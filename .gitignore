@@ -1,0 +1,39 @@
+# Временные файлы
+*.log
+*.tmp
+*.temp
+temp_*
+ctool1cd_*
+ctool1cd_extracted/
+ctool1cd_ready/
+
+# Результаты анализа
+final_1cd_analysis_report.json
+temp_output.csv
+temp_log.txt
+
+# Docker
+.dockerignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+Thumbs.db
+
+# Большие файлы (не коммитить)
+# 1Cv8.1CD 
