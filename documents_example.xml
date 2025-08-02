@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Documents>
+  <Metadata>
+    <ExtractionDate>2024-01-15T10:30:00</ExtractionDate>
+    <SourceFile>raw/1Cv8.1CD</SourceFile>
+    <TotalDocuments>100</TotalDocuments>
+  </Metadata>
+  
+  <Acts>
+    <!-- Пример акта выполненных работ -->
+    <Act>
+      <Number>000000001</Number>
+      <Date>2024-01-15</Date>
+      <Contractor>ИП Иванов</Contractor>
+      <Amount>5000.00</Amount>
+      <TablePart>
+        <Row>
+          <Nomenclature>Букет 'Свадебный'</Nomenclature>
+          <Quantity>1</Quantity>
+          <Price>5000.00</Price>
+          <Amount>5000.00</Amount>
+        </Row>
+      </TablePart>
+    </Act>
+  </Acts>
+  
+  <Invoices>
+    <!-- Пример счета-фактуры -->
+    <Invoice>
+      <Number>000000001</Number>
+      <Date>2024-01-15</Date>
+      <Contractor>ООО 'Цветочный рай'</Contractor>
+      <Amount>12000.00</Amount>
+      <TablePart>
+        <Row>
+          <Nomenclature>Роза красная</Nomenclature>
+          <Quantity>100</Quantity>
+          <Price>120.00</Price>
+          <Amount>12000.00</Amount>
+        </Row>
+      </TablePart>
+    </Invoice>
+  </Invoices>
+  
+  <Waybills>
+    <!-- Пример накладной -->
+    <Waybill>
+      <Number>000000001</Number>
+      <Date>2024-01-15</Date>
+      <Warehouse>Основной склад</Warehouse>
+      <Contractor>ООО 'Цветочный рай'</Contractor>
+      <TablePart>
+        <Row>
+          <Nomenclature>Роза красная</Nomenclature>
+          <Quantity>100</Quantity>
+          <Price>120.00</Price>
+          <Amount>12000.00</Amount>
+        </Row>
+      </TablePart>
+    </Waybill>
+  </Waybills>
+</Documents>
