@@ -1,0 +1,535 @@
+{
+  "documents": [
+    {
+      "id": "_DOCUMENT163_1",
+      "table_name": "_DOCUMENT163",
+      "row_index": 1,
+      "fields": {
+        "_VERSION": "1.0.1.0",
+        "_MARKED": true,
+        "_NUMBER": "00000053131",
+        "_POSTED": false,
+        "_FLD4225": true,
+        "_FLD4226": false,
+        "_FLD4227": false,
+        "_FLD4236": true,
+        "_FLD4237": true,
+        "_FLD4238": 10.0,
+        "_FLD4239": 8700.0,
+        "_FLD4240": 1,
+        "_FLD4249": false,
+        "_FLD4252": "",
+        "_FLD8015": 5,
+        "_FLD8070": "      ",
+        "_FLD8205": false,
+        "_FLD9885": 0.0,
+        "_FLD10651": 0,
+        "_FLD10654": false,
+        "_FLD13609": false,
+        "_FLD14340": false,
+        "_FLD12955": "",
+        "_FLD12950": ""
+      },
+      "blobs": {
+        "_FLD4229": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4243": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4254": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4255": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4256": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT163_2",
+      "table_name": "_DOCUMENT163",
+      "row_index": 2,
+      "fields": {
+        "_VERSION": "1.1.1.1",
+        "_MARKED": false,
+        "_NUMBER": "00000182413",
+        "_POSTED": true,
+        "_FLD4225": true,
+        "_FLD4226": false,
+        "_FLD4227": false,
+        "_FLD4236": false,
+        "_FLD4237": false,
+        "_FLD4238": 10.0,
+        "_FLD4239": 4858.0,
+        "_FLD4240": 1,
+        "_FLD4249": false,
+        "_FLD4252": "",
+        "_FLD8015": 0,
+        "_FLD8070": "      ",
+        "_FLD8205": false,
+        "_FLD9885": 0.0,
+        "_FLD10651": 1,
+        "_FLD10654": false,
+        "_FLD13609": false,
+        "_FLD14340": false,
+        "_FLD12955": "",
+        "_FLD12950": ""
+      },
+      "blobs": {
+        "_FLD4229": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4243": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4254": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4255": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4256": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT163_3",
+      "table_name": "_DOCUMENT163",
+      "row_index": 3,
+      "fields": {
+        "_VERSION": "1.2.1.2",
+        "_MARKED": false,
+        "_NUMBER": "00000045214",
+        "_POSTED": true,
+        "_FLD4225": true,
+        "_FLD4226": false,
+        "_FLD4227": false,
+        "_FLD4236": false,
+        "_FLD4237": false,
+        "_FLD4238": 10.0,
+        "_FLD4239": 3199.1,
+        "_FLD4240": 1,
+        "_FLD4249": false,
+        "_FLD4252": "",
+        "_FLD8015": 1,
+        "_FLD8070": "      ",
+        "_FLD8205": false,
+        "_FLD9885": 0.0,
+        "_FLD10651": 0,
+        "_FLD10654": false,
+        "_FLD13609": false,
+        "_FLD14340": false,
+        "_FLD12955": "",
+        "_FLD12950": ""
+      },
+      "blobs": {
+        "_FLD4229": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4243": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4254": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4255": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4256": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT163_4",
+      "table_name": "_DOCUMENT163",
+      "row_index": 4,
+      "fields": {
+        "_VERSION": "1.3.1.3",
+        "_MARKED": false,
+        "_NUMBER": "00000091720",
+        "_POSTED": true,
+        "_FLD4225": true,
+        "_FLD4226": false,
+        "_FLD4227": false,
+        "_FLD4236": false,
+        "_FLD4237": false,
+        "_FLD4238": 10.0,
+        "_FLD4239": 1850.0,
+        "_FLD4240": 1,
+        "_FLD4249": false,
+        "_FLD4252": "",
+        "_FLD8015": 0,
+        "_FLD8070": "      ",
+        "_FLD8205": false,
+        "_FLD9885": 0.0,
+        "_FLD10651": 0,
+        "_FLD10654": false,
+        "_FLD13609": false,
+        "_FLD14340": false,
+        "_FLD12955": "",
+        "_FLD12950": ""
+      },
+      "blobs": {
+        "_FLD4229": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4243": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4254": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4255": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4256": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT163_5",
+      "table_name": "_DOCUMENT163",
+      "row_index": 5,
+      "fields": {
+        "_VERSION": "1.4.1.4",
+        "_MARKED": false,
+        "_NUMBER": "00000073287",
+        "_POSTED": true,
+        "_FLD4225": true,
+        "_FLD4226": false,
+        "_FLD4227": false,
+        "_FLD4236": false,
+        "_FLD4237": false,
+        "_FLD4238": 10.0,
+        "_FLD4239": 21681.43,
+        "_FLD4240": 1,
+        "_FLD4249": false,
+        "_FLD4252": "",
+        "_FLD8015": 0,
+        "_FLD8070": "      ",
+        "_FLD8205": false,
+        "_FLD9885": 0.0,
+        "_FLD10651": 12,
+        "_FLD10654": false,
+        "_FLD13609": false,
+        "_FLD14340": false,
+        "_FLD12955": "",
+        "_FLD12950": ""
+      },
+      "blobs": {
+        "_FLD4229": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4243": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4254": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4255": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        },
+        "_FLD4256": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT184_1",
+      "table_name": "_DOCUMENT184",
+      "row_index": 1,
+      "fields": {
+        "_VERSION": "1.0.1.0",
+        "_MARKED": false,
+        "_NUMBER": "00000000499",
+        "_POSTED": true,
+        "_FLD4938": false,
+        "_FLD4939": "Розничная"
+      },
+      "blobs": {
+        "_FLD4936": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT184_2",
+      "table_name": "_DOCUMENT184",
+      "row_index": 2,
+      "fields": {
+        "_VERSION": "1.1.1.1",
+        "_MARKED": false,
+        "_NUMBER": "00000000508",
+        "_POSTED": true,
+        "_FLD4938": false,
+        "_FLD4939": "Розничная"
+      },
+      "blobs": {
+        "_FLD4936": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT184_3",
+      "table_name": "_DOCUMENT184",
+      "row_index": 3,
+      "fields": {
+        "_VERSION": "1.2.1.2",
+        "_MARKED": false,
+        "_NUMBER": "00000000494",
+        "_POSTED": true,
+        "_FLD4938": true,
+        "_FLD4939": "Розничная"
+      },
+      "blobs": {
+        "_FLD4936": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT184_4",
+      "table_name": "_DOCUMENT184",
+      "row_index": 4,
+      "fields": {
+        "_VERSION": "1.3.1.3",
+        "_MARKED": false,
+        "_NUMBER": "00000000495",
+        "_POSTED": true,
+        "_FLD4938": true,
+        "_FLD4939": "Розничная"
+      },
+      "blobs": {
+        "_FLD4936": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT184_5",
+      "table_name": "_DOCUMENT184",
+      "row_index": 5,
+      "fields": {
+        "_VERSION": "1.4.1.4",
+        "_MARKED": false,
+        "_NUMBER": "00000000496",
+        "_POSTED": true,
+        "_FLD4938": true,
+        "_FLD4939": "Розничная"
+      },
+      "blobs": {
+        "_FLD4936": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT154_1",
+      "table_name": "_DOCUMENT154",
+      "row_index": 1,
+      "fields": {
+        "_VERSION": "1.0.1.0",
+        "_MARKED": false,
+        "_NUMBER": "00000025351",
+        "_POSTED": true,
+        "_FLD3774": 1,
+        "_FLD3775": 10.0,
+        "_FLD3776": false,
+        "_FLD3777": "00000131389",
+        "_FLD3780": false,
+        "_FLD3781": false,
+        "_FLD3782": true,
+        "_FLD11495": false,
+        "_FLD3784": false,
+        "_FLD3787": true,
+        "_FLD3788": 7950.0,
+        "_FLD3790": true,
+        "_FLD3795": "",
+        "_FLD8104": "",
+        "_FLD8131": "",
+        "_FLD8146": 0.0,
+        "_FLD9319": 0.0,
+        "_FLD10134": false,
+        "_FLD10236": false,
+        "_FLD12417": 0.0,
+        "_FLD12420": "",
+        "_FLD14499": false,
+        "_FLD14500": 0.0
+      },
+      "blobs": {
+        "_FLD3772": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT154_2",
+      "table_name": "_DOCUMENT154",
+      "row_index": 2,
+      "fields": {
+        "_VERSION": "1.1.1.1",
+        "_MARKED": false,
+        "_NUMBER": "00000008412",
+        "_POSTED": true,
+        "_FLD3774": 1,
+        "_FLD3775": 10.0,
+        "_FLD3776": false,
+        "_FLD3777": "",
+        "_FLD3780": false,
+        "_FLD3781": false,
+        "_FLD3782": true,
+        "_FLD11495": false,
+        "_FLD3784": false,
+        "_FLD3787": false,
+        "_FLD3788": 868.8,
+        "_FLD3790": false,
+        "_FLD3795": "",
+        "_FLD8104": "",
+        "_FLD8131": "",
+        "_FLD8146": 0.0,
+        "_FLD9319": 0.0,
+        "_FLD10134": false,
+        "_FLD10236": false,
+        "_FLD12417": 0.0,
+        "_FLD12420": "",
+        "_FLD14499": false,
+        "_FLD14500": 0.0
+      },
+      "blobs": {
+        "_FLD3772": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT154_3",
+      "table_name": "_DOCUMENT154",
+      "row_index": 3,
+      "fields": {
+        "_VERSION": "1.2.1.2",
+        "_MARKED": false,
+        "_NUMBER": "00000026798",
+        "_POSTED": true,
+        "_FLD3774": 1,
+        "_FLD3775": 10.0,
+        "_FLD3776": false,
+        "_FLD3777": "00000042568",
+        "_FLD3780": false,
+        "_FLD3781": false,
+        "_FLD3782": true,
+        "_FLD11495": false,
+        "_FLD3784": false,
+        "_FLD3787": true,
+        "_FLD3788": 28580.0,
+        "_FLD3790": true,
+        "_FLD3795": "",
+        "_FLD8104": "",
+        "_FLD8131": "",
+        "_FLD8146": 295.77,
+        "_FLD9319": 0.0,
+        "_FLD10134": false,
+        "_FLD10236": false,
+        "_FLD12417": 0.0,
+        "_FLD12420": "",
+        "_FLD14499": false,
+        "_FLD14500": 0.0
+      },
+      "blobs": {
+        "_FLD3772": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT154_4",
+      "table_name": "_DOCUMENT154",
+      "row_index": 4,
+      "fields": {
+        "_VERSION": "1.3.1.3",
+        "_MARKED": false,
+        "_NUMBER": "00000027737",
+        "_POSTED": true,
+        "_FLD3774": 1,
+        "_FLD3775": 10.0,
+        "_FLD3776": true,
+        "_FLD3777": "30043",
+        "_FLD3780": true,
+        "_FLD3781": true,
+        "_FLD3782": true,
+        "_FLD11495": false,
+        "_FLD3784": false,
+        "_FLD3787": true,
+        "_FLD3788": 321580.8,
+        "_FLD3790": true,
+        "_FLD3795": "",
+        "_FLD8104": "",
+        "_FLD8131": "",
+        "_FLD8146": 3470.58,
+        "_FLD9319": 0.0,
+        "_FLD10134": false,
+        "_FLD10236": false,
+        "_FLD12417": 0.0,
+        "_FLD12420": "",
+        "_FLD14499": false,
+        "_FLD14500": 0.0
+      },
+      "blobs": {
+        "_FLD3772": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    },
+    {
+      "id": "_DOCUMENT154_5",
+      "table_name": "_DOCUMENT154",
+      "row_index": 5,
+      "fields": {
+        "_VERSION": "1.4.1.4",
+        "_MARKED": false,
+        "_NUMBER": "00000012097",
+        "_POSTED": true,
+        "_FLD3774": 1,
+        "_FLD3775": 10.0,
+        "_FLD3776": false,
+        "_FLD3777": "00000038057",
+        "_FLD3780": false,
+        "_FLD3781": false,
+        "_FLD3782": true,
+        "_FLD11495": false,
+        "_FLD3784": false,
+        "_FLD3787": true,
+        "_FLD3788": 26520.0,
+        "_FLD3790": true,
+        "_FLD3795": "",
+        "_FLD8104": "",
+        "_FLD8131": "",
+        "_FLD8146": 360.43,
+        "_FLD9319": 0.0,
+        "_FLD10134": false,
+        "_FLD10236": false,
+        "_FLD12417": 0.0,
+        "_FLD12420": "",
+        "_FLD14499": false,
+        "_FLD14500": 0.0
+      },
+      "blobs": {
+        "_FLD3772": {
+          "error": "'Blob' object has no attribute 'get_data'"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "extraction_date": "2025-08-02T11:25:05.731719",
+    "total_documents": 15,
+    "total_blobs": 0,
+    "source_file": "raw/1Cv8.1CD"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "task-master-ai": {
+      "command": "task-master-ai",
+      "args": ["server", "--stdio"],
+      "env": {
+        "TASK_MASTER_PROJECT_ROOT": "/Users/ilyakrasinsky/workspace/vscode.projects/1С-extractor"
+      }
+    }
+  }
+} 

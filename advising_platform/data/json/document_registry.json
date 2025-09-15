@@ -1,0 +1,8 @@
+{
+  "abstractions": {
+    "task:todo": "[todo · incidents]/todo.md",
+    "task:document_relations": "[todo · incidents]/todo.md",
+    "incident:task_fragmentation": "[todo · incidents]/ai.incidents/incident-task-fragmentation-20250515.md"
+  },
+  "last_updated": 1747287143.5870984
+}

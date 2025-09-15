@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление задачами - Advising Platform</title>
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --primary-hover: #0055aa;
+            --secondary-color: #666;
+            --text-color: #333;
+            --light-bg: #f9f9f9;
+            --border-color: #ddd;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            
+            /* Модульная сетка */
+            --base-module: 3px;
+            --half-module: calc(var(--base-module) * 0.5);
+            --module: calc(var(--base-module) * 1);
+            --double-module: calc(var(--base-module) * 2);
+            --triple-module: calc(var(--base-module) * 3);
+            --quad-module: calc(var(--base-module) * 4);
+            --large-module: calc(var(--base-module) * 8);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: var(--light-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: var(--triple-module) var(--large-module);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .nav-links a {
+            margin-left: var(--quad-module);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--large-module);
+            flex: 1;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: var(--module);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: var(--large-module);
+            margin-bottom: var(--large-module);
+        }
+        
+        h1, h2, h3, h4 {
+            margin: 0 0 var(--quad-module) 0;
+            line-height: 1.2;
+        }
+        
+        h1 {
+            font-size: 30px;
+        }
+        
+        h2 {
+            font-size: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: var(--double-module);
+            margin-bottom: var(--quad-module);
+        }
+        
+        h3 {
+            font-size: 21px;
+            margin-top: var(--large-module);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-gap: var(--quad-module);
+        }
+        
+        .stat-card {
+            background-color: var(--light-bg);
+            padding: var(--quad-module);
+            border-radius: var(--module);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: var(--module);
+        }
+        
+        .stat-label {
+            font-size: 15px;
+            color: var(--secondary-color);
+            margin-top: var(--module);
+        }
+        
+        .category-stats {
+            margin-top: var(--large-module);
+        }
+        
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--double-module) 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .category-name {
+            font-weight: 600;
+        }
+        
+        .category-progress {
+            display: flex;
+            align-items: center;
+        }
+        
+        .progress-bar {
+            width: 150px;
+            height: var(--module);
+            background-color: var(--border-color);
+            border-radius: var(--half-module);
+            margin-right: var(--double-module);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: var(--quad-module);
+        }
+        
+        .tab {
+            padding: var(--double-module) var(--quad-module);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: var(--quad-module);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: var(--module);
+            font-weight: 600;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: var(--double-module);
+            border: 1px solid var(--border-color);
+            border-radius: var(--module);
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: var(--double-module) var(--quad-module);
+            border: none;
+            border-radius: var(--module);
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .task-list {
+            margin-top: var(--quad-module);
+        }
+        
+        .task-item {
+            padding: var(--quad-module);
+            border: 1px solid var(--border-color);
+            border-radius: var(--module);
+            margin-bottom: var(--double-module);
+            background-color: white;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--double-module);
+        }
+        
+        .task-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .task-status {
+            font-size: 13px;
+            padding: var(--half-module) var(--module);
+            border-radius: var(--module);
+            background-color: var(--light-bg);
+        }
+        
+        .task-status.completed {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+        
+        .task-status.in-progress {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .task-actions {
+            margin-top: var(--double-module);
+            display: flex;
+            gap: var(--double-module);
+        }
+        
+        .alert {
+            padding: var(--quad-module);
+            border-radius: var(--module);
+            margin-bottom: var(--quad-module);
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border-left-color: var(--success-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border-left-color: var(--warning-color);
+        }
+        
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-left-color: var(--danger-color);
+        }
+        
+        footer {
+            background-color: white;
+            padding: var(--quad-module) 0;
+            text-align: center;
+            color: var(--secondary-color);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Стили для графиков */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: var(--quad-module);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Advising Platform</div>
+            <div class="nav-links">
+                <a href="/">Главная</a>
+                <a href="/reports">Отчеты</a>
+                <a href="/tasks" class="active">Задачи</a>
+                <a href="/incidents">Инциденты</a>
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <h1>Управление задачами</h1>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="statistics">Статистика</div>
+            <div class="tab" data-tab="task-list">Список задач</div>
+            <div class="tab" data-tab="create-task">Создать задачу</div>
+        </div>
+        
+        <div class="tab-content active" id="statistics">
+            <div class="container">
+                <h2>Общая статистика</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.total }}</div>
+                        <div class="stat-label">Всего задач</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.completed }}</div>
+                        <div class="stat-label">Выполнено</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.in_progress }}</div>
+                        <div class="stat-label">В процессе</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.completion_rate }}%</div>
+                        <div class="stat-label">Степень выполнения</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="container">
+                <h2>Статистика по категориям</h2>
+                
+                <div class="category-stats">
+                    {% for category, data in stats.categories.items() %}
+                    <div class="category-item">
+                        <div class="category-name">{{ category }}</div>
+                        <div class="category-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ (data.completed / data.total * 100) if data.total > 0 else 0 }}%;"></div>
+                            </div>
+                            <div class="progress-text">{{ data.completed }}/{{ data.total }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="container">
+                <h2>Динамика выполнения задач</h2>
+                
+                <div class="chart-container">
+                    <canvas id="completionChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="task-list">
+            <div class="container">
+                <h2>Список задач</h2>
+                
+                <div class="task-list">
+                    {% for task in tasks %}
+                    <div class="task-item">
+                        <div class="task-header">
+                            <div class="task-title">{{ task.title }}</div>
+                            <div class="task-status {{ 'completed' if task.completed else 'in-progress' }}">
+                                {{ 'Выполнено' if task.completed else 'В процессе' }}
+                            </div>
+                        </div>
+                        
+                        <div class="task-description">
+                            {{ task.description }}
+                        </div>
+                        
+                        <div class="task-actions">
+                            {% if not task.completed %}
+                            <button class="btn btn-success complete-task" data-id="{{ task.id }}">Отметить как выполненную</button>
+                            {% endif %}
+                            <button class="btn btn-secondary view-details" data-id="{{ task.id }}">Подробности</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="create-task">
+            <div class="container">
+                <h2>Создание новой задачи</h2>
+                
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="taskTitle">Название задачи</label>
+                        <input type="text" id="taskTitle" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskType">Тип задачи</label>
+                        <select id="taskType" name="task_type" required>
+                            <option value="analysis">Анализ данных</option>
+                            <option value="standard">Обновление стандарта</option>
+                            <option value="report">Создание отчета</option>
+                            <option value="bug">Исправление ошибки</option>
+                            <option value="ui">Улучшение интерфейса</option>
+                            <option value="performance">Оптимизация производительности</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskDescription">Описание</label>
+                        <textarea id="taskDescription" name="description" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskPriority">Приоритет</label>
+                        <select id="taskPriority" name="priority">
+                            <option value="Высокий">Высокий</option>
+                            <option value="Средний" selected>Средний</option>
+                            <option value="Низкий">Низкий</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Создать задачу</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>© 2025 Advising Platform. Все права защищены.</p>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Переключение вкладок
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Удаляем активный класс у всех вкладок
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // Добавляем активный класс текущей вкладке
+                tab.classList.add('active');
+                
+                // Скрываем все контенты вкладок
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                // Показываем контент текущей вкладки
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Инициализация графика выполнения задач
+        const ctx = document.getElementById('completionChart').getContext('2d');
+        const chartData = {
+            labels: Object.keys({{ stats.week_stats|tojson }}),
+            datasets: [{
+                label: 'Выполненные задачи',
+                data: Object.values({{ stats.week_stats|tojson }}),
+                backgroundColor: 'rgba(0, 102, 204, 0.2)',
+                borderColor: 'rgba(0, 102, 204, 1)',
+                borderWidth: 1
+            }]
+        };
+        
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Обработка отметки задачи как выполненной
+        document.querySelectorAll('.complete-task').forEach(button => {
+            button.addEventListener('click', async () => {
+                const taskId = button.getAttribute('data-id');
+                const taskTitle = button.closest('.task-item').querySelector('.task-title').textContent;
+                
+                try {
+                    const response = await fetch('/api/v1/tasks/complete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            task_description: taskTitle
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Обновление интерфейса
+                        const taskItem = button.closest('.task-item');
+                        const statusElement = taskItem.querySelector('.task-status');
+                        
+                        statusElement.textContent = 'Выполнено';
+                        statusElement.classList.remove('in-progress');
+                        statusElement.classList.add('completed');
+                        
+                        button.remove();
+                        
+                        // Показываем уведомление
+                        showAlert('success', 'Задача успешно отмечена как выполненная');
+                    } else {
+                        showAlert('danger', data.error || 'Произошла ошибка при отметке задачи');
+                    }
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    showAlert('danger', 'Произошла ошибка при отметке задачи');
+                }
+            });
+        });
+        
+        // Обработка формы создания задачи
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const taskData = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('/api/v1/tasks/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(taskData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Сбрасываем форму
+                    e.target.reset();
+                    
+                    // Показываем уведомление
+                    showAlert('success', 'Задача успешно создана');
+                } else {
+                    showAlert('danger', data.error || 'Произошла ошибка при создании задачи');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showAlert('danger', 'Произошла ошибка при создании задачи');
+            }
+        });
+        
+        // Функция для отображения уведомлений
+        function showAlert(type, message) {
+            // Удаляем существующие уведомления
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Создаем новое уведомление
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert alert-${type}`;
+            alertElement.textContent = message;
+            
+            // Добавляем уведомление в начало main
+            const mainElement = document.querySelector('main');
+            mainElement.insertBefore(alertElement, mainElement.firstChild);
+            
+            // Убираем уведомление через 5 секунд
+            setTimeout(() => {
+                alertElement.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "last_updated": "2025-06-10T05:30:00Z",
+    "total_components": 15,
+    "total_dependencies": 47,
+    "system_health": "operational"
+  },
+  "core_components": {
+    "standards_mcp_server": {
+      "type": "mcp_server",
+      "language": "nodejs",
+      "port": 3001,
+      "status": "running",
+      "dependencies": [
+        "@modelcontextprotocol/sdk",
+        "duckdb_cache_api",
+        "standards_system.duckdb"
+      ],
+      "provides": [
+        "standards-resolver",
+        "suggest-standards", 
+        "validate-compliance",
+        "search-standards-semantic"
+      ],
+      "health_score": 0.98,
+      "performance_metrics": {
+        "standards_resolver": {
+          "success_rate": 0.95,
+          "avg_response_ms": 120,
+          "monthly_calls": 847
+        },
+        "suggest_standards": {
+          "success_rate": 0.87,
+          "avg_response_ms": 340,
+          "monthly_calls": 623
+        },
+        "validate_compliance": {
+          "success_rate": 0.98,
+          "avg_response_ms": 87,
+          "monthly_calls": 1247
+        },
+        "search_standards_semantic": {
+          "success_rate": 0.89,
+          "avg_response_ms": 156,
+          "monthly_calls": 445
+        }
+      }
+    },
+    "duckdb_cache_api": {
+      "type": "api_server",
+      "language": "python",
+      "port": 5004,
+      "status": "running",
+      "dependencies": [
+        "duckdb",
+        "flask",
+        "standards_system.duckdb"
+      ],
+      "provides": [
+        "/api/cache/stats",
+        "/api/cache/standards",
+        "/api/cache/search"
+      ],
+      "health_score": 0.99
+    },
+    "mcp_chat_api": {
+      "type": "api_bridge",
+      "language": "python", 
+      "port": 5002,
+      "status": "running",
+      "dependencies": [
+        "flask",
+        "flask-cors",
+        "websockets"
+      ],
+      "provides": [
+        "/chat/mcp",
+        "/chat/bridge",
+        "/chat/status"
+      ],
+      "health_score": 0.97
+    },
+    "api_server": {
+      "type": "main_api",
+      "language": "python",
+      "port": 5003,
+      "status": "running",
+      "dependencies": [
+        "flask",
+        "flask-cors",
+        "external_api_manager",
+        "standards_integration"
+      ],
+      "provides": [
+        "/api/status",
+        "/api/reorganization", 
+        "/api/external",
+        "/api/standards"
+      ],
+      "health_score": 0.95
+    },
+    "web_server": {
+      "type": "frontend",
+      "language": "python",
+      "port": 5000,
+      "status": "running",
+      "dependencies": [
+        "http.server",
+        "templates",
+        "static_assets"
+      ],
+      "provides": [
+        "dashboard_interface",
+        "system_monitoring",
+        "workflow_status"
+      ],
+      "health_score": 0.99
+    }
+  },
+  "workflow_components": {
+    "heroes_workflow_orchestrator": {
+      "type": "workflow_engine",
+      "status": "active",
+      "dependencies": [
+        "analysis_index.json",
+        "heroesGPT_review_template_v1.4.md",
+        "standards_compliance"
+      ],
+      "capabilities": [
+        "landing_page_analysis",
+        "jtbd_compliance_checking",
+        "quality_scoring",
+        "report_generation"
+      ]
+    },
+    "n8n_workflow_review": {
+      "type": "analysis_module",
+      "status": "active",
+      "dependencies": [
+        "workflow_metrics",
+        "performance_analysis",
+        "optimization_engine"
+      ],
+      "capabilities": [
+        "workflow_complexity_analysis",
+        "bottleneck_detection",
+        "performance_recommendations",
+        "error_handling_assessment"
+      ]
+    },
+    "cache_initializer": {
+      "type": "maintenance",
+      "status": "completed",
+      "dependencies": [
+        "standards_system.duckdb",
+        "file_indexing",
+        "metadata_extraction"
+      ],
+      "last_run": "2025-06-10T05:26:58Z",
+      "standards_loaded": 50
+    }
+  },
+  "data_stores": {
+    "standards_system.duckdb": {
+      "type": "database",
+      "size_mb": 2.1,
+      "records": 50,
+      "status": "healthy",
+      "last_backup": "2025-06-10T00:00:00Z",
+      "integrity_score": 1.0
+    },
+    "analysis_index.json": {
+      "type": "index_file",
+      "size_kb": 15.7,
+      "records": 5,
+      "status": "current",
+      "last_updated": "2025-05-28T18:10:00Z"
+    }
+  },
+  "external_integrations": {
+    "github_sync": {
+      "status": "active",
+      "last_sync": "2025-06-10T05:20:00Z",
+      "files_synced": 47,
+      "conflicts_resolved": 3
+    },
+    "n8n_workflows": {
+      "status": "monitored",
+      "active_workflows": 4,
+      "reports_generated": 4,
+      "testcases_active": 3
+    }
+  },
+  "dependency_graph": {
+    "critical_path": [
+      "standards_system.duckdb",
+      "duckdb_cache_api", 
+      "standards_mcp_server",
+      "mcp_chat_api"
+    ],
+    "backup_paths": [
+      "api_server -> standards_integration",
+      "web_server -> dashboard_interface"
+    ],
+    "single_points_of_failure": [
+      "standards_system.duckdb"
+    ]
+  },
+  "performance_metrics": {
+    "average_response_time_ms": 87,
+    "system_uptime_percent": 99.8,
+    "cache_hit_rate": 0.94,
+    "error_rate": 0.002,
+    "concurrent_users": 3
+  },
+  "monitoring_alerts": {
+    "active_warnings": [
+      {
+        "component": "documentation_updater",
+        "status": "failed",
+        "issue": "Module import path resolution",
+        "priority": "medium",
+        "since": "2025-06-10T05:26:58Z"
+      }
+    ],
+    "resolved_issues": [
+      {
+        "component": "port_conflicts",
+        "resolved": "2025-06-09T18:30:00Z",
+        "resolution": "Port allocation strategy updated"
+      }
+    ]
+  },
+  "system_capabilities": {
+    "mcp_commands": 10,
+    "api_endpoints": 12,
+    "workflow_types": 6,
+    "analysis_modules": 3,
+    "integration_points": 8
+  }
+}

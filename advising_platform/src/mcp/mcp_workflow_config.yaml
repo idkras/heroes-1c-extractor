@@ -1,0 +1,192 @@
+# MCP Workflow Configuration
+# Полная конфигурация для MCP-оркестратора
+
+version: "1.0"
+name: "MCP Hypothesis Cycle"
+description: "Полный цикл от гипотезы до результата с TDD подходом"
+
+# Конфигурация workflow
+workflow:
+  timeout_seconds: 300
+  max_retries: 2
+  auto_recovery: true
+  parallel_execution: false
+  
+  # Шаги workflow в порядке выполнения
+  steps:
+    - name: "form_hypothesis"
+      module: "form_hypothesis"
+      required: true
+      timeout: 30
+      description: "Формирование и валидация гипотезы"
+      input_type: "text"
+      output_type: "hypothesis_json"
+      
+    - name: "build_jtbd"
+      module: "build_jtbd"
+      required: true
+      timeout: 45
+      description: "Создание JTBD и Customer Journey Map"
+      input_type: "hypothesis_json"
+      output_type: "jtbd_json"
+      
+    - name: "write_prd"
+      module: "write_prd"
+      required: true
+      timeout: 60
+      description: "Генерация PRD документа"
+      input_type: "jtbd_json"
+      output_type: "prd_json"
+      
+    - name: "red_phase_tests"
+      module: "red_phase_tests"
+      required: true
+      timeout: 120
+      description: "Генерация TDD пирамиды тестов"
+      input_type: "prd_json"
+      output_type: "test_suite_json"
+      
+    - name: "implement_feature"
+      module: "implement_feature"
+      required: false
+      timeout: 300
+      description: "Реализация функциональности (опционально)"
+      input_type: "test_suite_json"
+      output_type: "implementation_json"
+      
+    - name: "run_tests"
+      module: "run_tests"
+      required: false
+      timeout: 180
+      description: "Запуск тестов"
+      input_type: "implementation_json"
+      output_type: "test_results_json"
+      
+    - name: "evaluate_outcome"
+      module: "evaluate_outcome"
+      required: true
+      timeout: 60
+      description: "Оценка результатов"
+      input_type: "test_results_json"
+      output_type: "evaluation_json"
+      
+    - name: "falsify_or_confirm"
+      module: "falsify_or_confirm"
+      required: true
+      timeout: 30
+      description: "Фальсификация или подтверждение гипотезы"
+      input_type: "evaluation_json"
+      output_type: "decision_json"
+
+# Обработка ошибок
+error_handling:
+  on_module_not_found: "continue_with_red_phase"
+  on_timeout: "create_incident"
+  on_validation_error: "create_incident_and_stop"
+  on_critical_error: "create_incident_and_rollback"
+  
+  incident_creation:
+    auto_create: true
+    include_workflow_state: true
+    trigger_root_cause_analysis: true
+    notify_team: false
+
+# Логирование и мониторинг
+logging:
+  enabled: true
+  level: "INFO"
+  include_performance_metrics: true
+  dashboard_integration: true
+  
+  operations_to_log:
+    - "step_start"
+    - "step_complete"
+    - "step_error"
+    - "workflow_start"
+    - "workflow_complete"
+    - "incident_created"
+
+# Интеграция с существующими системами
+integrations:
+  mcp_dashboard:
+    enabled: true
+    log_all_operations: true
+    include_metrics: true
+    
+  nodejs_mcp_server:
+    enabled: true
+    port: 3000
+    endpoints:
+      - "/mcp/standards"
+      - "/mcp/suggest"
+      - "/mcp/validate"
+    
+  file_system:
+    output_directory: "src/mcp/output"
+    backup_enabled: true
+    cleanup_old_files: true
+    max_file_age_days: 30
+
+# Конфигурация производительности
+performance:
+  response_time_target_ms: 1000
+  throughput_target_ops_per_minute: 100
+  memory_limit_mb: 512
+  
+  caching:
+    enabled: true
+    ttl_seconds: 3600
+    max_entries: 1000
+    
+  parallel_limits:
+    max_concurrent_workflows: 5
+    max_concurrent_steps: 3
+
+# Конфигурация качества
+quality:
+  validation:
+    strict_mode: true
+    validate_inputs: true
+    validate_outputs: true
+    
+  testing:
+    run_smoke_tests: true
+    coverage_threshold: 80
+    performance_tests: true
+    
+  documentation:
+    auto_generate: true
+    include_examples: true
+    update_on_change: true
+
+# Метрики и аналитика
+metrics:
+  collect_performance: true
+  collect_usage: true
+  collect_errors: true
+  
+  targets:
+    workflow_success_rate: 95
+    average_completion_time_minutes: 5
+    incident_resolution_time_hours: 4
+    
+  alerts:
+    low_success_rate: 85
+    high_completion_time_minutes: 10
+    critical_error_count: 5
+
+# Безопасность
+security:
+  validate_inputs: true
+  sanitize_outputs: true
+  log_security_events: true
+  
+  access_control:
+    require_authentication: false
+    rate_limiting: true
+    max_requests_per_minute: 60
+    
+  data_protection:
+    encrypt_sensitive_data: false
+    mask_pii_in_logs: true
+    secure_file_storage: true

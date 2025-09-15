@@ -106,4 +106,12 @@ all_*.json
 all_*.xml
 *_analysis.json
 *_search.json
-*_results.json 
+*_results.json
+
+# Внешние репозитории (submodules)
+dck1c/
+heroes-platform/
+tools_ui_1c/
+tools/onec_dtools/
+tools/temp-tool1cd/
+tools/v8unpack/ 

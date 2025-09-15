@@ -1,0 +1,137 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Анализ структуры 1CD файла",
+        "description": "Получить полную читаемую структуру данных из 1CD файла",
+        "status": "done",
+        "priority": "high",
+        "details": "Анализировать метаданные 1С (IBVERSION, FILENAME, CREATION, etc.), изучить структуру CSV файлов (52MB + дополнительные), анализировать TXT файлы (77MB), исследовать конфигурационные каталоги, создать карту структуры данных",
+        "testStrategy": "Проверить понимание модели данных 1С",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": "2",
+        "title": "Извлечение читаемых документов",
+        "description": "Извлечь все типы читаемых документов и описать закодированное",
+        "status": "done",
+        "priority": "high",
+        "details": "Извлечь содержимое CSV файлов, анализировать TXT файлы, исследовать структурированные блоки (48,153), найти и декодировать документы (акты, накладные, счета), создать каталог типов документов",
+        "testStrategy": "Полная картина всех документов на диске",
+        "dependencies": [
+          "1"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "3",
+        "title": "Настройка ctool1cd для Mac M2",
+        "description": "Создать рабочие скрипты для запуска ctool1cd на Mac M2",
+        "status": "done",
+        "priority": "medium",
+        "details": "Создать Docker скрипты с x86_64 эмуляцией, настроить Ubuntu 22.04 образ, установить ctool1cd из PPA репозитория, создать альтернативные варианты через Wine",
+        "testStrategy": "Успешный запуск анализа 1CD файла",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": "4",
+        "title": "Запуск полного анализа 1CD файла",
+        "description": "Запустить ctool1cd для извлечения всех данных из файла",
+        "status": "pending",
+        "priority": "high",
+        "details": "Запустить оптимизированный Docker скрипт, дождаться завершения анализа (30-60 минут), извлечь структурированные данные, сохранить результаты в CSV формате",
+        "testStrategy": "Получение структурированных данных из 1CD файла",
+        "dependencies": [
+          "3"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "5",
+        "title": "Анализ данных о цветочках",
+        "description": "Извлечь и проанализировать данные о поставках цветов",
+        "status": "pending",
+        "priority": "high",
+        "details": "Найти документы о заказах цветов, извлечь данные о поставках, проанализировать акты приемки, создать отчет о движении товаров",
+        "testStrategy": "Получение конкретных данных о цветочках",
+        "dependencies": [
+          "4"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "6",
+        "title": "Сборка ctool1cd из исходников в Docker",
+        "description": "Собрать ctool1cd из исходников в Docker для Mac M2, решить проблему с Qt6 зависимостями",
+        "status": "pending",
+        "priority": "high",
+        "details": "Проблема: CMake требует Qt6 даже для консольной версии. Задачи: 1. Проанализировать CMakeLists.txt из репозитория tool1cd 2. Найти все зависимости от gtool1cd (GUI версии) 3. Удалить или отключить GUI компоненты полностью 4. Собрать только консольную версию ctool1cd 5. Протестировать сборку в Docker на Mac M2. Текущий статус: Dockerfile создан, но сборка падает на Qt6 зависимости.",
+        "testStrategy": "Успешная сборка ctool1cd без Qt6 зависимостей",
+        "dependencies": [],
+        "subtasks": [
+          {
+            "id": "6.1",
+            "title": "Анализ CMakeLists.txt из репозитория tool1cd",
+            "description": "Изучить структуру CMakeLists.txt и найти все зависимости от GUI компонентов",
+            "status": "pending",
+            "priority": "high",
+            "details": "Клонировать репозиторий tool1cd, изучить CMakeLists.txt, найти все ссылки на gtool1cd и Qt6 зависимости",
+            "testStrategy": "Полный список всех GUI зависимостей в CMakeLists.txt",
+            "dependencies": []
+          },
+          {
+            "id": "6.2",
+            "title": "Удаление GUI компонентов из сборки",
+            "description": "Модифицировать CMakeLists.txt для исключения GUI компонентов",
+            "status": "pending",
+            "priority": "high",
+            "details": "Удалить или закомментировать все ссылки на gtool1cd, отключить Qt6 зависимости, модифицировать Dockerfile",
+            "testStrategy": "CMakeLists.txt без GUI зависимостей",
+            "dependencies": ["6.1"]
+          },
+          {
+            "id": "6.3",
+            "title": "Сборка консольной версии ctool1cd",
+            "description": "Собрать только консольную версию без GUI зависимостей",
+            "status": "pending",
+            "priority": "high",
+            "details": "Запустить сборку в Docker, убедиться что собирается только ctool1cd без gtool1cd",
+            "testStrategy": "Успешная сборка ctool1cd без ошибок Qt6",
+            "dependencies": ["6.2"]
+          },
+          {
+            "id": "6.4",
+            "title": "Тестирование сборки на Mac M2",
+            "description": "Протестировать собранный ctool1cd на Mac M2",
+            "status": "pending",
+            "priority": "high",
+            "details": "Запустить Docker контейнер, протестировать ctool1cd на тестовом файле, убедиться в работоспособности",
+            "testStrategy": "Успешный запуск ctool1cd в Docker на Mac M2",
+            "dependencies": ["6.3"]
+          },
+          {
+            "id": "6.5",
+            "title": "Интеграция с основным проектом",
+            "description": "Интегрировать собранный ctool1cd в основной проект",
+            "status": "pending",
+            "priority": "medium",
+            "details": "Обновить Dockerfile.ctool1cd, создать финальный скрипт сборки, обновить документацию",
+            "testStrategy": "Готовый к использованию ctool1cd в проекте",
+            "dependencies": ["6.4"]
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "version": "1.0",
+      "created": "2025-01-28T20:00:00Z",
+      "lastModified": "2025-01-28T20:00:00Z",
+      "totalTasks": 6,
+      "completedTasks": 3,
+      "pendingTasks": 3
+    }
+  }
+}

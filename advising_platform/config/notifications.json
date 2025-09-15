@@ -1,0 +1,25 @@
+{
+    "enabled_channels": [
+        "console",
+        "system_log"
+    ],
+    "console": {
+        "enabled": true
+    },
+    "email": {
+        "enabled": false
+    },
+    "slack": {
+        "enabled": false
+    },
+    "telegram": {
+        "enabled": false
+    },
+    "webhook": {
+        "enabled": false
+    },
+    "system_log": {
+        "enabled": true,
+        "log_file": "advising_platform/logs/notifications.log"
+    }
+}

@@ -1,0 +1,201 @@
+{
+  "retail_warehouse_verification": {
+    "_DOCUMENT137": {
+      "table_name": "_DOCUMENT137",
+      "total_records": 227566,
+      "analyzed_records": 50,
+      "retail_records_count": 1,
+      "wholesale_records_count": 0,
+      "unclear_records_count": 48,
+      "retail_percentage": 2.0,
+      "retail_samples": [
+        {
+          "record_index": 21,
+          "content_sample": " b\"\\x0b\\x14\\xed2\\xfb\\xf8k\\x82\\xef\\xdc\\xe4'\\x9d\\xcfm\\x15\" 1.20.1.20 false 2020-03-11 09:47:38 2020-01-01 00:00:00 00000004841 true b'\\xa2\\xcbx\\x8az\\xf1#)\\x11\\xeaz`\\xfe\\xff\\x99r' ошибка чтения blob: gen",
+          "retail_keywords": [
+            "тт"
+          ]
+        }
+      ],
+      "wholesale_samples": []
+    },
+    "_DOCUMENT137_VT3035": {
+      "table_name": "_DOCUMENT137_VT3035",
+      "total_records": 1270406,
+      "analyzed_records": 50,
+      "retail_records_count": 0,
+      "wholesale_records_count": 0,
+      "unclear_records_count": 49,
+      "retail_percentage": 0.0,
+      "retail_samples": [],
+      "wholesale_samples": []
+    },
+    "_DOCUMENT138": {
+      "table_name": "_DOCUMENT138",
+      "total_records": 861178,
+      "analyzed_records": 50,
+      "retail_records_count": 1,
+      "wholesale_records_count": 0,
+      "unclear_records_count": 48,
+      "retail_percentage": 2.0,
+      "retail_samples": [
+        {
+          "record_index": 3,
+          "content_sample": " b'\\x80\\x00u\\x93y\\x8b\\x13\\x99l\\xc7\\xc5\\x86d\\x98\\xbe\\x06' 1.2.1.2 false 2025-04-25 11:45:46 2025-01-01 00:00:00 00011824975 true b'\\x9d\\xdfu\\xed\\x13\\xad\\x17\\x1b@sv\\xe1\\xbb\\xc0\\x1do' b'\\x00\\x00\\x00\\x00\\",
+          "retail_keywords": [
+            "магазин"
+          ]
+        }
+      ],
+      "wholesale_samples": []
+    },
+    "_DOCUMENT163": {
+      "table_name": "_DOCUMENT163",
+      "total_records": 527194,
+      "analyzed_records": 50,
+      "retail_records_count": 27,
+      "wholesale_records_count": 0,
+      "unclear_records_count": 22,
+      "retail_percentage": 54.0,
+      "retail_samples": [
+        {
+          "record_index": 1,
+          "content_sample": " b'\\x80\\x00\\x08\\x0cl\\x16\\xa8\\x98g\\x9d@\\xf7\\xd9m\\xdar' 1.0.1.0 true 2015-08-16 00:00:00 2015-01-01 00:00:00 00000053131 false b\"\\x9a\\xe4'\\x9c\\x9f'\\xb5\\xbcb\\x88-r\\x9f\\xc4\\xd3t\" b'\\x90e\\x00\"c\\xd2\\x82\\xf2",
+          "retail_keywords": [
+            "магазин",
+            "пц"
+          ]
+        },
+        {
+          "record_index": 5,
+          "content_sample": " b'\\x80\\x007\\n\\xdex\\xd0\\xfclz#\\x02\\xa1\\xc2\\xb5\\x9c' 1.4.1.4 false 2022-02-28 14:35:00 2022-01-01 00:00:00 00000073287 true b\"\\x9a\\xe4'\\x9c\\x9f'\\xb5\\xbcb\\x88-r\\x9f\\xc4\\xd3t\" b'\\x90e\\x00\"c\\xd2\\x82\\xf2\\x",
+          "retail_keywords": [
+            "магазин",
+            "фм"
+          ]
+        },
+        {
+          "record_index": 6,
+          "content_sample": " b\"\\x80\\x00r\\x9e\\xc0\\xb7\\xdd'd\\xafr?\\xc1<sl\" 1.5.1.5 false 2015-05-22 00:16:00 2015-01-01 00:00:00 00000045243 true b\"\\x9a\\xe4'\\x9c\\x9f'\\xb5\\xbcb\\x88-r\\x9f\\xc4\\xd3t\" b'\\x90e\\x00\"c\\xd2\\x82\\xf2\\x11\\xdf\\",
+          "retail_keywords": [
+            "магазин",
+            "пц"
+          ]
+        },
+        {
+          "record_index": 7,
+          "content_sample": " b\"\\x80\\x00s\\xcf\\xb2p'\\x90n}\\xfe\\x81?9tp\" 1.6.1.6 false 2015-11-09 22:58:09 2015-01-01 00:00:00 00000061856 true b\"\\x9a\\xe4'\\x9c\\x9f'\\xb5\\xbcb\\x88-r\\x9f\\xc4\\xd3t\" b'\\x90e\\x00\"c\\xd2\\x82\\xf2\\x11\\xdf\\x15",
+          "retail_keywords": [
+            "магазин",
+            "пц"
+          ]
+        },
+        {
+          "record_index": 9,
+          "content_sample": " b'\\x80\\x00^\\xdd\\xbf\\xffs9ed\\xe5\\xceh\\xd3\\xbam' 1.8.1.8 false 2022-09-17 13:30:00 2022-01-01 00:00:00 00000092720 true b\"\\x9a\\xe4'\\x9c\\x9f'\\xb5\\xbcb\\x88-r\\x9f\\xc4\\xd3t\" b'\\x90e\\x00\"c\\xd2\\x82\\xf2\\x11\\x",
+          "retail_keywords": [
+            "магазин",
+            "пц"
+          ]
+        }
+      ],
+      "wholesale_samples": []
+    },
+    "_DOCUMENT9490_VT9494": {
+      "table_name": "_DOCUMENT9490_VT9494",
+      "total_records": 528877,
+      "analyzed_records": 50,
+      "retail_records_count": 0,
+      "wholesale_records_count": 0,
+      "unclear_records_count": 49,
+      "retail_percentage": 0.0,
+      "retail_samples": [],
+      "wholesale_samples": []
+    },
+    "_DOCUMENT156": {
+      "table_name": "_DOCUMENT156",
+      "total_records": 571213,
+      "analyzed_records": 50,
+      "retail_records_count": 8,
+      "wholesale_records_count": 0,
+      "unclear_records_count": 41,
+      "retail_percentage": 16.0,
+      "retail_samples": [
+        {
+          "record_index": 3,
+          "content_sample": " b'\\x80<\\x18\\xa9\\x05f\\xc9\\x98\\x11\\xe1\\xbb\\xbb\\x15j\\x95\\x83' 1.2.1.2 false 2012-06-21 20:55:47 2012-01-01 00:00:00 вх/00000013 true b'\\x90e\\x00\"c\\xd2\\x82\\xf2\\x11\\xdf\\x15\\x8a\\x0e\\x8a\\x18]' b'\\x9f`\\x18\\x",
+          "retail_keywords": [
+            "фм"
+          ]
+        },
+        {
+          "record_index": 25,
+          "content_sample": " b'\\x80<\\x18\\xa9\\x05f\\xc9\\x98\\x11\\xe1\\xbb\\xe1b|6\\x1c' 1.24.1.24 false 2012-06-22 09:03:36 2012-01-01 00:00:00 пш/00000779 true b'\\x90e\\x00\"c\\xd2\\x82\\xf2\\x11\\xdf\\x15\\x8a\\x0e\\x8a\\x18]' b'\\xb9h\\x18\\xa9\\x",
+          "retail_keywords": [
+            "фм"
+          ]
+        },
+        {
+          "record_index": 27,
+          "content_sample": " b'\\x80<\\x18\\xa9\\x05f\\xc9\\x98\\x11\\xe1\\xbc\\x18\\xcd%v\\xc5' 1.26.1.26 false 2012-06-22 08:50:10 2012-01-01 00:00:00 мн/00000827 true b'\\x90e\\x00\"c\\xd2\\x82\\xf2\\x11\\xdf\\x15\\x8a\\x0e\\x8a\\x18]' b'\\xa1i\\x18\\xa",
+          "retail_keywords": [
+            "фм"
+          ]
+        },
+        {
+          "record_index": 33,
+          "content_sample": " b'\\x80<\\x18\\xa9\\x05f\\xc9\\x98\\x11\\xe1\\xbc)+\\x8e\\xb5\\x94' 1.32.1.32 false 2012-06-22 09:17:29 2012-01-01 00:00:00 чк/00000771 true b'\\x90e\\x00\"c\\xd2\\x82\\xf2\\x11\\xdf\\x15\\x8a\\x0e\\x8a\\x18]' b'\\xa1l\\x18\\xa",
+          "retail_keywords": [
+            "фм"
+          ]
+        },
+        {
+          "record_index": 35,
+          "content_sample": " b'\\x80<\\x18\\xa9\\x05f\\xc9\\x98\\x11\\xe1\\xbc)6m\\xef\\xbd' 1.34.1.34 false 2012-06-22 20:52:28 2012-01-01 00:00:00 пш/00000781 true b'\\x90e\\x00\"c\\xd2\\x82\\xf2\\x11\\xdf\\x15\\x8a\\x0e\\x8a\\x18]' b'\\xb9h\\x18\\xa9\\x",
+          "retail_keywords": [
+            "фм"
+          ]
+        }
+      ],
+      "wholesale_samples": []
+    }
+  },
+  "filtered_documents": {
+    "_DOCUMENT137": {
+      "status": "INCLUDE",
+      "reason": "Преобладают розничные записи",
+      "retail_percentage": 2.0
+    },
+    "_DOCUMENT137_VT3035": {
+      "status": "REVIEW_REQUIRED",
+      "reason": "Неясная классификация, требуется дополнительный анализ",
+      "retail_percentage": 0.0
+    },
+    "_DOCUMENT138": {
+      "status": "INCLUDE",
+      "reason": "Преобладают розничные записи",
+      "retail_percentage": 2.0
+    },
+    "_DOCUMENT163": {
+      "status": "INCLUDE",
+      "reason": "Преобладают розничные записи",
+      "retail_percentage": 54.0
+    },
+    "_DOCUMENT9490_VT9494": {
+      "status": "REVIEW_REQUIRED",
+      "reason": "Неясная классификация, требуется дополнительный анализ",
+      "retail_percentage": 0.0
+    },
+    "_DOCUMENT156": {
+      "status": "INCLUDE",
+      "reason": "Преобладают розничные записи",
+      "retail_percentage": 16.0
+    }
+  },
+  "excluded_documents": {},
+  "metadata": {
+    "extraction_date": "2025-09-03T15:58:05.425999",
+    "source_file": "raw/1Cv8.1CD",
+    "filter_criteria": "вид склада = розница"
+  }
+}

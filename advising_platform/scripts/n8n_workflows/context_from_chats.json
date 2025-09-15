@@ -1,0 +1,372 @@
+{
+  "name": "Чтение чатов Slack и Telegram для контекста",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "message",
+        "operation": "getAll",
+        "channelId": "={{ $env.SLACK_CHANNEL_ID }}",
+        "returnAll": false,
+        "limit": 50
+      },
+      "name": "Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "1",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getUpdates",
+        "offset": 0,
+        "limit": 50,
+        "timeout": 0,
+        "additionalFields": {
+          "allowedUpdates": [
+            "message"
+          ]
+        }
+      },
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        240,
+        480
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "2",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Преобразуем сообщения Slack в единый формат\nlet messages = [];\n\n// Добавляем сообщения из Slack\nif ($input.item(0).json.messages && Array.isArray($input.item(0).json.messages)) {\n  const slackMessages = $input.item(0).json.messages;\n  \n  slackMessages.forEach(msg => {\n    // Преобразуем сообщение Slack в единый формат\n    messages.push({\n      source: 'slack',\n      channel: $input.item(0).json.channel || 'unknown',\n      user: msg.user,\n      text: msg.text,\n      timestamp: new Date(Number(msg.ts) * 1000).toISOString(),\n      raw: msg\n    });\n  });\n}\n\n// Добавляем сообщения из Telegram\nif ($input.item(1).json.result && Array.isArray($input.item(1).json.result)) {\n  const telegramUpdates = $input.item(1).json.result;\n  \n  telegramUpdates.forEach(update => {\n    if (update.message) {\n      const msg = update.message;\n      \n      // Преобразуем сообщение Telegram в единый формат\n      messages.push({\n        source: 'telegram',\n        channel: msg.chat.id.toString(),\n        user: msg.from.username || msg.from.first_name || msg.from.id.toString(),\n        text: msg.text || '',\n        timestamp: new Date(msg.date * 1000).toISOString(),\n        raw: msg\n      });\n    }\n  });\n}\n\n// Сортируем сообщения по времени (обратная хронология)\nmessages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));\n\nreturn { messages };"
+      },
+      "name": "Преобразование сообщений",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        460,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Извлекаем проект из сообщений по определенным шаблонам\n// Пример: #rick.ai или для проекта rick.ai и т.д.\n\nconst messages = $input.item(0).json.messages;\nconst projects = {};\n\nfor (const msg of messages) {\n  // Ищем упоминания проектов по разным шаблонам\n  const hashtagRegex = /#([a-zA-Z0-9._-]+)/g;\n  const projectKeywordRegex = /для проекта\\s+([a-zA-Z0-9._-]+)/gi;\n  const domainRegex = /([a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\\.[a-zA-Z]{2,})/g;\n  \n  let matches = [];\n  \n  // Добавляем все совпадения из текста сообщения\n  let match;\n  while (match = hashtagRegex.exec(msg.text)) {\n    matches.push(match[1]);\n  }\n  \n  while (match = projectKeywordRegex.exec(msg.text)) {\n    matches.push(match[1]);\n  }\n  \n  while (match = domainRegex.exec(msg.text)) {\n    matches.push(match[1]);\n  }\n  \n  // Добавляем уникальные совпадения в объекты проектов\n  for (const projectId of matches) {\n    if (!projects[projectId]) {\n      projects[projectId] = {\n        id: projectId,\n        messages: []\n      };\n    }\n    \n    projects[projectId].messages.push(msg);\n  }\n}\n\n// Преобразуем в массив для последующей обработки\nconst projectsArray = Object.values(projects);\n\nreturn { projectsArray };"
+      },
+      "name": "Группировка по проектам",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        700,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Разделение по проектам",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        920,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Форматируем сообщения проекта в context.md формат по стандарту v2.2\n\nconst project = $input.item(0).json;\nconst dateNow = new Date().toISOString().split('T')[0];\nconst timeNow = new Date().toTimeString().split(' ')[0];\nconst formattedDate = `${dateNow.replace(/-/g, ' ')} ${timeNow} CET`;\n\n// Группируем сообщения по дням\nconst messagesByDay = {};\nfor (const msg of project.messages) {\n  const day = msg.timestamp.split('T')[0];\n  if (!messagesByDay[day]) {\n    messagesByDay[day] = [];\n  }\n  messagesByDay[day].push(msg);\n}\n\n// Сортируем дни в обратном хронологическом порядке\nconst sortedDays = Object.keys(messagesByDay).sort().reverse();\n\n// Формируем содержимое для context.md\nlet contextContent = `## ${formattedDate} - Обновление из чатов\\n\\n`;\n\n// Добавляем сообщения для каждого дня\nfor (const day of sortedDays) {\n  const dayMessages = messagesByDay[day];\n  \n  // Переводим YYYY-MM-DD в читаемый формат\n  const [year, month, dayNum] = day.split('-');\n  const months = [\n    'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',\n    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'\n  ];\n  const formattedDay = `${parseInt(dayNum)} ${months[parseInt(month) - 1]} ${year}`;\n  \n  contextContent += `### ${formattedDay}\\n\\n`;\n  \n  // Добавляем сообщения дня в обратном хронологическом порядке\n  dayMessages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));\n  \n  for (const msg of dayMessages) {\n    const time = new Date(msg.timestamp).toTimeString().split(' ')[0];\n    contextContent += `- **${time}** ${msg.user}: ${msg.text}\\n`;\n  }\n  \n  contextContent += '\\n';\n}\n\n// Формируем данные запроса для API\nconst apiData = {\n  context: {\n    project: project.id,\n    namespace: \"chat_updates\",\n    version: \"2.2\",\n    data: {\n      content: contextContent,\n      metadata: {\n        source: \"n8n_workflow\",\n        timestamp: new Date().toISOString(),\n        message_count: project.messages.length\n      }\n    }\n  }\n};\n\nreturn apiData;"
+      },
+      "name": "Форматирование в context.md",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=http://localhost:5003/api/v1/external/context/{{ $input.item(0).json.context.project }}",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.ADVISING_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "context",
+              "value": "={{ $input.item(0).json.context }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Отправка в API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Создаем запись для next_actions.md\n\nconst project = $input.item(0).json.context.project;\nconst dateNow = new Date().toISOString().split('T')[0];\nconst formattedDate = dateNow.replace(/-/g, '.');\n\n// Анализируем сообщения на наличие потенциальных задач\n// Ищем шаблоны вида \"нужно сделать X\", \"задача: X\", \"to do: X\"\nconst messages = $input.item(0).json.context.data.content.split('\\n');\nconst taskPatterns = [\n  /нужно (сделать|выполнить) ([^\\n.]+)/i,\n  /задача:? ([^\\n.]+)/i,\n  /to ?do:? ([^\\n.]+)/i,\n  /надо ([^\\n.]+)/i,\n  /необходимо ([^\\n.]+)/i\n];\n\nlet tasks = [];\n\nfor (const line of messages) {\n  for (const pattern of taskPatterns) {\n    const match = line.match(pattern);\n    if (match) {\n      // Определяем задачу\n      const taskText = match[match.length - 1].trim();\n      \n      // Ищем ответственного (@имя)\n      const assigneeMatch = line.match(/@([a-zA-Z0-9._-]+)/i);\n      const assignee = assigneeMatch ? `@${assigneeMatch[1]}` : '@team';\n      \n      // Ищем дедлайн (до ДД.ММ.ГГГГ)\n      const deadlineMatch = line.match(/до (\\d{1,2}[.\\/-]\\d{1,2}([.\\/-]\\d{2,4})?)/i);\n      const deadline = deadlineMatch ? deadlineMatch[1] : `до ${new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU')}`;\n      \n      tasks.push({\n        text: taskText,\n        assignee: assignee,\n        deadline: deadline,\n        source: line\n      });\n    }\n  }\n}\n\n// Если задач не найдено, создаем одну общую задачу по анализу переписки\nif (tasks.length === 0) {\n  tasks.push({\n    text: `Проанализировать переписку по проекту ${project}`,\n    assignee: '@team',\n    deadline: `до ${new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU')}`,\n    source: 'автоматически создано workflow'\n  });\n}\n\n// Форматируем задачи в формате next_actions.md\nlet nextActionsContent = `## ${formattedDate}\\n\\n`;\nnextActionsContent += `### 🏢 ${project}\\n`;\n\nfor (const task of tasks) {\n  nextActionsContent += `- [ ] ${task.text} → ${task.assignee} → ${task.deadline}\\n`;\n}\n\nreturn { \n  project,\n  next_actions: nextActionsContent,\n  task_count: tasks.length\n};"
+      },
+      "name": "Генерация next_actions",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5003/api/v1/external/next_actions/update",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.ADVISING_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "project",
+              "value": "={{ $input.item(0).json.project }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ $input.item(0).json.next_actions }}"
+            },
+            {
+              "name": "append",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Отправка в next_actions API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        1580,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 9,
+              "minute": 0
+            },
+            {
+              "hour": 13,
+              "minute": 0
+            },
+            {
+              "hour": 17,
+              "minute": 0
+            }
+          ]
+        }
+      },
+      "name": "Запуск по расписанию",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        40,
+        380
+      ]
+    },
+    {
+      "parameters": {},
+      "name": "Объединение",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        440,
+        540
+      ]
+    }
+  ],
+  "connections": {
+    "Slack": {
+      "main": [
+        [
+          {
+            "node": "Объединение",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        [
+          {
+            "node": "Объединение",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Преобразование сообщений": {
+      "main": [
+        [
+          {
+            "node": "Группировка по проектам",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Группировка по проектам": {
+      "main": [
+        [
+          {
+            "node": "Разделение по проектам",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Разделение по проектам": {
+      "main": [
+        [
+          {
+            "node": "Форматирование в context.md",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Форматирование в context.md": {
+      "main": [
+        [
+          {
+            "node": "Отправка в API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Генерация next_actions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Отправка в API": {
+      "main": [
+        []
+      ]
+    },
+    "Генерация next_actions": {
+      "main": [
+        [
+          {
+            "node": "Отправка в next_actions API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Запуск по расписанию": {
+      "main": [
+        [
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Объединение": {
+      "main": [
+        [
+          {
+            "node": "Преобразование сообщений",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "integration",
+      "color": "#00CCFF"
+    },
+    {
+      "name": "communication",
+      "color": "#91BA5D"
+    },
+    {
+      "name": "context",
+      "color": "#FF9900"
+    }
+  ],
+  "pinData": {},
+  "versionId": "b34f34f1-c0e9-4b2f-952d-c3f3a2ed1cf8",
+  "triggerCount": 1,
+  "staticData": null,
+  "createdAt": "2025-05-16T08:00:00.000Z",
+  "updatedAt": "2025-05-16T08:30:00.000Z"
+}

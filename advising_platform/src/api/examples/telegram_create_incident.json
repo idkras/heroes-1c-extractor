@@ -1,0 +1,12 @@
+{
+  "action": "create_incident",
+  "incident": {
+    "title": "Недоступность API платежей",
+    "description": "Платежный API недоступен для пользователей на мобильных устройствах. Ошибка возникает при попытке подтвердить платеж в мобильном приложении. Веб-версия работает корректно.",
+    "severity": "high",
+    "category": "infrastructure",
+    "project": "heroes.camp",
+    "assignee": "@backend_team",
+    "tags": ["payment", "api", "mobile"]
+  }
+}

@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализ блокеров конверсии | Lavsit.ru</title>
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --primary-hover: #004f9e;
+            --secondary-color: #03A87C;
+            --text-color: #333333;
+            --secondary-text-color: #666666;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --border-color: #e5e7eb;
+            --accent-color: #f0f7ff;
+            --accent-border: #cce5ff;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: var(--background-color);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .page-title {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--secondary-text-color);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 0.9rem;
+            color: var(--secondary-text-color);
+            margin-bottom: 1rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .meta-item::before {
+            content: "•";
+            margin-right: 0.5rem;
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .opportunity-score {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .card-description {
+            color: var(--secondary-text-color);
+            margin-bottom: 1rem;
+            padding-right: 3rem;
+        }
+        
+        /* Blockers List */
+        .blockers-section {
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .blockers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .blocker-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .blocker-header {
+            background-color: var(--accent-color);
+            padding: 1rem;
+            border-bottom: 1px solid var(--accent-border);
+            position: relative;
+        }
+        
+        .blocker-title {
+            font-size: 1.1rem;
+            margin-right: 3.5rem;
+        }
+        
+        .blocker-type {
+            font-size: 0.8rem;
+            color: var(--secondary-text-color);
+            margin-top: 0.25rem;
+        }
+        
+        .blocker-frequency {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .blocker-content {
+            padding: 1rem;
+        }
+        
+        .example-quote {
+            background-color: var(--accent-color);
+            border-left: 4px solid var(--primary-color);
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+        
+        .example-attribution {
+            font-size: 0.8rem;
+            text-align: right;
+            color: var(--secondary-text-color);
+        }
+        
+        /* Charts */
+        .charts-section {
+            margin-bottom: 3rem;
+        }
+        
+        .chart-container {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+        
+        /* Recommendations */
+        .recommendations-section {
+            margin-bottom: 3rem;
+        }
+        
+        .quick-wins {
+            margin-bottom: 2rem;
+        }
+        
+        .recommendations-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .recommendations-table th,
+        .recommendations-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .recommendations-table th {
+            background-color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        .recommendations-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .complexity, .impact {
+            display: flex;
+            align-items: center;
+        }
+        
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        
+        .dot.empty {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+        }
+        
+        /* Navigation */
+        .navigation {
+            position: sticky;
+            top: 0;
+            background-color: var(--card-background);
+            padding: 1rem 2rem;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-logo-icon {
+            margin-right: 0.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .blockers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .meta-info {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        
+        /* Chart Styles */
+        .weekly-chart {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="nav-logo-icon">📊</span>
+                <span>Lavsit.ru Аналитика</span>
+            </div>
+            <div class="nav-links">
+                <a href="#overview" class="nav-link">Обзор</a>
+                <a href="#blockers" class="nav-link">Блокеры</a>
+                <a href="#charts" class="nav-link">Динамика</a>
+                <a href="#recommendations" class="nav-link">Рекомендации</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header id="overview">
+            <h1 class="page-title">Анализ блокеров конверсии Lavsit.ru</h1>
+            <p class="subtitle">Детальный анализ препятствий для совершения покупки и рекомендации по их устранению</p>
+            <div class="meta-info">
+                <div class="meta-item">Дата: 19 мая 2025</div>
+                <div class="meta-item">Проанализировано: 28,595 обращений</div>
+                <div class="meta-item">Выявлено: 5 ключевых минных полей</div>
+            </div>
+        </header>
+
+        <section class="dashboard">
+            <div class="dashboard-card">
+                <h2 class="card-title">Неопределенность процесса доставки</h2>
+                <div class="opportunity-score">14.8</div>
+                <p class="card-description">Отсутствие точных сроков, сложность коммуникации с доставкой</p>
+                <div class="card-stats">
+                    <div>Важность: 9.2/10</div>
+                    <div>Удовлетворенность: 3.6/10</div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h2 class="card-title">Неуверенность в характеристиках мебели</h2>
+                <div class="opportunity-score">13.4</div>
+                <p class="card-description">Недостаток информации о материалах, размерах и функционале</p>
+                <div class="card-stats">
+                    <div>Важность: 8.7/10</div>
+                    <div>Удовлетворенность: 4.0/10</div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h2 class="card-title">Ценовые ожидания</h2>
+                <div class="opportunity-score">12.9</div>
+                <p class="card-description">Непрозрачность формирования цены, скрытые расходы</p>
+                <div class="card-stats">
+                    <div>Важность: 9.1/10</div>
+                    <div>Удовлетворенность: 5.3/10</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="blockers" class="blockers-section">
+            <h2 class="section-title">Ключевые блокеры конверсии</h2>
+            
+            <div class="blockers-grid">
+                <div class="blocker-card">
+                    <div class="blocker-header">
+                        <h3 class="blocker-title">Неясность интервалов доставки</h3>
+                        <div class="blocker-type">Информационный + Эмоциональный блокер</div>
+                        <div class="blocker-frequency">52%</div>
+                    </div>
+                    <div class="blocker-content">
+                        <div class="example-quote">
+                            "Когда примерно будет доставка? Мне нужно планировать свой день, а указан только день без времени."
+                            <div class="example-attribution">Клиент Максим, 14.04.2025</div>
+                        </div>
+                        <div class="example-quote">
+                            "Мне сказали, что привезут сегодня, но не сказали во сколько. Я не могу весь день ждать, у меня встречи."
+                            <div class="example-attribution">Клиент Елена, 15.04.2025</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blocker-card">
+                    <div class="blocker-header">
+                        <h3 class="blocker-title">Непонимание реальных размеров</h3>
+                        <div class="blocker-type">Информационный блокер</div>
+                        <div class="blocker-frequency">62%</div>
+                    </div>
+                    <div class="blocker-content">
+                        <div class="example-quote">
+                            "Диван точно поместится в мою комнату? Размеры на сайте указаны, но не могу представить."
+                            <div class="example-attribution">Клиент Дмитрий, 10.04.2025</div>
+                        </div>
+                        <div class="example-quote">
+                            "Какова высота дивана в собранном состоянии? Это не указано, а у меня низкий подоконник."
+                            <div class="example-attribution">Клиент Наталья, 16.04.2025</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blocker-card">
+                    <div class="blocker-header">
+                        <h3 class="blocker-title">Неочевидные дополнительные расходы</h3>
+                        <div class="blocker-type">Финансовый + Эмоциональный блокер</div>
+                        <div class="blocker-frequency">68%</div>
+                    </div>
+                    <div class="blocker-content">
+                        <div class="example-quote">
+                            "Почему финальная цена выше, чем указана на сайте? Откуда взялись эти дополнительные платежи?"
+                            <div class="example-attribution">Клиент Борис, 11.04.2025</div>
+                        </div>
+                        <div class="example-quote">
+                            "Сколько будет стоить подъем на 7 этаж без лифта? Это нигде не указано."
+                            <div class="example-attribution">Клиент Валентина, 13.04.2025</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blocker-card">
+                    <div class="blocker-header">
+                        <h3 class="blocker-title">Отсутствие контрольных точек производства</h3>
+                        <div class="blocker-type">Информационный + Эмоциональный блокер</div>
+                        <div class="blocker-frequency">68%</div>
+                    </div>
+                    <div class="blocker-content">
+                        <div class="example-quote">
+                            "На какой стадии производства сейчас мой заказ? Хочется понимать, когда примерно ждать."
+                            <div class="example-attribution">Клиент Геннадий, 12.04.2025</div>
+                        </div>
+                        <div class="example-quote">
+                            "Почему нельзя отслеживать статус заказа как в других магазинах?"
+                            <div class="example-attribution">Клиент Светлана, 14.04.2025</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blocker-card">
+                    <div class="blocker-header">
+                        <h3 class="blocker-title">Неясность гарантийных условий</h3>
+                        <div class="blocker-type">Информационный блокер</div>
+                        <div class="blocker-frequency">47%</div>
+                    </div>
+                    <div class="blocker-content">
+                        <div class="example-quote">
+                            "Какая гарантия на диван? На сайте нет четкой информации."
+                            <div class="example-attribution">Клиент Федор, 10.04.2025</div>
+                        </div>
+                        <div class="example-quote">
+                            "Что делать, если обивка дивана протрется? Это будет гарантийным случаем?"
+                            <div class="example-attribution">Клиент Вера, 15.04.2025</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blocker-card">
+                    <div class="blocker-header">
+                        <h3 class="blocker-title">Неполнота информации о материалах</h3>
+                        <div class="blocker-type">Информационный блокер</div>
+                        <div class="blocker-frequency">48%</div>
+                    </div>
+                    <div class="blocker-content">
+                        <div class="example-quote">
+                            "Из какой ткани сделана обивка дивана? На сайте только название 'Велюр', но нет подробностей."
+                            <div class="example-attribution">Клиент Василий, 12.04.2025</div>
+                        </div>
+                        <div class="example-quote">
+                            "Что за наполнитель используется в подушках? Нужно понять, подойдет ли для аллергика."
+                            <div class="example-attribution">Клиент Марина, 15.04.2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="charts" class="charts-section">
+            <h2 class="section-title">Динамика блокеров по неделям</h2>
+            
+            <div class="chart-container">
+                <canvas id="weeklyChart" class="weekly-chart"></canvas>
+            </div>
+        </section>
+
+        <section id="recommendations" class="recommendations-section">
+            <h2 class="section-title">Рекомендации по улучшению конверсии</h2>
+            
+            <div class="quick-wins">
+                <h3>Быстрые победы (1-2 дня)</h3>
+                <table class="recommendations-table">
+                    <thead>
+                        <tr>
+                            <th>Эксперимент</th>
+                            <th>Минное поле</th>
+                            <th>Сложность (1-5)</th>
+                            <th>Влияние (1-5)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Добавление основной информации о доставке в карточку товара</td>
+                            <td>Неопределенность доставки</td>
+                            <td>
+                                <div class="complexity">
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="impact">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Расширенное описание материалов в карточке товара</td>
+                            <td>Неуверенность в характеристиках</td>
+                            <td>
+                                <div class="complexity">
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="impact">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Добавление отображения статуса заказа в личном кабинете</td>
+                            <td>Сроки производства</td>
+                            <td>
+                                <div class="complexity">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="impact">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Внедрение калькулятора полной стоимости</td>
+                            <td>Ценовые ожидания</td>
+                            <td>
+                                <div class="complexity">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="impact">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Размещение видеоинструкций по уходу за мебелью</td>
+                            <td>Пост-покупочное обслуживание</td>
+                            <td>
+                                <div class="complexity">
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="impact">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="medium-wins" style="margin-top: 2rem;">
+                <h3>Эксперименты средней сложности (3-5 дней)</h3>
+                <table class="recommendations-table">
+                    <thead>
+                        <tr>
+                            <th>Эксперимент</th>
+                            <th>Минное поле</th>
+                            <th>Сложность (1-5)</th>
+                            <th>Влияние (1-5)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Интеграция с Яндекс.Картами для точного указания адреса</td>
+                            <td>Неопределенность доставки</td>
+                            <td>
+                                <div class="complexity">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="impact">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Добавление интерактивной 3D-модели дивана</td>
+                            <td>Неуверенность в характеристиках</td>
+                            <td>
+                                <div class="complexity">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="impact">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Внедрение системы рассрочки без переплаты</td>
+                            <td>Ценовые ожидания</td>
+                            <td>
+                                <div class="complexity">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot empty"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="impact">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation highlighting
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            
+            window.addEventListener('scroll', function() {
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    
+                    if (pageYOffset >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            // Weekly Chart
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+            const weeklyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Неделя 1', 'Неделя 2', 'Неделя 3', 'Неделя 4', 'Неделя 5', 'Неделя 6'],
+                    datasets: [
+                        {
+                            label: 'Неопределенность интервалов доставки',
+                            data: [52, 54, 50, 48, 45, 42],
+                            borderColor: '#0066cc',
+                            backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Непонимание реальных размеров',
+                            data: [62, 60, 59, 58, 56, 54],
+                            borderColor: '#03A87C',
+                            backgroundColor: 'rgba(3, 168, 124, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Неочевидные дополнительные расходы',
+                            data: [68, 67, 65, 64, 63, 61],
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Динамика частоты блокеров по неделям (%)'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Частота запросов (%)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

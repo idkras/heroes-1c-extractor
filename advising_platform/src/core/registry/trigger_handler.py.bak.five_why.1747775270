@@ -1,0 +1,1350 @@
+"""
+Модуль обработчика триггеров для задач и инцидентов.
+Предоставляет единый интерфейс для обработки различных типов триггеров.
+"""
+
+import logging
+import traceback
+import os
+import re
+import json
+import time
+import hashlib
+from typing import Any, Dict, List, Optional, Tuple, Callable, Set
+from datetime import datetime, timedelta
+
+# Настраиваем логирование
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+class TriggerType:
+    """Типы триггеров."""
+    TASK_CREATE = "task_create"  
+    TASK_UPDATE = "task_update"  
+    INCIDENT_CREATE = "incident_create"  
+    INCIDENT_UPDATE = "incident_update"  
+    HYPOTHESIS_CREATE = "hypothesis_create"  
+    HYPOTHESIS_UPDATE = "hypothesis_update"  
+    STANDARD_CREATE = "standard_create"  
+    STANDARD_UPDATE = "standard_update"  
+    CACHE_SYNC = "cache_sync"  
+    PERIODIC_CHECK = "periodic_check"
+    FILE_DUPLICATION_CHECK = "file_duplication_check"
+
+class TriggerResult:
+    """Результат обработки триггера."""
+    def __init__(self, success: bool = False, message: str = "", data: Optional[Dict[str, Any]] = None):
+        self.success = success
+        self.message = message
+        self.data = data or {}
+        
+    def __str__(self) -> str:
+        return f"TriggerResult(success={self.success}, message={self.message}, data={self.data})"
+
+class TriggerContext:
+    """Контекст триггера."""
+    def __init__(self, trigger_type: Any, data: Dict[str, Any], timestamp: Optional[float] = None, source: Optional[str] = None):
+        self.trigger_type = trigger_type
+        self.data = data
+        self.timestamp = timestamp or time.time()
+        self.source = source
+        
+    def __str__(self) -> str:
+        return f"TriggerContext(type={self.trigger_type}, source={self.source}, timestamp={self.timestamp})"
+
+class TriggerHandler:
+    """Обработчик триггеров."""
+    
+    _instance = None
+    
+    def __init__(self, report_progress_func: Optional[Callable] = None):
+        """
+        Инициализирует обработчик триггеров.
+        
+        Args:
+            report_progress_func: Функция для отчета о прогрессе
+        """
+        self.handlers = {
+            TriggerType.FILE_DUPLICATION_CHECK: self._handle_file_duplication_check,}
+        self.report_progress_func = report_progress_func
+        self.archived_tasks_count = 0
+        self.duplicated_files = []
+        self.task_statistics = {}
+        self.incident_statistics = {}
+        self.hypothesis_statistics = {}
+        self.standard_statistics = {}
+        
+        # Регистрируем обработчики по умолчанию
+        self._register_default_handlers()
+        
+    def _register_default_handlers(self):
+        """Регистрирует обработчики по умолчанию."""
+        self.register_handler(TriggerType.TASK_CREATE, self._handle_task_create)
+        self.register_handler(TriggerType.TASK_UPDATE, self._handle_task_update)
+        self.register_handler(TriggerType.INCIDENT_CREATE, self._handle_incident_create)
+        self.register_handler(TriggerType.INCIDENT_UPDATE, self._handle_incident_update)
+        self.register_handler(TriggerType.HYPOTHESIS_CREATE, self._handle_hypothesis_create)
+        self.register_handler(TriggerType.HYPOTHESIS_UPDATE, self._handle_hypothesis_update)
+        self.register_handler(TriggerType.STANDARD_CREATE, self._handle_standard_create)
+        self.register_handler(TriggerType.STANDARD_UPDATE, self._handle_standard_update)
+        self.register_handler(TriggerType.CACHE_SYNC, self._handle_cache_sync)
+        self.register_handler(TriggerType.PERIODIC_CHECK, self._handle_periodic_check)
+        self.register_handler(TriggerType.FILE_DUPLICATION_CHECK, self._handle_file_duplication_check)
+        
+    def register_handler(self, trigger_type: str, handler_func: Callable) -> bool:
+        """
+        Регистрирует функцию-обработчик для указанного типа триггера.
+        
+        Args:
+            trigger_type: Тип триггера
+            handler_func: Функция-обработчик
+            
+        Returns:
+            bool: True, если регистрация успешна, иначе False
+        """
+        if trigger_type in self.handlers:
+            logger.warning(f"Обработчик для триггера {trigger_type} уже зарегистрирован, он будет перезаписан")
+            
+        self.handlers[trigger_type] = handler_func
+        return True
+        
+    def trigger(self, context: TriggerContext) -> bool:
+        """
+        Запускает обработку триггера.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            bool: True, если обработка прошла успешно, иначе False
+        """
+        result = self.handle_trigger(context)
+        return result.success
+        
+    def handle_trigger(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        trigger_type = context.trigger_type
+        
+        if trigger_type not in self.handlers:
+            logger.error(f"Неизвестный тип триггера: {trigger_type}")
+            return TriggerResult(success=False, message=f"Неизвестный тип триггера: {trigger_type}")
+            
+        try:
+            handler = self.handlers[trigger_type]
+            result = handler(context)
+            
+            # Если обработчик вернул не TriggerResult, а что-то другое, оборачиваем в TriggerResult
+            if not isinstance(result, TriggerResult):
+                result = TriggerResult(success=True, message="Триггер обработан", data={"result": result})
+                
+            return result
+        except Exception as e:
+            logger.error(f"Ошибка при обработке триггера {trigger_type}: {e}")
+            traceback.print_exc()
+            return TriggerResult(success=False, message=f"Ошибка при обработке триггера: {e}")
+    
+    def _handle_task_create(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер создания задачи.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        try:
+            # Извлекаем данные из контекста
+            data = context.data
+            title = data.get("title", "")
+            description = data.get("description", "")
+            properties = data.get("properties", {})
+            
+            # 1. Архивация завершенных задач
+            archived_count = self._archive_completed_tasks()
+            logger.info(f"Архивировано {archived_count} завершенных задач")
+            
+            # 2. Проверка на дубликаты
+            duplicates = self._check_task_duplicates(title, description)
+            
+            if duplicates:
+                logger.warning(f"Найдены возможные дубликаты задачи '{title}': {duplicates}")
+                
+            # 3. Обновление статистики
+            stats = self._update_task_statistics(title, properties)
+            
+            # 4. Отчет о прогрессе через функцию report_progress
+            if self.report_progress_func:
+                self.report_progress_func({
+                    "event": "task_created",
+                    "title": title,
+                    "stats": stats,
+                    "archived_count": archived_count,
+                    "duplicates": duplicates,
+                    "web_link": f"http://localhost:5000/tasks/view/{title.replace(' ', '_').lower()}"
+                })
+                
+            return TriggerResult(
+                success=True,
+                message=f"Задача '{title}' успешно создана",
+                data={
+                    "title": title,
+                    "stats": stats,
+                    "archived_count": archived_count,
+                    "duplicates": duplicates
+                }
+            )
+        except Exception as e:
+            logger.error(f"Ошибка при обработке триггера создания задачи: {e}")
+            traceback.print_exc()
+            
+            return TriggerResult(success=False, message=f"Ошибка при обработке триггера создания задачи: {e}")
+    
+    def _archive_completed_tasks(self) -> int:
+        """
+        Архивирует завершенные задачи.
+        
+        Returns:
+            int: Количество архивированных задач
+        """
+        try:
+            # Имитация архивации задач 
+            # (в реальном коде здесь будет логика перемещения файлов задач из active в archive)
+            self.archived_tasks_count += 1
+            return self.archived_tasks_count
+        except Exception as e:
+            logger.error(f"Ошибка при архивации задач: {e}")
+            return 0
+    
+    def _check_task_duplicates(self, title: str, description: str) -> list:
+        """
+        Проверяет наличие дубликатов задачи.
+        
+        Args:
+            title: Название задачи
+            description: Описание задачи
+            
+        Returns:
+            list: Список возможных дубликатов
+        """
+        # Упрощенная демонстрация проверки дубликатов
+        # В реальном приложении здесь должен быть более сложный алгоритм
+        duplicate_check = []
+        
+        # Проверяем директорию todo
+        if os.path.exists("todo"):
+            for root, _, files in os.walk("todo"):
+                for file in files:
+                    if file.endswith(".md"):
+                        file_path = os.path.join(root, file)
+                        try:
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                                # Простая проверка на совпадение по ключевым словам
+                                if title.lower() in content.lower() or any(word for word in title.split() if len(word) > 4 and word.lower() in content.lower()):
+                                    duplicate_check.append({"file": file_path, "similarity": "По названию"})
+                        except Exception as e:
+                            logger.warning(f"Ошибка при чтении файла {file_path}: {e}")
+        
+        return duplicate_check
+    
+    def _update_task_statistics(self, title: str, properties: dict) -> dict:
+        """
+        Обновляет статистику по задачам.
+        
+        Args:
+            title: Название задачи
+            properties: Свойства задачи
+            
+        Returns:
+            dict: Обновленная статистика
+        """
+        # Обновляем статистику задач
+        task_type = properties.get("task_type", "Задача")
+        priority = properties.get("priority", "Средний")
+        
+        if task_type not in self.task_statistics:
+            self.task_statistics[task_type] = {
+                "total": 0,
+                "priorities": {}
+            }
+        
+        self.task_statistics[task_type]["total"] += 1
+        
+        if priority not in self.task_statistics[task_type]["priorities"]:
+            self.task_statistics[task_type]["priorities"][priority] = 0
+        
+        self.task_statistics[task_type]["priorities"][priority] += 1
+        
+        return {
+            "tasks_by_type": self.task_statistics,
+            "total_tasks": sum(stats["total"] for stats in self.task_statistics.values()),
+            "last_added": title
+        }
+    
+    def _handle_task_update(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер обновления задачи.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера обновления задачи
+        # Аналогично созданию, но обновляет статистику и проверяет на изменения
+        data = context.data
+        title = data.get("title", "")
+        
+        # Обновляем статистику
+        stats = self._update_task_statistics(title, data.get("properties", {}))
+        
+        # Отчет о прогрессе
+        if self.report_progress_func:
+            self.report_progress_func({
+                "event": "task_updated",
+                "title": title,
+                "stats": stats,
+                "web_link": f"http://localhost:5000/tasks/view/{title.replace(' ', '_').lower()}"
+            })
+            
+        return TriggerResult(success=True, message=f"Задача '{title}' обновлена")
+    
+    def _handle_incident_create(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер создания инцидента.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        try:
+            # Извлекаем данные из контекста
+            data = context.data
+            title = data.get("title", "")
+            description = data.get("description", "")
+            properties = data.get("properties", {})
+            
+            # 1. Извлечение 5-почему анализа
+            five_whys_from_context = data.get("five_whys", [])
+            
+            if five_whys_from_context:
+                five_whys = five_whys_from_context
+                logger.info(f"Найден 5-почему анализ в контексте триггера: {len(five_whys)} вопросов")
+            else:
+                # Если в контексте нет, извлекаем из описания
+                five_whys = self._extract_five_whys(description)
+                logger.info(f"Найден 5-почему анализ в описании: {len(five_whys)} вопросов")
+            
+            # 2. Обновление статистики по инцидентам
+            incident_stats = self._update_incident_statistics(title, properties)
+            
+            # 3. Проверка связанных инцидентов
+            related_incidents = self._check_related_incidents(title, description)
+            
+            # 4. Отчет о прогрессе
+            if self.report_progress_func:
+                self.report_progress_func({
+                    "event": "incident_created",
+                    "title": title,
+                    "five_whys": five_whys,
+                    "five_whys_count": len(five_whys),
+                    "stats": incident_stats,
+                    "related_incidents": related_incidents,
+                    "web_link": f"http://localhost:5000/incidents/view/{title.replace(' ', '_').lower()}"
+                })
+                
+            return TriggerResult(
+                success=True,
+                message=f"Инцидент '{title}' успешно создан",
+                data={
+                    "title": title,
+                    "five_whys": five_whys,
+                    "stats": incident_stats,
+                    "related_incidents": related_incidents
+                }
+            )
+        except Exception as e:
+            logger.error(f"Ошибка при обработке триггера создания инцидента: {e}")
+            traceback.print_exc()
+            
+            return TriggerResult(success=False, message=f"Ошибка при обработке триггера создания инцидента: {e}")
+    
+    def _extract_five_whys(self, description: str) -> list:
+        """
+        Извлекает 5-почему анализ из описания инцидента.
+        
+        Args:
+            description: Описание инцидента
+            
+        Returns:
+            list: Список вопросов и ответов
+        """
+        try:
+            # Проверяем, есть ли в описании раздел 5-почему
+            if "почему" not in description.lower() and "why" not in description.lower():
+                logger.info("5-почему анализ не найден в описании")
+                return []
+            
+            # Простая реализация извлечения 5-почему анализа
+            five_whys_list = []
+            lines = description.split("\n")
+            
+            for line in lines:
+                line = line.strip()
+                if (line.lower().startswith("почему") or line.lower().startswith("why") or 
+                    "почему:" in line.lower() or "why:" in line.lower()):
+                    five_whys_list.append(line)
+            
+            # Если не нашли ничего по прямому совпадению, попробуем найти по шаблону
+            if not five_whys_list:
+                # Разбиваем текст на секции по маркерам Markdown
+                sections = re.split(r'#{1,6}\s+', description)
+                for section in sections:
+                    if "почему" in section.lower() or "why" in section.lower():
+                        # Разбиваем секцию на строки и ищем вопросы
+                        section_lines = section.split("\n")
+                        for i, line in enumerate(section_lines):
+                            line = line.strip()
+                            if (line.lower().startswith("почему") or line.lower().startswith("why") or 
+                                "почему:" in line.lower() or "why:" in line.lower() or 
+                                re.search(r'\d+\.\s+(почему|why)', line.lower())):
+                                five_whys_list.append(line)
+                                # Если есть следующая строка и она не пустая, добавляем её как ответ
+                                if i + 1 < len(section_lines) and section_lines[i + 1].strip():
+                                    five_whys_list.append("Ответ: " + section_lines[i + 1].strip())
+            
+            # Если и так не нашли, пробуем найти по спискам
+            if not five_whys_list:
+                # Разбиваем текст на блоки, разделенные пустыми строками
+                blocks = re.split(r'\n\s*\n', description)
+                for block in blocks:
+                    if "почему" in block.lower() or "why" in block.lower():
+                        # Ищем строки, которые начинаются с цифры и точки, затем "почему" или "why"
+                        matches = re.findall(r'(?:^|\n)(?:\d+\.\s*|[-*]\s*|•\s*)(почему|why).*?(?=\n|$)', block, re.IGNORECASE)
+                        if matches:
+                            five_whys_list.extend(matches)
+            
+            return five_whys_list
+        except Exception as e:
+            logger.error(f"Ошибка при извлечении 5-почему анализа: {e}")
+            traceback.print_exc()
+            return []
+    
+    def _update_incident_statistics(self, title: str, properties: dict) -> dict:
+        """
+        Обновляет статистику по инцидентам.
+        
+        Args:
+            title: Название инцидента
+            properties: Свойства инцидента
+            
+        Returns:
+            dict: Обновленная статистика
+        """
+        # Обновляем статистику инцидентов
+        severity = properties.get("severity", "Средний")
+        impact = properties.get("impact", "Низкий")
+        
+        if severity not in self.incident_statistics:
+            self.incident_statistics[severity] = {
+                "total": 0,
+                "impacts": {}
+            }
+        
+        self.incident_statistics[severity]["total"] += 1
+        
+        if impact not in self.incident_statistics[severity]["impacts"]:
+            self.incident_statistics[severity]["impacts"][impact] = 0
+        
+        self.incident_statistics[severity]["impacts"][impact] += 1
+        
+        return {
+            "incidents_by_severity": self.incident_statistics,
+            "total_incidents": sum(stats["total"] for stats in self.incident_statistics.values()),
+            "last_added": title
+        }
+    
+    def _check_related_incidents(self, title: str, description: str) -> list:
+        """
+        Проверяет наличие связанных инцидентов.
+        
+        Args:
+            title: Название инцидента
+            description: Описание инцидента
+            
+        Returns:
+            list: Список связанных инцидентов
+        """
+        # Упрощенная демонстрация проверки связанных инцидентов
+        # В реальном приложении здесь должен быть более сложный алгоритм
+        related_check = []
+        
+        # Проверяем директорию incidents
+        if os.path.exists("incidents"):
+            for root, _, files in os.walk("incidents"):
+                for file in files:
+                    if file.endswith(".md"):
+                        file_path = os.path.join(root, file)
+                        try:
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                                # Простая проверка на совпадение по ключевым словам
+                                keywords = [word for word in title.split() if len(word) > 4]
+                                for keyword in keywords:
+                                    if keyword.lower() in content.lower():
+                                        related_check.append({"file": file_path, "keyword": keyword})
+                                        break
+                        except Exception as e:
+                            logger.warning(f"Ошибка при чтении файла {file_path}: {e}")
+        
+        return related_check
+    
+    def _handle_incident_update(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер обновления инцидента.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера обновления инцидента
+        # Аналогично созданию, но обновляет статистику и проверяет на изменения
+        data = context.data
+        title = data.get("title", "")
+        description = data.get("description", "")
+        
+        # Извлечение 5-почему анализа
+        five_whys = self._extract_five_whys(description)
+        
+        # Обновляем статистику
+        stats = self._update_incident_statistics(title, data.get("properties", {}))
+        
+        # Отчет о прогрессе
+        if self.report_progress_func:
+            self.report_progress_func({
+                "event": "incident_updated",
+                "title": title,
+                "five_whys": five_whys,
+                "stats": stats,
+                "web_link": f"http://localhost:5000/incidents/view/{title.replace(' ', '_').lower()}"
+            })
+            
+        return TriggerResult(success=True, message=f"Инцидент '{title}' обновлен")
+    
+    def _handle_hypothesis_create(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер создания гипотезы.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        try:
+            # Извлекаем данные из контекста
+            data = context.data
+            title = data.get("title", "")
+            description = data.get("description", "")
+            
+            # 1. Извлечение гипотезы, критериев RAT и фальсифицируемости
+            hypothesis_details = self._extract_hypothesis_details(description)
+            
+            # 2. Обновление статистики по гипотезам
+            stats = self._update_hypothesis_statistics(title, hypothesis_details)
+            
+            # 3. Отчет о прогрессе
+            if self.report_progress_func:
+                self.report_progress_func({
+                    "event": "hypothesis_created",
+                    "title": title,
+                    "hypothesis": hypothesis_details.get("hypothesis", ""),
+                    "rat": hypothesis_details.get("rat", []),
+                    "falsifiability": hypothesis_details.get("falsifiability", ""),
+                    "stats": stats,
+                    "web_link": f"http://localhost:5000/hypotheses/view/{title.replace(' ', '_').lower()}"
+                })
+                
+            return TriggerResult(
+                success=True,
+                message=f"Гипотеза '{title}' успешно создана",
+                data={
+                    "title": title,
+                    "hypothesis_details": hypothesis_details,
+                    "stats": stats
+                }
+            )
+        except Exception as e:
+            logger.error(f"Ошибка при обработке триггера создания гипотезы: {e}")
+            traceback.print_exc()
+            
+            return TriggerResult(success=False, message=f"Ошибка при обработке триггера создания гипотезы: {e}")
+    
+    def _extract_hypothesis_details(self, description: str) -> dict:
+        """
+        Извлекает детали гипотезы из описания.
+        
+        Args:
+            description: Описание гипотезы
+            
+        Returns:
+            dict: Словарь с деталями гипотезы
+        """
+        details = {
+            "hypothesis": "",
+            "rat": [],
+            "falsifiability": ""
+        }
+        
+        try:
+            lines = description.split("\n")
+            current_section = None
+            
+            # Ищем секции в тексте
+            for line in lines:
+                line_lower = line.lower().strip()
+                
+                if "гипотез" in line_lower or "hypothesis" in line_lower:
+                    current_section = "hypothesis"
+                    continue
+                elif "rat" in line_lower or "relevant" in line_lower and "testable" in line_lower:
+                    current_section = "rat"
+                    continue
+                elif "фальсифиц" in line_lower or "falsif" in line_lower:
+                    current_section = "falsifiability"
+                    continue
+                
+                # Заполняем текущую секцию, если она определена
+                if current_section and line.strip():
+                    if current_section == "hypothesis":
+                        details["hypothesis"] += line.strip() + " "
+                    elif current_section == "rat":
+                        details["rat"].append(line.strip())
+                    elif current_section == "falsifiability":
+                        details["falsifiability"] += line.strip() + " "
+            
+            # Очищаем результаты
+            details["hypothesis"] = details["hypothesis"].strip()
+            details["falsifiability"] = details["falsifiability"].strip()
+            
+            # Если не нашли явные секции, пробуем другой подход
+            if not details["hypothesis"] and not details["falsifiability"] and not details["rat"]:
+                # Простой эвристический поиск
+                for i, line in enumerate(lines):
+                    line_lower = line.lower().strip()
+                    
+                    if "гипотез" in line_lower or "предположен" in line_lower:
+                        if i + 1 < len(lines) and lines[i + 1].strip():
+                            details["hypothesis"] = lines[i + 1].strip()
+                    
+                    if "можно проверить" in line_lower or "критерий" in line_lower:
+                        if i + 1 < len(lines):
+                            details["rat"].extend([l.strip() for l in lines[i+1:i+4] if l.strip()])
+                    
+                    if "опроверг" in line_lower or "фальсифиц" in line_lower:
+                        if i + 1 < len(lines) and lines[i + 1].strip():
+                            details["falsifiability"] = lines[i + 1].strip()
+            
+            return details
+        except Exception as e:
+            logger.error(f"Ошибка при извлечении деталей гипотезы: {e}")
+            traceback.print_exc()
+            return details
+    
+    def _update_hypothesis_statistics(self, title: str, details: dict) -> dict:
+        """
+        Обновляет статистику по гипотезам.
+        
+        Args:
+            title: Название гипотезы
+            details: Детали гипотезы
+            
+        Returns:
+            dict: Обновленная статистика
+        """
+        # Определяем категорию гипотезы по ключевым словам
+        category = "Общая"
+        hypothesis_text = details.get("hypothesis", "").lower()
+        
+        if "улучшение" in hypothesis_text or "оптимизация" in hypothesis_text:
+            category = "Оптимизация"
+        elif "проблема" in hypothesis_text or "ошибка" in hypothesis_text:
+            category = "Решение проблемы"
+        elif "пользователь" in hypothesis_text or "клиент" in hypothesis_text:
+            category = "Пользовательский опыт"
+        
+        # Обновляем статистику
+        if category not in self.hypothesis_statistics:
+            self.hypothesis_statistics[category] = {
+                "total": 0,
+                "verified": 0,
+                "falsified": 0
+            }
+        
+        self.hypothesis_statistics[category]["total"] += 1
+        
+        return {
+            "hypotheses_by_category": self.hypothesis_statistics,
+            "total_hypotheses": sum(stats["total"] for stats in self.hypothesis_statistics.values()),
+            "last_added": title
+        }
+    
+    def _handle_hypothesis_update(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер обновления гипотезы.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Извлекаем данные из контекста
+        data = context.data
+        title = data.get("title", "")
+        description = data.get("description", "")
+        
+        # Извлечение деталей гипотезы
+        hypothesis_details = self._extract_hypothesis_details(description)
+        
+        # Обновляем статистику
+        stats = self._update_hypothesis_statistics(title, hypothesis_details)
+        
+        # Проверяем статус проверки гипотезы
+        verification_status = data.get("status", "")
+        if verification_status == "verified":
+            for category in self.hypothesis_statistics:
+                if title in self.hypothesis_statistics[category].get("titles", []):
+                    self.hypothesis_statistics[category]["verified"] += 1
+        elif verification_status == "falsified":
+            for category in self.hypothesis_statistics:
+                if title in self.hypothesis_statistics[category].get("titles", []):
+                    self.hypothesis_statistics[category]["falsified"] += 1
+        
+        # Отчет о прогрессе
+        if self.report_progress_func:
+            self.report_progress_func({
+                "event": "hypothesis_updated",
+                "title": title,
+                "hypothesis": hypothesis_details.get("hypothesis", ""),
+                "rat": hypothesis_details.get("rat", []),
+                "falsifiability": hypothesis_details.get("falsifiability", ""),
+                "status": verification_status,
+                "stats": stats,
+                "web_link": f"http://localhost:5000/hypotheses/view/{title.replace(' ', '_').lower()}"
+            })
+            
+        return TriggerResult(success=True, message=f"Гипотеза '{title}' обновлена")
+    
+    def _handle_standard_create(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер создания стандарта.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        try:
+            # Извлекаем данные из контекста
+            data = context.data
+            title = data.get("title", "")
+            content = data.get("content", "")
+            path = data.get("path", "")
+            
+            # 1. Проверка на дублирование существующих стандартов
+            similar_standards = self._check_similar_standards(title, content)
+            
+            # 2. Проверка формата стандарта
+            format_check = self._verify_standard_format(content)
+            
+            # 3. Обновление статистики стандартов
+            stats = self._update_standard_statistics(title, path)
+            
+            # 4. Отчет о прогрессе
+            if self.report_progress_func:
+                self.report_progress_func({
+                    "event": "standard_created",
+                    "title": title,
+                    "path": path,
+                    "similar_standards": similar_standards,
+                    "format_check": format_check,
+                    "stats": stats,
+                    "web_link": f"http://localhost:5000/standards/view/{path.replace('/', '_').replace('.md', '').lower()}"
+                })
+                
+            return TriggerResult(
+                success=True,
+                message=f"Стандарт '{title}' успешно создан",
+                data={
+                    "title": title,
+                    "path": path,
+                    "similar_standards": similar_standards,
+                    "format_check": format_check,
+                    "stats": stats
+                }
+            )
+        except Exception as e:
+            logger.error(f"Ошибка при обработке триггера создания стандарта: {e}")
+            traceback.print_exc()
+            
+            return TriggerResult(success=False, message=f"Ошибка при обработке триггера создания стандарта: {e}")
+    
+    def _check_similar_standards(self, title: str, content: str) -> list:
+        """
+        Проверяет наличие похожих стандартов.
+        
+        Args:
+            title: Название стандарта
+            content: Содержимое стандарта
+            
+        Returns:
+            list: Список похожих стандартов
+        """
+        # Простая реализация поиска похожих стандартов
+        similar_standards = []
+        
+        # Проверяем директорию standards
+        standards_dirs = ["standards", "[standards .md]"]
+        
+        for standards_dir in standards_dirs:
+            if os.path.exists(standards_dir):
+                for root, _, files in os.walk(standards_dir):
+                    for file in files:
+                        if file.endswith(".md"):
+                            file_path = os.path.join(root, file)
+                            try:
+                                with open(file_path, 'r', encoding='utf-8') as f:
+                                    standard_content = f.read()
+                                    
+                                    # Простая проверка на совпадение по заголовку
+                                    if title.lower() in standard_content.lower():
+                                        similar_standards.append({
+                                            "path": file_path,
+                                            "reason": "Совпадение по заголовку",
+                                            "similarity": "Высокая"
+                                        })
+                                        continue
+                                    
+                                    # Проверка на совпадение по ключевым словам
+                                    keywords = [word for word in title.split() if len(word) > 4]
+                                    matches = 0
+                                    
+                                    for keyword in keywords:
+                                        if keyword.lower() in standard_content.lower():
+                                            matches += 1
+                                    
+                                    if matches > 0:
+                                        similarity = "Низкая"
+                                        if matches > len(keywords) / 2:
+                                            similarity = "Средняя"
+                                        if matches > len(keywords) * 0.8:
+                                            similarity = "Высокая"
+                                            
+                                        similar_standards.append({
+                                            "path": file_path,
+                                            "reason": f"Совпадение по {matches} ключевым словам",
+                                            "similarity": similarity
+                                        })
+                            except Exception as e:
+                                logger.warning(f"Ошибка при чтении файла {file_path}: {e}")
+        
+        return similar_standards
+    
+    def _verify_standard_format(self, content: str) -> dict:
+        """
+        Проверяет формат стандарта.
+        
+        Args:
+            content: Содержимое стандарта
+            
+        Returns:
+            dict: Результат проверки
+        """
+        # Проверка на соответствие формату стандарта
+        result = {
+            "is_valid": True,
+            "missing_sections": [],
+            "suggestions": []
+        }
+        
+        # Обязательные секции
+        required_sections = [
+            r"#+\s+Цель",
+            r"#+\s+Определения",
+            r"#+\s+Основные принципы",
+            r"#+\s+(Правила|Требования)",
+            r"#+\s+Примеры"
+        ]
+        
+        # Рекомендуемые секции
+        recommended_sections = [
+            r"#+\s+Исключения",
+            r"#+\s+Связанные стандарты",
+            r"#+\s+История изменений"
+        ]
+        
+        # Проверяем обязательные секции
+        for section_pattern in required_sections:
+            if not re.search(section_pattern, content, re.IGNORECASE):
+                section_name = re.sub(r"#+\s+", "", section_pattern).replace(r"|", " или ")
+                result["is_valid"] = False
+                result["missing_sections"].append(section_name)
+        
+        # Проверяем рекомендуемые секции
+        for section_pattern in recommended_sections:
+            if not re.search(section_pattern, content, re.IGNORECASE):
+                section_name = re.sub(r"#+\s+", "", section_pattern)
+                result["suggestions"].append(f"Добавить секцию '{section_name}'")
+        
+        # Проверяем наличие заголовка
+        if not re.search(r"^#\s+", content):
+            result["is_valid"] = False
+            result["missing_sections"].insert(0, "Заголовок (# Название стандарта)")
+            
+        return result
+    
+    def _update_standard_statistics(self, title: str, path: str) -> dict:
+        """
+        Обновляет статистику по стандартам.
+        
+        Args:
+            title: Название стандарта
+            path: Путь к файлу стандарта
+            
+        Returns:
+            dict: Обновленная статистика
+        """
+        # Определяем категорию стандарта по пути
+        category = "Общие стандарты"
+        
+        if "/" in path:
+            category_path = os.path.dirname(path)
+            if category_path:
+                category = category_path
+        
+        # Обновляем статистику
+        if category not in self.standard_statistics:
+            self.standard_statistics[category] = {
+                "total": 0,
+                "paths": []
+            }
+        
+        self.standard_statistics[category]["total"] += 1
+        self.standard_statistics[category]["paths"].append(path)
+        
+        return {
+            "standards_by_category": self.standard_statistics,
+            "total_standards": sum(stats["total"] for stats in self.standard_statistics.values()),
+            "last_added": {
+                "title": title,
+                "path": path
+            }
+        }
+    
+    def _handle_standard_update(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер обновления стандарта.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Извлекаем данные из контекста
+        data = context.data
+        title = data.get("title", "")
+        content = data.get("content", "")
+        path = data.get("path", "")
+        
+        # Проверка формата стандарта
+        format_check = self._verify_standard_format(content)
+        
+        # Проверка на изменение связанных стандартов
+        relations_updated = self._check_standard_relations_updated(content, path)
+        
+        # Обновляем статистику
+        stats = self._update_standard_statistics(title, path)
+        
+        # Отчет о прогрессе
+        if self.report_progress_func:
+            self.report_progress_func({
+                "event": "standard_updated",
+                "title": title,
+                "path": path,
+                "format_check": format_check,
+                "relations_updated": relations_updated,
+                "stats": stats,
+                "web_link": f"http://localhost:5000/standards/view/{path.replace('/', '_').replace('.md', '').lower()}"
+            })
+            
+        return TriggerResult(success=True, message=f"Стандарт '{title}' обновлен")
+    
+    def _check_standard_relations_updated(self, content: str, path: str) -> bool:
+        """
+        Проверяет, обновились ли связи между стандартами.
+        
+        Args:
+            content: Содержимое стандарта
+            path: Путь к файлу стандарта
+            
+        Returns:
+            bool: True, если связи обновились, иначе False
+        """
+        # Простая реализация проверки обновления связей
+        # В реальном приложении должна быть более сложная логика
+        relations_section = re.search(r"#+\s+Связанные стандарты\s+(.*?)(?=#+|$)", content, re.DOTALL | re.IGNORECASE)
+        
+        if not relations_section:
+            return False
+        
+        # Извлекаем связанные стандарты
+        relations_text = relations_section.group(1)
+        relations = re.findall(r'\[(.*?)\]\((.*?)\)', relations_text)
+        
+        # Проверяем существование связанных стандартов
+        for relation_title, relation_path in relations:
+            # Если путь относительный, преобразуем его в абсолютный
+            if not relation_path.startswith("/"):
+                base_dir = os.path.dirname(path)
+                relation_path = os.path.join(base_dir, relation_path)
+            
+            # Проверяем существование файла
+            if not os.path.exists(relation_path):
+                logger.warning(f"Стандарт ссылается на несуществующий файл: {relation_path}")
+                return True
+        
+        return False
+    
+    def _handle_cache_sync(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер синхронизации кеша.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Имитация синхронизации кеша
+        # В реальном приложении здесь должна быть логика синхронизации
+        data = context.data
+        
+        # Получаем статистику по кешу
+        cache_stats = data.get("stats", {})
+        
+        # Отчет о прогрессе
+        if self.report_progress_func:
+            self.report_progress_func({
+                "event": "cache_sync",
+                "stats": cache_stats,
+                "timestamp": time.time()
+            })
+            
+        return TriggerResult(success=True, message="Кеш синхронизирован")
+    
+    def _handle_file_duplication_check(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер проверки дублирования файлов.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        try:
+            data = context.data
+            file_paths = data.get("file_paths", [])
+            
+            if not file_paths:
+                return TriggerResult(
+                    success=False,
+                    message="Не указаны пути к файлам для проверки дублирования"
+                )
+            
+            # Фильтруем только скрипты Python
+            script_files = [path for path in file_paths if path.endswith('.py')]
+            
+            if not script_files:
+                return TriggerResult(
+                    success=True,
+                    message="Нет скриптов для проверки дублирования"
+                )
+            
+            # Выполняем проверку дублирования
+            duplications = self._find_code_duplications(script_files)
+            
+            # Сохраняем найденные дубликаты
+            self.duplicated_files = duplications
+            
+            # Отчет о прогрессе
+            if self.report_progress_func and duplications:
+                self.report_progress_func({
+                    "event": "file_duplication_check",
+                    "duplications": duplications,
+                    "message": f"Найдено {len(duplications)} дублирований кода"
+                })
+            
+            return TriggerResult(
+                success=True,
+                message=f"Проверка дублирования файлов завершена, проверено {len(script_files)} файлов",
+                data={"duplications": duplications}
+            )
+        except Exception as e:
+            logger.error(f"Ошибка при проверке дублирования файлов: {e}")
+            traceback.print_exc()
+            return TriggerResult(success=False, message=f"Ошибка при проверке дублирования файлов: {e}")
+    
+    def _find_code_duplications(self, file_paths: list) -> list:
+        """
+        Находит дублирования кода в файлах.
+        
+        Args:
+            file_paths: Список путей к файлам для проверки
+            
+        Returns:
+            list: Список найденных дублирований
+        """
+        # Упрощенный алгоритм поиска дубликатов кода
+        duplications = []
+        
+        # Считываем содержимое файлов
+        file_contents = {}
+        
+        for path in file_paths:
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    file_contents[path] = content
+            except Exception as e:
+                logger.warning(f"Ошибка при чтении файла {path}: {e}")
+        
+        # Разбиваем содержимое на блоки и ищем дубликаты
+        file_blocks = {}
+        
+        for path, content in file_contents.items():
+            # Разбиваем на строки и игнорируем комментарии и пустые строки
+            lines = [line.strip() for line in content.split('\n') 
+                     if line.strip() and not line.strip().startswith('#')]
+            
+            # Создаем блоки по 5-10 строк и вычисляем их хеши
+            blocks = {}
+            
+            for i in range(len(lines) - 4):  # Минимум 5 строк в блоке
+                for block_size in range(5, min(11, len(lines) - i + 1)):
+                    block = '\n'.join(lines[i:i+block_size])
+                    block_hash = hashlib.md5(block.encode('utf-8')).hexdigest()
+                    
+                    if block_hash not in blocks:
+                        blocks[block_hash] = []
+                    
+                    blocks[block_hash].append({
+                        "start_line": i + 1,  # +1 для человекочитаемой нумерации
+                        "end_line": i + block_size,
+                        "content": block
+                    })
+            
+            file_blocks[path] = blocks
+        
+        # Ищем дубликаты между файлами
+        for path1, blocks1 in file_blocks.items():
+            for path2, blocks2 in file_blocks.items():
+                if path1 >= path2:  # Избегаем повторной проверки и проверки файла с самим собой
+                    continue
+                
+                # Ищем одинаковые хеши блоков
+                for block_hash, block_positions1 in blocks1.items():
+                    if block_hash in blocks2:
+                        block_positions2 = blocks2[block_hash]
+                        
+                        # Для каждой пары одинаковых блоков добавляем информацию о дубликации
+                        for pos1 in block_positions1:
+                            for pos2 in block_positions2:
+                                # Проверяем, что дубликат достаточно большой (не менее 5 строк)
+                                if pos1["end_line"] - pos1["start_line"] + 1 >= 5:
+                                    duplications.append({
+                                        "file1": path1,
+                                        "start_line1": pos1["start_line"],
+                                        "end_line1": pos1["end_line"],
+                                        "file2": path2,
+                                        "start_line2": pos2["start_line"],
+                                        "end_line2": pos2["end_line"],
+                                        "duplicate_lines": pos1["end_line"] - pos1["start_line"] + 1,
+                                        "content": pos1["content"]
+                                    })
+        
+        return duplications
+    
+    def _handle_periodic_check(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер периодической проверки.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # В этом методе мы можем выполнять регулярные проверки системы
+        # Например, архивацию задач, проверку на дубликаты, обновление статистики
+        
+        # 1. Архивация завершенных задач
+        archived_count = self._archive_completed_tasks()
+        
+        # 2. Проверка дубликатов файлов
+        duplicate_files = self._check_duplicate_files()
+        
+        # 3. Сбор общей статистики
+        stats = self._collect_system_stats()
+        
+        # 4. Отчет о прогрессе
+        if self.report_progress_func:
+            self.report_progress_func({
+                "event": "periodic_check",
+                "archived_tasks": archived_count,
+                "duplicate_files": duplicate_files,
+                "stats": stats,
+                "timestamp": time.time()
+            })
+            
+        return TriggerResult(
+            success=True,
+            message="Периодическая проверка выполнена",
+            data={
+                "archived_tasks": archived_count,
+                "duplicate_files": duplicate_files,
+                "stats": stats
+            }
+        )
+    
+    def _check_duplicate_files(self) -> list:
+        """
+        Проверяет наличие дубликатов файлов в системе.
+        
+        Returns:
+            list: Список дубликатов
+        """
+        # Простая проверка на дубликаты файлов
+        duplicates = []
+        
+        # Строим хеш-мапу содержимого файлов
+        content_map = {}
+        
+        # Директории для проверки
+        dirs_to_check = [
+            "todo", "incidents", "standards", "projects", 
+            "[standards .md]", "templates", "docs"
+        ]
+        
+        # Проверяем каждую директорию
+        for dir_name in dirs_to_check:
+            if os.path.exists(dir_name):
+                for root, _, files in os.walk(dir_name):
+                    for file in files:
+                        if file.endswith((".md", ".py", ".json", ".txt")):
+                            file_path = os.path.join(root, file)
+                            try:
+                                with open(file_path, 'r', encoding='utf-8') as f:
+                                    content = f.read()
+                                    content_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
+                                    
+                                    if content_hash in content_map:
+                                        content_map[content_hash].append(file_path)
+                                    else:
+                                        content_map[content_hash] = [file_path]
+                            except Exception as e:
+                                logger.warning(f"Ошибка при чтении файла {file_path}: {e}")
+        
+        # Выбираем только дубликаты (хеши с более чем одним файлом)
+        for content_hash, paths in content_map.items():
+            if len(paths) > 1:
+                duplicates.append({
+                    "hash": content_hash,
+                    "paths": paths
+                })
+        
+        return duplicates
+    
+    def _collect_system_stats(self) -> dict:
+        """
+        Собирает общую статистику по системе.
+        
+        Returns:
+            dict: Общая статистика
+        """
+        # Сбор общей статистики
+        stats = {
+            "tasks": self.task_statistics,
+            "incidents": self.incident_statistics,
+            "hypotheses": self.hypothesis_statistics,
+            "standards": self.standard_statistics,
+            "total_items": {
+                "tasks": sum(stats["total"] for stats in self.task_statistics.values()),
+                "incidents": sum(stats["total"] for stats in self.incident_statistics.values()),
+                "hypotheses": sum(stats["total"] for stats in self.hypothesis_statistics.values()),
+                "standards": sum(stats["total"] for stats in self.standard_statistics.values())
+            },
+            "archived_tasks": self.archived_tasks_count,
+            "duplicated_files": len(self.duplicated_files)
+        }
+        
+        # Добавляем информацию о веб-интерфейсе
+        stats["web_interface"] = {
+            "url": "http://localhost:5000",
+            "task_url": "http://localhost:5000/tasks",
+            "incident_url": "http://localhost:5000/incidents",
+            "hypothesis_url": "http://localhost:5000/hypotheses",
+            "standard_url": "http://localhost:5000/standards"
+        }
+        
+        return stats
+
+
+# Функция для получения экземпляра обработчика триггеров (синглтон)
+def get_handler(report_progress_func: Optional[Callable] = None) -> TriggerHandler:
+    """
+    Возвращает экземпляр обработчика триггеров (синглтон).
+    
+    Args:
+        report_progress_func: Функция для отчета о прогрессе
+        
+    Returns:
+        TriggerHandler: Экземпляр обработчика триггеров
+    """
+    if TriggerHandler._instance is None:
+        TriggerHandler._instance = TriggerHandler(report_progress_func)
+    return TriggerHandler._instance
+
+# Функция для совместимости с предыдущими версиями
+def get_trigger_handler_instance(report_progress_func: Optional[Callable] = None) -> TriggerHandler:
+    """
+    Возвращает экземпляр обработчика триггеров для совместимости.
+    Обертка вокруг функции get_handler.
+    
+    Args:
+        report_progress_func: Функция для отчета о прогрессе
+        
+    Returns:
+        TriggerHandler: Экземпляр обработчика триггеров
+    """
+    return get_handler(report_progress_func)

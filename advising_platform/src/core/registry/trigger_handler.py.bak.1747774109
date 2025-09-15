@@ -1,0 +1,632 @@
+"""
+Модуль обработчика триггеров для задач и инцидентов.
+Предоставляет единый интерфейс для обработки различных типов триггеров.
+"""
+
+import logging
+import traceback
+import os
+import re
+import json
+import time
+from typing import Any, Dict, List, Optional, Tuple, Callable
+from datetime import datetime, timedelta
+
+# Настраиваем логирование
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+class TriggerType:
+    """Типы триггеров."""
+    FILE_DUPLICATION_CHECK = "file_duplication_check"  # Новый тип для проверки дублирования файлов
+    TASK_CREATE = "task_create"  
+    TASK_UPDATE = "task_update"  
+    INCIDENT_CREATE = "incident_create"  
+    INCIDENT_UPDATE = "incident_update"  
+    HYPOTHESIS_CREATE = "hypothesis_create"  
+    HYPOTHESIS_UPDATE = "hypothesis_update"  
+    STANDARD_CREATE = "standard_create"  
+    STANDARD_UPDATE = "standard_update"  
+    CACHE_SYNC = "cache_sync"  
+    PERIODIC_CHECK = "periodic_check"  
+
+class TriggerResult:
+    """Результат обработки триггера."""
+    def __init__(self, success: bool = False, message: str = "", data: Optional[Dict[str, Any]] = None):
+        self.success = success
+        self.message = message
+        self.data = data or {}
+        
+    def __str__(self) -> str:
+        return f"TriggerResult(success={self.success}, message={self.message}, data={self.data})"
+
+class TriggerContext:
+    """Контекст триггера."""
+    def __init__(self, trigger_type: Any, data: Dict[str, Any], timestamp: Optional[float] = None, source: Optional[str] = None):
+        self.trigger_type = trigger_type
+        self.data = data
+        self.timestamp = timestamp or time.time()
+        self.source = source
+        
+    def __str__(self) -> str:
+        return f"TriggerContext(type={self.trigger_type}, source={self.source}, timestamp={self.timestamp})"
+
+class TriggerHandler:
+    """Обработчик триггеров."""
+    
+    _instance = None
+    
+    def __init__(self, report_progress_func: Optional[Callable] = None):
+        """
+        Инициализирует обработчик триггеров.
+        
+        Args:
+            report_progress_func: Функция для отчета о прогрессе
+        """
+        self.handlers = {}
+        self.report_progress_func = report_progress_func
+        
+        # Регистрируем обработчики по умолчанию
+        self._register_default_handlers()
+        
+    def _register_default_handlers(self):
+        """Регистрирует обработчики по умолчанию."""
+        self.register_handler(TriggerType.TASK_CREATE, self._handle_task_create)
+        self.register_handler(TriggerType.TASK_UPDATE, self._handle_task_update)
+        self.register_handler(TriggerType.INCIDENT_CREATE, self._handle_incident_create)
+        self.register_handler(TriggerType.INCIDENT_UPDATE, self._handle_incident_update)
+        self.register_handler(TriggerType.HYPOTHESIS_CREATE, self._handle_hypothesis_create)
+        self.register_handler(TriggerType.HYPOTHESIS_UPDATE, self._handle_hypothesis_update)
+        self.register_handler(TriggerType.STANDARD_CREATE, self._handle_standard_create)
+        self.register_handler(TriggerType.STANDARD_UPDATE, self._handle_standard_update)
+        self.register_handler(TriggerType.CACHE_SYNC, self._handle_cache_sync)
+        self.register_handler(TriggerType.PERIODIC_CHECK, self._handle_periodic_check)
+        self.register_handler(TriggerType.FILE_DUPLICATION_CHECK, self._handle_file_duplication_check)
+        
+    def register_handler(self, trigger_type: str, handler_func: Callable) -> bool:
+        """
+        Регистрирует функцию-обработчик для указанного типа триггера.
+        
+        Args:
+            trigger_type: Тип триггера
+            handler_func: Функция-обработчик
+            
+        Returns:
+            bool: True, если регистрация успешна, иначе False
+        """
+        if trigger_type in self.handlers:
+            logger.warning(f"Обработчик для триггера {trigger_type} уже зарегистрирован, он будет перезаписан")
+            
+        self.handlers[trigger_type] = handler_func
+        return True
+        
+    def trigger(self, context: TriggerContext) -> bool:
+        """
+        Запускает обработку триггера.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            bool: True, если обработка прошла успешно, иначе False
+        """
+        result = self.handle_trigger(context)
+        return result.success
+        
+    def handle_trigger(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        trigger_type = context.trigger_type
+        
+        if trigger_type not in self.handlers:
+            logger.error(f"Неизвестный тип триггера: {trigger_type}")
+            return TriggerResult(success=False, message=f"Неизвестный тип триггера: {trigger_type}")
+            
+        try:
+            handler = self.handlers[trigger_type]
+            result = handler(context)
+            
+            # Если обработчик вернул не TriggerResult, а что-то другое, оборачиваем в TriggerResult
+            if not isinstance(result, TriggerResult):
+                result = TriggerResult(success=True, message="Триггер обработан", data={"result": result})
+                
+            return result
+        except Exception as e:
+            logger.error(f"Ошибка при обработке триггера {trigger_type}: {e}")
+            traceback.print_exc()
+            return TriggerResult(success=False, message=f"Ошибка при обработке триггера: {e}")
+    
+    def _handle_task_create(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер создания задачи.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        try:
+            # Извлекаем данные из контекста
+            data = context.data
+            title = data.get("title", "")
+            description = data.get("description", "")
+            properties = data.get("properties", {})
+            
+            # 1. Архивация завершенных задач
+            archived_count = self._archive_completed_tasks()
+            logger.info(f"Архивировано {archived_count} завершенных задач")
+            
+            # 2. Проверка на дубликаты
+            duplicates = self._check_task_duplicates(title, description)
+            
+            if duplicates:
+                logger.warning(f"Найдены возможные дубликаты задачи '{title}': {duplicates}")
+                
+            # 3. Обновление статистики
+            stats = self._update_task_statistics(title, properties)
+            
+            # 4. Отчет о прогрессе
+            if self.report_progress_func:
+                self.report_progress_func({
+                    "event": "task_created",
+                    "title": title,
+                    "stats": stats,
+                    "archived_count": archived_count,
+                    "duplicates": duplicates
+                })
+                
+            return TriggerResult(
+                success=True,
+                message=f"Задача '{title}' успешно создана",
+                data={
+                    "title": title,
+                    "stats": stats,
+                    "archived_count": archived_count,
+                    "duplicates": duplicates
+                }
+            )
+        except Exception as e:
+            logger.error(f"Ошибка при обработке триггера создания задачи: {e}")
+            traceback.print_exc()
+            
+            return TriggerResult(success=False, message=f"Ошибка при обработке триггера создания задачи: {e}")
+    
+    def _archive_completed_tasks(self) -> int:
+        """
+        Архивирует завершенные задачи.
+        
+        Returns:
+            int: Количество архивированных задач
+        """
+        # Здесь будет реализация архивации задач
+        return 0
+    
+    def _check_task_duplicates(self, title: str, description: str) -> list:
+        """
+        Проверяет наличие дубликатов задачи.
+        
+        Args:
+            title: Название задачи
+            description: Описание задачи
+            
+        Returns:
+            list: Список возможных дубликатов
+        """
+        # Здесь будет реализация проверки дубликатов
+        return []
+    
+    def _update_task_statistics(self, title: str, properties: dict) -> dict:
+        """
+        Обновляет статистику по задачам.
+        
+        Args:
+            title: Название задачи
+            properties: Свойства задачи
+            
+        Returns:
+            dict: Обновленная статистика
+        """
+        # Здесь будет реализация обновления статистики
+        return {}
+    
+    def _handle_task_update(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер обновления задачи.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера обновления задачи
+        return TriggerResult(success=True, message="Задача обновлена")
+    
+    def _handle_incident_create(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер создания инцидента.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        try:
+            # Извлекаем данные из контекста
+            data = context.data
+            title = data.get("title", "")
+            description = data.get("description", "")
+            properties = data.get("properties", {})
+            
+            # 1. Извлечение 5-почему анализа
+            five_whys_from_context = data.get("five_whys", [])
+            
+            if five_whys_from_context:
+                five_whys = five_whys_from_context
+                logger.info(f"Найден 5-почему анализ в контексте триггера: {len(five_whys)} вопросов")
+            else:
+                # Если в контексте нет, извлекаем из описания
+                five_whys = self._extract_five_whys(description)
+                logger.info(f"Найден 5-почему анализ в описании: {len(five_whys)} вопросов")
+            
+            # 2. Обновление статистики по инцидентам
+            incident_stats = self._update_incident_statistics(title, properties)
+            
+            # 3. Проверка связанных инцидентов
+            related_incidents = self._check_related_incidents(title, description)
+            
+            # 4. Отчет о прогрессе
+            if self.report_progress_func:
+                self.report_progress_func({
+                    "event": "incident_created",
+                    "title": title,
+                    "five_whys_count": len(five_whys),
+                    "stats": incident_stats,
+                    "related_incidents": related_incidents
+                })
+                
+            return TriggerResult(
+                success=True,
+                message=f"Инцидент '{title}' успешно создан",
+                data={
+                    "title": title,
+                    "five_whys": five_whys,
+                    "stats": incident_stats,
+                    "related_incidents": related_incidents
+                }
+            )
+        except Exception as e:
+            logger.error(f"Ошибка при обработке триггера создания инцидента: {e}")
+            traceback.print_exc()
+            
+            return TriggerResult(success=False, message=f"Ошибка при обработке триггера создания инцидента: {e}")
+    
+    def _extract_five_whys(self, description: str) -> list:
+        """
+        Извлекает 5-почему анализ из описания инцидента.
+        
+        Args:
+            description: Описание инцидента
+            
+        Returns:
+            list: Список вопросов и ответов
+        """
+        try:
+            # Проверяем, есть ли в описании раздел 5-почему
+            if "почему" not in description.lower() and "why" not in description.lower():
+                logger.info("5-почему анализ не найден в описании")
+                return []
+            
+            # Простая реализация извлечения 5-почему анализа
+            five_whys_list = []
+            lines = description.split("\n")
+            
+            for line in lines:
+                line = line.strip()
+                if line.lower().startswith("почему") or line.lower().startswith("why"):
+                    five_whys_list.append(line)
+            
+            return five_whys_list
+        except Exception as e:
+            logger.error(f"Ошибка при извлечении 5-почему анализа: {e}")
+            traceback.print_exc()
+            return []
+            
+    def _update_incident_statistics(self, title: str, properties: dict) -> dict:
+        """
+        Обновляет статистику по инцидентам.
+        
+        Args:
+            title: Название инцидента
+            properties: Свойства инцидента
+            
+        Returns:
+            dict: Обновленная статистика
+        """
+        # Здесь будет реализация обновления статистики
+        return {}
+    
+    def _check_related_incidents(self, title: str, description: str) -> list:
+        """
+        Проверяет наличие связанных инцидентов.
+        
+        Args:
+            title: Название инцидента
+            description: Описание инцидента
+            
+        Returns:
+            list: Список связанных инцидентов
+        """
+        # Здесь будет реализация проверки связанных инцидентов
+        return []
+    
+    def _handle_incident_update(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер обновления инцидента.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера обновления инцидента
+        return TriggerResult(success=True, message="Инцидент обновлен")
+    
+    def _handle_hypothesis_create(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер создания гипотезы.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера создания гипотезы
+        return TriggerResult(success=True, message="Гипотеза создана")
+    
+    def _extract_hypothesis_components(self, description: str) -> dict:
+        """
+        Извлекает компоненты гипотезы из её описания.
+        
+        Args:
+            description: Описание гипотезы
+            
+        Returns:
+            dict: Словарь с компонентами гипотезы
+        """
+        # Здесь будет реализация извлечения компонентов гипотезы
+        return {}
+    
+    def _verify_hypothesis(self, description: str, rat: str = "", falsifiability_criterion: str = "") -> dict:
+        """
+        Верифицирует гипотезу на наличие всех необходимых компонентов.
+        
+        Args:
+            description: Описание гипотезы
+            rat: Рисуемая мишень (Rapid Assumption Testing), если уже извлечена
+            falsifiability_criterion: Критерий фальсифицируемости, если уже извлечен
+            
+        Returns:
+            dict: Результаты верификации
+        """
+        # Здесь будет реализация верификации гипотезы
+        return {"verified": True}
+    
+    def _handle_hypothesis_update(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер обновления гипотезы.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера обновления гипотезы
+        return TriggerResult(success=True, message="Гипотеза обновлена")
+    
+    def _standardize_standard_format(self, description: str, properties: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
+        """
+        Стандартизирует формат стандарта.
+        
+        Args:
+            description: Описание стандарта
+            properties: Свойства стандарта
+            
+        Returns:
+            Tuple[str, Dict[str, Any]]: Стандартизированные описание и свойства
+        """
+        # Здесь будет реализация стандартизации формата стандарта
+        return description, properties
+    
+    def _handle_standard_create(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер создания стандарта.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера создания стандарта
+        return TriggerResult(success=True, message="Стандарт создан")
+    
+    def _check_related_standards(self, title: str, description: str) -> list:
+        """
+        Проверяет наличие близких или зависимых стандартов.
+        
+        Args:
+            title: Название стандарта
+            description: Описание стандарта
+            
+        Returns:
+            list: Список близких или зависимых стандартов
+        """
+        # Здесь будет реализация проверки близких стандартов
+        return []
+    
+    def _verify_standard_format(self, description: str) -> dict:
+        """
+        Проверяет соответствие стандарта требованиям мини-манифеста.
+        
+        Args:
+            description: Описание стандарта
+            
+        Returns:
+            dict: Результаты верификации
+        """
+        # Здесь будет реализация верификации формата стандарта
+        return {"verified": True}
+    
+    def _handle_standard_update(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер обновления стандарта.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера обновления стандарта
+        return TriggerResult(success=True, message="Стандарт обновлен")
+    
+    def _handle_cache_sync(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер синхронизации кеша.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера синхронизации кеша
+        return TriggerResult(success=True, message="Кеш синхронизирован")
+    
+    def _handle_file_duplication_check(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер проверки дублирования файлов.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        try:
+            data = context.data
+            file_paths = data.get("file_paths", [])
+            
+            if not file_paths:
+                return TriggerResult(
+                    success=False,
+                    message="Не указаны пути к файлам для проверки дублирования"
+                )
+            
+            # Фильтруем только скрипты Python
+            script_files = [path for path in file_paths if self._is_script_file(path)]
+            
+            if not script_files:
+                return TriggerResult(
+                    success=True,
+                    message="Нет скриптов для проверки дублирования"
+                )
+            
+            # Проверяем дублирование кода
+            duplications = self._check_code_duplications(script_files)
+            
+            return TriggerResult(
+                success=True,
+                message=f"Проверка дублирования файлов завершена, найдено {len(duplications)} потенциальных дубликатов",
+                data={"duplications": duplications}
+            )
+        except Exception as e:
+            logger.error(f"Ошибка при проверке дублирования файлов: {e}")
+            traceback.print_exc()
+            return TriggerResult(success=False, message=f"Ошибка при проверке дублирования файлов: {e}")
+    
+    def _is_script_file(self, file_path: str) -> bool:
+        """
+        Проверяет, является ли файл скриптом.
+        
+        Args:
+            file_path: Путь к файлу
+            
+        Returns:
+            bool: True, если файл является скриптом, иначе False
+        """
+        return file_path.endswith('.py')
+    
+    def _check_code_duplications(self, file_paths: list) -> list:
+        """
+        Проверяет наличие дублирующегося кода в файлах.
+        
+        Args:
+            file_paths: Список путей к файлам для проверки
+            
+        Returns:
+            list: Список найденных дубликатов кода
+        """
+        duplications = []
+        
+        # Здесь будет реализация проверки дублирования кода
+        
+        return duplications
+    
+    def _handle_periodic_check(self, context: TriggerContext) -> TriggerResult:
+        """
+        Обрабатывает триггер периодической проверки.
+        
+        Args:
+            context: Контекст триггера
+            
+        Returns:
+            TriggerResult: Результат обработки триггера
+        """
+        # Реализация обработки триггера периодической проверки
+        return TriggerResult(success=True, message="Периодическая проверка выполнена")
+
+# Глобальные функции для получения экземпляра обработчика триггеров
+
+def get_handler(report_progress_func: Optional[Callable] = None) -> TriggerHandler:
+    """
+    Возвращает экземпляр обработчика триггеров (синглтон).
+    
+    Args:
+        report_progress_func: Функция для отчета о прогрессе
+        
+    Returns:
+        TriggerHandler: Экземпляр обработчика триггеров
+    """
+    if not TriggerHandler._instance:
+        TriggerHandler._instance = TriggerHandler(report_progress_func)
+    return TriggerHandler._instance
+
+def get_trigger_handler_instance(report_progress_func: Optional[Callable] = None) -> TriggerHandler:
+    """
+    Возвращает экземпляр обработчика триггеров для совместимости.
+    Обертка вокруг функции get_handler.
+    
+    Args:
+        report_progress_func: Функция для отчета о прогрессе
+        
+    Returns:
+        TriggerHandler: Экземпляр обработчика триггеров
+    """
+    return get_handler(report_progress_func)

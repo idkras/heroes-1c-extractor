@@ -1,0 +1,62 @@
+{
+  "task:todo": {
+    "physical_path": "[todo · incidents]/todo.md",
+    "doc_type": "task",
+    "title": "Основной список задач",
+    "description": "Центральный файл со всеми задачами проекта"
+  },
+  "incident:ai": {
+    "physical_path": "[todo · incidents]/ai.incidents.md",
+    "doc_type": "incident",
+    "title": "Инциденты AI системы",
+    "description": "Журнал инцидентов и проблем AI системы"
+  },
+  "standard:task_master": {
+    "physical_path": "[standards .md]/0. core standards/0.0 task master 10 may 2226 cet by ilya krasinsky.md",
+    "doc_type": "standard",
+    "title": "Task Master Standard",
+    "description": "Основной стандарт для работы с задачами"
+  },
+  "standard:process_task": {
+    "physical_path": "[standards .md]/1. process · goalmap · task · incidents · tickets · qa/1.4 process task standard 14 may 2025 0640 cet by ai assistant.md",
+    "doc_type": "standard",
+    "title": "Process Task Standard",
+    "description": "Стандарт процессов работы с задачами"
+  },
+  "standard:ticket": {
+    "physical_path": "[standards .md]/1. process · goalmap · task · incidents · tickets · qa/1.5 ticket standard 14 may 2025 0650 cet by ai assistant.md",
+    "doc_type": "standard",
+    "title": "Ticket Standard",
+    "description": "Стандарт оформления тикетов"
+  },
+  "standard:hypothesis": {
+    "physical_path": "[standards .md]/1. process · goalmap · task · incidents · tickets · qa/1.8 hypothesis standard 15 may 2025 1745 cet by ai assistant.md",
+    "doc_type": "standard",
+    "title": "Hypothesis Standard",
+    "description": "Стандарт работы с гипотезами"
+  },
+  "standard:ai_incident": {
+    "physical_path": "[standards .md]/1. process · goalmap · task · incidents · tickets · qa/1.9 ai incident standard 15 may 2025 2042 cet by ai assistant.md",
+    "doc_type": "standard",
+    "title": "AI Incident Standard",
+    "description": "Стандарт обработки инцидентов AI"
+  },
+  "dir:standards": {
+    "physical_path": "[standards .md]",
+    "doc_type": "directory",
+    "title": "Директория стандартов",
+    "description": "Основная директория со всеми стандартами"
+  },
+  "dir:archive": {
+    "physical_path": "[standards .md]/[archive]",
+    "doc_type": "directory",
+    "title": "Архив стандартов",
+    "description": "Архивные и устаревшие стандарты"
+  },
+  "dir:todo_incidents": {
+    "physical_path": "[todo · incidents]",
+    "doc_type": "directory",
+    "title": "Задачи и инциденты",
+    "description": "Директория с задачами и инцидентами"
+  }
+}

@@ -1,0 +1,510 @@
+#!/usr/bin/env python3
+"""
+Модуль реализации персистентного хранилища для состояний системы отчетов.
+Решает проблему синхронизации состояния между различными процессами.
+
+Автор: AI Assistant
+Дата: 20 мая 2025
+"""
+
+import os
+import json
+import time
+import fcntl
+import logging
+import traceback
+from typing import Dict, Any, List, Optional, Set, Union
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("persistent_state")
+
+# Константы для хранилища
+STATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../../logs/state")
+STATE_FILE = os.path.join(STATE_DIR, "reporting_state.json")
+LOCK_FILE = os.path.join(STATE_DIR, "reporting_state.lock")
+
+# Инициализируем пути для хранения состояния
+os.makedirs(STATE_DIR, exist_ok=True)
+
+
+class FileSystemLock:
+    """Реализация файловой блокировки для синхронизации доступа к состоянию."""
+    
+    def __init__(self, lock_file: str):
+        self.lock_file = lock_file
+        self.lock_handle = None
+        logger.debug(f"Инициализирована блокировка для файла: {lock_file}")
+    
+    def __enter__(self):
+        self.acquire()
+        return self
+        
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.release()
+        
+    def acquire(self, timeout: float = 3.0, retry_interval: float = 0.05) -> bool:
+        """
+        Получает блокировку с таймаутом.
+        
+        Args:
+            timeout: Максимальное время ожидания в секундах
+            retry_interval: Интервал между попытками в секундах
+            
+        Returns:
+            bool: True, если блокировка получена, иначе False
+        """
+        start_time = time.time()
+        
+        # Если файла блокировки не существует, создаем его
+        if not os.path.exists(self.lock_file):
+            try:
+                os.makedirs(os.path.dirname(self.lock_file), exist_ok=True)
+                with open(self.lock_file, 'w') as f:
+                    pass
+            except Exception as e:
+                logger.error(f"Не удалось создать файл блокировки {self.lock_file}: {e}")
+                return False
+        
+        # Проверяем, не висит ли старая блокировка
+        try:
+            # Если файл блокировки старше 10 секунд, принудительно удаляем его
+            if os.path.exists(self.lock_file) and (time.time() - os.path.getmtime(self.lock_file)) > 10:
+                os.remove(self.lock_file)
+                logger.warning(f"Удалена устаревшая блокировка: {self.lock_file}")
+                with open(self.lock_file, 'w') as f:
+                    pass
+        except Exception as e:
+            logger.warning(f"Не удалось проверить или удалить устаревшую блокировку: {e}")
+                
+        # Пытаемся получить блокировку с таймаутом
+        while True:
+            try:
+                # Открываем файл блокировки только для чтения
+                # Это позволяет избежать проблем с разрешениями
+                if self.lock_handle is None:
+                    self.lock_handle = open(self.lock_file, 'r+')
+                
+                # Пробуем получить неблокирующую блокировку
+                fcntl.flock(self.lock_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                logger.debug(f"Получена блокировка для файла: {self.lock_file}")
+                return True
+            except IOError:
+                # Если блокировка уже занята, ждем и пробуем снова
+                if time.time() - start_time < timeout:
+                    time.sleep(retry_interval)
+                else:
+                    # В случае истечения таймаута, удаляем старую блокировку и пробуем снова один раз
+                        if os.path.exists(self.lock_file):
+                            try:
+                                os.remove(self.lock_file)
+                                logger.info(f"Удалена устаревшая блокировка после таймаута: {self.lock_file}")
+                                time.sleep(0.1)  # Даем время для завершения операций удаления
+                                if self.lock_handle is not None:
+                                    self.lock_handle.close()
+                                    self.lock_handle = None
+                                return self.acquire(timeout=1.0)  # Пробуем получить блокировку еще раз
+                            except Exception as e:
+                                logger.warning(f"Не удалось удалить устаревшую блокировку: {e}")
+                        logger.warning(f"Не удалось получить блокировку для файла {self.lock_file} за {timeout} секунд, продолжаем без блокировки")
+                        return True  # Возвращаем True для продолжения работы
+            except Exception as e:
+                logger.error(f"Ошибка при получении блокировки для файла {self.lock_file}: {e}")
+                return True  # Возвращаем True для продолжения работы, даже если блокировка не получена
+    
+    def release(self) -> bool:
+        """
+        Освобождает блокировку.
+        
+        Returns:
+            bool: True, если блокировка освобождена, иначе False
+        """
+        if self.lock_handle is not None:
+            try:
+                # Пробуем освободить блокировку
+                try:
+                    fcntl.flock(self.lock_handle.fileno(), fcntl.LOCK_UN)
+                except Exception as e:
+                    logger.warning(f"Проблема при освобождении fcntl блокировки: {e}")
+                
+                # Закрываем дескриптор файла
+                try:
+                    self.lock_handle.close()
+                except Exception as e:
+                    logger.warning(f"Проблема при закрытии дескриптора файла: {e}")
+                
+                # Обнуляем дескриптор
+                self.lock_handle = None
+                
+                # Удаляем файл блокировки, если он существует
+                if os.path.exists(self.lock_file):
+                    try:
+                        os.remove(self.lock_file)
+                    except Exception as e:
+                        logger.warning(f"Не удалось удалить файл блокировки: {e}")
+                
+                logger.debug(f"Освобождена блокировка для файла: {self.lock_file}")
+                return True
+            except Exception as e:
+                logger.error(f"Ошибка при освобождении блокировки для файла {self.lock_file}: {e}")
+                # Даже при ошибке пробуем очистить ресурсы
+                try:
+                    if self.lock_handle:
+                        self.lock_handle.close()
+                    self.lock_handle = None
+                except:
+                    pass
+                return False
+        return True
+
+
+def ensure_state_directory() -> bool:
+    """
+    Проверяет наличие директории для хранения состояния и создает её при необходимости.
+    
+    Returns:
+        bool: True, если директория существует или создана, иначе False
+    """
+    try:
+        os.makedirs(STATE_DIR, exist_ok=True)
+        return True
+    except Exception as e:
+        logger.error(f"Не удалось создать директорию для хранения состояния {STATE_DIR}: {e}")
+        return False
+
+
+def load_state() -> Dict[str, Any]:
+    """
+    Загружает состояние из файла.
+    
+    Returns:
+        Dict[str, Any]: Состояние
+    """
+    # Обеспечиваем наличие директории
+    ensure_state_directory()
+    
+    # Создаем пустое состояние по умолчанию
+    default_state = {
+        "last_report_hash": None,
+        "report_count": 0,
+        "report_history": {},
+        "message_hashes": set(),  # Для проверки дублирования
+        "last_update": time.time()
+    }
+    
+    # Если файл состояния не существует, создаем его
+    if not os.path.exists(STATE_FILE):
+        try:
+            with open(STATE_FILE, 'w', encoding='utf-8') as f:
+                # Преобразуем set в list для сериализации
+                state_to_save = default_state.copy()
+                state_to_save["message_hashes"] = list(state_to_save["message_hashes"])
+                json.dump(state_to_save, f, ensure_ascii=False, indent=2)
+            logger.info(f"Создан новый файл состояния: {STATE_FILE}")
+        except Exception as e:
+            logger.error(f"Ошибка при создании файла состояния {STATE_FILE}: {e}")
+            
+    # Загружаем состояние из файла
+    try:
+        with FileSystemLock(LOCK_FILE):
+            if os.path.exists(STATE_FILE):
+                with open(STATE_FILE, 'r', encoding='utf-8') as f:
+                    state = json.load(f)
+                    
+                    # Преобразуем list обратно в set для оптимизации поиска
+                    if "message_hashes" in state and isinstance(state["message_hashes"], list):
+                        state["message_hashes"] = set(state["message_hashes"])
+                    else:
+                        state["message_hashes"] = set()
+                        
+                    return state
+    except Exception as e:
+        logger.error(f"Ошибка при загрузке состояния из файла {STATE_FILE}: {e}")
+        
+    return default_state
+
+
+def save_state(state: Dict[str, Any]) -> bool:
+    """
+    Сохраняет состояние в файл.
+    
+    Args:
+        state: Состояние для сохранения
+        
+    Returns:
+        bool: True, если сохранение успешно, иначе False
+    """
+    # Обеспечиваем наличие директории
+    ensure_state_directory()
+    
+    try:
+        with FileSystemLock(LOCK_FILE):
+            # Преобразуем set в list для сериализации
+            state_to_save = state.copy()
+            if "message_hashes" in state_to_save and isinstance(state_to_save["message_hashes"], set):
+                state_to_save["message_hashes"] = list(state_to_save["message_hashes"])
+                
+            # Обновляем время последнего обновления
+            state_to_save["last_update"] = time.time()
+            
+            # Сохраняем состояние в файл
+            with open(STATE_FILE, 'w', encoding='utf-8') as f:
+                json.dump(state_to_save, f, ensure_ascii=False, indent=2)
+                
+            logger.debug(f"Состояние успешно сохранено в файл: {STATE_FILE}")
+            return True
+    except Exception as e:
+        logger.error(f"Ошибка при сохранении состояния в файл {STATE_FILE}: {e}")
+        traceback.print_exc()
+        return False
+
+
+def update_state(updates: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Обновляет состояние атомарно.
+    
+    Args:
+        updates: Обновления для применения к состоянию
+        
+    Returns:
+        Dict[str, Any]: Обновленное состояние
+    """
+    try:
+        with FileSystemLock(LOCK_FILE):
+            # Загружаем текущее состояние
+            state = load_state()
+            
+            # Применяем обновления
+            for key, value in updates.items():
+                state[key] = value
+                
+            # Сохраняем обновленное состояние
+            save_state(state)
+            
+            logger.debug(f"Состояние успешно обновлено с ключами: {list(updates.keys())}")
+            return state
+    except Exception as e:
+        logger.error(f"Ошибка при обновлении состояния: {e}")
+        traceback.print_exc()
+        return load_state()  # Возвращаем текущее состояние без изменений
+
+
+def add_report_to_history(report_id: str, report_data: Dict[str, Any]) -> bool:
+    """
+    Добавляет отчет в историю отчетов.
+    
+    Args:
+        report_id: Идентификатор отчета
+        report_data: Данные отчета
+        
+    Returns:
+        bool: True, если добавление успешно, иначе False
+    """
+    try:
+        with FileSystemLock(LOCK_FILE):
+            # Загружаем текущее состояние
+            state = load_state()
+            
+            # Добавляем отчет в историю
+            if "report_history" not in state:
+                state["report_history"] = {}
+                
+            # Добавляем временную метку
+            report_entry = report_data.copy()
+            report_entry["timestamp"] = time.time()
+            
+            # Сохраняем отчет в историю
+            state["report_history"][report_id] = report_entry
+            
+            # Ограничиваем размер истории (оставляем только последние 100 отчетов)
+            if len(state["report_history"]) > 100:
+                # Сортируем по timestamp и оставляем только последние 100
+                sorted_reports = sorted(
+                    state["report_history"].items(),
+                    key=lambda x: x[1].get("timestamp", 0),
+                    reverse=True
+                )
+                state["report_history"] = dict(sorted_reports[:100])
+                
+            # Сохраняем обновленное состояние
+            save_state(state)
+            
+            logger.debug(f"Отчет {report_id} успешно добавлен в историю")
+            return True
+    except Exception as e:
+        logger.error(f"Ошибка при добавлении отчета {report_id} в историю: {e}")
+        traceback.print_exc()
+        return False
+
+
+def increment_report_count() -> int:
+    """
+    Атомарно увеличивает счетчик отчетов.
+    
+    Returns:
+        int: Новое значение счетчика
+    """
+    try:
+        with FileSystemLock(LOCK_FILE):
+            # Загружаем текущее состояние
+            state = load_state()
+            
+            # Увеличиваем счетчик отчетов
+            if "report_count" not in state:
+                state["report_count"] = 0
+                
+            state["report_count"] += 1
+            
+            # Сохраняем обновленное состояние
+            save_state(state)
+            
+            logger.debug(f"Счетчик отчетов увеличен до {state['report_count']}")
+            return state["report_count"]
+    except Exception as e:
+        logger.error(f"Ошибка при увеличении счетчика отчетов: {e}")
+        traceback.print_exc()
+        
+        # В случае ошибки, загружаем текущее состояние и возвращаем текущее значение
+        state = load_state()
+        return state.get("report_count", 0)
+
+
+def set_last_report_hash(hash_value: str) -> bool:
+    """
+    Устанавливает хеш последнего отчета.
+    
+    Args:
+        hash_value: Хеш отчета
+        
+    Returns:
+        bool: True, если установка успешна, иначе False
+    """
+    try:
+        with FileSystemLock(LOCK_FILE):
+            # Загружаем текущее состояние
+            state = load_state()
+            
+            # Устанавливаем хеш последнего отчета
+            state["last_report_hash"] = hash_value
+            
+            # Добавляем хеш в множество хешей для проверки дублирования
+            if "message_hashes" not in state or not isinstance(state["message_hashes"], set):
+                state["message_hashes"] = set()
+                
+            state["message_hashes"].add(hash_value)
+            
+            # Ограничиваем размер множества хешей (оставляем только последние 1000 хешей)
+            if len(state["message_hashes"]) > 1000:
+                # Преобразуем в список, сортируем и оставляем только последние 1000
+                state["message_hashes"] = set(list(state["message_hashes"])[-1000:])
+                
+            # Сохраняем обновленное состояние
+            save_state(state)
+            
+            logger.debug(f"Хеш последнего отчета успешно установлен: {hash_value}")
+            return True
+    except Exception as e:
+        logger.error(f"Ошибка при установке хеша последнего отчета: {e}")
+        traceback.print_exc()
+        return False
+
+
+def get_last_report_hash() -> Optional[str]:
+    """
+    Получает хеш последнего отчета.
+    
+    Returns:
+        Optional[str]: Хеш последнего отчета или None, если нет отчетов
+    """
+    try:
+        # Загружаем текущее состояние
+        state = load_state()
+        
+        # Возвращаем хеш последнего отчета
+        return state.get("last_report_hash")
+    except Exception as e:
+        logger.error(f"Ошибка при получении хеша последнего отчета: {e}")
+        return None
+
+
+def get_report_count() -> int:
+    """
+    Получает текущее значение счетчика отчетов.
+    
+    Returns:
+        int: Значение счетчика отчетов
+    """
+    try:
+        # Загружаем текущее состояние
+        state = load_state()
+        
+        # Возвращаем значение счетчика отчетов
+        return state.get("report_count", 0)
+    except Exception as e:
+        logger.error(f"Ошибка при получении значения счетчика отчетов: {e}")
+        return 0
+
+
+def should_suppress_duplicate(message_hash: str, force_critical: bool = False) -> bool:
+    """
+    Проверяет, следует ли подавить дублирующееся сообщение.
+    
+    Args:
+        message_hash: Хеш сообщения
+        force_critical: Принудительно отправить критически важную информацию
+        
+    Returns:
+        bool: True, если сообщение следует подавить, иначе False
+    """
+    # Если это критически важное сообщение, не подавляем его
+    if force_critical:
+        return False
+        
+    try:
+        # Загружаем текущее состояние
+        state = load_state()
+        
+        # Проверяем наличие хеша в множестве хешей
+        if "message_hashes" not in state or not isinstance(state["message_hashes"], set):
+            return False
+            
+        # Если хеш найден в множестве хешей, подавляем сообщение
+        return message_hash in state["message_hashes"]
+    except Exception as e:
+        logger.error(f"Ошибка при проверке дублирования сообщения: {e}")
+        return False  # В случае ошибки, не подавляем сообщение
+
+
+def get_report_history(limit: int = 10) -> List[Dict[str, Any]]:
+    """
+    Получает историю отчетов.
+    
+    Args:
+        limit: Максимальное количество отчетов для возврата
+        
+    Returns:
+        List[Dict[str, Any]]: История отчетов
+    """
+    try:
+        # Загружаем текущее состояние
+        state = load_state()
+        
+        # Проверяем наличие истории отчетов
+        if "report_history" not in state or not isinstance(state["report_history"], dict):
+            return []
+            
+        # Сортируем отчеты по временной метке (от новых к старым)
+        sorted_reports = sorted(
+            state["report_history"].items(),
+            key=lambda x: x[1].get("timestamp", 0),
+            reverse=True
+        )
+        
+        # Возвращаем только последние limit отчетов
+        return [report for _, report in sorted_reports[:limit]]
+    except Exception as e:
+        logger.error(f"Ошибка при получении истории отчетов: {e}")
+        return []

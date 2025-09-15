@@ -1,0 +1,14 @@
+{
+  "title": "Если добавить MCP dashboard, то команды будут лучше видеть прогресс.",
+  "description": "Гипотеза: Если добавить MCP dashboard, то команды будут лучше видеть прогресс.",
+  "output": "Рабочий dashboard с метриками",
+  "outcome": "Увеличение вовлеченности команд на 50%",
+  "falsifiable_if": "Команды не используют dashboard через 2 недели",
+  "metrics": [
+    "dashboard_usage_rate",
+    "team_engagement_score"
+  ],
+  "id": "H20250526_225807",
+  "created_at": "2025-05-26T22:58:07.356037",
+  "status": "draft"
+}

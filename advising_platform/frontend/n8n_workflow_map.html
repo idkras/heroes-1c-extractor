@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>N8N Workflow Map - Real Data Integration</title>
+  <script src="https://unpkg.com/cytoscape@3.26.0/dist/cytoscape.min.js"></script>
+  <style>
+    body { background: #181818; color: #eee; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    #cy { width: 100vw; height: 95vh; display: block; background: #23272e; border-radius: 8px; margin: 2vh auto; }
+    .cy-tooltip { position: absolute; background: #222; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 13px; pointer-events: none; z-index: 1000; box-shadow: 0 2px 8px #0008; }
+    .n8n-node-svg { width: 22px; height: 22px; vertical-align: middle; margin-right: 6px; display: inline-block; }
+    .n8n-node-svg img { width: 22px; height: 22px; display: inline-block; }
+    .loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #333; padding: 20px; border-radius: 8px; z-index: 1001; }
+    .status { position: fixed; top: 10px; right: 10px; background: #333; padding: 10px; border-radius: 6px; font-size: 12px; z-index: 1000; }
+    
+    /* n8n-style node styling */
+    .n8n-node {
+      background-color: var(--node-color, #2196F3);
+      border: 2px solid var(--node-border, #1976D2);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: white;
+      text-align: center;
+      min-width: 120px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .n8n-node.active {
+      border-color: #4CAF50;
+      box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+    }
+    
+    .n8n-node.inactive {
+      opacity: 0.6;
+      border-color: #666;
+    }
+    
+    .n8n-workflow-group {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 8px;
+    }
+    
+    .n8n-workflow-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">N8N Workflow Map - Real Data Integration</h2>
+  <div id="cy"></div>
+  <div id="loading" class="loading" style="display:none;">Loading workflows from n8n API...</div>
+  <div id="status" class="status">Status: Initializing...</div>
+  
+  <script>
+    // Конфигурация n8n API
+    const N8N_API_URL = 'https://flow.rick.ai/api/v1';
+    const N8N_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMjI4Zjk2Ny00YmRhLTQzN2ItOGJhOC0xNzhmNzQwMTlkYzUiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzUyNDQyNTM1LCJleHAiOjE3NTQ5NTY4MDB9.z1Hgduiq_aQokOmCKPvsGn1np9_eMK8LKj5obfv808Y';
+
+    // Тестовые данные для демонстрации дизайна
+    const mockWorkflows = [
+      {
+        id: 'wf1',
+        name: 'Telegram Bot Workflow',
+        active: true,
+        nodes: [
+          { name: 'Manual Trigger', type: 'manualtrigger', position: [100, 100] },
+          { name: 'Telegram Send', type: 'telegram', position: [300, 100] },
+          { name: 'HTTP Request', type: 'httprequest', position: [500, 100] },
+          { name: 'Function', type: 'function', position: [700, 100] }
+        ],
+        connections: {
+          'Manual Trigger': { main: [{ node: 'Telegram Send' }] },
+          'Telegram Send': { main: [{ node: 'HTTP Request' }] },
+          'HTTP Request': { main: [{ node: 'Function' }] }
+        }
+      },
+      {
+        id: 'wf2',
+        name: 'Slack Integration',
+        active: false,
+        nodes: [
+          { name: 'Schedule Trigger', type: 'scheduletrigger', position: [100, 300] },
+          { name: 'Slack Send', type: 'slack', position: [300, 300] },
+          { name: 'Google Sheets', type: 'googlesheets', position: [500, 300] }
+        ],
+        connections: {
+          'Schedule Trigger': { main: [{ node: 'Slack Send' }] },
+          'Slack Send': { main: [{ node: 'Google Sheets' }] }
+        }
+      },
+      {
+        id: 'wf3',
+        name: 'Email Automation',
+        active: true,
+        nodes: [
+          { name: 'Webhook', type: 'webhook', position: [100, 500] },
+          { name: 'Email Send', type: 'email', position: [300, 500] },
+          { name: 'Notion', type: 'notion', position: [500, 500] },
+          { name: 'Wait', type: 'wait', position: [700, 500] }
+        ],
+        connections: {
+          'Webhook': { main: [{ node: 'Email Send' }] },
+          'Email Send': { main: [{ node: 'Notion' }] },
+          'Notion': { main: [{ node: 'Wait' }] }
+        }
+      }
+    ];
+
+    // Загрузка всех workflow из n8n API с fallback на тестовые данные
+    async function loadAllWorkflows() {
+      const statusEl = document.getElementById('status');
+      const loadingEl = document.getElementById('loading');
+      
+      try {
+        statusEl.textContent = 'Status: Loading workflows list...';
+        loadingEl.style.display = 'block';
+        
+        // Получаем список всех workflow
+        const workflowsResponse = await fetch(`${N8N_API_URL}/workflows`, {
+          headers: {
+            'Authorization': `Bearer ${N8N_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!workflowsResponse.ok) {
+          throw new Error(`Failed to fetch workflows: ${workflowsResponse.status}`);
+        }
+        
+        const workflows = await workflowsResponse.json();
+        statusEl.textContent = `Status: Found ${workflows.length} workflows`;
+        
+        // Загружаем детали каждого workflow
+        const workflowDetails = [];
+        for (const workflow of workflows) {
+          try {
+            const detailResponse = await fetch(`${N8N_API_URL}/workflows/${workflow.id}`, {
+              headers: {
+                'Authorization': `Bearer ${N8N_API_KEY}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (detailResponse.ok) {
+              const detail = await detailResponse.json();
+              workflowDetails.push(detail);
+              statusEl.textContent = `Status: Loaded ${workflowDetails.length}/${workflows.length} workflows`;
+            }
+          } catch (error) {
+            console.warn(`Failed to load workflow ${workflow.id}:`, error);
+          }
+        }
+        
+        if (workflowDetails.length > 0) {
+          statusEl.textContent = `Status: Loaded ${workflowDetails.length} workflows successfully`;
+          loadingEl.style.display = 'none';
+          return workflowDetails;
+        } else {
+          // Fallback на тестовые данные
+          console.log('Using mock data for demonstration');
+          statusEl.textContent = 'Status: Using mock data for demonstration';
+          loadingEl.style.display = 'none';
+          return mockWorkflows;
+        }
+      } catch (error) {
+        console.error('Failed to load workflows:', error);
+        console.log('Using mock data due to API error');
+        statusEl.textContent = 'Status: Using mock data (API error)';
+        loadingEl.style.display = 'none';
+        return mockWorkflows;
+      }
+    }
+
+    // Маппинг типов нод n8n к цветам и иконкам (как в оригинальном n8n)
+    const n8nNodeTypeMap = {
+      'start':      { color: '#56C02B', icon: '▶', shape: 'roundrectangle' },
+      'manualtrigger': { color: '#56C02B', icon: '▶', shape: 'roundrectangle' },
+      'scheduletrigger': { color: '#56C02B', icon: '⏰', shape: 'roundrectangle' },
+      'httprequest': { color: '#1A82E3', icon: '🌐', shape: 'roundrectangle' },
+      'webhook':    { color: '#1A82E3', icon: '🔗', shape: 'roundrectangle' },
+      'function':   { color: '#F7B924', icon: 'ƒ', shape: 'roundrectangle' },
+      'code':       { color: '#F7B924', icon: '{}', shape: 'roundrectangle' },
+      'telegram':   { color: '#229ED9', icon: 'T', shape: 'roundrectangle' },
+      'slack':      { color: '#4A154B', icon: 'S', shape: 'roundrectangle' },
+      'discord':    { color: '#5865F2', icon: 'D', shape: 'roundrectangle' },
+      'email':      { color: '#D44638', icon: '✉', shape: 'roundrectangle' },
+      'notion':     { color: '#000', icon: 'N', shape: 'roundrectangle' },
+      'googlesheets': { color: '#0F9D58', icon: '📊', shape: 'roundrectangle' },
+      'mysql':      { color: '#00758F', icon: '🗄', shape: 'roundrectangle' },
+      'postgres':   { color: '#336791', icon: '🗄', shape: 'roundrectangle' },
+      'airtable':   { color: '#18BFFF', icon: '🗄', shape: 'roundrectangle' },
+      'github':     { color: '#24292F', icon: '🐙', shape: 'roundrectangle' },
+      'trello':     { color: '#0079BF', icon: '📋', shape: 'roundrectangle' },
+      'stripe':     { color: '#635BFF', icon: '💳', shape: 'roundrectangle' },
+      'merge':      { color: '#A259FF', icon: '🔗', shape: 'roundrectangle' },
+      'split':      { color: '#FFB300', icon: '🔀', shape: 'roundrectangle' },
+      'switch':     { color: '#FFB300', icon: '🔀', shape: 'roundrectangle' },
+      'set':        { color: '#F7B924', icon: '⚙', shape: 'roundrectangle' },
+      'wait':       { color: '#F7B924', icon: '⏳', shape: 'roundrectangle' },
+      'errortrigger': { color: '#F44336', icon: '⚠', shape: 'roundrectangle' },
+      // fallback
+      'default':    { color: '#2196F3', icon: '●', shape: 'roundrectangle' }
+    };
+
+    function getNodeStyle(type) {
+      const key = (type || '').replace(/\s+/g, '').toLowerCase();
+      return n8nNodeTypeMap[key] || n8nNodeTypeMap['default'];
+    }
+
+    function getNodeIcon(type) {
+      return getNodeStyle(type).icon;
+    }
+
+    function getNodeColor(type) {
+      return getNodeStyle(type).color;
+    }
+
+    // SVG CDN mapping for popular n8n node types
+    const n8nNodeSVGMap = {
+      'telegram': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/telegram.svg',
+      'slack': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/slack.svg',
+      'discord': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/discord.svg',
+      'notion': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/notion.svg',
+      'googlesheets': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/googlesheets.svg',
+      'mysql': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/mysql.svg',
+      'postgres': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/postgresql.svg',
+      'airtable': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/airtable.svg',
+      'github': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/github.svg',
+      'trello': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/trello.svg',
+      'stripe': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/stripe.svg',
+      'email': 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/maildotru.svg',
+      // fallback: undefined
+    };
+
+    function getNodeSVG(type) {
+      const key = (type || '').replace(/\s+/g, '').toLowerCase();
+      return n8nNodeSVGMap[key];
+    }
+
+    function buildElementsFromWorkflows(workflows) {
+      const elements = [];
+      let nodeIdCounter = 0;
+      
+      for (const workflow of workflows) {
+        // Создаем группу для workflow
+        const workflowId = `wf_${workflow.id}`;
+        elements.push({ 
+          data: { 
+            id: workflowId, 
+            label: workflow.name || `Workflow ${workflow.id}`, 
+            type: 'workflow',
+            workflowId: workflow.id,
+            active: workflow.active || false
+          } 
+        });
+        
+        // Добавляем ноды workflow
+        if (workflow.nodes && Array.isArray(workflow.nodes)) {
+          for (const node of workflow.nodes) {
+            const style = getNodeStyle(node.type);
+            const nodeId = `node_${workflow.id}_${node.name}`;
+            
+            elements.push({
+              data: {
+                id: nodeId,
+                label: node.name,
+                parent: workflowId,
+                type: 'node',
+                nodetype: node.type,
+                icon: style.icon,
+                color: style.color,
+                shape: style.shape || 'roundrectangle',
+                workflowId: workflow.id,
+                nodeId: node.name,
+                position: node.position || [0, 0]
+              }
+            });
+          }
+        }
+        
+        // Добавляем связи между нодами
+        if (workflow.connections) {
+          for (const [fromNode, connections] of Object.entries(workflow.connections)) {
+            if (connections.main && Array.isArray(connections.main)) {
+              for (const connection of connections.main) {
+                const sourceId = `node_${workflow.id}_${fromNode}`;
+                const targetId = `node_${workflow.id}_${connection.node}`;
+                
+                elements.push({ 
+                  data: { 
+                    id: `edge_${workflow.id}_${fromNode}_${connection.node}`,
+                    source: sourceId, 
+                    target: targetId,
+                    workflowId: workflow.id
+                  } 
+                });
+              }
+            }
+          }
+        }
+      }
+      
+      return elements;
+    }
+
+    (async () => {
+      let elements = [];
+      const statusEl = document.getElementById('status');
+      
+      try {
+        // Загружаем реальные workflow из n8n API
+        const workflows = await loadAllWorkflows();
+        console.log('Loaded workflows:', workflows);
+        
+        if (workflows && workflows.length > 0) {
+          elements = buildElementsFromWorkflows(workflows);
+          console.log('Built elements:', elements);
+          statusEl.textContent = `Status: Loaded ${workflows.length} workflows with ${elements.filter(el => el.data.type === 'node').length} nodes`;
+        } else {
+          // Fallback на заглушки если API недоступен
+          elements = [
+            { data: { id: 'w1', label: 'Workflow 1', type: 'workflow', active: true } },
+            { data: { id: 'w1n1', label: 'Start', parent: 'w1', type: 'node', nodetype: 'start', icon: '▶️', color: '#56C02B' } },
+            { data: { id: 'w1n2', label: 'HTTP Request', parent: 'w1', type: 'node', nodetype: 'httprequest', icon: '🌐', color: '#1A82E3' } },
+            { data: { id: 'w1e1', source: 'w1n1', target: 'w1n2' } },
+          ];
+          statusEl.textContent = 'Status: Using fallback data (API unavailable)';
+        }
+      } catch (e) {
+        console.error('Error loading workflows:', e);
+        elements = [
+          { data: { id: 'w1', label: 'Workflow 1', type: 'workflow', active: true } },
+          { data: { id: 'w1n1', label: 'Start', parent: 'w1', type: 'node', nodetype: 'start', icon: '▶️', color: '#56C02B' } },
+          { data: { id: 'w1n2', label: 'HTTP Request', parent: 'w1', type: 'node', nodetype: 'httprequest', icon: '🌐', color: '#1A82E3' } },
+          { data: { id: 'w1e1', source: 'w1n1', target: 'w1n2' } },
+        ];
+        statusEl.textContent = 'Status: Error - using fallback data';
+      }
+
+      const cy = cytoscape({
+        container: document.getElementById('cy'),
+        elements,
+        style: [
+          { selector: 'node[type="workflow"]', style: {
+              'shape': 'roundrectangle', 
+              'background-color': 'data(active) ? #4CAF50 : #666', 
+              'label': 'data(label)', 
+              'color': '#fff', 
+              'font-size': 14, 
+              'font-weight': '600',
+              'text-valign': 'center', 
+              'text-halign': 'center', 
+              'width': 280, 
+              'height': 80, 
+              'padding': 12, 
+              'z-index': 2, 
+              'border-width': 3, 
+              'border-color': 'data(active) ? #4CAF50 : #666',
+              'border-opacity': '0.8'
+          }},
+          { selector: 'node[type="node"]', style: {
+              'shape': 'roundrectangle',
+              'background-color': 'data(color)',
+              'label': 'data(label)',
+              'color': '#fff',
+              'font-size': 11,
+              'font-weight': '500',
+              'width': 140,
+              'height': 50,
+              'text-valign': 'center',
+              'text-halign': 'center',
+              'z-index': 3,
+              'border-width': 2,
+              'border-color': 'data(color)',
+              'border-opacity': '0.8',
+              'text-wrap': 'wrap',
+              'text-max-width': 120,
+              'padding': 8
+          }},
+          { selector: 'edge', style: {
+              'width': 3, 
+              'line-color': '#666', 
+              'target-arrow-shape': 'triangle', 
+              'target-arrow-color': '#666', 
+              'curve-style': 'bezier', 
+              'z-index': 1,
+              'arrow-scale': '1.2'
+          }},
+          { selector: ':parent', style: {
+              'background-opacity': 0.05, 
+              'border-width': 2, 
+              'border-color': '#4CAF50', 
+              'padding': 24,
+              'border-style': 'dashed'
+          }}
+        ],
+        layout: { name: 'cose', animate: true, padding: 40 }
+      });
+
+      // Делаем Cytoscape доступным глобально для тестов
+      window.cy = cy;
+
+      // Drag-n-drop
+      cy.nodes().on('grab', function(evt){ evt.target.addClass('dragging'); });
+      cy.nodes().on('free', function(evt){ evt.target.removeClass('dragging'); });
+
+      // Popover
+      let tooltip;
+      cy.on('mouseover', 'node[type="node"]', function(evt){
+        const node = evt.target;
+        const icon = node.data('icon') || getNodeIcon(node.data('nodetype'));
+        const svgUrl = getNodeSVG(node.data('nodetype'));
+        tooltip = document.createElement('div');
+        tooltip.className = 'cy-tooltip';
+        tooltip.innerHTML =
+          (svgUrl ? `<span class='n8n-node-svg'><img src='${svgUrl}' alt='icon'/></span>` : `<span class='n8n-node-icon'>${icon}</span>`) +
+          `<b>${node.data('label')}</b><br>Type: <b>${node.data('nodetype')}</b><br>ID: ${node.id()}<br>Color: <span style='color:${node.data('color')};'>${node.data('color')}</span>`;
+        document.body.appendChild(tooltip);
+        const pos = node.renderedPosition();
+        tooltip.style.left = (pos.x + 30) + 'px';
+        tooltip.style.top = (pos.y + 60) + 'px';
+      });
+      cy.on('mouseout', 'node[type="node"]', function(){ if (tooltip) { tooltip.remove(); tooltip = null; } });
+
+      // Deeplink on click (real n8n link)
+      cy.on('tap', 'node[type="node"]', function(evt){
+        const node = evt.target;
+        const workflowId = node.data('workflowId');
+        const nodeId = node.data('nodeId');
+        const n8nUrl = `https://flow.rick.ai/workflow/${workflowId}`;
+        alert(`Opening n8n workflow: ${n8nUrl}\nNode: ${nodeId}`);
+        // window.open(n8nUrl, '_blank'); // Uncomment to actually open
+      });
+
+      // Zoom controls
+      cy.on('zoom', function(evt) {
+        const zoom = cy.zoom();
+        statusEl.textContent = `Status: Zoom ${Math.round(zoom * 100)}%`;
+      });
+    })();
+  </script>
+</body>
+</html> 

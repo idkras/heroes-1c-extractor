@@ -1,0 +1,430 @@
+{
+  "timestamp": "2025-05-13T23:42:51Z",
+  "base_structure": {
+    "missing_dirs": []
+  },
+  "src_structure": {
+    "missing_dirs": [],
+    "missing_files": [
+      "src/utils/generate_pdf.py"
+    ]
+  },
+  "scripts_structure": {
+    "missing_dirs": [],
+    "missing_files": []
+  },
+  "python_files": {
+    "misplaced_files": [
+      "server.py",
+      "scrape_garderob_hypothises.py",
+      "compare_structure.py",
+      "webhook_client.py",
+      "simple_server.py",
+      "research_documents.py",
+      "document_cli.py",
+      "api_client.py",
+      "convert_links.py",
+      "document_abstractions.py",
+      "add_logical_id.py",
+      "abstract_links_tool.py",
+      "server_api.py",
+      "generate_pdf.py"
+    ],
+    "duplicate_files": {
+      "cbeb1d2d1d0e985358a60d173f100571": [
+        "./server.py",
+        "./src/web/server.py"
+      ],
+      "660888f210ad3d4c109ffdd2271a749e": [
+        "./scrape_garderob_hypothises.py",
+        "./src/utils/scrape_garderob_hypothises.py",
+        "./tests/scrape_garderob_hypothises.py"
+      ],
+      "da726458c8f8720351e542006a81ba5f": [
+        "./compare_structure.py",
+        "./scripts/document_tools/compare_structure.py",
+        "./src/utils/compare_structure.py"
+      ],
+      "aa4ebe6f244d3ba547e24baa8f704231": [
+        "./webhook_client.py",
+        "./scripts/webhook_client.py",
+        "./src/api/webhook_client.py"
+      ],
+      "dd14e1f3f1850f8eb4826dc4f6ae4e45": [
+        "./simple_server.py",
+        "./src/web/simple_server.py"
+      ],
+      "6610897072fe066597b82f0add0ba6ec": [
+        "./research_documents.py",
+        "./scripts/document_tools/research_documents.py",
+        "./src/utils/research_documents.py"
+      ],
+      "5b94306edc513d94619710d27b1ce2c3": [
+        "./document_cli.py",
+        "./scripts/document_tools/document_cli.py"
+      ],
+      "ae3af39954880259ba755cf474d3c2cd": [
+        "./api_client.py",
+        "./src/api/api_client.py"
+      ],
+      "905b03516886e2f8b9e7a3d0426313d3": [
+        "./convert_links.py",
+        "./scripts/document_tools/convert_links.py"
+      ],
+      "c8ec98df2ec0b67caa2b973e0847ffc0": [
+        "./document_abstractions.py",
+        "./scripts/document_tools/document_abstractions.py",
+        "./src/core/document_abstractions.py"
+      ],
+      "5b546996f3a2293d931b4fb9301389db": [
+        "./add_logical_id.py",
+        "./scripts/document_tools/add_logical_id.py"
+      ],
+      "9961eb51b88903087876f45066f88cb4": [
+        "./abstract_links_tool.py",
+        "./scripts/document_tools/abstract_links_tool.py",
+        "./src/cli/abstract_links_tool.py"
+      ],
+      "efa7d6c0ba2a3b6276c74e6c7cbeafeb": [
+        "./projects/advising_auto/auto codebase/main.py",
+        "./backups/20250511/projects/auto/main.py"
+      ],
+      "64c92f7eece862ae664c5fc4d930c1db": [
+        "./projects/advising_auto/auto codebase/src/n8n_workflow_analyzer.py",
+        "./backups/20250511/projects/auto/src/n8n_workflow_analyzer.py"
+      ],
+      "d41d8cd98f00b204e9800998ecf8427e": [
+        "./projects/advising_auto/auto codebase/src/__init__.py",
+        "./projects/advising_auto/auto codebase/src/validator/__init__.py",
+        "./projects/advising_auto/auto codebase/src/api/__init__.py",
+        "./projects/advising_auto/auto codebase/src/models/__init__.py",
+        "./projects/advising_auto/auto codebase/src/utils/__init__.py",
+        "./scripts/__init__.py",
+        "./scripts/document_tools/__init__.py",
+        "./backups/20250511/projects/auto/src/__init__.py",
+        "./backups/20250511/projects/auto/src/validator/__init__.py",
+        "./backups/20250511/projects/auto/src/api/__init__.py",
+        "./backups/20250511/projects/auto/src/models/__init__.py",
+        "./backups/20250511/projects/auto/src/utils/__init__.py",
+        "./src/__init__.py",
+        "./src/core/__init__.py",
+        "./src/api/__init__.py",
+        "./src/cli/__init__.py",
+        "./src/web/__init__.py",
+        "./src/utils/__init__.py",
+        "./data/__init__.py",
+        "./data/registry/__init__.py",
+        "./tests/__init__.py",
+        "./tests/document_tests/__init__.py"
+      ],
+      "1db24361eaf77353f4bced22c2b26e99": [
+        "./projects/advising_auto/auto codebase/src/validator/standard_validator.py",
+        "./backups/20250511/projects/auto/src/validator/standard_validator.py"
+      ],
+      "5d3c8f4a0f80f820b0c238b9da00c5be": [
+        "./projects/advising_auto/auto codebase/src/api/n8n_client.py",
+        "./backups/20250511/projects/auto/src/api/n8n_client.py"
+      ],
+      "2b85f7fb46b2ecbbb9162f147c2ca886": [
+        "./projects/advising_auto/auto codebase/src/models/workflow_models.py",
+        "./backups/20250511/projects/auto/src/models/workflow_models.py"
+      ],
+      "4e95007ffd76c3c4484a1db86478b679": [
+        "./projects/advising_auto/auto codebase/src/utils/recommendation_generator.py",
+        "./backups/20250511/projects/auto/src/utils/recommendation_generator.py"
+      ]
+    }
+  },
+  "docs_structure": {
+    "misplaced_files": [
+      "advising_diagnostics_report.md",
+      "advising_instructions.md",
+      "test_links.md",
+      "test_links_correct.md",
+      "complex_test.md",
+      "project_structure.md",
+      "reorganization_plan.md",
+      "obsolete_files_analysis.md",
+      "file_structure_analysis.md",
+      "ai_todo.md",
+      "kira_standard.md",
+      "co-evolution journal.md",
+      "todo.archive.md",
+      "todo.md"
+    ],
+    "duplicate_files": {
+      "8833d131a1c4fbb640a5b7a8cf05512f": [
+        "./advising_diagnostics_report.md",
+        "./projects/documentation/advising_diagnostics_report.md",
+        "./docs/advising_diagnostics_report.md"
+      ],
+      "739f6e539b200deeb9116be841540665": [
+        "./advising_instructions.md",
+        "./projects/documentation/advising_instructions.md",
+        "./docs/advising_instructions.md"
+      ],
+      "216fc49c22ba1f6feed4ac82f606b22e": [
+        "./test_links.md",
+        "./examples/test_links.md",
+        "./tests/document_tests/test_links.md"
+      ],
+      "acbbe02b81cdfcdb257f14a6527f8551": [
+        "./test_links_correct.md",
+        "./examples/test_links_correct.md",
+        "./tests/document_tests/test_links_correct.md"
+      ],
+      "d903b6e263892e92249a16e1bfee9b70": [
+        "./complex_test.md",
+        "./examples/complex_test.md",
+        "./tests/document_tests/complex_test.md"
+      ],
+      "67ba5bf46468bc1084a980770e1f13be": [
+        "./project_structure.md",
+        "./projects/documentation/project_structure.md"
+      ],
+      "6b3e0d895e485865b56989e3d3b2e6a5": [
+        "./reorganization_plan.md",
+        "./projects/documentation/reorganization_plan.md",
+        "./docs/reorganization_plan.md"
+      ],
+      "6a7f11dd0a1d6228e82fef98260640c5": [
+        "./obsolete_files_analysis.md",
+        "./projects/documentation/obsolete_files_analysis.md",
+        "./docs/obsolete_files_analysis.md"
+      ],
+      "20c5c960ef5ddf9f8226455f03c4c924": [
+        "./file_structure_analysis.md",
+        "./projects/documentation/file_structure_analysis.md"
+      ],
+      "d41d8cd98f00b204e9800998ecf8427e": [
+        "./projects/garderob.app/garderob diagnostic.md",
+        "./projects/moonly.app/moonly steps.md",
+        "./backups/20250511/projects/moonly.app/moonly steps.md",
+        "./backups/20250511/projects/garderob.app/garderob diagnostic.md"
+      ],
+      "fcb6bf32ffe77effb4c2857440d51567": [
+        "./projects/garderob.app/garderob hypothises.md",
+        "./backups/20250511/projects/garderob.app/garderob hypothises.md"
+      ],
+      "300f5cd3ce3793802a0adfaf8e88288d": [
+        "./projects/garderob.app/garderob_hypothises_restructured.md",
+        "./backups/20250511/projects/garderob.app/garderob_hypothises_restructured.md"
+      ],
+      "4035b6bd2d1d272d605bd7668113a4e9": [
+        "./projects/garderob.app/garderob.context.md",
+        "./backups/20250511/projects/garderob.app/garderob context.md"
+      ],
+      "13e132e22009b5e7409782bc17229423": [
+        "./projects/moonly.app/moonly.context.md",
+        "./backups/20250511/projects/moonly.app/moonly context.md"
+      ],
+      "1144e180352f0fb0b6791751a09c8768": [
+        "./projects/kontur-extern.ru/Контекстная_информация.md",
+        "./backups/20250511/projects/kontur-extern.ru/Контекстная_информация.md"
+      ],
+      "5776b2bac30074e7893a1842bba96487": [
+        "./projects/kontur-extern.ru/attached_assets/Отчет_№1.md",
+        "./backups/20250511/projects/kontur-extern.ru/attached_assets/Отчет_№1.md"
+      ],
+      "e657154c4336bd55d8cfecac301b6681": [
+        "./projects/kontur-extern.ru/attached_assets/Отчет_№2.md",
+        "./backups/20250511/projects/kontur-extern.ru/attached_assets/Отчет_№2.md"
+      ],
+      "3ee8ead93d94aa3524120fdb84502d5d": [
+        "./projects/kontur-extern.ru/incidents/kontur-extern-management-incidents.md",
+        "./projects/kontur-extern.ru/diagnostic release/kontur-extern-management-incidents.md"
+      ],
+      "9b61f769adf5eef710a9484e855737a9": [
+        "./projects/kontur-extern.ru/diagnostic release/Запрос_данных_к_третьей_встрече.md",
+        "./backups/20250511/projects/kontur-extern.ru/Запрос_данных_к_третьей_встрече.md"
+      ],
+      "8eb984cb5c771fec38a0bdf3cb3603ad": [
+        "./projects/skillbox.ru/skillbox.context.md",
+        "./backups/20250511/projects/skillbox.ru/skillbox context.md"
+      ],
+      "009fc2e0081d0c24bca87dce270c8368": [
+        "./projects/rask.ai/rask_ai_rick_ai_integration_goal_map.md",
+        "./backups/20250511/advising standards .md/rask_ai_rick_ai_integration_goal_map_11_may_2000_CET.md",
+        "./backups/20250511/projects/rask.ai/rask_ai_rick_ai_integration_goal_map.md"
+      ],
+      "3b155ef594ebf04ff0902290ebb00bef": [
+        "./projects/rask.ai/rask_ai_rick_ai_integration_spec.md",
+        "./backups/20250511/projects/rask.ai/rask_ai_rick_ai_integration_spec.md"
+      ],
+      "3ae0d3a94a322319cbeddc919cfc4f1c": [
+        "./projects/rick.ai/docs_specs/rick_ai_technical_documentation.md",
+        "./projects/rick.ai/docs_specs/rick_ai_documentation_11_may_2025_CET.md",
+        "./backups/20250511/advising standards .md/rick_ai_documentation_11_may_2025_CET.md",
+        "./backups/20250511/projects/rick.ai/docs_specs/rick_ai_technical_documentation.md"
+      ],
+      "2ce12071f09f77409f988e7560da3b95": [
+        "./projects/rick.ai/docs_specs/rick_ai_architecture_specification.md",
+        "./backups/20250511/projects/rick.ai/docs_specs/rick_ai_architecture_specification.md"
+      ],
+      "d1b00622f752f8c94f02fdbdb22166cd": [
+        "./projects/advising_auto/auto codebase/README.md",
+        "./backups/20250511/projects/auto/README.md"
+      ],
+      "5d0c8bf9137beb48a80270611f915222": [
+        "./projects/advising_auto/auto codebase/n8n_todo.md",
+        "./backups/20250511/projects/auto/n8n_todo.md"
+      ],
+      "a3063f269ec3dac1b9e669c8acd4ba48": [
+        "./projects/advising_auto/auto codebase/auto context.md",
+        "./backups/20250511/projects/auto/auto context.md"
+      ],
+      "49bde73812f7c8ed79ff2748cafbc171": [
+        "./projects/advising_auto/auto codebase/data/n8n_standards_metrics.md",
+        "./backups/20250511/projects/auto/data/n8n_standards_metrics.md"
+      ],
+      "d060720d0897ec2abea14914678a5bfb": [
+        "./projects/advising_auto/auto codebase/data/validation_system_specification.md",
+        "./backups/20250511/projects/auto/data/validation_system_specification.md"
+      ],
+      "85ae7793feadd5d94b12bc954b014b3a": [
+        "./docs/project structure 10 may 1055 CET by AI Assistant.md",
+        "./backups/20250511/docs/project structure 10 may 1055 CET by AI Assistant.md"
+      ],
+      "37547751d6edac176d0a643660ea2766": [
+        "./docs/qa_requirements.md",
+        "./backups/20250511/docs/qa_requirements.md"
+      ],
+      "9fd0ab7e154a84deb3cd085d87e924eb": [
+        "./docs/README.md",
+        "./backups/20250511/docs/README.md"
+      ],
+      "6fc28eea15a32dd6f531007bc7f420a6": [
+        "./docs/WORKFLOW.md",
+        "./backups/20250511/docs/WORKFLOW.md"
+      ],
+      "d76f15371d52043097f3236309249229": [
+        "./advising standards .md/3.0 n8n workflow check 7 may 1800 by Ilya Krasinsky.md",
+        "./advising standards .md/archive AI never use/backups_20250510/n8n workflow check 7 may 1800 by Ilya Krasinsky.md",
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/n8n workflow check 7 may 1800 by Ilya Krasinsky.md",
+        "./advising standards .md/backups_20250514/3.0 n8n workflow check 7 may 1800 by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/3.0 n8n workflow check 7 may 1800 by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/n8n workflow check 7 may 1800 by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/n8n workflow check 7 may 1800 by Ilya Krasinsky.md"
+      ],
+      "831ad69d138f2e82d6f51ad8a54561a7": [
+        "./advising standards .md/README.md",
+        "./advising standards .md/backups_20250514/README.md",
+        "./backups/20250511/advising standards .md/README.md"
+      ],
+      "38afb8e4fe7c54942116d7dbf7444801": [
+        "./advising standards .md/project_structure_checklist.md",
+        "./advising standards .md/backups_20250514/project_structure_checklist.md"
+      ],
+      "57b894117fcfe97e2cdb8a10241416a0": [
+        "./advising standards .md/standards_registry.md",
+        "./advising standards .md/backups_20250514/standards_registry.md"
+      ],
+      "8a4742f6cdd323ae67448ec69d567d35": [
+        "./advising standards .md/3.0 registry standard 14 may 2025 0220 CET by AI Assistant.md",
+        "./advising standards .md/archive/3.0 registry standard 14 may 2025 0220 CET by AI Assistant.md",
+        "./advising standards .md/backups_20250514/3.0 registry standard 14 may 2025 0220 CET by AI Assistant.md"
+      ],
+      "8cd60812cc3ec5be9c79beca9fa0c629": [
+        "./advising standards .md/0.1 registry standard 14 may 2025 0350 CET by AI Assistant.md",
+        "./advising standards .md/backups_20250514/0.1 registry standard 14 may 2025 0350 CET by AI Assistant.md"
+      ],
+      "ffed164e8c2f2671177d596c707f5d31": [
+        "./advising standards .md/защита неизменяемых разделов стандартов.md",
+        "./advising standards .md/backups_20250514/защита неизменяемых разделов стандартов.md"
+      ],
+      "45e79b3bc8b5363658aba9db3d048dc7": [
+        "./advising standards .md/archive AI never use/1. process standard 10 may 1200 CET by Ilya Krasinsky.md",
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/archive AI never use/1. process standard 10 may 1200 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/1. process standard 10 may 1200 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/archive AI never use/1. process standard 10 may 1200 CET by Ilya Krasinsky.md"
+      ],
+      "79deefdaf3d88ba310fa5b662c5e6924": [
+        "./advising standards .md/archive AI never use/1.1 ticket standard by 10 may 2025 2355 CET by Ilya Krasinsky.md",
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/1.1 ticket standard by 10 may 2025 2355 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/1.1 ticket standard by 10 may 2025 2355 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/1.1 ticket standard by 10 may 2025 2355 CET by Ilya Krasinsky.md"
+      ],
+      "8c2aa9fc1168014335954f2799ddc6c3": [
+        "./advising standards .md/archive AI never use/advising_context_standard.md",
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/archive AI never use/advising_context_standard.md",
+        "./backups/20250511/advising standards .md/archive AI never use/advising_context_standard.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/archive AI never use/advising_context_standard.md"
+      ],
+      "0c48a01ed5002b09475135291591aeaa": [
+        "./advising standards .md/archive AI never use/hypo check 6 may 1553 2025 by Ilya Krasinsky check.md",
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/archive AI never use/hypo check 6 may 1553 2025 by Ilya Krasinsky check.md",
+        "./backups/20250511/advising standards .md/archive AI never use/hypo check 6 may 1553 2025 by Ilya Krasinsky check.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/archive AI never use/hypo check 6 may 1553 2025 by Ilya Krasinsky check.md"
+      ],
+      "cc89ee20d114703bea0d6438d837ae1d": [
+        "./advising standards .md/archive AI never use/2.0 client context standard 9 May 1544 CET by Ilya Krasinsky.md",
+        "./advising standards .md/archive AI never use/backups_20250510/client context standard 9 May 1544 CET by Ilya Krasinsky.md",
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/client context standard 9 May 1544 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/2.0 client context standard 9 May 1544 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/client context standard 9 May 1544 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/client context standard 9 May 1544 CET by Ilya Krasinsky.md"
+      ],
+      "111c0430ece9e1ce47a4887457bba4e6": [
+        "./advising standards .md/archive AI never use/0. task master 9 may 1430 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/0. task master 9 may 1430 CET by Ilya Krasinsky.md"
+      ],
+      "4ff120c1a20e814886bb65dc18904f2d": [
+        "./advising standards .md/archive AI never use/backups_20250510/advising diagnostics standard.md",
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/advising diagnostics standard.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising diagnostics standard.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/advising diagnostics standard.md"
+      ],
+      "5a928e54c967eddfe7b621d2e3a93f6e": [
+        "./advising standards .md/archive AI never use/backups_20250510/hypo check 9 may 1530 2025 by Ilya Krasinsky.md",
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/hypo check 9 may 1530 2025 by Ilya Krasinsky.md",
+        "./advising standards .md/archive/20250512/2.1 hypo check 9 may 1530 2025 by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/2.1 hypo check 9 may 1530 2025 by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/hypo check 9 may 1530 2025 by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/hypo check 9 may 1530 2025 by Ilya Krasinsky.md"
+      ],
+      "5af2f80cea09f04d33015644f3e13bd2": [
+        "./advising standards .md/archive AI never use/backups_20250510/ticket_1000.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/ticket_1000.md"
+      ],
+      "725b53d15a51b93bc0433836ac2439d6": [
+        "./advising standards .md/archive AI never use/backups_20250510/ticket_1200.md",
+        "./advising standards .md/backups_20250514/1.1 ticket standard by 11 may 2025 1200 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/1.1 ticket standard by 11 may 2025 1200 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/ticket_1200.md"
+      ],
+      "5ce8837f9ab0b13c791c366020585e13": [
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/0. task master 9 may 1430 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/0. task master 9 may 1430 CET by Ilya Krasinsky.md"
+      ],
+      "d9406eac77c689f460cace1c9c456883": [
+        "./advising standards .md/archive AI never use/backups_20250510/advising standards .md/1.0 Process Task Standard by 10 may 1745 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/1.0 process task standard by 10 may 1745 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/archive AI never use/backups_20250510/advising standards .md/1.0 Process Task Standard by 10 may 1745 CET by Ilya Krasinsky.md"
+      ],
+      "210eb4a68c50802669a7135cc0c8095d": [
+        "./advising standards .md/crm-billing/hubspot standard 11 may 2025 CET by Advising Assistant.md",
+        "./backups/20250511/advising standards .md/crm-billing/hubspot standard 11 may 2025 CET by Advising Assistant.md"
+      ],
+      "9704e798d6d107a1387a9fbf90ffe2da": [
+        "./advising standards .md/archive/20250512/1.0 design standard 11 may 0330 CET by Advising Assistant.md",
+        "./backups/20250511/advising standards .md/1.0 design standard 11 may 0330 CET by Advising Assistant.md"
+      ],
+      "dcca5a8c500f334d8fae4bf895a85e4f": [
+        "./advising standards .md/backups_20250514/1.2 root cause analysis 11 may 1530 CET by Advising Assistant.md",
+        "./backups/20250511/advising standards .md/3.1 root cause analysis 11 may 1530 CET by Advising Assistant.md"
+      ],
+      "a5e803c7cf28548e22a249723f7f0838": [
+        "./advising standards .md/backups_20250514/1.3 git commit standard 11 may 0910 CET by Ilya Krasinsky.md",
+        "./backups/20250511/advising standards .md/1.2 git commit standard 11 may 0910 CET by Ilya Krasinsky.md"
+      ],
+      "ed634d825d4d9bb7624745ef25dd777b": [
+        "./advising standards .md/backups_20250514/2.5 scenarium standard 11 may 2025 CET by Advising Assistant.md",
+        "./backups/20250511/advising standards .md/2.5 scenarium standard 11 may 2025 CET by Advising Assistant.md"
+      ]
+    }
+  },
+  "summary": {
+    "issues_count": 105,
+    "has_critical_issues": true
+  }
+}

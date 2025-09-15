@@ -1,0 +1,37 @@
+# syntax=docker/dockerfile:1
+FROM debian:bullseye
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Устанавливаем зависимости для сборки
+RUN apt-get update && apt-get install -y \
+    build-essential cmake git \
+    libboost-filesystem-dev libboost-system-dev libboost-regex-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем переменные окружения для Boost
+ENV Boost_USE_STATIC_LIBS=OFF
+ENV Boost_USE_STATIC_RUNTIME=OFF
+ENV Boost_USE_MULTITHREADED=ON
+
+# Клонируем репозиторий
+RUN git clone https://github.com/e8tools/tool1cd.git /src/tool1cd
+
+# Собираем только консольную версию (без GUI)
+WORKDIR /src/tool1cd
+RUN cmake -DNOGUI=ON -DBUILD_GUI=OFF -DBoost_USE_STATIC_LIBS=OFF -DBoost_USE_STATIC_RUNTIME=OFF . && \
+    make -j$(nproc) ctool1cd
+
+# Копируем готовый бинарный файл
+RUN cp ctool1cd /usr/local/bin/ && \
+    chmod +x /usr/local/bin/ctool1cd
+
+# Проверяем что ctool1cd работает
+RUN ctool1cd --help
+
+# Создаем рабочую директорию
+WORKDIR /workspace
+
+# Проверяем что ctool1cd работает
+ENTRYPOINT ["ctool1cd"]

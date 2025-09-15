@@ -1,0 +1,8 @@
+{
+  "redirect": {
+    "original_path": "cache_validation_report.json",
+    "new_path": "advising_platform/data/test_results/cache_validation_report.json",
+    "migration_date": "2025-05-15 21:50:36",
+    "description": "Этот файл был перемещен в структурированную директорию. Используйте новый путь для доступа к актуальным данным."
+  }
+}

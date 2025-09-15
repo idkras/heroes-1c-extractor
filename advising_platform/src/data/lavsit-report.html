@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализ блокеров конверсии | Lavsit.ru</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        h1, h2, h3, h4 {
+            color: #0066cc;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .meta-info {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #666;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .score {
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .quote {
+            background-color: #f5f5f5;
+            border-left: 4px solid #0066cc;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        
+        .attribution {
+            text-align: right;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .chart {
+            margin: 30px 0;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .recommendations {
+            margin: 30px 0;
+        }
+        
+        .complexity, .impact {
+            display: inline-block;
+        }
+        
+        .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #0066cc;
+            margin-right: 2px;
+        }
+        
+        .empty {
+            background-color: transparent;
+            border: 1px solid #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Анализ блокеров конверсии Lavsit.ru</h1>
+    
+    <div class="meta-info">
+        <p>Дата: 19 мая 2025 | Проанализировано: 28,595 обращений | Выявлено: 5 ключевых минных полей</p>
+    </div>
+    
+    <div class="section">
+        <h2>Ключевые "минные поля" и их оценка</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Минное поле</th>
+                    <th>Opportunity Score</th>
+                    <th>Ключевая проблематика</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Неопределенность процесса доставки</strong></td>
+                    <td class="score">14.8</td>
+                    <td>Отсутствие точных сроков, сложность коммуникации с доставкой</td>
+                </tr>
+                <tr>
+                    <td><strong>Неуверенность в характеристиках мебели</strong></td>
+                    <td class="score">13.4</td>
+                    <td>Недостаток информации о материалах, размерах и функционале</td>
+                </tr>
+                <tr>
+                    <td><strong>Ценовые ожидания</strong></td>
+                    <td class="score">12.9</td>
+                    <td>Непрозрачность формирования цены, скрытые расходы</td>
+                </tr>
+                <tr>
+                    <td><strong>Пост-покупочное обслуживание</strong></td>
+                    <td class="score">11.7</td>
+                    <td>Неясность гарантий и процесса решения проблем</td>
+                </tr>
+                <tr>
+                    <td><strong>Сроки производства</strong></td>
+                    <td class="score">10.5</td>
+                    <td>Отсутствие прозрачности статуса заказа и контрольных точек</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h2>Примеры реальных обращений клиентов</h2>
+        
+        <h3>Неопределенность интервалов доставки (52% случаев)</h3>
+        <div class="quote">
+            "Когда примерно будет доставка? Мне нужно планировать свой день, а указан только день без времени."
+            <div class="attribution">Клиент Максим, 14.04.2025</div>
+        </div>
+        <div class="quote">
+            "Мне сказали, что привезут сегодня, но не сказали во сколько. Я не могу весь день ждать, у меня встречи."
+            <div class="attribution">Клиент Елена, 15.04.2025</div>
+        </div>
+        
+        <h3>Непонимание реальных размеров (62% обращений о характеристиках)</h3>
+        <div class="quote">
+            "Диван точно поместится в мою комнату? Размеры на сайте указаны, но не могу представить."
+            <div class="attribution">Клиент Дмитрий, 10.04.2025</div>
+        </div>
+        <div class="quote">
+            "Какова высота дивана в собранном состоянии? Это не указано, а у меня низкий подоконник."
+            <div class="attribution">Клиент Наталья, 16.04.2025</div>
+        </div>
+        
+        <h3>Неочевидные дополнительные расходы (68% обращений о цене)</h3>
+        <div class="quote">
+            "Почему финальная цена выше, чем указана на сайте? Откуда взялись эти дополнительные платежи?"
+            <div class="attribution">Клиент Борис, 11.04.2025</div>
+        </div>
+        <div class="quote">
+            "Сколько будет стоить подъем на 7 этаж без лифта? Это нигде не указано."
+            <div class="attribution">Клиент Валентина, 13.04.2025</div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Динамика частоты блокеров по неделям</h2>
+        
+        <h3>Неопределенность доставки</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Период</th>
+                    <th>Неделя 1</th>
+                    <th>Неделя 2</th>
+                    <th>Неделя 3</th>
+                    <th>Неделя 4</th>
+                    <th>Неделя 5</th>
+                    <th>Неделя 6</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Частота (%)</strong></td>
+                    <td>52%</td>
+                    <td>54%</td>
+                    <td>50%</td>
+                    <td>48%</td>
+                    <td>45%</td>
+                    <td>42%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Непонимание размеров</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Период</th>
+                    <th>Неделя 1</th>
+                    <th>Неделя 2</th>
+                    <th>Неделя 3</th>
+                    <th>Неделя 4</th>
+                    <th>Неделя 5</th>
+                    <th>Неделя 6</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Частота (%)</strong></td>
+                    <td>62%</td>
+                    <td>60%</td>
+                    <td>59%</td>
+                    <td>58%</td>
+                    <td>56%</td>
+                    <td>54%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Дополнительные расходы</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Период</th>
+                    <th>Неделя 1</th>
+                    <th>Неделя 2</th>
+                    <th>Неделя 3</th>
+                    <th>Неделя 4</th>
+                    <th>Неделя 5</th>
+                    <th>Неделя 6</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Частота (%)</strong></td>
+                    <td>68%</td>
+                    <td>67%</td>
+                    <td>65%</td>
+                    <td>64%</td>
+                    <td>63%</td>
+                    <td>61%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="section recommendations">
+        <h2>Приоритизированные быстрые эксперименты (1-2 дня)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Эксперимент</th>
+                    <th>Минное поле</th>
+                    <th>Сложность (1-5)</th>
+                    <th>Влияние (1-5)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Добавление основной информации о доставке в карточку товара</td>
+                    <td>Неопределенность доставки</td>
+                    <td>1</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>Расширенное описание материалов в карточке товара</td>
+                    <td>Неуверенность в характеристиках</td>
+                    <td>1</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>Добавление отображения статуса заказа в личном кабинете</td>
+                    <td>Сроки производства</td>
+                    <td>2</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Внедрение калькулятора полной стоимости</td>
+                    <td>Ценовые ожидания</td>
+                    <td>2</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Размещение видеоинструкций по уходу за мебелью</td>
+                    <td>Пост-покупочное обслуживание</td>
+                    <td>1</td>
+                    <td>3</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2 style="margin-top: 30px;">Эксперименты средней сложности (3-5 дней)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Эксперимент</th>
+                    <th>Минное поле</th>
+                    <th>Сложность (1-5)</th>
+                    <th>Влияние (1-5)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Интеграция с Яндекс.Картами для точного указания адреса</td>
+                    <td>Неопределенность доставки</td>
+                    <td>3</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Добавление интерактивной 3D-модели дивана</td>
+                    <td>Неуверенность в характеристиках</td>
+                    <td>3</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>Внедрение системы рассрочки без переплаты</td>
+                    <td>Ценовые ожидания</td>
+                    <td>4</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Создание раздела гарантии с четкими условиями</td>
+                    <td>Пост-покупочное обслуживание</td>
+                    <td>2</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>Внедрение системы уведомлений о статусе заказа</td>
+                    <td>Сроки производства</td>
+                    <td>3</td>
+                    <td>4</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "analysis_id": "heroes_20250617_152651",
+    "url": "https://teamly.ru/",
+    "timestamp": "2025-06-17T15:26:51.163840",
+    "standard": "HeroesGPT v1.0",
+    "analyzer": "HeroesWorkflowOrchestrator"
+  },
+  "summary": {
+    "total_score": 5.41,
+    "grade": "C",
+    "status": "completed"
+  },
+  "detailed_analysis": {
+    "url": "https://teamly.ru/",
+    "domain": "teamly.ru",
+    "timestamp": "2025-06-17T15:26:51.163105",
+    "criteria_scores": {
+      "conversion_fundamentals": {
+        "clear_value_proposition": {
+          "score": 4.5,
+          "max_score": 10,
+          "weight": 0.15,
+          "weighted_score": 0.6749999999999999
+        },
+        "hero_section_clarity": {
+          "score": 6,
+          "max_score": 10,
+          "weight": 0.12,
+          "weighted_score": 0.72
+        },
+        "cta_prominence": {
+          "score": 3.5,
+          "max_score": 10,
+          "weight": 0.1,
+          "weighted_score": 0.35000000000000003
+        },
+        "trust_signals": {
+          "score": 3,
+          "max_score": 10,
+          "weight": 0.08,
+          "weighted_score": 0.24
+        }
+      },
+      "psychological_triggers": {
+        "urgency_scarcity": {
+          "score": 5.0,
+          "max_score": 10,
+          "weight": 0.08,
+          "weighted_score": 0.4
+        },
+        "social_proof": {
+          "score": 5.0,
+          "max_score": 10,
+          "weight": 0.1,
+          "weighted_score": 0.5
+        },
+        "authority_credibility": {
+          "score": 5.0,
+          "max_score": 10,
+          "weight": 0.07,
+          "weighted_score": 0.35000000000000003
+        },
+        "reciprocity_elements": {
+          "score": 5.0,
+          "max_score": 10,
+          "weight": 0.05,
+          "weighted_score": 0.25
+        }
+      },
+      "user_experience": {
+        "loading_speed": {
+          "score": 10,
+          "max_score": 10,
+          "weight": 0.08,
+          "weighted_score": 0.8
+        },
+        "mobile_optimization": {
+          "score": 8,
+          "max_score": 10,
+          "weight": 0.1,
+          "weighted_score": 0.8
+        },
+        "navigation_clarity": {
+          "score": 5.0,
+          "max_score": 10,
+          "weight": 0.05,
+          "weighted_score": 0.25
+        },
+        "visual_hierarchy": {
+          "score": 5.0,
+          "max_score": 10,
+          "weight": 0.07,
+          "weighted_score": 0.35000000000000003
+        }
+      }
+    },
+    "total_score": 5.41,
+    "grade": "C",
+    "recommendations": [
+      "Усилить ценностное предложение в hero-секции",
+      "Сделать CTA более заметными и убедительными",
+      "Добавить больше сигналов доверия (отзывы, сертификаты)"
+    ]
+  },
+  "action_items": [
+    "Усилить ценностное предложение в hero-секции",
+    "Сделать CTA более заметными и убедительными",
+    "Добавить больше сигналов доверия (отзывы, сертификаты)"
+  ]
+}

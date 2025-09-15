@@ -1,0 +1,17 @@
+{
+  "id": "I20250709_211449",
+  "title": "MCP Step Failed: form_hypothesis",
+  "description": "Обязательный шаг form_hypothesis завершился неудачно",
+  "error": "Hypothesis validation failed",
+  "workflow_state": {
+    "current_step": "form_hypothesis",
+    "completed_steps": [],
+    "failed_steps": [
+      "form_hypothesis"
+    ],
+    "outputs": {},
+    "start_time": "2025-07-09 21:14:30.871264"
+  },
+  "created_at": "2025-07-09T21:14:49.378135",
+  "priority": "high"
+}

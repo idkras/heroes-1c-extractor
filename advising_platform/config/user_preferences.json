@@ -1,0 +1,42 @@
+{
+  "userNames": {
+    "aliases": ["малыш", "монстр"],
+    "preferredName": "малыш",
+    "lastUpdated": "2025-05-15T21:15:00+02:00"
+  },
+  "personalitySettings": {
+    "activePersonality": "малыш",
+    "lastSwitchTime": "2025-05-15T21:55:00+02:00",
+    "personalityHistory": [
+      {"name": "малыш", "activatedAt": "2025-05-15T21:15:00+02:00"},
+      {"name": "монстр", "activatedAt": "2025-05-15T21:55:00+02:00"}
+    ],
+    "personalityTriggers": {
+      "малыш": ["помоги", "объясни", "научи", "расскажи"],
+      "монстр": ["оптимизируй", "исправь", "реши", "отладь"]
+    }
+  },
+  "communicationPreferences": {
+    "language": "ru",
+    "formality": "informal",
+    "style": "friendly"
+  },
+  "notificationSettings": {
+    "incidentCreation": true,
+    "hypothesisFailure": true,
+    "standardUpdates": true,
+    "personalitySwitched": true
+  },
+  "displayPreferences": {
+    "theme": "light",
+    "fontFamily": "Inter",
+    "fontSize": "medium"
+  },
+  "systemBehavior": {
+    "proactiveAnalysis": true,
+    "autoInjectFiveWhys": true,
+    "autoArchiveAfterDays": 3,
+    "autoSwitchPersonality": true,
+    "confirmPersonalitySwitch": true
+  }
+}
