@@ -36,4 +36,74 @@ venv/
 Thumbs.db
 
 # Большие файлы (не коммитить)
-# 1Cv8.1CD 
+# 1CD файлы базы данных
+*.1CD
+raw/
+onec_dtools/tests/fixtures/Platform8Demo/*.1CD
+onec_dtools/tests/fixtures/Platform8Demo/*.efd
+onec_dtools/tests/fixtures/Platform8Demo/conf.cf
+temp-tool1cd/tests/*/1Cv8.1CD
+temp-tool1cd/tests/*/1cv8ddb.1CD
+
+# Архивы и дистрибутивы
+*.zip
+*.tar.gz
+*.7z
+*.rar
+tool1cd-1.0.0.10.zip
+dck1c/dist/*.zip
+
+# Большие PDF файлы
+*.pdf
+
+# Большие TSV/CSV файлы с данными
+*.tsv
+advising_platform/*/results/*.tsv 
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+export_*.log
+test_*.log
+full_scan.log
+# Dependency directories
+node_modules/
+# Environment variables
+.env
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# OS specific
+
+# Task files
+# tasks.json
+# tasks/
+
+# Экспортированные данные
+exported_tables/
+export_test/
+binary_export/
+extracted_flowers/
+extracted_data_samples.csv
+extracted_documents.json
+extracted_with_methods.json
+final_*.json
+final_*.xml
+final_*.csv
+real_*.json
+real_*.xml
+real_*.csv
+all_*.json
+all_*.xml
+*_analysis.json
+*_search.json
+*_results.json 
