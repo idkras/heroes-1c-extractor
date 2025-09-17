@@ -62,18 +62,14 @@ def get_service_credentials(service: str) -> dict:
         sys.exit(1)
     
     credentials = {}
-    print(f"INFO: Loading {service} credentials via credentials_manager...", file=sys.stderr)
-    
+    # Silent credential loading to avoid JSON-RPC interference
     for credential_name in service_credentials[service]:
         result = credentials_manager.get_credential(credential_name)
         if result.success:
             # Map credential name to environment variable name
             env_var = credential_name.upper()
             credentials[env_var] = result.value
-            print(f"SUCCESS: {env_var}", file=sys.stderr)
-        else:
-            print(f"WARNING: Failed to get {credential_name}: {result.error}", file=sys.stderr)
-            print(f"INFO: Continuing without {credential_name}...", file=sys.stderr)
+        # Silent failure - credentials will be empty if not found
     
     return credentials
 
@@ -98,7 +94,7 @@ def main():
         os.environ[key] = value
     
     # Run command
-    print(f"INFO: Starting {command} {' '.join(args)}...", file=sys.stderr)
+    print(f"🚀 Starting {command} {' '.join(args)}...", file=sys.stderr)
     
     import subprocess
     try:

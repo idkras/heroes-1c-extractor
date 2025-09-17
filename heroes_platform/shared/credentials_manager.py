@@ -106,6 +106,13 @@ class CredentialsManager:
                 fallback_sources=["env", "github_secrets"],
                 validation_rules={"type": "str", "min_length": 20, "prefix": "lin_api_"}
             ),
+            "figma_token": CredentialConfig(
+                name="Figma Personal Access Token",
+                source="keychain",
+                key="figma_token",
+                fallback_sources=["env", "github_secrets"],
+                validation_rules={"type": "str", "min_length": 20, "prefix": "figd_"}
+            ),
 
             # Rick.ai credentials
             "rick_session_cookie": CredentialConfig(

@@ -64,6 +64,11 @@ dependencies = [
     
     # JSON utilities
     "ujson>=5.8.0,<6.0.0",
+    
+    # Database and Analytics
+    "duckdb>=1.4.0,<2.0.0",
+    "pandas>=2.3.0,<3.0.0",
+    "pyarrow>=21.0.0,<22.0.0",
 ]
 
 [project.optional-dependencies]
@@ -91,6 +96,11 @@ dev = [
     
     # Type stubs
     "types-requests>=2.31.0,<3.0.0",
+    
+    # Jupyter and Data Science
+    "jupyterlab>=4.4.0,<5.0.0",
+    "notebook>=7.0.0,<8.0.0",
+    "ipykernel>=6.30.0,<7.0.0",
 ]
 
 production = [
@@ -285,6 +295,7 @@ warn_unreachable = false
 strict_equality = false
 ignore_missing_imports = true
 ignore_errors = true
+mypy_path = "."
 
 [[tool.mypy.overrides]]
 module = [
@@ -306,7 +317,8 @@ module = [
     "scripts.*",
     "potpie.*",
     "potpie.app.*",
-    "app.*"
+    "app.*",
+    "shared.*"
 ]
 disallow_untyped_defs = false
 disallow_untyped_decorators = false

@@ -62,12 +62,12 @@ class URLAnalyzer:
     def _extract_css_files(self, soup: BeautifulSoup) -> list:
         """Извлечение CSS файлов (≤20 строк)"""
         css_links = soup.find_all("link", rel="stylesheet")
-        return [link.get("href") for link in css_links if link.get("href")]
+        return [link.get("href") for link in css_links if hasattr(link, 'get') and link.get("href")]
 
     def _extract_js_files(self, soup: BeautifulSoup) -> list:
         """Извлечение JS файлов (≤20 строк)"""
         js_scripts = soup.find_all("script", src=True)
-        return [script.get("src") for script in js_scripts]
+        return [script.get("src") for script in js_scripts if hasattr(script, 'get') and script.get("src")]
 
     def _analyze_content(self, soup: BeautifulSoup) -> dict[str, bool]:
         """Анализ контента (≤20 строк)"""
@@ -84,8 +84,9 @@ class URLAnalyzer:
         """Извлечение мета-тегов (≤20 строк)"""
         meta_tags = {}
         for meta in soup.find_all("meta"):
-            name = meta.get("name") or meta.get("property")
-            content = meta.get("content")
-            if name and content:
-                meta_tags[name] = content
+            if hasattr(meta, 'get'):
+                name = meta.get("name") or meta.get("property")
+                content = meta.get("content")
+                if name and content:
+                    meta_tags[str(name)] = str(content)
         return meta_tags

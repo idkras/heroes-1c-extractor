@@ -1,17 +1,7 @@
 """
-Shared utilities and common functionality for Heroes Platform.
+Shared utilities and modules for Heroes Platform
 """
 
-from .credentials_manager import (
-    CredentialsManager,
-    get_credential,
-    store_credential,
-    credentials_manager
-)
+from .credentials_manager import credentials_manager
 
-__all__ = [
-    "CredentialsManager",
-    "get_credential", 
-    "store_credential",
-    "credentials_manager"
-]
+__all__ = ['credentials_manager']
