@@ -1,0 +1,4 @@
+MCP Command Test Result:
+Command: mcp_heroes-mcp_google_sheets_read_spreadsheet
+Result: {"result":"❌ Error: No module named 'google'"}
+Status: FAILED - MCP server needs configuration update

@@ -1,0 +1,39 @@
+[Unit]
+Description=Heroes Advising Platform MCP Server
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=mcp-server
+Group=mcp-server
+WorkingDirectory=/opt/mcp-server
+Environment=PYTHONPATH=/opt/mcp-server
+Environment=ENVIRONMENT=production
+ExecStart=/usr/bin/python3 /opt/mcp-server/src/mcp_server.py
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcp-server
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/mcp_server /var/cache/mcp_server
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+MemoryMax=1G
+CPUQuota=200%
+
+# Health check
+ExecStartPre=/usr/bin/test -f /opt/mcp-server/src/mcp_server.py
+ExecStartPre=/usr/bin/python3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,44 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true,
+    "source.fixAll": true
+  },
+  "python.defaultInterpreterPath": "./venv/bin/python",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.linting.enabled": true,
+  "python.linting.ruffEnabled": true,
+  "python.linting.mypyEnabled": true,
+  "python.formatting.provider": "black",
+  "files.associations": {
+    "*.py": "python"
+  },
+  "emmet.includeLanguages": {
+    "python": "html"
+  },
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "workbench.colorTheme": "Default Dark+",
+  "editor.rulers": [88],
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true,
+    "**/htmlcov": true,
+    "**/.coverage": true,
+    "**/node_modules": true,
+    "**/.git": true
+  },
+  "files.watcherExclude": {
+    "**/__pycache__/**": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache/**": true,
+    "**/htmlcov/**": true,
+    "**/.coverage": true
+  }
+}

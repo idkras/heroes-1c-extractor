@@ -1,0 +1,412 @@
+[
+  {
+    "name": "server_info",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [],
+    "docstring": "Get information about the current server.",
+    "line_number": 45
+  },
+  {
+    "name": "telegram_get_credentials",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [],
+    "docstring": "Get Telegram credentials from Mac Keychain",
+    "line_number": 159
+  },
+  {
+    "name": "telegram_test_connection",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [],
+    "docstring": "Test Telegram connection using stored credentials",
+    "line_number": 172
+  },
+  {
+    "name": "telegram_get_chats",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "page",
+        "type": "int",
+        "required": true
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": true
+      }
+    ],
+    "docstring": "Get a paginated list of Telegram chats",
+    "line_number": 209
+  },
+  {
+    "name": "telegram_search_chats",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "query",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "limit",
+        "type": "int",
+        "required": true
+      }
+    ],
+    "docstring": "Search for Telegram chats by name",
+    "line_number": 259
+  },
+  {
+    "name": "telegram_export_chat",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "chat_id",
+        "type": "int",
+        "required": true
+      },
+      {
+        "name": "limit",
+        "type": "int",
+        "required": true
+      }
+    ],
+    "docstring": "Export chat messages to formatted string",
+    "line_number": 309
+  },
+  {
+    "name": "standards_list",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [],
+    "docstring": "Получить список всех стандартов в системе\n\nReturns:\n    str: JSON строка со списком стандартов и их метаданными",
+    "line_number": 380
+  },
+  {
+    "name": "standards_get",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "standard_name",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "Получить содержимое конкретного стандарта\n\nArgs:\n    standard_name: Название стандарта для получения\n\nReturns:\n    str: JSON строка с содержимым стандарта",
+    "line_number": 464
+  },
+  {
+    "name": "standards_search",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "query",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "limit",
+        "type": "int",
+        "required": true
+      }
+    ],
+    "docstring": "Поиск по стандартам\n\nArgs:\n    query: Поисковый запрос\n    limit: Максимальное количество результатов\n\nReturns:\n    str: JSON строка с результатами поиска",
+    "line_number": 514
+  },
+  {
+    "name": "standards_validate",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "standard_name",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "Валидация стандарта по Registry Standard\n\nArgs:\n    standard_name: Название стандарта для валидации\n\nReturns:\n    str: JSON строка с результатами валидации",
+    "line_number": 584
+  },
+  {
+    "name": "standards_audit",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [],
+    "docstring": "Аудит всей системы стандартов\n\nReturns:\n    str: JSON строка с результатами аудита",
+    "line_number": 667
+  },
+  {
+    "name": "standards_management",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "command",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "path",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "query",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "Управление стандартами проекта (интегрированная команда)\n\nArgs:\n    command: Команда (list, get, search, workflow)\n    path: Путь к файлу (для команды get)\n    query: Поисковый запрос (для команды search)",
+    "line_number": 762,
+    "jtbd_context": {
+      "big_jtbd": "🎯 Управление продуктом",
+      "when": "Перед grooming",
+      "medium_jtbd": "Описание задач",
+      "small_jtbd": "Создание Definition of Done",
+      "source": "`templates/dod.md`",
+      "status": "✅"
+    }
+  },
+  {
+    "name": "heroes_gpt_workflow",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "action",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "content",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "prompt",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "HeroesGPT workflow для анализа лендингов и контента\n\nArgs:\n    action: Действие (analyze, generate)\n    url: URL для анализа\n    content: Контент для анализа\n    prompt: Промпт для генерации",
+    "line_number": 809
+  },
+  {
+    "name": "ai_guidance_checklist",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "task_type",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "JTBD: Как guidance system, я хочу дать AI чеклист для проверки,\nчтобы предотвратить типичные ошибки.\n\nArgs:\n    task_type: Тип задачи (general, development, analysis, integration)\n\nReturns:\n    str: JSON строка с чеклистом для AI агента",
+    "line_number": 855
+  },
+  {
+    "name": "common_mistakes_prevention",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "domain",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "JTBD: Как prevention system, я хочу предупредить о типичных ошибках,\nчтобы AI избежал их в своей работе.\n\nArgs:\n    domain: Область (general, development, analysis, integration, mcp)\n\nReturns:\n    str: JSON строка с предупреждениями о типичных ошибках",
+    "line_number": 974
+  },
+  {
+    "name": "quality_validation",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "result",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "criteria",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "JTBD: Как validator, я хочу проверить качество результата AI,\nчтобы убедиться в соответствии стандартам.\n\nArgs:\n    result: Результат для валидации\n    criteria: Критерии валидации (general, code, analysis, documentation)\n\nReturns:\n    str: JSON строка с результатами валидации качества",
+    "line_number": 1113
+  },
+  {
+    "name": "approach_recommendation",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "problem",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "context",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "JTBD: Как advisor, я хочу рекомендовать подход к решению проблемы,\nчтобы AI выбрал оптимальную стратегию.\n\nArgs:\n    problem: Описание проблемы\n    context: Дополнительный контекст\n\nReturns:\n    str: JSON строка с рекомендациями по подходу",
+    "line_number": 1203
+  },
+  {
+    "name": "standards_analyze",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "standard_name",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "Анализ структуры и качества стандарта\n\nArgs:\n    standard_name: Название стандарта для анализа\n\nReturns:\n    str: JSON строка с результатами анализа",
+    "line_number": 1452
+  },
+  {
+    "name": "standards_compliance",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [],
+    "docstring": "Проверка соответствия всей системы стандартов\n\nReturns:\n    str: JSON строка с отчетом о соответствии",
+    "line_number": 1556
+  },
+  {
+    "name": "standards_create",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "standard_name",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "category",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "description",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "template",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "Создание нового стандарта по шаблону\n\nArgs:\n    standard_name: Название нового стандарта\n    category: Категория стандарта (general, core, process, etc.)\n    description: Описание стандарта\n    template: Шаблон для создания (basic, full, minimal)\n\nReturns:\n    str: JSON строка с результатом создания",
+    "line_number": 1632
+  },
+  {
+    "name": "standards_update",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "standard_name",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "update_type",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "new_content",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "update_notes",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "Обновление существующего стандарта\n\nArgs:\n    standard_name: Название стандарта для обновления\n    update_type: Тип обновления (version, content, metadata)\n    new_content: Новое содержимое (для update_type=\"content\")\n    update_notes: Заметки об обновлении\n\nReturns:\n    str: JSON строка с результатом обновления",
+    "line_number": 1855
+  },
+  {
+    "name": "standards_archive",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "standard_name",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "reason",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "replacement_standard",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "Архивирование устаревшего стандарта\n\nArgs:\n    standard_name: Название стандарта для архивации\n    reason: Причина архивации\n    replacement_standard: Название заменяющего стандарта (если есть)\n\nReturns:\n    str: JSON строка с результатом архивации",
+    "line_number": 1985
+  },
+  {
+    "name": "cocoindex_search_existing_files",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "query",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "confidence_threshold",
+        "type": "float",
+        "required": true
+      }
+    ],
+    "docstring": "Поиск существующих скриптов через CocoIndex\n\nArgs:\n    query: Поисковый запрос\n    confidence_threshold: Минимальный уровень уверенности для создания файла\n\nReturns:\n    str: JSON с результатами поиска и рекомендациями",
+    "line_number": 2147
+  },
+  {
+    "name": "cocoindex_validate_file_creation",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [
+      {
+        "name": "file_path",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "content",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "docstring": "Валидация создания нового файла\n\nArgs:\n    file_path: Путь к создаваемому файлу\n    content: Содержимое файла\n\nReturns:\n    str: JSON с результатом валидации и confidence level",
+    "line_number": 2170
+  },
+  {
+    "name": "cocoindex_get_functionality_map",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [],
+    "docstring": "Получить карту функциональности проекта\n\nReturns:\n    str: JSON с картой функциональности по категориям",
+    "line_number": 2193
+  },
+  {
+    "name": "cocoindex_analyze_duplicates",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [],
+    "docstring": "Анализ дублирований в проекте\n\nReturns:\n    str: JSON с результатами анализа дублирований",
+    "line_number": 2212
+  },
+  {
+    "name": "registry_compliance_check",
+    "file": "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py",
+    "parameters": [],
+    "docstring": "Проверка соответствия Registry Standard v5.8\n\nReturns:\n    str: JSON строка с результатами проверки",
+    "line_number": 2231
+  }
+]

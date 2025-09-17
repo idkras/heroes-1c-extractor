@@ -1,0 +1,1154 @@
+<!doctype html>
+<html class="writer-html5" lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      📚 Стратегия автоматического обновления документации &mdash; MCP Server
+      1.0.0 documentation
+    </title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="_static/pygments.css?v=80d5e7a1"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="_static/css/theme.css?v=e59714d7"
+    />
+
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  </head>
+
+  <body class="wy-body-for-nav">
+    <div class="wy-grid-for-nav">
+      <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+        <div class="wy-side-scroll">
+          <div class="wy-side-nav-search">
+            <a href="index.html" class="icon icon-home"> MCP Server </a>
+            <div role="search">
+              <form
+                id="rtd-search-form"
+                class="wy-form"
+                action="search.html"
+                method="get"
+              >
+                <input
+                  type="text"
+                  name="q"
+                  placeholder="Search docs"
+                  aria-label="Search docs"
+                />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+            </div>
+          </div>
+          <div
+            class="wy-menu wy-menu-vertical"
+            data-spy="affix"
+            role="navigation"
+            aria-label="Navigation menu"
+          >
+            <p class="caption" role="heading">
+              <span class="caption-text">Contents:</span>
+            </p>
+            <ul>
+              <li class="toctree-l1">
+                <a class="reference internal" href="api/index.html"
+                  >API Documentation</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+        <nav class="wy-nav-top" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MCP Server</a>
+        </nav>
+
+        <div class="wy-nav-content">
+          <div class="rst-content">
+            <div role="navigation" aria-label="Page navigation">
+              <ul class="wy-breadcrumbs">
+                <li>
+                  <a
+                    href="index.html"
+                    class="icon icon-home"
+                    aria-label="Home"
+                  ></a>
+                </li>
+                <li class="breadcrumb-item active">
+                  📚 Стратегия автоматического обновления документации
+                </li>
+                <li class="wy-breadcrumbs-aside">
+                  <a
+                    href="_sources/documentation_strategy.md.txt"
+                    rel="nofollow"
+                  >
+                    View page source</a
+                  >
+                </li>
+              </ul>
+              <hr />
+            </div>
+            <div
+              role="main"
+              class="document"
+              itemscope="itemscope"
+              itemtype="http://schema.org/Article"
+            >
+              <div itemprop="articleBody">
+                <section class="tex2jax_ignore mathjax_ignore" id="id1">
+                  <h1>
+                    📚 Стратегия автоматического обновления документации<a
+                      class="headerlink"
+                      href="#id1"
+                      title="Link to this heading"
+                      ></a
+                    >
+                  </h1>
+                  <section id="id2">
+                    <h2>
+                      🎯 <strong>Цель документа</strong
+                      ><a
+                        class="headerlink"
+                        href="#id2"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <p>
+                      <strong>JTBD:</strong> Как архитектор системы
+                      документации, я хочу иметь четкую стратегию
+                      автоматического обновления документации, чтобы обеспечить
+                      актуальность и качество документации при минимальных
+                      ручных усилиях.
+                    </p>
+                  </section>
+                  <section id="dependencies-matrix-md">
+                    <h2>
+                      ✅
+                      <strong
+                        >Правильное размещение
+                        <code class="docutils literal notranslate"
+                          ><span class="pre">dependencies_matrix.md</span></code
+                        ></strong
+                      ><a
+                        class="headerlink"
+                        href="#dependencies-matrix-md"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id3">
+                      <h3>
+                        <strong>Текущее местоположение:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id3"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-default notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="p">[</span><span class="n">standards</span> <span class="o">.</span><span class="n">md</span><span class="p">]</span><span class="o">/</span><span class="n">platform</span><span class="o">/</span><span class="n">mcp_server</span><span class="o">/</span><span class="n">docs</span><span class="o">/</span><span class="n">dependencies_matrix</span><span class="o">.</span><span class="n">md</span>  <span class="c1"># ✅ ПРАВИЛЬНО</span>
+</pre>
+                        </div>
+                      </div>
+                      <p><strong>Причины правильного размещения:</strong></p>
+                      <ol class="arabic simple">
+                        <li>
+                          <p>
+                            <strong>Логическая связь</strong> - документ
+                            описывает структуру MCP сервера
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>Автоматическое обновление</strong> - скрипт
+                            находится в
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >mcp_server/scripts/</span
+                              ></code
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>Версионность</strong> - отслеживается вместе
+                            с кодом MCP сервера
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>Доступность для AI</strong> - рядом с
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">mcp_server.py</span></code
+                            >
+                          </p>
+                        </li>
+                      </ol>
+                    </section>
+                    <section id="id4">
+                      <h3>
+                        <strong>❌ НЕПРАВИЛЬНО:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id4"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-default notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="p">[</span><span class="n">standards</span> <span class="o">.</span><span class="n">md</span><span class="p">]</span><span class="o">/</span><span class="n">platform</span><span class="o">/</span><span class="n">dependencies_matrix</span><span class="o">.</span><span class="n">md</span>  <span class="c1"># ❌ НЕПРАВИЛЬНО</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="id5">
+                    <h2>
+                      🔄 <strong>Процесс автоматического обновления</strong
+                      ><a
+                        class="headerlink"
+                        href="#id5"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id6">
+                      <h3>
+                        <strong
+                          >1. Автоматическое обновление при изменениях:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id6"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <section id="id7">
+                        <h4>
+                          <strong>Команды для обновления:</strong
+                          ><a
+                            class="headerlink"
+                            href="#id7"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-bash notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="c1"># Обновить только dependencies matrix</span>
+make<span class="w"> </span>deps
+
+<span class="c1"># Обновить всю документацию</span>
+make<span class="w"> </span>docs
+
+<span class="c1"># Генерировать API документацию</span>
+make<span class="w"> </span>docs-generate
+
+<span class="c1"># Валидировать документацию</span>
+make<span class="w"> </span>docs-validate
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="id8">
+                        <h4>
+                          <strong>Скрипты автоматизации:</strong
+                          ><a
+                            class="headerlink"
+                            href="#id8"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <ul class="simple">
+                          <li>
+                            <p>
+                              <code class="docutils literal notranslate"
+                                ><span class="pre"
+                                  >scripts/update_dependencies_matrix.py</span
+                                ></code
+                              >
+                              - обновляет матрицу зависимостей
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              <code class="docutils literal notranslate"
+                                ><span class="pre"
+                                  >scripts/generate_api_docs.py</span
+                                ></code
+                              >
+                              - генерирует API документацию
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              <code class="docutils literal notranslate"
+                                ><span class="pre"
+                                  >scripts/validate_docs.py</span
+                                ></code
+                              >
+                              - валидирует качество документации
+                            </p>
+                          </li>
+                        </ul>
+                      </section>
+                    </section>
+                    <section id="id9">
+                      <h3>
+                        <strong>2. Когда обновляется документация:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id9"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <section id="id10">
+                        <h4>
+                          <strong>Автоматически:</strong
+                          ><a
+                            class="headerlink"
+                            href="#id10"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <ul class="simple">
+                          <li><p>При добавлении новых файлов</p></li>
+                          <li><p>При изменении структуры проекта</p></li>
+                          <li><p>При обнаружении дублирований</p></li>
+                          <li><p>При изменении зависимостей</p></li>
+                          <li><p>При изменении MCP tools</p></li>
+                        </ul>
+                      </section>
+                      <section id="id11">
+                        <h4>
+                          <strong>Вручную:</strong
+                          ><a
+                            class="headerlink"
+                            href="#id11"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <ul class="simple">
+                          <li><p>При изменении архитектуры</p></li>
+                          <li><p>При добавлении новых workflow</p></li>
+                          <li><p>При изменении стандартов</p></li>
+                        </ul>
+                      </section>
+                    </section>
+                  </section>
+                  <section id="id12">
+                    <h2>
+                      📊
+                      <strong
+                        >Современные подходы к автоматической
+                        документации</strong
+                      ><a
+                        class="headerlink"
+                        href="#id12"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="swagger-openapi">
+                      <h3>
+                        <strong>1. Swagger/OpenAPI подходы</strong
+                        ><a
+                          class="headerlink"
+                          href="#swagger-openapi"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <section id="fastapi-pydantic-python">
+                        <h4>
+                          <strong>FastAPI + Pydantic (Python)</strong
+                          ><a
+                            class="headerlink"
+                            href="#fastapi-pydantic-python"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-python notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Heroes MCP Server&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;MCP Server with automated documentation&quot;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.0.0&quot;</span>
+<span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">WorkflowRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">command</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">arguments</span><span class="p">:</span> <span class="nb">dict</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/workflows/execute&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">execute_workflow</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">WorkflowRequest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Execute MCP workflow with automatic OpenAPI documentation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="s2">&quot;workflow executed&quot;</span><span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                        <p><strong>Преимущества:</strong></p>
+                        <ul class="simple">
+                          <li>
+                            <p>
+                              ✅ Автоматическая генерация OpenAPI спецификации
+                            </p>
+                          </li>
+                          <li>
+                            <p>✅ Интерактивная документация (Swagger UI)</p>
+                          </li>
+                          <li><p>✅ Валидация запросов/ответов</p></li>
+                          <li>
+                            <p>✅ Автоматические тесты из документации</p>
+                          </li>
+                        </ul>
+                      </section>
+                    </section>
+                    <section id="python">
+                      <h3>
+                        <strong>2. Python-специфичные подходы</strong
+                        ><a
+                          class="headerlink"
+                          href="#python"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <section id="sphinx-autodoc">
+                        <h4>
+                          <strong>Sphinx + autodoc</strong
+                          ><a
+                            class="headerlink"
+                            href="#sphinx-autodoc"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-python notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="k">class</span> <span class="nc">MCPWorkflow</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    MCP Workflow base class with automatic documentation.</span>
+<span class="sd">    </span>
+<span class="sd">    This class provides the foundation for all MCP workflows</span>
+<span class="sd">    with automatic Sphinx documentation generation.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str): The name of the workflow</span>
+<span class="sd">        version (str): The version of the workflow</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arguments</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute the workflow with given arguments.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            arguments: Dictionary containing workflow arguments</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Result of workflow execution</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            WorkflowError: If workflow execution fails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="mkdocs-material">
+                        <h4>
+                          <strong>MkDocs + Material</strong
+                          ><a
+                            class="headerlink"
+                            href="#mkdocs-material"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-yaml notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="c1"># mkdocs.yml</span>
+<span class="nt">site_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Heroes MCP Server</span>
+<span class="nt">theme</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">material</span>
+<span class="w">  </span><span class="nt">features</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">navigation.tabs</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">navigation.sections</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">navigation.expand</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">search.highlight</span>
+
+<span class="nt">plugins</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">search</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mkdocstrings</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">default_handler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="w">      </span><span class="nt">handlers</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">python</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">src</span><span class="p p-Indicator">]</span>
+<span class="w">          </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">show_source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">show_root_heading</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                    </section>
+                  </section>
+                  <section id="id13">
+                    <h2>
+                      🔧 <strong>Интегрированная система документации</strong
+                      ><a
+                        class="headerlink"
+                        href="#id13"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id14">
+                      <h3>
+                        <strong>Структура автоматической документации:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id14"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-default notranslate">
+                        <div class="highlight">
+                          <pre><span></span>[standards .md]/platform/mcp_server/
+├── docs/
+│   ├── api/                    # Автоматически генерируемая API документация
+│   │   ├── index.md           # Индексная страница
+│   │   ├── workflows.md       # Из docstrings
+│   │   ├── tools.md          # Из MCP tools
+│   │   └── schemas.md        # Из Pydantic моделей
+│   ├── architecture/          # Архитектурная документация
+│   │   ├── dependencies_matrix.md  # Автоматически обновляемая
+│   │   ├── workflow_diagram.md     # Из кода
+│   │   └── system_overview.md      # Ручная документация
+│   └── guides/                # Руководства пользователя
+├── scripts/
+│   ├── generate_api_docs.py   # Генерация API документации
+│   ├── update_dependencies_matrix.py  # Обновление матрицы зависимостей
+│   ├── extract_docstrings.py  # Извлечение docstrings
+│   └── validate_docs.py       # Валидация документации
+└── mkdocs.yml                 # Конфигурация MkDocs
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="id15">
+                    <h2>
+                      🎯 <strong>Рекомендации для нашего проекта</strong
+                      ><a
+                        class="headerlink"
+                        href="#id15"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id16">
+                      <h3>
+                        <strong>1. Немедленные действия:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id16"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <section id="id17">
+                        <h4>
+                          <strong>Исправить критические проблемы:</strong
+                          ><a
+                            class="headerlink"
+                            href="#id17"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-bash notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="c1"># Обновить dependencies matrix</span>
+make<span class="w"> </span>deps
+
+<span class="c1"># Сгенерировать API документацию</span>
+make<span class="w"> </span>docs-generate
+
+<span class="c1"># Валидировать документацию</span>
+make<span class="w"> </span>docs-validate
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="docstrings">
+                        <h4>
+                          <strong>Добавить недостающие docstrings:</strong
+                          ><a
+                            class="headerlink"
+                            href="#docstrings"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-python notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="k">class</span> <span class="nc">YourClass</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Краткое описание класса.</span>
+<span class="sd">    </span>
+<span class="sd">    Более подробное описание функциональности класса.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        attr1 (str): Описание атрибута</span>
+<span class="sd">        attr2 (int): Описание атрибута</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">param2</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Инициализация класса.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            param1: Описание параметра</span>
+<span class="sd">            param2: Описание параметра</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attr1</span> <span class="o">=</span> <span class="n">param1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attr2</span> <span class="o">=</span> <span class="n">param2</span>
+
+    <span class="k">def</span> <span class="nf">your_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Описание метода.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            arg: Описание аргумента</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Описание возвращаемого значения</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: Когда что-то идет не так</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                    </section>
+                    <section id="id18">
+                      <h3>
+                        <strong>2. Долгосрочные улучшения:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id18"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <section id="ci-cd">
+                        <h4>
+                          <strong>Интеграция с CI/CD:</strong
+                          ><a
+                            class="headerlink"
+                            href="#ci-cd"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-yaml notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="c1"># .github/workflows/docs.yml</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Update Documentation</span>
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;src/**&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;docs/**&#39;</span><span class="p p-Indicator">]</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">update-docs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v3</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Generate API documentation</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">python scripts/generate_api_docs.py</span>
+<span class="w">          </span><span class="no">python scripts/update_dependencies_matrix.py</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Validate documentation</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python scripts/validate_docs.py</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy to GitHub Pages</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">peaceiris/actions-gh-pages@v3</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">github_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.GITHUB_TOKEN }}</span>
+<span class="w">          </span><span class="nt">publish_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./site</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="pre-commit-hooks">
+                        <h4>
+                          <strong>Pre-commit hooks:</strong
+                          ><a
+                            class="headerlink"
+                            href="#pre-commit-hooks"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-yaml notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="c1"># .pre-commit-config.yaml</span>
+<span class="nt">repos</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">repo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+<span class="w">    </span><span class="nt">hooks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">update-docs</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Update documentation</span>
+<span class="w">        </span><span class="nt">entry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bash -c &#39;cd &quot;[standards .md]/platform/mcp_server&quot; &amp;&amp; python3 scripts/update_dependencies_matrix.py&#39;</span>
+<span class="w">        </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">system</span>
+<span class="w">        </span><span class="nt">files</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">^src/</span>
+<span class="w">        </span><span class="nt">pass_filenames</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                    </section>
+                  </section>
+                  <section id="checklist">
+                    <h2>
+                      📋 <strong>Checklist для внедрения</strong
+                      ><a
+                        class="headerlink"
+                        href="#checklist"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id19">
+                      <h3>
+                        <strong>Критические исправления:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id19"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="contains-task-list simple">
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              checked="checked"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Переместить
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >dependencies_matrix.md</span
+                              ></code
+                            >
+                            в правильное место
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              checked="checked"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Создать скрипт автоматического обновления
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              checked="checked"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Создать генератор API документации
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              checked="checked"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Создать валидатор документации
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              checked="checked"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Обновить Makefile с новыми командами
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="id20">
+                      <h3>
+                        <strong>Структурные улучшения:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id20"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="contains-task-list simple">
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Добавить docstrings ко всем классам и методам
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Исправить сломанные ссылки в документации
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Создать README файлы для всех директорий
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Настроить MkDocs для статической документации
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Интегрировать с GitHub Actions
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="id21">
+                      <h3>
+                        <strong>Мониторинг качества:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id21"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="contains-task-list simple">
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Настроить автоматическую валидацию в CI/CD
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Добавить pre-commit hooks для документации
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Настроить уведомления о проблемах документации
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Создать дашборд качества документации
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                  </section>
+                  <section id="id22">
+                    <h2>
+                      🔗 <strong>Полезные ресурсы</strong
+                      ><a
+                        class="headerlink"
+                        href="#id22"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id23">
+                      <h3>
+                        <strong>Инструменты:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id23"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <a
+                              class="reference external"
+                              href="https://www.mkdocs.org/"
+                              >MkDocs</a
+                            >
+                            - Статический генератор документации
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <a
+                              class="reference external"
+                              href="https://www.sphinx-doc.org/"
+                              >Sphinx</a
+                            >
+                            - Продвинутый генератор документации
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <a
+                              class="reference external"
+                              href="https://fastapi.tiangolo.com/"
+                              >FastAPI</a
+                            >
+                            - Автоматическая API документация
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <a
+                              class="reference external"
+                              href="https://pydantic-docs.helpmanual.io/"
+                              >Pydantic</a
+                            >
+                            - Валидация данных и документация
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="id24">
+                      <h3>
+                        <strong>Подходы:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id24"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <a
+                              class="reference external"
+                              href="https://en.wikipedia.org/wiki/Documentation-driven_development"
+                              >Documentation-Driven Development</a
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <a
+                              class="reference external"
+                              href="https://swagger.io/blog/api-design/api-first-design/"
+                              >API-First Design</a
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <a
+                              class="reference external"
+                              href="https://martinfowler.com/bliki/LivingDocumentation.html"
+                              >Living Documentation</a
+                            >
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                  </section>
+                  <section id="id25">
+                    <h2>
+                      🎯 <strong>Приоритеты действий</strong
+                      ><a
+                        class="headerlink"
+                        href="#id25"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id26">
+                      <h3>
+                        <strong>ВЫСОКИЙ ПРИОРИТЕТ:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id26"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li>
+                          <p>Исправить docstring coverage (сейчас 91.8%)</p>
+                        </li>
+                        <li><p>Исправить сломанные ссылки (6 проблем)</p></li>
+                        <li>
+                          <p>Добавить README файлы для основных директорий</p>
+                        </li>
+                      </ol>
+                    </section>
+                    <section id="id27">
+                      <h3>
+                        <strong>СРЕДНИЙ ПРИОРИТЕТ:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id27"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li>
+                          <p>Настроить MkDocs для статической документации</p>
+                        </li>
+                        <li><p>Интегрировать с GitHub Actions</p></li>
+                        <li><p>Добавить pre-commit hooks</p></li>
+                      </ol>
+                    </section>
+                    <section id="id28">
+                      <h3>
+                        <strong>НИЗКИЙ ПРИОРИТЕТ:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id28"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li><p>Создать интерактивную документацию</p></li>
+                        <li><p>Добавить примеры использования</p></li>
+                        <li><p>Создать видео-туториалы</p></li>
+                      </ol>
+                      <hr class="docutils" />
+                      <p>
+                        <strong>Статус:</strong> Стратегия разработана, система
+                        внедрена <strong>Следующий шаг:</strong> Исправить
+                        критические проблемы документации
+                      </p>
+                    </section>
+                  </section>
+                </section>
+              </div>
+            </div>
+            <footer>
+              <hr />
+
+              <div role="contentinfo">
+                <p>&#169; Copyright 2024, AI Assistant.</p>
+              </div>
+
+              Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using
+              a
+              <a href="https://github.com/readthedocs/sphinx_rtd_theme"
+                >theme</a
+              >
+              provided by <a href="https://readthedocs.org">Read the Docs</a>.
+            </footer>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script>
+      jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+      });
+    </script>
+  </body>
+</html>

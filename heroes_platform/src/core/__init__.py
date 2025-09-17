@@ -1,0 +1,1 @@
+# Heroes Platform Core Package

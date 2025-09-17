@@ -1,0 +1,126 @@
+{
+  "timestamp": "2025-09-10T19:52:24.078381",
+  "summary": {
+    "total_tests": 4,
+    "passed": 2,
+    "warnings": 0,
+    "failed": 2,
+    "success_rate": "50.0%"
+  },
+  "errors": {
+    "total": 78308,
+    "critical": 5,
+    "high": 78300,
+    "medium": 3,
+    "low": 0
+  },
+  "recommendations": [
+    "Проверьте MCP сервер на соответствие протоколу",
+    "Исправьте credentials_wrapper.py - перенаправьте логи в stderr",
+    "Используйте абсолютные пути в mcp.json конфигурации",
+    "Убедитесь, что эмодзи выводятся в stderr"
+  ],
+  "test_results": [
+    {
+      "test_name": "Cursor Logs Accessibility",
+      "status": "passed",
+      "errors_count": 0,
+      "evidence": {
+        "logs_directory": "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs",
+        "permissions": "GRANTED",
+        "log_files_count": "1552"
+      }
+    },
+    {
+      "test_name": "MCP Servers Logs Analysis",
+      "status": "failed",
+      "errors_count": 78305,
+      "evidence": {
+        "mcp_log_files": [
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250905T211157/window3/exthost/anysphere.cursor-retrieval/MCP user-figma-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250905T211157/window3/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-heroes-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250905T211157/window3/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-n8n-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250905T211157/window3/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-linear-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250905T211157/window3/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-telegram-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250905T211157/window3/exthost/anysphere.cursor-retrieval/MCP user-browsermcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250905T211157/window3/exthost/anysphere.cursor-retrieval/MCP user-mcp-chrome.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250905T211157/window3/exthost/anysphere.cursor-retrieval/MCP user-jira-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP user-health-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-health-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-n8n-mcp.1.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-google-sheets-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-figma-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-heroes-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-n8n-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-jira-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP user-heroes-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-linear-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-telegram-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-mcp-chrome.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-browsermcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-playwright-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window10/exthost/anysphere.cursor-retrieval/MCP user-n8n-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window11/exthost/anysphere.cursor-retrieval/MCP user-health-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window11/exthost/anysphere.cursor-retrieval/MCP user-heroes-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window11/exthost/anysphere.cursor-retrieval/MCP user-n8n-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window2/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-figma-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window2/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-heroes-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window2/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-n8n-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window2/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-linear-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window2/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-telegram-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window2/exthost/anysphere.cursor-retrieval/MCP project-0-heroes-template-playwright-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window12/exthost/anysphere.cursor-retrieval/MCP user-health-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window12/exthost/anysphere.cursor-retrieval/MCP user-heroes-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window12/exthost/anysphere.cursor-retrieval/MCP user-n8n-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window9/exthost/anysphere.cursor-retrieval/MCP user-health-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window9/exthost/anysphere.cursor-retrieval/MCP user-heroes-mcp.log",
+          "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs/20250908T080420/window9/exthost/anysphere.cursor-retrieval/MCP user-n8n-mcp.log"
+        ],
+        "log_file_MCP user-figma-mcp.log_lines": "4",
+        "log_file_MCP project-0-heroes-template-heroes-mcp.log_lines": "5730",
+        "log_file_MCP project-0-heroes-template-n8n-mcp.log_lines": "21940",
+        "log_file_MCP project-0-heroes-template-linear-mcp.log_lines": "578",
+        "log_file_MCP project-0-heroes-template-telegram-mcp.log_lines": "631",
+        "log_file_MCP user-browsermcp.log_lines": "3",
+        "log_file_MCP user-mcp-chrome.log_lines": "3",
+        "log_file_MCP user-jira-mcp.log_lines": "3",
+        "log_file_MCP user-health-mcp.log_lines": "80",
+        "log_file_MCP project-0-heroes-template-health-mcp.log_lines": "3222",
+        "log_file_MCP project-0-heroes-template-n8n-mcp.1.log_lines": "45660",
+        "log_file_MCP project-0-heroes-template-google-sheets-mcp.log_lines": "2",
+        "log_file_MCP project-0-heroes-template-figma-mcp.log_lines": "248",
+        "log_file_MCP project-0-heroes-template-jira-mcp.log_lines": "2",
+        "log_file_MCP user-heroes-mcp.log_lines": "128",
+        "log_file_MCP project-0-heroes-template-mcp-chrome.log_lines": "4",
+        "log_file_MCP project-0-heroes-template-browsermcp.log_lines": "2",
+        "log_file_MCP project-0-heroes-template-playwright-mcp.log_lines": "1053",
+        "log_file_MCP user-n8n-mcp.log_lines": "1414"
+      }
+    },
+    {
+      "test_name": "Output Panel Simulation",
+      "status": "passed",
+      "errors_count": 0,
+      "evidence": {
+        "available_channels": [
+          "MCP",
+          "Extension Host",
+          "Language Server Protocol",
+          "Terminal"
+        ],
+        "mcp_channels_found": "62"
+      }
+    },
+    {
+      "test_name": "Credentials Wrapper Output Check",
+      "status": "failed",
+      "errors_count": 3,
+      "evidence": {
+        "credentials_wrapper": "FOUND",
+        "file_size": "3573"
+      }
+    }
+  ],
+  "cursor_logs_path": "/Users/ilyakrasinsky/Library/Application Support/Cursor/logs",
+  "system": "darwin"
+}

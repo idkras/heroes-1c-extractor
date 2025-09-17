@@ -1,0 +1,122 @@
+# Heroes Platform - Main Requirements
+# Единый файл зависимостей для всего проекта
+# Обновлено: 2024-09-07
+
+# =============================================================================
+# CORE DEPENDENCIES - Критически важные для работы
+# =============================================================================
+
+# MCP Framework (совместимые версии)
+mcp>=1.13.1
+fastmcp>=2.12.2
+
+# Telegram Integration
+telethon>=1.41.2
+nest-asyncio>=1.6.0
+
+# PDF Generation
+weasyprint>=66.0
+PyPDF2>=3.0.1
+
+# Ghost CMS Integration
+PyJWT>=2.10.1
+
+# Linear API
+gql>=4.0.0
+
+# Google APIs
+google-api-python-client>=2.181.0
+google-auth>=2.40.3
+google-auth-oauthlib>=1.2.2
+
+# Core Utilities
+requests>=2.32.5
+python-dotenv>=1.1.1
+tomli>=2.2.1
+
+# Type Stubs
+types-pywin32>=311.0.0
+types-requests>=2.32.4
+
+# =============================================================================
+# DEVELOPMENT DEPENDENCIES - Для разработки и тестирования
+# =============================================================================
+
+# Testing Framework
+pytest>=8.4.2
+pytest-asyncio>=1.1.0
+pytest-playwright>=0.7.0
+
+# Code Quality
+black>=25.1.0
+ruff>=0.12.12
+mypy>=1.17.1
+pyright>=1.1.405
+bandit>=1.8.6
+safety>=3.6.1
+
+# Development Tools
+ipython>=9.5.0
+jupyter>=1.1.1
+memory-profiler>=0.61.0
+
+# Documentation
+sphinx>=8.2.3
+sphinx-rtd-theme>=3.0.2
+mkdocs>=1.6.1
+mkdocs-material>=9.6.18
+
+# Additional Utilities
+factory-boy>=3.3.3
+pre-commit>=4.3.0
+
+# =============================================================================
+# OPTIONAL DEPENDENCIES - Для специфических задач
+# =============================================================================
+
+# Web Scraping
+selenium>=4.35.0
+trafilatura>=2.0.0
+
+# Data Processing
+pandas>=2.3.2
+scipy>=1.16.1
+numpy>=2.3.2
+
+# Communication
+twilio>=9.8.0
+
+# Visualization
+matplotlib>=3.10.6
+
+# Database
+duckdb>=1.3.2
+
+# Office Documents
+python-docx>=1.2.0
+openpyxl>=3.1.5
+xlrd>=2.0.2
+
+# Google Sheets
+gspread>=6.2.1
+
+# Markdown Processing
+python-frontmatter>=1.1.0
+markdown2>=2.5.4
+markdown-extensions>=0.0.1
+
+# =============================================================================
+# INSTALLATION INSTRUCTIONS
+# =============================================================================
+# 
+# Для production установки:
+# pip install -r requirements_main.txt
+#
+# Для development установки:
+# pip install -r requirements_main.txt
+# pip install -e ".[dev]"
+#
+# Для проверки зависимостей:
+# python check_dependencies.py
+#
+# =============================================================================

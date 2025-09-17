@@ -1,0 +1,4 @@
+# file: /Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/workflows/standards_management.py
+# hypothesis_version: 6.138.2
+
+['#', '*.md', '0. core standards', 'File already exists', 'File not found', 'Input validation', 'Invalid input data', 'JTBD', 'Missing JTBD section', 'Missing main heading', 'Output validation', 'Process validation', 'Standard compliance', '[reflection]', '[standards .md]', 'args', 'command', 'content', 'content_length', 'count', 'create_standard', 'created', 'error', 'get_standards', 'input_validation', 'issues', 'name', 'output_validation', 'path', 'size', 'standard_compliance', 'standard_reading', 'standards', 'standards_count', 'success', 'utf-8', 'valid', 'validate_standard']

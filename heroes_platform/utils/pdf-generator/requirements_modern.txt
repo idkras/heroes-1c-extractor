@@ -1,0 +1,20 @@
+# Современный PDF генератор - зависимости
+# Основные библиотеки
+markdown>=3.5.0
+playwright>=1.40.0
+
+# Дополнительные markdown расширения
+markdown-extensions>=0.1.0
+pymdown-extensions>=10.0
+
+# Тестирование
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+
+# Утилиты
+pathlib2>=2.3.7; python_version < "3.4"
+typing-extensions>=4.0.0; python_version < "3.8"
+
+# Для отладки (опционально)
+weasyprint>=61.0
+PyPDF2>=3.0.0

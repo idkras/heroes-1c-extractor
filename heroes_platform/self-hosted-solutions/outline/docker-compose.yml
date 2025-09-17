@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  outline:
+    image: outlinewiki/outline:latest
+    container_name: outline
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Database
+      DATABASE_URL: postgresql://outline:outline@postgres:5432/outline
+      DATABASE_URL_TEST: postgresql://outline:outline@postgres:5432/outline_test
+      PGSSLMODE: disable
+      
+      # Redis
+      REDIS_URL: redis://redis:6379
+      
+      # App
+      NODE_ENV: development
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-here}
+      UTILS_SECRET: ${UTILS_SECRET:-your-utils-secret-here}
+      
+      # URL
+      URL: ${URL:-http://localhost:3000}
+      
+      # File storage (local)
+      FILE_STORAGE: local
+      FILE_STORAGE_LOCAL_ROOT_DIR: /var/lib/outline/data
+      
+      # Email (optional)
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
+      
+      # Authentication
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      
+      # Optional: GitHub OAuth
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      
+      # Optional: Slack OAuth
+      SLACK_CLIENT_ID: ${SLACK_CLIENT_ID}
+      SLACK_CLIENT_SECRET: ${SLACK_CLIENT_SECRET}
+      
+    volumes:
+      - outline_data:/var/lib/outline/data
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - outline_network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: outline_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: outline
+      POSTGRES_USER: outline
+      POSTGRES_PASSWORD: outline
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - outline_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: outline_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - outline_network
+
+volumes:
+  outline_data:
+  postgres_data:
+  redis_data:
+
+networks:
+  outline_network:
+    driver: bridge

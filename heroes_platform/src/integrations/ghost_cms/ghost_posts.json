@@ -1,0 +1,18 @@
+{
+  "ghost_posts": [
+    {
+      "title": "Test Post",
+      "content": "Test Content",
+      "blog_type": "2025",
+      "post_id": "test_id_123",
+      "status": "draft"
+    },
+    {
+      "title": "Persistence Test Post",
+      "content": "Testing data persistence workflow.",
+      "blog_type": "2025",
+      "post_id": "persistence_test_id",
+      "status": "draft"
+    }
+  ]
+}

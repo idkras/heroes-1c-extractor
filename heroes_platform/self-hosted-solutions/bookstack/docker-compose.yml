@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  bookstack:
+    image: linuxserver/bookstack:latest
+    container_name: bookstack
+    restart: unless-stopped
+    ports:
+      - "6875:80"
+    environment:
+      # Database
+      DB_HOST: mysql
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: bookstack
+      
+      # App
+      APP_URL: ${APP_URL:-http://localhost:6875}
+      APP_ENV: production
+      APP_DEBUG: false
+      APP_KEY: ${APP_KEY:-your-app-key-here}
+      
+      # Mail
+      MAIL_DRIVER: ${MAIL_DRIVER:-smtp}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-BookStack}
+      
+      # Cache
+      CACHE_DRIVER: ${CACHE_DRIVER:-file}
+      SESSION_DRIVER: ${SESSION_DRIVER:-file}
+      QUEUE_DRIVER: ${QUEUE_DRIVER:-sync}
+      
+      # Storage
+      STORAGE_TYPE: ${STORAGE_TYPE:-local}
+      
+    volumes:
+      - bookstack_uploads:/var/www/bookstack/public/uploads
+      - bookstack_storage:/var/www/bookstack/storage
+    depends_on:
+      - mysql
+    networks:
+      - bookstack_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: bookstack_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: bookstack
+      MYSQL_USER: bookstack
+      MYSQL_PASSWORD: bookstack
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - bookstack_network
+
+volumes:
+  bookstack_uploads:
+  bookstack_storage:
+  mysql_data:
+
+networks:
+  bookstack_network:
+    driver: bridge

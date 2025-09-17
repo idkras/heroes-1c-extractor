@@ -1,0 +1,29 @@
+{
+  "n8n": {
+    "base_url": "http://localhost:5678",
+    "api_key": "",
+    "username": "",
+    "password": "",
+    "timeout": 30,
+    "auto_init": false
+  },
+  "workflows": {
+    "default_category": "heroes",
+    "auto_activate": false,
+    "backup_before_update": true
+  },
+  "integrations": {
+    "heroes_gpt": {
+      "enabled": true,
+      "workflow_template": "heroes_gpt_analysis"
+    },
+    "standards_management": {
+      "enabled": true,
+      "workflow_template": "standards_update"
+    },
+    "telegram_export": {
+      "enabled": true,
+      "workflow_template": "telegram_export"
+    }
+  }
+}

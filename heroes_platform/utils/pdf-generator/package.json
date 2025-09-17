@@ -1,0 +1,37 @@
+{
+  "name": "pdf-generator-utils",
+  "version": "1.0.0",
+  "description": "Современные утилиты для генерации PDF из Markdown",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install-md-to-pdf": "npm install -g md-to-pdf",
+    "check-deps": "node -e \"console.log('Node.js:', process.version); require('child_process').execSync('npm --version', {encoding: 'utf8'}).trim()\""
+  },
+  "keywords": [
+    "pdf",
+    "markdown",
+    "converter",
+    "typography",
+    "russian",
+    "md-to-pdf"
+  ],
+  "author": "Rick.ai Team",
+  "license": "MIT",
+  "dependencies": {
+    "md-to-pdf": "^5.2.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/pdf-generator-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/pdf-generator-utils/issues"
+  },
+  "homepage": "https://github.com/your-org/pdf-generator-utils#readme"
+}

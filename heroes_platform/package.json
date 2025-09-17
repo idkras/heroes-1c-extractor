@@ -1,0 +1,66 @@
+{
+  "name": "heroes-platform",
+  "version": "1.0.0",
+  "description": "Heroes Platform - MCP Servers and Standards Management",
+  "main": "index.js",
+  "scripts": {
+    "install": "echo 'Installing Node.js dependencies...'",
+    "setup": "npm run install-deps",
+    "install-deps": "npm install",
+    "test": "python3 run_tests.py",
+    "test:unit": "python3 -m pytest tests/ -m unit -v",
+    "test:integration": "python3 -m pytest tests/ -m integration -v",
+    "test:coverage": "python3 -m pytest tests/ --cov=. --cov-report=html",
+    "lint": "python3 -m ruff check . && python3 -m mypy . --ignore-missing-imports",
+    "format": "python3 -m black . && python3 -m isort .",
+    "check-all": "npm run format && npm run lint && npm run test",
+    "server": "cd mcp_server && python3 run_mcp_server.py",
+    "playwright-mcp": "npx mcp-playwright",
+    "clean": "find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true && find . -type f -name '*.pyc' -delete 2>/dev/null || true",
+    "clean:venv": "rm -rf .venv",
+    "setup:unix": "chmod +x install.sh && ./install.sh",
+    "setup:windows": "install.bat",
+    "quick-setup": "npm run setup && npm run test"
+  },
+  "keywords": [
+    "mcp",
+    "ai",
+    "heroes",
+    "platform",
+    "python",
+    "automation"
+  ],
+  "author": "Ilya Krasinsky <ilya@magicrick.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/heroes-template.git"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@agent-tars/cli": "^0.2.10",
+    "@types/node": "^20.0.0",
+    "mcp-playwright": "^0.0.1",
+    "typescript": "^5.0.0",
+    "npm": "^10.0.0",
+    "npx": "^10.0.0",
+    "node": "^20.0.0"
+  },
+  "dependencies": {
+    "@lexical/markdown": "^0.34.0",
+    "@playwright/test": "^1.55.0",
+    "playwright": "^1.55.0",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0"
+  },
+  "config": {
+    "python": {
+      "version": ">=3.11",
+      "setup_tools": ">=65.5.1"
+    }
+  }
+}

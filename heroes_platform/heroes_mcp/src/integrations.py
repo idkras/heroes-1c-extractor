@@ -1,0 +1,1 @@
+# Ghost CMS integration module

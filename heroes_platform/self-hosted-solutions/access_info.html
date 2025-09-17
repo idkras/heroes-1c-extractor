@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доступ к Self-Hosted Сервисам</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        .service-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+        }
+        .service-card h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status.working {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .access-info {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .button.secondary {
+            background-color: #95a5a6;
+        }
+        .button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        .note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Доступ к Self-Hosted Сервисам</h1>
+        <p><em>Статус и информация о доступе к локально развернутым сервисам</em></p>
+
+        <div class="service-card">
+            <h3>📚 BookStack - Платформа документации</h3>
+            <p><strong>Статус:</strong> <span class="status working">Работает</span></p>
+            <p><strong>URL:</strong> <a href="http://localhost:6875" target="_blank">http://localhost:6875</a></p>
+            <p><strong>Описание:</strong> Платформа для создания документации/wiki контента, построенная на PHP и Laravel.</p>
+            
+            <div class="access-info">
+                <h4>🔑 Данные для входа:</h4>
+                <p><strong>Email:</strong> <code>admin@admin.com</code></p>
+                <p><strong>Пароль:</strong> <code>password</code> (по умолчанию)</p>
+                <p><strong>Примечание:</strong> Если пароль не подходит, возможно нужно сбросить его через базу данных.</p>
+            </div>
+
+            <div class="note">
+                <h4>📝 Как загрузить документ:</h4>
+                <ol>
+                    <li>Войдите в систему с учетными данными выше</li>
+                    <li>Создайте новую книгу или используйте существующую</li>
+                    <li>Добавьте новую страницу с содержимым документа</li>
+                    <li>Или используйте функцию импорта для загрузки Markdown/HTML файлов</li>
+                </ol>
+            </div>
+
+            <a href="http://localhost:6875" class="button" target="_blank">Открыть BookStack</a>
+        </div>
+
+        <div class="service-card">
+            <h3>📖 Outline - База знаний для команд</h3>
+            <p><strong>Статус:</strong> <span class="status working">Работает</span></p>
+            <p><strong>URL:</strong> <a href="http://localhost:3000" target="_blank">http://localhost:3000</a></p>
+            <p><strong>Описание:</strong> Быстрая, совместная база знаний для вашей команды, построенная с использованием React и Node.js.</p>
+            
+            <div class="access-info">
+                <h4>🔑 Первый запуск:</h4>
+                <p>При первом открытии Outline потребует настройки администратора:</p>
+                <ol>
+                    <li>Создание первого пользователя-администратора</li>
+                    <li>Настройка названия организации</li>
+                    <li>Настройка SMTP для уведомлений (опционально)</li>
+                </ol>
+            </div>
+
+            <div class="note">
+                <h4>📝 Как загрузить документ:</h4>
+                <ol>
+                    <li>Создайте аккаунт администратора при первом запуске</li>
+                    <li>Создайте новую коллекцию документов</li>
+                    <li>Добавьте новый документ с содержимым</li>
+                    <li>Или используйте функцию импорта для загрузки Markdown файлов</li>
+                </ol>
+            </div>
+
+            <a href="http://localhost:3000" class="button" target="_blank">Открыть Outline</a>
+        </div>
+
+        <div class="service-card">
+            <h3>📄 Документ для загрузки</h3>
+            <p><strong>Файл:</strong> <code>vipavenue-adjust-appmetrica.md</code></p>
+            <p><strong>Описание:</strong> Инструкция по интеграции Adjust с AppMetrica для UTM-трекинга</p>
+            <p><strong>Размер:</strong> ~5KB (Markdown формат)</p>
+            
+            <div class="note">
+                <h4>📋 Содержание документа:</h4>
+                <ul>
+                    <li>Технические задачи по интеграции</li>
+                    <li>Готовый код для Flutter, iOS, Android</li>
+                    <li>Настройка UTM-трекинга</li>
+                    <li>Конфигурация deep links</li>
+                    <li>Инструкции по настройке SKAdNetwork</li>
+                </ul>
+            </div>
+
+            <a href="vipavenue-adjust-appmetrica.html" class="button secondary" target="_blank">Просмотреть HTML версию</a>
+        </div>
+
+        <div class="service-card">
+            <h3>🔧 Техническая информация</h3>
+            <p><strong>Docker Compose:</strong> Оба сервиса запущены через Docker Compose</p>
+            <p><strong>Порты:</strong> BookStack (6875), Outline (3000)</p>
+            <p><strong>Базы данных:</strong> MySQL для BookStack, PostgreSQL для Outline</p>
+            <p><strong>Статус:</strong> Все сервисы работают корректно</p>
+        </div>
+
+        <div class="note">
+            <h4>⚠️ Важные замечания:</h4>
+            <ul>
+                <li>Это локальные сервисы, доступные только с вашего компьютера</li>
+                <li>Для продакшена рекомендуется настроить HTTPS и аутентификацию</li>
+                <li>Регулярно делайте бэкапы баз данных</li>
+                <li>Обновляйте Docker образы для безопасности</li>
+            </ul>
+        </div>
+
+        <h2>🎯 Следующие шаги</h2>
+        <ol>
+            <li>Откройте BookStack и войдите в систему</li>
+            <li>Создайте новую книгу или страницу</li>
+            <li>Скопируйте содержимое документа <code>vipavenue-adjust-appmetrica.md</code></li>
+            <li>Повторите для Outline</li>
+            <li>Проверьте, как выглядит документ в каждом сервисе</li>
+        </ol>
+
+        <p><strong>Дата проверки:</strong> 2025-01-29</p>
+        <p><strong>Статус:</strong> ✅ Все сервисы работают корректно</p>
+    </div>
+</body>
+</html>

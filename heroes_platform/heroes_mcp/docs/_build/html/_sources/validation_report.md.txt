@@ -1,0 +1,58 @@
+# Documentation Validation Report
+
+*Generated: 2025-08-19 18:54:36*
+
+## Overall Status: ⚠️ WARNING
+
+## Docstring Coverage
+
+- **Coverage:** 98.1%
+
+- **Documented:** 360/367
+
+
+### Undocumented Items
+
+- `unified_table.py:24` - FunctionDef `__init__`
+
+- `enhanced_log_monitor.py:28` - FunctionDef `__init__`
+
+- `ai_quality_assistant.py:35` - FunctionDef `__init__`
+
+- `mcp_server.py:124` - FunctionDef `get_performance_report`
+
+- `async_optimizer.py:37` - FunctionDef `__init__`
+
+- `async_optimizer.py:218` - FunctionDef `__init__`
+
+- `profiler.py:38` - FunctionDef `__init__`
+
+
+## Missing Documentation
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/modern_python
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/performance
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/security_testing
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/modern_python/security_frameworks
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/modern_python/code_quality
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/testing_pyramid/unit
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/testing_pyramid/integration
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/testing_pyramid/e2e
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/qa_ai_framework/quality_metrics
+
+- Missing README in /Users/ilyakrasinsky/workspace/vscode.projects/[cursor.template project]/[standards .md]/platform/mcp_server/src/qa_ai_framework/playwright
+
+- ... and 6 more
+
+
+## Recommendations
+
+- Add missing README files and module docstrings

@@ -1,0 +1,97 @@
+{
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/test_telegram.py": {
+    "mtime": 1755705507.2505174,
+    "size": 2332,
+    "hash": "574c24898f94148640ec63cf17f561b0"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/heroes_gpt_workflow_integration.py": {
+    "mtime": 1755871533.540465,
+    "size": 25469,
+    "hash": "be8da7767ae5a74ebe3e1b751dfeeacd"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/typography_checker.py": {
+    "mtime": 1755799959.6100743,
+    "size": 16692,
+    "hash": "0032c81bfa9b914c91c4d9fe1e1de2cf"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/api_documentation_generator.py": {
+    "mtime": 1756242766.6210632,
+    "size": 36676,
+    "hash": "76b52c5375593a284019923b424811a5"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/cross_reference_validator.py": {
+    "mtime": 1755785803.7285888,
+    "size": 19558,
+    "hash": "c4b585e0c89e68c3cb0d0694671f095d"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/heroes_gpt_offers_extractor.py": {
+    "mtime": 1755768751.3878129,
+    "size": 22998,
+    "hash": "76f9b9d8dbe9f49e5615d1154ff359dd"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/heroes_gpt_models.py": {
+    "mtime": 1755705512.9130192,
+    "size": 9835,
+    "hash": "1b09418fdfd15ff59edfa53c71b01466"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/todo_parser.py": {
+    "mtime": 1755885248.2002995,
+    "size": 6138,
+    "hash": "a5c0f45e468a2aaea92f831b5d078d30"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/heroes_gpt_analyzer.py": {
+    "mtime": 1755705512.9127119,
+    "size": 19830,
+    "hash": "5abd4111b6e86a7ea3f153750760ba38"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/test_cursor_connection.py": {
+    "mtime": 1755638023.400108,
+    "size": 4329,
+    "hash": "85a3f0ae2c411ec4b46a776561600636"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/linear_commands.py": {
+    "mtime": 1755873036.496159,
+    "size": 10048,
+    "hash": "25c2807a06f9d25fce982203722a6861"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/heroes_gpt_documentation_manager.py": {
+    "mtime": 1756239046.855039,
+    "size": 11028,
+    "hash": "61ed4bdfcb5a01538e0d3ba83011d687"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/test_server.py": {
+    "mtime": 1755638023.400238,
+    "size": 2865,
+    "hash": "ee8cb2f001f3bf4daf503249deacb6d4"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/credentials_manager.py": {
+    "mtime": 1756138470.0160396,
+    "size": 27754,
+    "hash": "20bca0c9b4319db2932434d8b0913869"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/file_output_manager.py": {
+    "mtime": 1755871480.0825617,
+    "size": 28985,
+    "hash": "1645e7a5efb9b8e79121bffea4cf1138"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/n8n_integration.py": {
+    "mtime": 1755810525.7973669,
+    "size": 21104,
+    "hash": "8c30e0916f42c72e2a3e5801a88a7c3a"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/playwright_validator.py": {
+    "mtime": 1756148357.790334,
+    "size": 8212,
+    "hash": "a1a7fc495a02d086cea3e91a8b962a3d"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/mcp_server.py": {
+    "mtime": 1756242751.3895721,
+    "size": 213046,
+    "hash": "53adae184a4556a07ce9256d5b2c44e9"
+  },
+  "/Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/src/config/settings.py": {
+    "mtime": 1755705507.251321,
+    "size": 2756,
+    "hash": "64a4595156cb9dc5e5e9380e01e065f3"
+  }
+}

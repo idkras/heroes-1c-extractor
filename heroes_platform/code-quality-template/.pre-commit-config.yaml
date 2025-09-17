@@ -1,0 +1,52 @@
+# Pre-commit configuration for sales-injury-mcp-workflow
+# Автоматическая проверка качества кода при коммите
+
+repos:
+  # Black - форматирование кода
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        language_version: python3.11
+        args: [--line-length=88]
+
+  # Ruff - быстрый линтер
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.0
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  # MyPy - проверка типов
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-requests, types-PyYAML]
+
+  # Bandit - проверка безопасности
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.0
+    hooks:
+      - id: bandit
+        args: [-r, ., -f, json, -o, bandit-report.json]
+        pass_filenames: false
+        exclude: ^tests/
+
+  # Trailing whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: "^\\[heroes-gpt-bot\\]/mkdocs.yml$"
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  # Commit message format
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.5.2
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]

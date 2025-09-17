@@ -1,0 +1,1868 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Heroes MCP Server API",
+    "description": "API для работы с MCP командами Heroes платформы",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/mcp/tools/server_info": {
+      "post": {
+        "summary": "server_info",
+        "description": "Get information about the current server.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для server_info",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "server_info",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/telegram_get_credentials": {
+      "post": {
+        "summary": "telegram_get_credentials",
+        "description": "Get Telegram credentials from Mac Keychain",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для telegram_get_credentials",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "telegram_get_credentials",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/telegram_test_connection": {
+      "post": {
+        "summary": "telegram_test_connection",
+        "description": "Test Telegram connection using stored credentials",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для telegram_test_connection",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "telegram_test_connection",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/telegram_get_chats": {
+      "post": {
+        "summary": "telegram_get_chats",
+        "description": "Get a paginated list of Telegram chats",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "integer",
+                    "description": "Параметр page"
+                  },
+                  "page_size": {
+                    "type": "integer",
+                    "description": "Параметр page_size"
+                  }
+                },
+                "required": [
+                  "page",
+                  "page_size"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для telegram_get_chats",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "telegram_get_chats",
+                      "arguments": {
+                        "page": 0,
+                        "page_size": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/telegram_search_chats": {
+      "post": {
+        "summary": "telegram_search_chats",
+        "description": "Search for Telegram chats by name",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Параметр query"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Параметр limit"
+                  }
+                },
+                "required": [
+                  "query",
+                  "limit"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для telegram_search_chats",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "telegram_search_chats",
+                      "arguments": {
+                        "query": "example_value",
+                        "limit": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/telegram_export_chat": {
+      "post": {
+        "summary": "telegram_export_chat",
+        "description": "Export chat messages to formatted string",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chat_id": {
+                    "type": "integer",
+                    "description": "Параметр chat_id"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Параметр limit"
+                  }
+                },
+                "required": [
+                  "chat_id",
+                  "limit"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для telegram_export_chat",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "telegram_export_chat",
+                      "arguments": {
+                        "chat_id": 0,
+                        "limit": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_list": {
+      "post": {
+        "summary": "standards_list",
+        "description": "Получить список всех стандартов в системе\n\nReturns:\n    str: JSON строка со списком стандартов и их метаданными",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_list",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_list",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_get": {
+      "post": {
+        "summary": "standards_get",
+        "description": "Получить содержимое конкретного стандарта\n\nArgs:\n    standard_name: Название стандарта для получения\n\nReturns:\n    str: JSON строка с содержимым стандарта",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "standard_name": {
+                    "type": "string",
+                    "description": "Параметр standard_name"
+                  }
+                },
+                "required": [
+                  "standard_name"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_get",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_get",
+                      "arguments": {
+                        "standard_name": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_search": {
+      "post": {
+        "summary": "standards_search",
+        "description": "Поиск по стандартам\n\nArgs:\n    query: Поисковый запрос\n    limit: Максимальное количество результатов\n\nReturns:\n    str: JSON строка с результатами поиска",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Параметр query"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Параметр limit"
+                  }
+                },
+                "required": [
+                  "query",
+                  "limit"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_search",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_search",
+                      "arguments": {
+                        "query": "example_value",
+                        "limit": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_validate": {
+      "post": {
+        "summary": "standards_validate",
+        "description": "Валидация стандарта по Registry Standard\n\nArgs:\n    standard_name: Название стандарта для валидации\n\nReturns:\n    str: JSON строка с результатами валидации",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "standard_name": {
+                    "type": "string",
+                    "description": "Параметр standard_name"
+                  }
+                },
+                "required": [
+                  "standard_name"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_validate",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_validate",
+                      "arguments": {
+                        "standard_name": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_audit": {
+      "post": {
+        "summary": "standards_audit",
+        "description": "Аудит всей системы стандартов\n\nReturns:\n    str: JSON строка с результатами аудита",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_audit",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_audit",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_management": {
+      "post": {
+        "summary": "standards_management",
+        "description": "Управление стандартами проекта (интегрированная команда)\n\nArgs:\n    command: Команда (list, get, search, workflow)\n    path: Путь к файлу (для команды get)\n    query: Поисковый запрос (для команды search)\n\n**JTBD Контекст:**\n- **Big JTBD:** 🎯 Управление продуктом\n- **Когда:** Перед grooming\n- **Medium JTBD:** Описание задач\n- **Small JTBD:** Создание Definition of Done\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "description": "Параметр command"
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "Параметр path"
+                  },
+                  "query": {
+                    "type": "string",
+                    "description": "Параметр query"
+                  }
+                },
+                "required": [
+                  "command",
+                  "path",
+                  "query"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_management",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_management",
+                      "arguments": {
+                        "command": "example_value",
+                        "path": "example_value",
+                        "query": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/heroes_gpt_workflow": {
+      "post": {
+        "summary": "heroes_gpt_workflow",
+        "description": "HeroesGPT workflow для анализа лендингов и контента\n\nArgs:\n    action: Действие (analyze, generate)\n    url: URL для анализа\n    content: Контент для анализа\n    prompt: Промпт для генерации",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "Параметр action"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "Параметр url"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Параметр content"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "description": "Параметр prompt"
+                  }
+                },
+                "required": [
+                  "action",
+                  "url",
+                  "content",
+                  "prompt"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для heroes_gpt_workflow",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "heroes_gpt_workflow",
+                      "arguments": {
+                        "action": "example_value",
+                        "url": "example_value",
+                        "content": "example_value",
+                        "prompt": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/ai_guidance_checklist": {
+      "post": {
+        "summary": "ai_guidance_checklist",
+        "description": "JTBD: Как guidance system, я хочу дать AI чеклист для проверки,\nчтобы предотвратить типичные ошибки.\n\nArgs:\n    task_type: Тип задачи (general, development, analysis, integration)\n\nReturns:\n    str: JSON строка с чеклистом для AI агента",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "task_type": {
+                    "type": "string",
+                    "description": "Параметр task_type"
+                  }
+                },
+                "required": [
+                  "task_type"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для ai_guidance_checklist",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "ai_guidance_checklist",
+                      "arguments": {
+                        "task_type": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/common_mistakes_prevention": {
+      "post": {
+        "summary": "common_mistakes_prevention",
+        "description": "JTBD: Как prevention system, я хочу предупредить о типичных ошибках,\nчтобы AI избежал их в своей работе.\n\nArgs:\n    domain: Область (general, development, analysis, integration, mcp)\n\nReturns:\n    str: JSON строка с предупреждениями о типичных ошибках",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domain": {
+                    "type": "string",
+                    "description": "Параметр domain"
+                  }
+                },
+                "required": [
+                  "domain"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для common_mistakes_prevention",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "common_mistakes_prevention",
+                      "arguments": {
+                        "domain": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/quality_validation": {
+      "post": {
+        "summary": "quality_validation",
+        "description": "JTBD: Как validator, я хочу проверить качество результата AI,\nчтобы убедиться в соответствии стандартам.\n\nArgs:\n    result: Результат для валидации\n    criteria: Критерии валидации (general, code, analysis, documentation)\n\nReturns:\n    str: JSON строка с результатами валидации качества",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "result": {
+                    "type": "string",
+                    "description": "Параметр result"
+                  },
+                  "criteria": {
+                    "type": "string",
+                    "description": "Параметр criteria"
+                  }
+                },
+                "required": [
+                  "result",
+                  "criteria"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для quality_validation",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "quality_validation",
+                      "arguments": {
+                        "result": "example_value",
+                        "criteria": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/approach_recommendation": {
+      "post": {
+        "summary": "approach_recommendation",
+        "description": "JTBD: Как advisor, я хочу рекомендовать подход к решению проблемы,\nчтобы AI выбрал оптимальную стратегию.\n\nArgs:\n    problem: Описание проблемы\n    context: Дополнительный контекст\n\nReturns:\n    str: JSON строка с рекомендациями по подходу",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "problem": {
+                    "type": "string",
+                    "description": "Параметр problem"
+                  },
+                  "context": {
+                    "type": "string",
+                    "description": "Параметр context"
+                  }
+                },
+                "required": [
+                  "problem",
+                  "context"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для approach_recommendation",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "approach_recommendation",
+                      "arguments": {
+                        "problem": "example_value",
+                        "context": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_analyze": {
+      "post": {
+        "summary": "standards_analyze",
+        "description": "Анализ структуры и качества стандарта\n\nArgs:\n    standard_name: Название стандарта для анализа\n\nReturns:\n    str: JSON строка с результатами анализа",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "standard_name": {
+                    "type": "string",
+                    "description": "Параметр standard_name"
+                  }
+                },
+                "required": [
+                  "standard_name"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_analyze",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_analyze",
+                      "arguments": {
+                        "standard_name": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_compliance": {
+      "post": {
+        "summary": "standards_compliance",
+        "description": "Проверка соответствия всей системы стандартов\n\nReturns:\n    str: JSON строка с отчетом о соответствии",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_compliance",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_compliance",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_create": {
+      "post": {
+        "summary": "standards_create",
+        "description": "Создание нового стандарта по шаблону\n\nArgs:\n    standard_name: Название нового стандарта\n    category: Категория стандарта (general, core, process, etc.)\n    description: Описание стандарта\n    template: Шаблон для создания (basic, full, minimal)\n\nReturns:\n    str: JSON строка с результатом создания",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "standard_name": {
+                    "type": "string",
+                    "description": "Параметр standard_name"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Параметр category"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Параметр description"
+                  },
+                  "template": {
+                    "type": "string",
+                    "description": "Параметр template"
+                  }
+                },
+                "required": [
+                  "standard_name",
+                  "category",
+                  "description",
+                  "template"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_create",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_create",
+                      "arguments": {
+                        "standard_name": "example_value",
+                        "category": "example_value",
+                        "description": "example_value",
+                        "template": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_update": {
+      "post": {
+        "summary": "standards_update",
+        "description": "Обновление существующего стандарта\n\nArgs:\n    standard_name: Название стандарта для обновления\n    update_type: Тип обновления (version, content, metadata)\n    new_content: Новое содержимое (для update_type=\"content\")\n    update_notes: Заметки об обновлении\n\nReturns:\n    str: JSON строка с результатом обновления",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "standard_name": {
+                    "type": "string",
+                    "description": "Параметр standard_name"
+                  },
+                  "update_type": {
+                    "type": "string",
+                    "description": "Параметр update_type"
+                  },
+                  "new_content": {
+                    "type": "string",
+                    "description": "Параметр new_content"
+                  },
+                  "update_notes": {
+                    "type": "string",
+                    "description": "Параметр update_notes"
+                  }
+                },
+                "required": [
+                  "standard_name",
+                  "update_type",
+                  "new_content",
+                  "update_notes"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_update",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_update",
+                      "arguments": {
+                        "standard_name": "example_value",
+                        "update_type": "example_value",
+                        "new_content": "example_value",
+                        "update_notes": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/standards_archive": {
+      "post": {
+        "summary": "standards_archive",
+        "description": "Архивирование устаревшего стандарта\n\nArgs:\n    standard_name: Название стандарта для архивации\n    reason: Причина архивации\n    replacement_standard: Название заменяющего стандарта (если есть)\n\nReturns:\n    str: JSON строка с результатом архивации",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "standard_name": {
+                    "type": "string",
+                    "description": "Параметр standard_name"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Параметр reason"
+                  },
+                  "replacement_standard": {
+                    "type": "string",
+                    "description": "Параметр replacement_standard"
+                  }
+                },
+                "required": [
+                  "standard_name",
+                  "reason",
+                  "replacement_standard"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для standards_archive",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "standards_archive",
+                      "arguments": {
+                        "standard_name": "example_value",
+                        "reason": "example_value",
+                        "replacement_standard": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/cocoindex_search_existing_files": {
+      "post": {
+        "summary": "cocoindex_search_existing_files",
+        "description": "Поиск существующих скриптов через CocoIndex\n\nArgs:\n    query: Поисковый запрос\n    confidence_threshold: Минимальный уровень уверенности для создания файла\n\nReturns:\n    str: JSON с результатами поиска и рекомендациями",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Параметр query"
+                  },
+                  "confidence_threshold": {
+                    "type": "number",
+                    "description": "Параметр confidence_threshold"
+                  }
+                },
+                "required": [
+                  "query",
+                  "confidence_threshold"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для cocoindex_search_existing_files",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "cocoindex_search_existing_files",
+                      "arguments": {
+                        "query": "example_value",
+                        "confidence_threshold": null
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/cocoindex_validate_file_creation": {
+      "post": {
+        "summary": "cocoindex_validate_file_creation",
+        "description": "Валидация создания нового файла\n\nArgs:\n    file_path: Путь к создаваемому файлу\n    content: Содержимое файла\n\nReturns:\n    str: JSON с результатом валидации и confidence level",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file_path": {
+                    "type": "string",
+                    "description": "Параметр file_path"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Параметр content"
+                  }
+                },
+                "required": [
+                  "file_path",
+                  "content"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для cocoindex_validate_file_creation",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "cocoindex_validate_file_creation",
+                      "arguments": {
+                        "file_path": "example_value",
+                        "content": "example_value"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/cocoindex_get_functionality_map": {
+      "post": {
+        "summary": "cocoindex_get_functionality_map",
+        "description": "Получить карту функциональности проекта\n\nReturns:\n    str: JSON с картой функциональности по категориям",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для cocoindex_get_functionality_map",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "cocoindex_get_functionality_map",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/cocoindex_analyze_duplicates": {
+      "post": {
+        "summary": "cocoindex_analyze_duplicates",
+        "description": "Анализ дублирований в проекте\n\nReturns:\n    str: JSON с результатами анализа дублирований",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для cocoindex_analyze_duplicates",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "cocoindex_analyze_duplicates",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/tools/registry_compliance_check": {
+      "post": {
+        "summary": "registry_compliance_check",
+        "description": "Проверка соответствия Registry Standard v5.8\n\nReturns:\n    str: JSON строка с результатами проверки",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+              },
+              "examples": {
+                "default": {
+                  "summary": "Пример запроса для registry_compliance_check",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "tools/call",
+                    "params": {
+                      "name": "registry_compliance_check",
+                      "arguments": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "example": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Результат выполнения команды"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {},
+    "examples": {}
+  }
+}

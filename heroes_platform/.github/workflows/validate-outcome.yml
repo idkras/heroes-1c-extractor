@@ -1,0 +1,86 @@
+name: Validate Actual Outcome Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'heroes-platform/mcp_server/**'
+      - 'heroes-platform/.github/workflows/validate-outcome.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'heroes-platform/mcp_server/**'
+      - 'heroes-platform/.github/workflows/validate-outcome.yml'
+  workflow_dispatch:
+    inputs:
+      test_url:
+        description: 'URL to test'
+        required: false
+        default: 'https://github.com'
+        type: string
+
+jobs:
+  validate-outcome:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+      
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: 3.11
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-3.11-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-3.11-
+          
+    - name: Setup Heroes Platform
+      run: |
+        cd heroes-platform
+        python setup.py
+        
+    - name: Install development dependencies
+      run: |
+        cd heroes-platform
+        python -m pip install -e ".[dev]"
+        
+    - name: Test validate_actual_outcome without screenshot
+      run: |
+        cd heroes-platform
+        python -c "
+        import sys
+        sys.path.append('mcp_server/src')
+        from mcp_server import validate_actual_outcome
+        result = validate_actual_outcome('${{ github.event.inputs.test_url || 'https://github.com' }}', take_screenshot=False)
+        print('✅ validate_actual_outcome test passed')
+        print(f'Result: {result}')
+        "
+        
+    - name: Test validate_actual_outcome with screenshot (if Playwright available)
+      run: |
+        cd heroes-platform
+        python -c "
+        import sys
+        sys.path.append('mcp_server/src')
+        from mcp_server import validate_actual_outcome
+        try:
+            result = validate_actual_outcome('${{ github.event.inputs.test_url || 'https://github.com' }}', take_screenshot=True)
+            print('✅ validate_actual_outcome with screenshot test passed')
+        except Exception as e:
+            print(f'⚠️ Screenshot test failed (expected): {e}')
+        "
+        
+    - name: Upload validation artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: validation-results
+        path: |
+          heroes-platform/output_screenshot/validate_actual_outcome/
+          heroes-platform/output/

@@ -1,0 +1,66 @@
+[
+  {
+    "logType": "test",
+    "event_type": "attribution_data",
+    "timestamp": "2025-01-27T11:45:00.000Z",
+    "adjust_id": "test_instagram_001",
+    "appmetrica_device_id": "test_instagram_dev_001",
+    "platform": "flutter",
+    "adjust_network": "instagram",
+    "adjust_campaign": "test_campaign_instagram",
+    "adjust_creative": "test_banner_instagram",
+    "adjust_tracker": "test_tracker_instagram",
+    "adjust_click_label": "test_user_instagram",
+    "is_first_launch": false,
+    "attribution_type": "reinstall",
+    "utm_source": "instagram",
+    "utm_medium": "",
+    "utm_campaign": "test_campaign_instagram",
+    "utm_content": "test_banner_instagram",
+    "app_id": "com.vipavenue.app",
+    "app_version": "1.0.0",
+    "app_build": "1",
+    "adjust_initialized": true,
+    "appmetrica_initialized": true,
+    "attribution_received": true,
+    "event_sent_to_appmetrica": true,
+    "has_errors": false,
+    "error_messages": ""
+  },
+  {
+    "logType": "test",
+    "event_type": "attribution_data",
+    "timestamp": "2025-01-27 12:00:00",
+    "adjust_id": "test_already_formatted_001",
+    "platform": "ios",
+    "utm_source": "facebook",
+    "utm_campaign": "test_campaign_facebook"
+  },
+  {
+    "logType": "test",
+    "event_type": "attribution_data",
+    "timestamp": 1640995200,
+    "adjust_id": "test_unix_001",
+    "platform": "android",
+    "utm_source": "google_ads",
+    "utm_campaign": "test_campaign_google"
+  },
+  {
+    "logType": "test",
+    "event_type": "attribution_data",
+    "timestamp": null,
+    "adjust_id": "test_null_001",
+    "platform": "flutter",
+    "utm_source": "tiktok",
+    "utm_campaign": "test_campaign_tiktok"
+  },
+  {
+    "logType": "test",
+    "event_type": "attribution_data",
+    "timestamp": "invalid_timestamp",
+    "adjust_id": "test_invalid_001",
+    "platform": "ios",
+    "utm_source": "yandex_direct",
+    "utm_campaign": "test_campaign_yandex"
+  }
+]

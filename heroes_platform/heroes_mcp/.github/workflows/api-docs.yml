@@ -1,0 +1,92 @@
+name: Generate API Documentation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'heroes-platform/heroes-mcp/src/**/*.py'
+      - '[standards .md]/**/*.md'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'heroes-platform/heroes-mcp/src/**/*.py'
+      - '[standards .md]/**/*.md'
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v5
+    
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        cd heroes-platform/heroes-mcp
+        pip install -r requirements.txt
+    
+    - name: Generate API documentation
+      run: |
+        cd heroes-platform/heroes-mcp
+        python3 scripts/generate_api_docs.py
+    
+    - name: Validate OpenAPI specification
+      run: |
+        cd heroes-platform/heroes-mcp
+        python3 -c "
+        import json
+        from pathlib import Path
+        
+        spec_path = Path('docs/api/openapi.json')
+        if spec_path.exists():
+            with open(spec_path) as f:
+                spec = json.load(f)
+            print('✅ OpenAPI specification is valid JSON')
+            print(f'📊 Found {len(spec.get(\"paths\", {}))} API endpoints')
+        else:
+            print('❌ OpenAPI specification not found')
+            exit(1)
+        "
+    
+    - name: Upload documentation artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-documentation
+        path: |
+          heroes-platform/heroes-mcp/docs/api/
+        retention-days: 30
+    
+    - name: Comment PR with documentation status
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          try {
+            const specPath = 'heroes-platform/heroes-mcp/docs/api/openapi.json';
+            if (fs.existsSync(specPath)) {
+              const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
+              const endpointCount = Object.keys(spec.paths || {}).length;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 📚 API Documentation Generated
+                
+                ✅ **Status:** Successfully generated
+                📊 **Endpoints:** ${endpointCount} MCP commands documented
+                🔗 **Preview:** [View Documentation](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+                
+                The API documentation has been automatically updated with the latest changes.`
+              });
+            }
+          } catch (error) {
+            console.error('Error commenting PR:', error);
+          }

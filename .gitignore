@@ -111,6 +111,7 @@ all_*.xml
 # Внешние репозитории (submodules)
 dck1c/
 heroes-platform/
+heroes_platform/
 tools_ui_1c/
 tools/onec_dtools/
 tools/temp-tool1cd/

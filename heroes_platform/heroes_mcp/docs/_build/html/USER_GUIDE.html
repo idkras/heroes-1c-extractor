@@ -1,0 +1,1189 @@
+<!doctype html>
+<html class="writer-html5" lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCP Server User Guide &mdash; MCP Server 1.0.0 documentation</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="_static/pygments.css?v=80d5e7a1"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="_static/css/theme.css?v=e59714d7"
+    />
+
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  </head>
+
+  <body class="wy-body-for-nav">
+    <div class="wy-grid-for-nav">
+      <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+        <div class="wy-side-scroll">
+          <div class="wy-side-nav-search">
+            <a href="index.html" class="icon icon-home"> MCP Server </a>
+            <div role="search">
+              <form
+                id="rtd-search-form"
+                class="wy-form"
+                action="search.html"
+                method="get"
+              >
+                <input
+                  type="text"
+                  name="q"
+                  placeholder="Search docs"
+                  aria-label="Search docs"
+                />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+            </div>
+          </div>
+          <div
+            class="wy-menu wy-menu-vertical"
+            data-spy="affix"
+            role="navigation"
+            aria-label="Navigation menu"
+          >
+            <p class="caption" role="heading">
+              <span class="caption-text">Contents:</span>
+            </p>
+            <ul>
+              <li class="toctree-l1">
+                <a class="reference internal" href="api/index.html"
+                  >API Documentation</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+        <nav class="wy-nav-top" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MCP Server</a>
+        </nav>
+
+        <div class="wy-nav-content">
+          <div class="rst-content">
+            <div role="navigation" aria-label="Page navigation">
+              <ul class="wy-breadcrumbs">
+                <li>
+                  <a
+                    href="index.html"
+                    class="icon icon-home"
+                    aria-label="Home"
+                  ></a>
+                </li>
+                <li class="breadcrumb-item active">MCP Server User Guide</li>
+                <li class="wy-breadcrumbs-aside">
+                  <a href="_sources/USER_GUIDE.md.txt" rel="nofollow">
+                    View page source</a
+                  >
+                </li>
+              </ul>
+              <hr />
+            </div>
+            <div
+              role="main"
+              class="document"
+              itemscope="itemscope"
+              itemtype="http://schema.org/Article"
+            >
+              <div itemprop="articleBody">
+                <section
+                  class="tex2jax_ignore mathjax_ignore"
+                  id="mcp-server-user-guide"
+                >
+                  <h1>
+                    MCP Server User Guide<a
+                      class="headerlink"
+                      href="#mcp-server-user-guide"
+                      title="Link to this heading"
+                      ></a
+                    >
+                  </h1>
+                  <section id="overview">
+                    <h2>
+                      Overview<a
+                        class="headerlink"
+                        href="#overview"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <p>
+                      The Heroes Advising Platform MCP Server provides 10
+                      workflow commands for managing standards, hypotheses, JTBD
+                      scenarios, TDD, QA, dependencies, Ghost integration,
+                      migration, and performance monitoring.
+                    </p>
+                  </section>
+                  <section id="quick-start">
+                    <h2>
+                      Quick Start<a
+                        class="headerlink"
+                        href="#quick-start"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="installation">
+                      <h3>
+                        1. Installation<a
+                          class="headerlink"
+                          href="#installation"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-bash notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>&lt;repository-url&gt;
+<span class="nb">cd</span><span class="w"> </span>heroes-advising-project
+
+<span class="c1"># Install dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+
+<span class="c1"># Configure environment</span>
+cp<span class="w"> </span>config/production.env.example<span class="w"> </span>config/production.env
+<span class="c1"># Edit production.env with your settings</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="running-the-server">
+                      <h3>
+                        2. Running the Server<a
+                          class="headerlink"
+                          href="#running-the-server"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-bash notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># Development mode</span>
+python3<span class="w"> </span><span class="s2">&quot;[standards .md]/platform/mcp_server/src/mcp_server.py&quot;</span>
+
+<span class="c1"># Production mode</span>
+python3<span class="w"> </span><span class="s2">&quot;[standards .md]/platform/mcp_server/src/mcp_server.py&quot;</span><span class="w"> </span>--production
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="testing-connection">
+                      <h3>
+                        3. Testing Connection<a
+                          class="headerlink"
+                          href="#testing-connection"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-bash notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># Test basic functionality</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 1, &quot;method&quot;: &quot;tools/list&quot;, &quot;params&quot;: {}}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span><span class="s2">&quot;[standards .md]/platform/mcp_server/src/mcp_server.py&quot;</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="available-commands">
+                    <h2>
+                      Available Commands<a
+                        class="headerlink"
+                        href="#available-commands"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="standards-management">
+                      <h3>
+                        1. Standards Management<a
+                          class="headerlink"
+                          href="#standards-management"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        <strong>Purpose:</strong> Manage and validate standards
+                        in the system
+                      </p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">get_standards</span></code
+                            >
+                            - List all available standards
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">validate_standard</span></code
+                            >
+                            - Validate a specific standard
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">create_standard</span></code
+                            >
+                            - Create a new standard
+                          </p>
+                        </li>
+                      </ul>
+                      <p><strong>Example:</strong></p>
+                      <div class="highlight-json notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;jsonrpc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tools/call&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;standards-management&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;arguments&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_standards&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;arguments&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="heroesgpt-workflow">
+                      <h3>
+                        2. HeroesGPT Workflow<a
+                          class="headerlink"
+                          href="#heroesgpt-workflow"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        <strong>Purpose:</strong> Execute HeroesGPT Landing
+                        Analysis Standard v1.8
+                      </p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >execute_heroes_workflow</span
+                              ></code
+                            >
+                            - Execute complete workflow
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >deep_segment_research</span
+                              ></code
+                            >
+                            - Perform deep segment research
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >activating_knowledge</span
+                              ></code
+                            >
+                            - Generate activating knowledge
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">unified_table</span></code
+                            >
+                            - Create unified table methodology
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">expert_review</span></code
+                            >
+                            - Perform expert review
+                          </p>
+                        </li>
+                      </ul>
+                      <p><strong>Example:</strong></p>
+                      <div class="highlight-json notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;jsonrpc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tools/call&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;heroes-gpt-workflow&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;arguments&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;execute_heroes_workflow&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;arguments&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;landing_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://example.com&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;segments&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;quality_focused&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;comfort_seekers&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="hypothesis-workflow">
+                      <h3>
+                        3. Hypothesis Workflow<a
+                          class="headerlink"
+                          href="#hypothesis-workflow"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        <strong>Purpose:</strong> Manage hypotheses with
+                        scientific methodology
+                      </p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">form_hypothesis</span></code
+                            >
+                            - Create a new hypothesis
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">falsify_or_confirm</span></code
+                            >
+                            - Test hypothesis validity
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">list_hypotheses</span></code
+                            >
+                            - List all hypotheses
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="jtbd-workflow">
+                      <h3>
+                        4. JTBD Workflow<a
+                          class="headerlink"
+                          href="#jtbd-workflow"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        <strong>Purpose:</strong> Manage Jobs-To-Be-Done
+                        scenarios
+                      </p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">build_jtbd</span></code
+                            >
+                            - Build JTBD scenarios
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >create_jtbd_scenarios</span
+                              ></code
+                            >
+                            - Create new scenarios
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">list_jtbd</span></code
+                            >
+                            - List all scenarios
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="tdd-workflow">
+                      <h3>
+                        5. TDD Workflow<a
+                          class="headerlink"
+                          href="#tdd-workflow"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        <strong>Purpose:</strong> Manage Test-Driven Development
+                        processes
+                      </p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">create_tdd_plan</span></code
+                            >
+                            - Create TDD plan
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">execute_tdd_cycle</span></code
+                            >
+                            - Execute TDD cycle
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">validate_tdd</span></code
+                            >
+                            - Validate TDD implementation
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="qa-workflow">
+                      <h3>
+                        6. QA Workflow<a
+                          class="headerlink"
+                          href="#qa-workflow"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        <strong>Purpose:</strong> Manage Quality Assurance
+                        processes
+                      </p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">create_qa_plan</span></code
+                            >
+                            - Create QA plan
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">execute_qa_tests</span></code
+                            >
+                            - Execute QA tests
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">validate_qa</span></code
+                            >
+                            - Validate QA results
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="dependency-management">
+                      <h3>
+                        7. Dependency Management<a
+                          class="headerlink"
+                          href="#dependency-management"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        <strong>Purpose:</strong> Manage system dependencies
+                      </p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >dependency_management</span
+                              ></code
+                            >
+                            - Manage dependencies
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >validate_dependencies</span
+                              ></code
+                            >
+                            - Validate dependency structure
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >monitor_dependencies</span
+                              ></code
+                            >
+                            - Monitor dependency health
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="ghost-integration">
+                      <h3>
+                        8. Ghost Integration<a
+                          class="headerlink"
+                          href="#ghost-integration"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        <strong>Purpose:</strong> Manage Ghost CMS integration
+                      </p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >ghost_publish_analysis</span
+                              ></code
+                            >
+                            - Publish analysis to Ghost
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >ghost_publish_document</span
+                              ></code
+                            >
+                            - Publish document to Ghost
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">ghost_integration</span></code
+                            >
+                            - Manage integration settings
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="migration-workflow">
+                      <h3>
+                        9. Migration Workflow<a
+                          class="headerlink"
+                          href="#migration-workflow"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p><strong>Purpose:</strong> Manage system migrations</p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >migrate_legacy_to_modern</span
+                              ></code
+                            >
+                            - Migrate from legacy to modern system
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >update_registry_legacy_deprecated</span
+                              ></code
+                            >
+                            - Mark legacy as deprecated
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >validate_migration_success</span
+                              ></code
+                            >
+                            - Validate migration
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >rollback_migration_if_needed</span
+                              ></code
+                            >
+                            - Rollback if needed
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="performance-monitor">
+                      <h3>
+                        10. Performance Monitor<a
+                          class="headerlink"
+                          href="#performance-monitor"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        <strong>Purpose:</strong> Monitor system performance
+                      </p>
+                      <p><strong>Commands:</strong></p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >get_performance_report</span
+                              ></code
+                            >
+                            - Get performance report
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">save_metrics</span></code
+                            >
+                            - Save performance metrics
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                  </section>
+                  <section id="configuration">
+                    <h2>
+                      Configuration<a
+                        class="headerlink"
+                        href="#configuration"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="environment-variables">
+                      <h3>
+                        Environment Variables<a
+                          class="headerlink"
+                          href="#environment-variables"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-bash notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># Server Configuration</span>
+<span class="nv">MCP_SERVER_HOST</span><span class="o">=</span><span class="m">0</span>.0.0.0
+<span class="nv">MCP_SERVER_PORT</span><span class="o">=</span><span class="m">3000</span>
+<span class="nv">MCP_SERVER_WORKERS</span><span class="o">=</span><span class="m">4</span>
+<span class="nv">MCP_SERVER_TIMEOUT</span><span class="o">=</span><span class="m">30</span>
+
+<span class="c1"># Logging Configuration</span>
+<span class="nv">LOG_LEVEL</span><span class="o">=</span>INFO
+<span class="nv">LOG_FORMAT</span><span class="o">=</span>json
+<span class="nv">LOG_FILE</span><span class="o">=</span>/var/log/mcp_server/mcp_server.log
+
+<span class="c1"># Performance Configuration</span>
+<span class="nv">MAX_CONCURRENT_REQUESTS</span><span class="o">=</span><span class="m">100</span>
+<span class="nv">REQUEST_TIMEOUT</span><span class="o">=</span><span class="m">30</span>
+<span class="nv">MEMORY_LIMIT</span><span class="o">=</span>512MB
+<span class="nv">CPU_LIMIT</span><span class="o">=</span><span class="m">2</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="production-setup">
+                      <h3>
+                        Production Setup<a
+                          class="headerlink"
+                          href="#production-setup"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic">
+                        <li>
+                          <p><strong>Environment Configuration:</strong></p>
+                          <div class="highlight-bash notranslate">
+                            <div class="highlight">
+                              <pre><span></span>cp<span class="w"> </span>config/production.env.example<span class="w"> </span>config/production.env
+<span class="c1"># Edit production.env with your settings</span>
+</pre>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <p><strong>Process Management:</strong></p>
+                          <div class="highlight-bash notranslate">
+                            <div class="highlight">
+                              <pre><span></span><span class="c1"># Using PM2</span>
+npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>pm2
+pm2<span class="w"> </span>start<span class="w"> </span>ecosystem.config.js
+
+<span class="c1"># Using systemd</span>
+sudo<span class="w"> </span>cp<span class="w"> </span>systemd/mcp-server.service<span class="w"> </span>/etc/systemd/system/
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>mcp-server
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mcp-server
+</pre>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <p><strong>Logging Setup:</strong></p>
+                          <div class="highlight-bash notranslate">
+                            <div class="highlight">
+                              <pre><span></span>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/var/log/mcp_server
+sudo<span class="w"> </span>chown<span class="w"> </span><span class="nv">$USER</span>:<span class="nv">$USER</span><span class="w"> </span>/var/log/mcp_server
+</pre>
+                            </div>
+                          </div>
+                        </li>
+                      </ol>
+                    </section>
+                  </section>
+                  <section id="monitoring-and-logging">
+                    <h2>
+                      Monitoring and Logging<a
+                        class="headerlink"
+                        href="#monitoring-and-logging"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="performance-monitoring">
+                      <h3>
+                        Performance Monitoring<a
+                          class="headerlink"
+                          href="#performance-monitoring"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>The system automatically tracks:</p>
+                      <ul class="simple">
+                        <li><p>Command execution times</p></li>
+                        <li><p>Success/failure rates</p></li>
+                        <li><p>Resource usage</p></li>
+                        <li><p>Error rates</p></li>
+                      </ul>
+                    </section>
+                    <section id="logging">
+                      <h3>
+                        Logging<a
+                          class="headerlink"
+                          href="#logging"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>Logs are stored in JSON format with:</p>
+                      <ul class="simple">
+                        <li><p>Timestamp</p></li>
+                        <li><p>Log level</p></li>
+                        <li><p>Module and function</p></li>
+                        <li><p>Error details</p></li>
+                        <li><p>Performance metrics</p></li>
+                      </ul>
+                    </section>
+                    <section id="health-checks">
+                      <h3>
+                        Health Checks<a
+                          class="headerlink"
+                          href="#health-checks"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-bash notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># Check server health</span>
+curl<span class="w"> </span>http://localhost:3000/health
+
+<span class="c1"># Check performance metrics</span>
+curl<span class="w"> </span>http://localhost:3000/metrics
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="troubleshooting">
+                    <h2>
+                      Troubleshooting<a
+                        class="headerlink"
+                        href="#troubleshooting"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="common-issues">
+                      <h3>
+                        Common Issues<a
+                          class="headerlink"
+                          href="#common-issues"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li>
+                          <p><strong>Server won’t start:</strong></p>
+                          <ul class="simple">
+                            <li><p>Check environment variables</p></li>
+                            <li><p>Verify port availability</p></li>
+                            <li><p>Check log files</p></li>
+                          </ul>
+                        </li>
+                        <li>
+                          <p><strong>Commands failing:</strong></p>
+                          <ul class="simple">
+                            <li><p>Check command syntax</p></li>
+                            <li><p>Verify required arguments</p></li>
+                            <li><p>Check error logs</p></li>
+                          </ul>
+                        </li>
+                        <li>
+                          <p><strong>Performance issues:</strong></p>
+                          <ul class="simple">
+                            <li><p>Monitor resource usage</p></li>
+                            <li><p>Check cache statistics</p></li>
+                            <li><p>Review performance logs</p></li>
+                          </ul>
+                        </li>
+                      </ol>
+                    </section>
+                    <section id="debug-mode">
+                      <h3>
+                        Debug Mode<a
+                          class="headerlink"
+                          href="#debug-mode"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-bash notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># Enable debug logging</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">LOG_LEVEL</span><span class="o">=</span>DEBUG
+python3<span class="w"> </span><span class="s2">&quot;[standards .md]/platform/mcp_server/src/mcp_server.py&quot;</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="log-analysis">
+                      <h3>
+                        Log Analysis<a
+                          class="headerlink"
+                          href="#log-analysis"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-bash notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># View recent logs</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/mcp_server/mcp_server.log
+
+<span class="c1"># Search for errors</span>
+grep<span class="w"> </span><span class="s1">&#39;&quot;level&quot;:&quot;ERROR&quot;&#39;</span><span class="w"> </span>/var/log/mcp_server/mcp_server.log
+
+<span class="c1"># Performance analysis</span>
+grep<span class="w"> </span><span class="s1">&#39;&quot;event_type&quot;:&quot;performance_metric&quot;&#39;</span><span class="w"> </span>/var/log/mcp_server/mcp_server.log
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="security">
+                    <h2>
+                      Security<a
+                        class="headerlink"
+                        href="#security"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="authentication">
+                      <h3>
+                        Authentication<a
+                          class="headerlink"
+                          href="#authentication"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="simple">
+                        <li><p>API key authentication (optional)</p></li>
+                        <li><p>Rate limiting enabled</p></li>
+                        <li><p>Request validation</p></li>
+                      </ul>
+                    </section>
+                    <section id="rate-limiting">
+                      <h3>
+                        Rate Limiting<a
+                          class="headerlink"
+                          href="#rate-limiting"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="simple">
+                        <li><p>100 requests per hour per IP</p></li>
+                        <li><p>Configurable limits</p></li>
+                        <li><p>Automatic blocking of abusive IPs</p></li>
+                      </ul>
+                    </section>
+                    <section id="data-protection">
+                      <h3>
+                        Data Protection<a
+                          class="headerlink"
+                          href="#data-protection"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="simple">
+                        <li><p>All sensitive data encrypted</p></li>
+                        <li><p>Secure file permissions</p></li>
+                        <li><p>Regular security audits</p></li>
+                      </ul>
+                    </section>
+                  </section>
+                  <section id="backup-and-recovery">
+                    <h2>
+                      Backup and Recovery<a
+                        class="headerlink"
+                        href="#backup-and-recovery"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="backup-strategy">
+                      <h3>
+                        Backup Strategy<a
+                          class="headerlink"
+                          href="#backup-strategy"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="simple">
+                        <li><p>Daily automated backups</p></li>
+                        <li><p>7-day retention policy</p></li>
+                        <li><p>Encrypted backup storage</p></li>
+                      </ul>
+                    </section>
+                    <section id="recovery-procedures">
+                      <h3>
+                        Recovery Procedures<a
+                          class="headerlink"
+                          href="#recovery-procedures"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li><p>Stop the server</p></li>
+                        <li><p>Restore from backup</p></li>
+                        <li><p>Verify data integrity</p></li>
+                        <li><p>Restart the server</p></li>
+                      </ol>
+                    </section>
+                    <section id="manual-backup">
+                      <h3>
+                        Manual Backup<a
+                          class="headerlink"
+                          href="#manual-backup"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-bash notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># Create backup</span>
+tar<span class="w"> </span>-czf<span class="w"> </span>backup-<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>.tar.gz<span class="w"> </span>/var/cache/mcp_server<span class="w"> </span>/var/log/mcp_server
+
+<span class="c1"># Restore backup</span>
+tar<span class="w"> </span>-xzf<span class="w"> </span>backup-20250818.tar.gz<span class="w"> </span>-C<span class="w"> </span>/
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="support">
+                    <h2>
+                      Support<a
+                        class="headerlink"
+                        href="#support"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="getting-help">
+                      <h3>
+                        Getting Help<a
+                          class="headerlink"
+                          href="#getting-help"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="simple">
+                        <li><p>Check this documentation</p></li>
+                        <li><p>Review log files</p></li>
+                        <li><p>Contact support team</p></li>
+                      </ul>
+                    </section>
+                    <section id="reporting-issues">
+                      <h3>
+                        Reporting Issues<a
+                          class="headerlink"
+                          href="#reporting-issues"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>When reporting issues, include:</p>
+                      <ul class="simple">
+                        <li><p>Error messages</p></li>
+                        <li><p>Log files</p></li>
+                        <li><p>System configuration</p></li>
+                        <li><p>Steps to reproduce</p></li>
+                      </ul>
+                    </section>
+                    <section id="feature-requests">
+                      <h3>
+                        Feature Requests<a
+                          class="headerlink"
+                          href="#feature-requests"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>Submit feature requests through:</p>
+                      <ul class="simple">
+                        <li><p>GitHub issues</p></li>
+                        <li><p>Support email</p></li>
+                        <li><p>Team meetings</p></li>
+                      </ul>
+                    </section>
+                  </section>
+                  <section id="version-history">
+                    <h2>
+                      Version History<a
+                        class="headerlink"
+                        href="#version-history"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="v1-0-0-2025-08-18">
+                      <h3>
+                        v1.0.0 (2025-08-18)<a
+                          class="headerlink"
+                          href="#v1-0-0-2025-08-18"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="simple">
+                        <li><p>Initial production release</p></li>
+                        <li><p>10 workflow commands</p></li>
+                        <li><p>Performance monitoring</p></li>
+                        <li><p>Structured logging</p></li>
+                        <li><p>Production deployment</p></li>
+                      </ul>
+                    </section>
+                    <section id="upcoming-features">
+                      <h3>
+                        Upcoming Features<a
+                          class="headerlink"
+                          href="#upcoming-features"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="simple">
+                        <li><p>Advanced caching strategies</p></li>
+                        <li><p>Real-time monitoring dashboard</p></li>
+                        <li><p>API rate limiting improvements</p></li>
+                        <li><p>Enhanced security features</p></li>
+                      </ul>
+                    </section>
+                  </section>
+                </section>
+              </div>
+            </div>
+            <footer>
+              <hr />
+
+              <div role="contentinfo">
+                <p>&#169; Copyright 2024, AI Assistant.</p>
+              </div>
+
+              Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using
+              a
+              <a href="https://github.com/readthedocs/sphinx_rtd_theme"
+                >theme</a
+              >
+              provided by <a href="https://readthedocs.org">Read the Docs</a>.
+            </footer>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script>
+      jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+      });
+    </script>
+  </body>
+</html>

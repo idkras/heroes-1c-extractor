@@ -1,0 +1,69 @@
+{
+  "event_type": "test_webhook_validation",
+  "timestamp": "2025-08-29T12:40:00Z",
+  "app_info": {
+    "app_id": "com.vipavenue.app",
+    "platform": "test",
+    "version": "1.0.0",
+    "build": "test-003"
+  },
+  "device_info": {
+    "adjust_id": "test_adjust_id_12345",
+    "appmetrica_device_id": "test_appmetrica_id_67890",
+    "platform": "test_platform",
+    "idfa": "test_idfa_abcdef",
+    "idfv": "test_idfv_ghijkl",
+    "os_version": "test_os_15.0",
+    "device_model": "test_device_model"
+  },
+  "attribution_data": {
+    "adjust_network": "test_network",
+    "adjust_campaign": "test_campaign_2025",
+    "adjust_creative": "test_banner",
+    "adjust_tracker": "test_tracker_abc123",
+    "adjust_click_label": "test_label",
+    "is_first_launch": true,
+    "attribution_type": "test_install"
+  },
+  "utm_data": {
+    "utm_source": "test_source",
+    "utm_medium": "test_medium",
+    "utm_campaign": "test_campaign",
+    "utm_content": "test_content"
+  },
+  "sdk_status": {
+    "adjust_initialized": true,
+    "appmetrica_initialized": true,
+    "attribution_received": true,
+    "event_sent_to_appmetrica": true
+  },
+  "error_info": {
+    "has_errors": false,
+    "error_messages": []
+  },
+  "test_data": {
+    "test_id": "webhook_test_003",
+    "test_timestamp": "2025-08-29T12:40:00Z",
+    "test_description": "Тестовые данные для вебхука flow.rick.ai - проверка работы в n8n"
+  },
+  "deep_link_data": {
+    "deep_link_url": "https://test.example.com/deep-link",
+    "deep_link_source": "test_deep_link_source",
+    "deep_link_campaign": "test_deep_link_campaign",
+    "deep_link_medium": "test_deep_link_medium",
+    "deep_link_path": "/test/path",
+    "product_id": "test_product_123",
+    "user_id": "test_user_456"
+  },
+  "custom_data": {
+    "phone_hash": "test_phone_hash",
+    "email_hash": "test_email_hash",
+    "user_id": "test_user_456",
+    "attribution_timestamp": 1693308000
+  },
+  "sync_info": {
+    "sync_timestamp": "2025-08-29T12:40:00Z",
+    "sync_type": "test_sync",
+    "platform": "test_platform"
+  }
+}

@@ -1,0 +1,4 @@
+# file: /Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/workflows/jtbd_workflow.py
+# hypothesis_version: 6.138.2
+
+['Invalid input data', 'JTBD', 'args', 'build_jtbd', 'command', 'content_length', 'context', 'count', 'created_at', 'error', 'id', 'input_validation', 'issues', 'job_description', 'job_title', 'jtbd', 'jtbd_count', 'jtbd_id', 'jtbd_list', 'jtbd_scenarios', 'jtbd_scenarios.json', 'list_jtbd', 'notes', 'output_validation', 'scenario', 'scenarios', 'scenarios_count', 'standard_compliance', 'standard_reading', 'success', 'updated_at', 'utf-8', 'valid']

@@ -1,0 +1,1030 @@
+<!doctype html>
+<html class="writer-html5" lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Abstract Links Integration Documentation &mdash; MCP Server 1.0.0
+      documentation
+    </title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="_static/pygments.css?v=80d5e7a1"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="_static/css/theme.css?v=e59714d7"
+    />
+
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  </head>
+
+  <body class="wy-body-for-nav">
+    <div class="wy-grid-for-nav">
+      <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+        <div class="wy-side-scroll">
+          <div class="wy-side-nav-search">
+            <a href="index.html" class="icon icon-home"> MCP Server </a>
+            <div role="search">
+              <form
+                id="rtd-search-form"
+                class="wy-form"
+                action="search.html"
+                method="get"
+              >
+                <input
+                  type="text"
+                  name="q"
+                  placeholder="Search docs"
+                  aria-label="Search docs"
+                />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+            </div>
+          </div>
+          <div
+            class="wy-menu wy-menu-vertical"
+            data-spy="affix"
+            role="navigation"
+            aria-label="Navigation menu"
+          >
+            <p class="caption" role="heading">
+              <span class="caption-text">Contents:</span>
+            </p>
+            <ul>
+              <li class="toctree-l1">
+                <a class="reference internal" href="api/index.html"
+                  >API Documentation</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+        <nav class="wy-nav-top" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MCP Server</a>
+        </nav>
+
+        <div class="wy-nav-content">
+          <div class="rst-content">
+            <div role="navigation" aria-label="Page navigation">
+              <ul class="wy-breadcrumbs">
+                <li>
+                  <a
+                    href="index.html"
+                    class="icon icon-home"
+                    aria-label="Home"
+                  ></a>
+                </li>
+                <li class="breadcrumb-item active">
+                  Abstract Links Integration Documentation
+                </li>
+                <li class="wy-breadcrumbs-aside">
+                  <a
+                    href="_sources/abstract_links_integration.md.txt"
+                    rel="nofollow"
+                  >
+                    View page source</a
+                  >
+                </li>
+              </ul>
+              <hr />
+            </div>
+            <div
+              role="main"
+              class="document"
+              itemscope="itemscope"
+              itemtype="http://schema.org/Article"
+            >
+              <div itemprop="articleBody">
+                <section
+                  class="tex2jax_ignore mathjax_ignore"
+                  id="abstract-links-integration-documentation"
+                >
+                  <h1>
+                    Abstract Links Integration Documentation<a
+                      class="headerlink"
+                      href="#abstract-links-integration-documentation"
+                      title="Link to this heading"
+                      ></a
+                    >
+                  </h1>
+                  <section id="overview">
+                    <h2>
+                      Overview<a
+                        class="headerlink"
+                        href="#overview"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <p>
+                      This document describes the integration of abstract links
+                      functionality from the advising platform into the MCP
+                      server project. The abstract links system provides a way
+                      to work with logical references instead of hard-coded file
+                      paths, making the system more maintainable and flexible.
+                    </p>
+                  </section>
+                  <section id="background">
+                    <h2>
+                      Background<a
+                        class="headerlink"
+                        href="#background"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <p>
+                      The abstract links system was originally developed in the
+                      advising platform (<code
+                        class="docutils literal notranslate"
+                        ><span class="pre"
+                          >/Users/ilyakrasinsky/workspace/vscode.projects/heroes.advising.project/advising_platform</span
+                        ></code
+                      >) and was integrated into this MCP server project to
+                      provide consistent abstract link resolution capabilities.
+                    </p>
+                  </section>
+                  <section id="architecture">
+                    <h2>
+                      Architecture<a
+                        class="headerlink"
+                        href="#architecture"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="core-components">
+                      <h3>
+                        Core Components<a
+                          class="headerlink"
+                          href="#core-components"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li>
+                          <p>
+                            <strong>AbstractLinksResolver</strong> (<code
+                              class="docutils literal notranslate"
+                              ><span class="pre"
+                                >src/primitives/abstract_links.py</span
+                              ></code
+                            >)
+                          </p>
+                          <ul class="simple">
+                            <li>
+                              <p>
+                                Main resolver class for abstract address
+                                resolution
+                              </p>
+                            </li>
+                            <li>
+                              <p>
+                                Handles mapping between logical IDs and physical
+                                paths
+                              </p>
+                            </li>
+                            <li>
+                              <p>
+                                Provides caching and persistence functionality
+                              </p>
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>AbstractLinksWorkflow</strong> (<code
+                              class="docutils literal notranslate"
+                              ><span class="pre"
+                                >src/workflows/abstract_links_workflow.py</span
+                              ></code
+                            >)
+                          </p>
+                          <ul class="simple">
+                            <li>
+                              <p>
+                                MCP workflow wrapper for abstract links
+                                functionality
+                              </p>
+                            </li>
+                            <li>
+                              <p>
+                                Provides standardized interface for MCP tools
+                              </p>
+                            </li>
+                            <li>
+                              <p>
+                                Handles command routing and response formatting
+                              </p>
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>MCP Server Integration</strong> (<code
+                              class="docutils literal notranslate"
+                              ><span class="pre">src/mcp_server.py</span></code
+                            >)
+                          </p>
+                          <ul class="simple">
+                            <li>
+                              <p>Integrated abstract links as a new MCP tool</p>
+                            </li>
+                            <li>
+                              <p>
+                                Added workflow specification and tool
+                                registration
+                              </p>
+                            </li>
+                          </ul>
+                        </li>
+                      </ol>
+                    </section>
+                  </section>
+                  <section id="features">
+                    <h2>
+                      Features<a
+                        class="headerlink"
+                        href="#features"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="abstract-address-resolution">
+                      <h3>
+                        Abstract Address Resolution<a
+                          class="headerlink"
+                          href="#abstract-address-resolution"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        The system supports resolving abstract addresses in the
+                        format:
+                      </p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >abstract://standard:task_master</span
+                              ></code
+                            >
+                            →
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">[standards</span>
+                              <span class="pre">.md]/0.</span>
+                              <span class="pre">core</span>
+                              <span class="pre">standards/0.0</span>
+                              <span class="pre">task</span>
+                              <span class="pre">master...</span></code
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >abstract://task:todo</span
+                              ></code
+                            >
+                            →
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">[todo</span>
+                              <span class="pre">·</span>
+                              <span class="pre">incidents]/todo.md</span></code
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >abstract://incident:ai</span
+                              ></code
+                            >
+                            →
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">[todo</span>
+                              <span class="pre">·</span>
+                              <span class="pre"
+                                >incidents]/ai.incidents.md</span
+                              ></code
+                            >
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="automatic-mapping-discovery">
+                      <h3>
+                        Automatic Mapping Discovery<a
+                          class="headerlink"
+                          href="#automatic-mapping-discovery"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        The system automatically scans the standards directory
+                        and creates mappings for all markdown files found,
+                        extracting logical IDs from filenames.
+                      </p>
+                    </section>
+                    <section id="link-conversion">
+                      <h3>
+                        Link Conversion<a
+                          class="headerlink"
+                          href="#link-conversion"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        Supports bidirectional conversion between abstract and
+                        physical links in text content:
+                      </p>
+                      <ul class="simple">
+                        <li><p>Physical paths → Abstract links</p></li>
+                        <li><p>Abstract links → Physical paths</p></li>
+                      </ul>
+                    </section>
+                    <section id="search-and-filtering">
+                      <h3>
+                        Search and Filtering<a
+                          class="headerlink"
+                          href="#search-and-filtering"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        Provides search functionality across mappings with
+                        filtering by document type.
+                      </p>
+                    </section>
+                  </section>
+                  <section id="usage">
+                    <h2>
+                      Usage<a
+                        class="headerlink"
+                        href="#usage"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="mcp-tool-commands">
+                      <h3>
+                        MCP Tool Commands<a
+                          class="headerlink"
+                          href="#mcp-tool-commands"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        The abstract links functionality is available through
+                        the MCP server as the
+                        <code class="docutils literal notranslate"
+                          ><span class="pre">abstract-links</span></code
+                        >
+                        tool with the following commands:
+                      </p>
+                      <section id="resolve-abstract-path">
+                        <h4>
+                          1. resolve_abstract_path<a
+                            class="headerlink"
+                            href="#resolve-abstract-path"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <p>Resolves an abstract address to physical path.</p>
+                        <div class="highlight-json notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;resolve_abstract_path&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;abstract_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abstract://standard:task_master&quot;</span>
+<span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                        <p>Response:</p>
+                        <div class="highlight-json notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;abstract_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abstract://standard:task_master&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;resolved_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[standards .md]/0. core standards/0.0 task master 10 may 2226 cet by ilya krasinsky.md&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;absolute_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/project/standards .md/0. core standards/0.0 task master 10 may 2226 cet by ilya krasinsky.md&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="get-mappings">
+                        <h4>
+                          2. get_mappings<a
+                            class="headerlink"
+                            href="#get-mappings"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <p>
+                          Retrieves mappings, optionally filtered by document
+                          type.
+                        </p>
+                        <div class="highlight-json notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_mappings&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;doc_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;standard&quot;</span>
+<span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="register-mapping">
+                        <h4>
+                          3. register_mapping<a
+                            class="headerlink"
+                            href="#register-mapping"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <p>Registers a new mapping manually.</p>
+                        <div class="highlight-json notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;register_mapping&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;logical_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;standard:new_standard&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;physical_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[standards .md]/new_standard.md&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;doc_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;standard&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;New Standard&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Description of the new standard&quot;</span>
+<span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="convert-links">
+                        <h4>
+                          4. convert_links<a
+                            class="headerlink"
+                            href="#convert-links"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <p>
+                          Converts links in text between abstract and physical
+                          formats.
+                        </p>
+                        <div class="highlight-json notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;convert_links&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;See [Task Master Standard](../../../0. core standards/0.0 task master 10 may 2226 cet by ilya krasinsky.md)&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;to_abstract&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="get-statistics">
+                        <h4>
+                          5. get_statistics<a
+                            class="headerlink"
+                            href="#get-statistics"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <p>Returns statistics about the mappings.</p>
+                        <div class="highlight-json notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_statistics&quot;</span>
+<span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="refresh-mappings">
+                        <h4>
+                          6. refresh_mappings<a
+                            class="headerlink"
+                            href="#refresh-mappings"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <p>Refreshes mappings by re-scanning directories.</p>
+                        <div class="highlight-json notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;refresh_mappings&quot;</span>
+<span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="search-mappings">
+                        <h4>
+                          7. search_mappings<a
+                            class="headerlink"
+                            href="#search-mappings"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <p>Searches mappings by query.</p>
+                        <div class="highlight-json notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;search_mappings&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;doc_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;standard&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+<span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                    </section>
+                    <section id="direct-api-usage">
+                      <h3>
+                        Direct API Usage<a
+                          class="headerlink"
+                          href="#direct-api-usage"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        You can also use the abstract links functionality
+                        directly in Python code:
+                      </p>
+                      <div class="highlight-python notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="kn">from</span> <span class="nn">primitives.abstract_links</span> <span class="kn">import</span> <span class="n">get_resolver</span><span class="p">,</span> <span class="n">resolve_abstract_path</span>
+
+<span class="c1"># Get resolver instance</span>
+<span class="n">resolver</span> <span class="o">=</span> <span class="n">get_resolver</span><span class="p">()</span>
+
+<span class="c1"># Resolve abstract address</span>
+<span class="n">physical_path</span> <span class="o">=</span> <span class="n">resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s2">&quot;abstract://standard:task_master&quot;</span><span class="p">)</span>
+
+<span class="c1"># Quick resolution function</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">resolve_abstract_path</span><span class="p">(</span><span class="s2">&quot;abstract://task:todo&quot;</span><span class="p">)</span>
+
+<span class="c1"># Convert links in text</span>
+<span class="n">converted_text</span> <span class="o">=</span> <span class="n">resolver</span><span class="o">.</span><span class="n">convert_text_links</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">to_abstract</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="configuration">
+                    <h2>
+                      Configuration<a
+                        class="headerlink"
+                        href="#configuration"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="cache-file">
+                      <h3>
+                        Cache File<a
+                          class="headerlink"
+                          href="#cache-file"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        Mappings are cached in
+                        <code class="docutils literal notranslate"
+                          ><span class="pre"
+                            >data/abstract_mappings.json</span
+                          ></code
+                        >
+                        relative to the project root. This file is automatically
+                        created and updated by the system.
+                      </p>
+                    </section>
+                    <section id="core-mappings">
+                      <h3>
+                        Core Mappings<a
+                          class="headerlink"
+                          href="#core-mappings"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        The system includes predefined core mappings for
+                        essential files:
+                      </p>
+                      <ul class="simple">
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">task:todo</span></code
+                            >
+                            →
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">[todo</span>
+                              <span class="pre">·</span>
+                              <span class="pre">incidents]/todo.md</span></code
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">incident:ai</span></code
+                            >
+                            →
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">[todo</span>
+                              <span class="pre">·</span>
+                              <span class="pre"
+                                >incidents]/ai.incidents.md</span
+                              ></code
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >standard:task_master</span
+                              ></code
+                            >
+                            → Task Master Standard
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">standard:registry</span></code
+                            >
+                            → Registry Standard
+                          </p>
+                        </li>
+                        <li><p>And more…</p></li>
+                      </ul>
+                    </section>
+                  </section>
+                  <section id="testing">
+                    <h2>
+                      Testing<a
+                        class="headerlink"
+                        href="#testing"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <p>
+                      The integration includes comprehensive tests in
+                      <code class="docutils literal notranslate"
+                        ><span class="pre"
+                          >tests/test_abstract_links.py</span
+                        ></code
+                      >
+                      that verify:
+                    </p>
+                    <ul class="simple">
+                      <li><p>Abstract address resolution</p></li>
+                      <li><p>Workflow functionality</p></li>
+                      <li><p>Link conversion</p></li>
+                      <li><p>Statistics and search</p></li>
+                    </ul>
+                    <p>Run tests with:</p>
+                    <div class="highlight-bash notranslate">
+                      <div class="highlight">
+                        <pre><span></span>python<span class="w"> </span>tests/test_abstract_links.py
+</pre>
+                      </div>
+                    </div>
+                  </section>
+                  <section id="integration-details">
+                    <h2>
+                      Integration Details<a
+                        class="headerlink"
+                        href="#integration-details"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="file-structure">
+                      <h3>
+                        File Structure<a
+                          class="headerlink"
+                          href="#file-structure"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-default notranslate">
+                        <div class="highlight">
+                          <pre><span></span>src/
+├── primitives/
+│   └── abstract_links.py          # Core resolver functionality
+├── workflows/
+│   └── abstract_links_workflow.py # MCP workflow wrapper
+└── mcp_server.py                  # MCP server with integration
+
+tests/
+└── test_abstract_links.py         # Integration tests
+
+data/
+└── abstract_mappings.json         # Cache file (auto-generated)
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="mcp-server-integration">
+                      <h3>
+                        MCP Server Integration<a
+                          class="headerlink"
+                          href="#mcp-server-integration"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        The abstract links functionality is integrated into the
+                        MCP server through:
+                      </p>
+                      <ol class="arabic simple">
+                        <li>
+                          <p>
+                            <strong>Workflow Import</strong>: Added import for
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >AbstractLinksWorkflow</span
+                              ></code
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>Tool Registration</strong>: Added
+                            <code class="docutils literal notranslate"
+                              ><span class="pre">abstract-links</span></code
+                            >
+                            tool to the tools list
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>Workflow Specification</strong>: Added
+                            workflow specification for lazy loading
+                          </p>
+                        </li>
+                      </ol>
+                    </section>
+                    <section id="error-handling">
+                      <h3>
+                        Error Handling<a
+                          class="headerlink"
+                          href="#error-handling"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>The system includes comprehensive error handling:</p>
+                      <ul class="simple">
+                        <li><p>Graceful fallbacks for missing files</p></li>
+                        <li><p>Logging of resolution failures</p></li>
+                        <li><p>Validation of input parameters</p></li>
+                        <li><p>Safe file operations</p></li>
+                      </ul>
+                    </section>
+                  </section>
+                  <section id="performance">
+                    <h2>
+                      Performance<a
+                        class="headerlink"
+                        href="#performance"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <ul class="simple">
+                      <li>
+                        <p>
+                          <strong>Caching</strong>: Mappings are cached in
+                          memory and persisted to disk
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <strong>Lazy Loading</strong>: Workflows are loaded
+                          only when needed
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <strong>Efficient Scanning</strong>: Directory
+                          scanning is optimized to skip archive folders
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <strong>Minimal I/O</strong>: File operations are
+                          minimized through caching
+                        </p>
+                      </li>
+                    </ul>
+                  </section>
+                  <section id="future-enhancements">
+                    <h2>
+                      Future Enhancements<a
+                        class="headerlink"
+                        href="#future-enhancements"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <p>Potential improvements for the abstract links system:</p>
+                    <ol class="arabic simple">
+                      <li>
+                        <p>
+                          <strong>Real-time Monitoring</strong>: Watch for file
+                          system changes and update mappings automatically
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <strong>Validation</strong>: Validate that physical
+                          paths actually exist
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <strong>Conflict Resolution</strong>: Handle cases
+                          where multiple files could map to the same logical ID
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <strong>Versioning</strong>: Support for versioned
+                          mappings
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <strong>API Endpoints</strong>: REST API endpoints for
+                          external access
+                        </p>
+                      </li>
+                    </ol>
+                  </section>
+                  <section id="troubleshooting">
+                    <h2>
+                      Troubleshooting<a
+                        class="headerlink"
+                        href="#troubleshooting"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="common-issues">
+                      <h3>
+                        Common Issues<a
+                          class="headerlink"
+                          href="#common-issues"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li>
+                          <p>
+                            <strong>Import Errors</strong>: Ensure the project
+                            structure is correct and Python path includes the
+                            src directory
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>Missing Files</strong>: Check that the
+                            standards directory exists and contains markdown
+                            files
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>Permission Issues</strong>: Ensure write
+                            permissions for the data directory
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>Cache Corruption</strong>: Delete
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >data/abstract_mappings.json</span
+                              ></code
+                            >
+                            to regenerate mappings
+                          </p>
+                        </li>
+                      </ol>
+                    </section>
+                    <section id="debugging">
+                      <h3>
+                        Debugging<a
+                          class="headerlink"
+                          href="#debugging"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <p>
+                        Enable debug logging to see detailed information about
+                        mapping operations:
+                      </p>
+                      <div class="highlight-python notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;primitives.abstract_links&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="conclusion">
+                    <h2>
+                      Conclusion<a
+                        class="headerlink"
+                        href="#conclusion"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <p>
+                      The abstract links integration provides a robust
+                      foundation for working with logical references in the MCP
+                      server project. It maintains compatibility with the
+                      original advising platform implementation while providing
+                      a clean MCP interface for external tools and clients.
+                    </p>
+                    <p>
+                      The system successfully resolves 91 mappings including 87
+                      standards, demonstrating comprehensive coverage of the
+                      project’s documentation structure.
+                    </p>
+                  </section>
+                </section>
+              </div>
+            </div>
+            <footer>
+              <hr />
+
+              <div role="contentinfo">
+                <p>&#169; Copyright 2024, AI Assistant.</p>
+              </div>
+
+              Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using
+              a
+              <a href="https://github.com/readthedocs/sphinx_rtd_theme"
+                >theme</a
+              >
+              provided by <a href="https://readthedocs.org">Read the Docs</a>.
+            </footer>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script>
+      jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+      });
+    </script>
+  </body>
+</html>

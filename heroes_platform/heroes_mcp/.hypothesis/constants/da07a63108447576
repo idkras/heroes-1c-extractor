@@ -1,0 +1,4 @@
+# file: /Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server/workflows/hypothesis_workflow.py
+# hypothesis_version: 6.138.2
+
+['Invalid input data', 'JTBD', 'all', 'args', 'command', 'content_length', 'count', 'created_at', 'error', 'evidence', 'expected_outcome', 'falsify_or_confirm', 'filter', 'form_hypothesis', 'hypotheses', 'hypotheses.json', 'hypotheses_count', 'hypothesis', 'hypothesis_id', 'id', 'input_validation', 'issues', 'list_hypotheses', 'notes', 'output_validation', 'pending', 'problem', 'proposed_solution', 'result', 'standard_compliance', 'standard_reading', 'standards_count', 'status', 'success', 'timestamp', 'updated_at', 'utf-8', 'valid', 'workflow']

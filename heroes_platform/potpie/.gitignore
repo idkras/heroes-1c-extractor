@@ -1,0 +1,70 @@
+.DS_Store
+.vscode
+*__pycache__
+.venv
+firebase_service_account.json
+firebase_service_account.json:Zone.Identifier
+cli/dist
+cli/.venv
+venv/
+.env
+*.json
+.momentum
+db
+cli/momentum_cli/.momentum
+.hypothesis
+# Ignore all .env.* files
+.env.*
+# Except for .env.template
+!.env.template
+*.log
+.cursorrules
+projects/
+# Ignore PyCharm config
+.idea
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+/.code-workspace
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+certificates
+package-lock.json
+
+.next
+.vscode/

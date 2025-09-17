@@ -1,0 +1,14 @@
+# Health MCP Server Dependencies
+mcp>=1.0.0
+fastmcp>=0.1.0
+pydantic>=2.0.0
+asyncio
+pathlib
+typing
+dataclasses
+re
+time
+subprocess
+sys
+os
+json

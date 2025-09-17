@@ -1,0 +1,54 @@
+# Core dependencies (for compatibility with pyproject.toml)
+# This file is kept for backward compatibility
+# Main dependencies are managed in pyproject.toml
+
+# Core dependencies
+requests>=2.31.0
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+numpy>=1.22.0
+pydantic>=2.9.2
+python-dotenv>=1.0.0
+
+# Web scraping and parsing
+selenium>=4.15.0
+beautifulsoup4>=4.12.0
+aiohttp>=3.9.0
+
+# GraphQL and API
+gql>=3.4.0
+gql[requests]>=3.4.0
+
+# PDF processing
+PyPDF2>=3.0.0
+weasyprint>=60.0
+
+# Date and time utilities
+arrow>=1.3.0
+
+# JSON utilities
+ujson>=5.8.0
+
+# Ghost CMS integration
+PyJWT>=2.8.0
+markdown>=3.5.0
+
+# Node.js integration for Lexical conversion
+subprocess32>=3.5.4
+
+# MCP and workflow
+mcp[cli]>=1.12.4
+playwright>=1.40.0
+telethon>=1.41.2
+nest-asyncio>=1.6.0
+
+# Database
+psycopg2-binary>=2.9.0
+
+# Note: For new installations, use:
+# cd heroes-platform
+# python -m pip install -e ".[dev]"
+#
+# ⚠️ ВАЖНО: Все MCP серверы используют .venv Python для консистентности
+# Создайте виртуальное окружение: python3.12 -m venv .venv
+# Активируйте его: source .venv/bin/activate

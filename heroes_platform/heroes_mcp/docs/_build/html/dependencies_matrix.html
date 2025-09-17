@@ -1,0 +1,880 @@
+<!doctype html>
+<html class="writer-html5" lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      📊 Dependencies Matrix - MCP Server Project Structure &mdash; MCP Server
+      1.0.0 documentation
+    </title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="_static/pygments.css?v=80d5e7a1"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="_static/css/theme.css?v=e59714d7"
+    />
+
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  </head>
+
+  <body class="wy-body-for-nav">
+    <div class="wy-grid-for-nav">
+      <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+        <div class="wy-side-scroll">
+          <div class="wy-side-nav-search">
+            <a href="index.html" class="icon icon-home"> MCP Server </a>
+            <div role="search">
+              <form
+                id="rtd-search-form"
+                class="wy-form"
+                action="search.html"
+                method="get"
+              >
+                <input
+                  type="text"
+                  name="q"
+                  placeholder="Search docs"
+                  aria-label="Search docs"
+                />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+            </div>
+          </div>
+          <div
+            class="wy-menu wy-menu-vertical"
+            data-spy="affix"
+            role="navigation"
+            aria-label="Navigation menu"
+          >
+            <p class="caption" role="heading">
+              <span class="caption-text">Contents:</span>
+            </p>
+            <ul>
+              <li class="toctree-l1">
+                <a class="reference internal" href="api/index.html"
+                  >API Documentation</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+        <nav class="wy-nav-top" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MCP Server</a>
+        </nav>
+
+        <div class="wy-nav-content">
+          <div class="rst-content">
+            <div role="navigation" aria-label="Page navigation">
+              <ul class="wy-breadcrumbs">
+                <li>
+                  <a
+                    href="index.html"
+                    class="icon icon-home"
+                    aria-label="Home"
+                  ></a>
+                </li>
+                <li class="breadcrumb-item active">
+                  📊 Dependencies Matrix - MCP Server Project Structure
+                </li>
+                <li class="wy-breadcrumbs-aside">
+                  <a href="_sources/dependencies_matrix.md.txt" rel="nofollow">
+                    View page source</a
+                  >
+                </li>
+              </ul>
+              <hr />
+            </div>
+            <div
+              role="main"
+              class="document"
+              itemscope="itemscope"
+              itemtype="http://schema.org/Article"
+            >
+              <div itemprop="articleBody">
+                <section
+                  class="tex2jax_ignore mathjax_ignore"
+                  id="dependencies-matrix-mcp-server-project-structure"
+                >
+                  <h1>
+                    📊 Dependencies Matrix - MCP Server Project Structure<a
+                      class="headerlink"
+                      href="#dependencies-matrix-mcp-server-project-structure"
+                      title="Link to this heading"
+                      ></a
+                    >
+                  </h1>
+                  <section id="id1">
+                    <h2>
+                      🎯 <strong>Цель документа</strong
+                      ><a
+                        class="headerlink"
+                        href="#id1"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <p>
+                      <strong>JTBD:</strong> Как разработчик, я хочу иметь
+                      четкое понимание структуры файлов и зависимостей проекта,
+                      чтобы избежать дублирования и эффективно работать с
+                      существующей кодовой базой.
+                    </p>
+                  </section>
+                  <section id="id2">
+                    <h2>
+                      🏗️ <strong>Структура проекта</strong
+                      ><a
+                        class="headerlink"
+                        href="#id2"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id3">
+                      <h3>
+                        <strong>Корневая директория</strong> (<code
+                          class="docutils literal notranslate"
+                          ><span class="pre">/</span></code
+                        >)<a
+                          class="headerlink"
+                          href="#id3"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-default notranslate">
+                        <div class="highlight">
+                          <pre><span></span>[cursor.template project]/
+├── workflows/                    # ✅ СУЩЕСТВУЕТ - основные workflow файлы
+│   ├── telegram_workflow.py     # ✅ СУЩЕСТВУЕТ - интеграция с telegram-mcp
+│   └── standards_management.py  # ✅ СУЩЕСТВУЕТ - управление стандартами
+├── scripts/                     # ✅ СУЩЕСТВУЕТ - скрипты сопровождения
+│   ├── setup_python_environment.py
+│   └── telegram/
+├── [standards .md]/             # ✅ СУЩЕСТВУЕТ - стандарты и документация
+│   └── platform/mcp_server/     # ✅ СУЩЕСТВУЕТ - основной MCP сервер
+└── config/                      # ✅ СУЩЕСТВУЕТ - конфигурации
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section
+                      id="mcp-server-platform-standards-md-platform-mcp-server"
+                    >
+                      <h3>
+                        <strong>MCP Server Platform</strong> (<code
+                          class="docutils literal notranslate"
+                          ><span class="pre">[standards</span>
+                          <span class="pre"
+                            >.md]/platform/mcp_server/</span
+                          ></code
+                        >)<a
+                          class="headerlink"
+                          href="#mcp-server-platform-standards-md-platform-mcp-server"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-default notranslate">
+                        <div class="highlight">
+                          <pre><span></span>platform/mcp_server/
+├── src/                         # ✅ СУЩЕСТВУЕТ - основной код
+│   ├── mcp_server.py           # ✅ СУЩЕСТВУЕТ - главный сервер (806 строк)
+│   ├── workflows/              # ✅ СУЩЕСТВУЕТ - workflow модули
+│   │   └── telegram_workflow_fixed.py  # ✅ СУЩЕСТВУЕТ (448 строк)
+│   ├── performance/            # ✅ СУЩЕСТВУЕТ - мониторинг производительности
+│   ├── atomic_operations/      # ✅ СУЩЕСТВУЕТ - атомарные операции
+│   ├── tdd_framework/          # ✅ СУЩЕСТВУЕТ - TDD фреймворк
+│   ├── qa_ai_framework/        # ✅ СУЩЕСТВУЕТ - AI QA фреймворк
+│   └── primitives/             # ✅ СУЩЕСТВУЕТ - примитивы
+├── scripts/                     # ✅ СУЩЕСТВУЕТ - скрипты мониторинга
+│   ├── enhanced_log_monitor.py # ✅ СУЩЕСТВУЕТ (392 строки)
+│   ├── health_check.py         # ✅ СУЩЕСТВУЕТ (110 строк)
+│   ├── check_critical_issues.py # ✅ СУЩЕСТВУЕТ (50 строк)
+│   ├── final_alert_check.py    # ✅ СУЩЕСТВУЕТ (49 строк)
+│   └── analyze_logs.py         # ✅ СУЩЕСТВУЕТ (581 строка)
+├── tests/                       # ✅ СУЩЕСТВУЕТ - тесты
+├── logs/                        # ✅ СУЩЕСТВУЕТ - логи
+└── .github/workflows/           # ✅ СУЩЕСТВУЕТ - CI/CD
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="id4">
+                    <h2>
+                      🔄 <strong>Критические зависимости и дублирования</strong
+                      ><a
+                        class="headerlink"
+                        href="#id4"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id5">
+                      <h3>
+                        <strong>🚨 ДУБЛИРОВАНИЯ ОБНАРУЖЕНЫ:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id5"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <section id="telegram-workflow-files">
+                        <h4>
+                          1. <strong>Telegram Workflow Files</strong
+                          ><a
+                            class="headerlink"
+                            href="#telegram-workflow-files"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <ul class="simple">
+                          <li>
+                            <p>
+                              <strong>Корень:</strong>
+                              <code class="docutils literal notranslate"
+                                ><span class="pre"
+                                  >workflows/telegram_workflow.py</span
+                                ></code
+                              >
+                              (297 строк)
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              <strong>Platform:</strong>
+                              <code class="docutils literal notranslate"
+                                ><span class="pre">[standards</span>
+                                <span class="pre"
+                                  >.md]/platform/mcp_server/src/workflows/telegram_workflow_fixed.py</span
+                                ></code
+                              >
+                              (448 строк)
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              <strong>Проблема:</strong> Два разных файла с
+                              одинаковой функциональностью
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              <strong>Решение:</strong> Использовать только
+                              platform версию, удалить корневую
+                            </p>
+                          </li>
+                        </ul>
+                      </section>
+                      <section id="log-monitoring-scripts">
+                        <h4>
+                          2. <strong>Log Monitoring Scripts</strong
+                          ><a
+                            class="headerlink"
+                            href="#log-monitoring-scripts"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <ul class="simple">
+                          <li>
+                            <p>
+                              <strong>Корень:</strong>
+                              <code class="docutils literal notranslate"
+                                ><span class="pre">scripts/</span></code
+                              >
+                              (минимальный)
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              <strong>Platform:</strong>
+                              <code class="docutils literal notranslate"
+                                ><span class="pre">[standards</span>
+                                <span class="pre"
+                                  >.md]/platform/mcp_server/scripts/</span
+                                ></code
+                              >
+                              (полный набор)
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              <strong>Проблема:</strong> Скрипты мониторинга в
+                              разных местах
+                            </p>
+                          </li>
+                          <li>
+                            <p>
+                              <strong>Решение:</strong> Использовать только
+                              platform версии
+                            </p>
+                          </li>
+                        </ul>
+                      </section>
+                    </section>
+                    <section id="id6">
+                      <h3>
+                        <strong>✅ ПРАВИЛЬНЫЕ ЗАВИСИМОСТИ:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id6"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <section id="mcp-server-configuration">
+                        <h4>
+                          <strong>MCP Server Configuration</strong
+                          ><a
+                            class="headerlink"
+                            href="#mcp-server-configuration"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-json notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="c1">// ~/.cursor/mcp.json - ПРАВИЛЬНО НАСТРОЕНО</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mcpServers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;heroes-mcp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/path/to/platform/mcp_server/src/mcp_server.py&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;PYTHONPATH&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/platform/mcp_server&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                      <section id="workflow-registration-mcp-server-py">
+                        <h4>
+                          <strong>Workflow Registration в mcp_server.py</strong
+                          ><a
+                            class="headerlink"
+                            href="#workflow-registration-mcp-server-py"
+                            title="Link to this heading"
+                            ></a
+                          >
+                        </h4>
+                        <div class="highlight-python notranslate">
+                          <div class="highlight">
+                            <pre><span></span><span class="c1"># ✅ ПРАВИЛЬНО - использует platform workflow</span>
+<span class="s2">&quot;telegram-workflow&quot;</span><span class="p">:</span> <span class="p">(</span>
+    <span class="s2">&quot;src.workflows.telegram_workflow_fixed&quot;</span><span class="p">,</span>  <span class="c1"># Platform путь</span>
+    <span class="s2">&quot;TelegramWorkflow&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;telegram_workflow&quot;</span><span class="p">,</span>
+<span class="p">),</span>
+</pre>
+                          </div>
+                        </div>
+                      </section>
+                    </section>
+                  </section>
+                  <section id="mcp-server">
+                    <h2>
+                      🎯 <strong>Текущие проблемы MCP Server</strong
+                      ><a
+                        class="headerlink"
+                        href="#mcp-server"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="import-errors">
+                      <h3>
+                        <strong>1. Import Errors</strong
+                        ><a
+                          class="headerlink"
+                          href="#import-errors"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-python notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># ❌ ПРОБЛЕМА - отсутствующие workflow модули</span>
+<span class="s2">&quot;standards-management&quot;</span><span class="p">:</span> <span class="p">(</span>
+    <span class="s2">&quot;workflows.standards_management&quot;</span><span class="p">,</span>  <span class="c1"># НЕ СУЩЕСТВУЕТ в platform</span>
+    <span class="s2">&quot;StandardsManagementWorkflow&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;standards_management&quot;</span><span class="p">,</span>
+<span class="p">),</span>
+<span class="s2">&quot;hypothesis-workflow&quot;</span><span class="p">:</span> <span class="p">(</span>
+    <span class="s2">&quot;workflows.hypothesis_workflow&quot;</span><span class="p">,</span>  <span class="c1"># НЕ СУЩЕСТВУЕТ</span>
+    <span class="s2">&quot;HypothesisWorkflow&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hypothesis_workflow&quot;</span><span class="p">,</span>
+<span class="p">),</span>
+<span class="c1"># ... и другие отсутствующие workflow</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="performance-monitor-issues">
+                      <h3>
+                        <strong>2. Performance Monitor Issues</strong
+                        ><a
+                          class="headerlink"
+                          href="#performance-monitor-issues"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-python notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># ❌ ПРОБЛЕМА - импорт performance модулей</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">simple_performance_monitor</span> <span class="kn">import</span> <span class="n">simple_monitor</span>
+    <span class="n">SIMPLE_MONITOR_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Performance monitor not available: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">simple_monitor_available</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Переменная не определена!</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="telegram-workflow-path-issues">
+                      <h3>
+                        <strong>3. Telegram Workflow Path Issues</strong
+                        ><a
+                          class="headerlink"
+                          href="#telegram-workflow-path-issues"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <div class="highlight-python notranslate">
+                        <div class="highlight">
+                          <pre><span></span><span class="c1"># ❌ ПРОБЛЕМА - неправильный путь к telegram-mcp</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">telegram_mcp_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;[projects]/tg.context/telegram-mcp/&quot;</span><span class="p">)</span>
+<span class="c1"># Должно быть: Path(&quot;telegram-mcp/&quot;) или относительный путь</span>
+</pre>
+                        </div>
+                      </div>
+                    </section>
+                  </section>
+                  <section id="id7">
+                    <h2>
+                      🔧 <strong>План исправления MCP Server</strong
+                      ><a
+                        class="headerlink"
+                        href="#id7"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id8">
+                      <h3>
+                        <strong>Этап 1: Исправить критические ошибки</strong
+                        ><a
+                          class="headerlink"
+                          href="#id8"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li>
+                          <p>
+                            <strong
+                              >Исправить performance monitor import</strong
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong
+                              >Создать отсутствующие workflow модули</strong
+                            >
+                          </p>
+                        </li>
+                        <li>
+                          <p><strong>Исправить пути к telegram-mcp</strong></p>
+                        </li>
+                      </ol>
+                    </section>
+                    <section id="id9">
+                      <h3>
+                        <strong>Этап 2: Унифицировать структуру</strong
+                        ><a
+                          class="headerlink"
+                          href="#id9"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li>
+                          <p>
+                            <strong>Удалить дублирующие файлы из корня</strong>
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            <strong>Перенести все в platform структуру</strong>
+                          </p>
+                        </li>
+                        <li>
+                          <p><strong>Обновить конфигурации</strong></p>
+                        </li>
+                      </ol>
+                    </section>
+                    <section id="id10">
+                      <h3>
+                        <strong>Этап 3: Тестирование</strong
+                        ><a
+                          class="headerlink"
+                          href="#id10"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li>
+                          <p><strong>Запустить MCP server</strong></p>
+                        </li>
+                        <li>
+                          <p><strong>Проверить все workflow</strong></p>
+                        </li>
+                        <li>
+                          <p><strong>Валидировать логирование</strong></p>
+                        </li>
+                      </ol>
+                    </section>
+                  </section>
+                  <section id="checklist">
+                    <h2>
+                      📋 <strong>Checklist для исправления</strong
+                      ><a
+                        class="headerlink"
+                        href="#checklist"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id11">
+                      <h3>
+                        <strong>Критические исправления:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id11"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="contains-task-list simple">
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Исправить
+                            <code class="docutils literal notranslate"
+                              ><span class="pre"
+                                >simple_monitor_available</span
+                              ></code
+                            >
+                            переменную в mcp_server.py
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Создать отсутствующие workflow модули в platform
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Исправить путь к telegram-mcp в
+                            telegram_workflow_fixed.py
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Удалить дублирующий telegram_workflow.py из корня
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="id12">
+                      <h3>
+                        <strong>Структурные улучшения:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id12"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="contains-task-list simple">
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Унифицировать все workflow в platform структуре
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Обновить все импорты в mcp_server.py
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Проверить все пути в конфигурациях
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Удалить неиспользуемые файлы
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                    <section id="id13">
+                      <h3>
+                        <strong>Тестирование:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id13"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ul class="contains-task-list simple">
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Запустить MCP server без ошибок
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Проверить все доступные tools
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Валидировать telegram workflow
+                          </p>
+                        </li>
+                        <li class="task-list-item">
+                          <p>
+                            <input
+                              class="task-list-item-checkbox"
+                              disabled="disabled"
+                              type="checkbox"
+                            />
+                            Проверить логирование и мониторинг
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                  </section>
+                  <section id="id14">
+                    <h2>
+                      🎯 <strong>Приоритеты действий</strong
+                      ><a
+                        class="headerlink"
+                        href="#id14"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <section id="id15">
+                      <h3>
+                        <strong>ВЫСОКИЙ ПРИОРИТЕТ:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id15"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li><p>Исправить критические import ошибки</p></li>
+                        <li><p>Создать отсутствующие workflow модули</p></li>
+                        <li><p>Исправить telegram-mcp интеграцию</p></li>
+                      </ol>
+                    </section>
+                    <section id="id16">
+                      <h3>
+                        <strong>СРЕДНИЙ ПРИОРИТЕТ:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id16"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li><p>Унифицировать структуру файлов</p></li>
+                        <li><p>Удалить дублирования</p></li>
+                        <li><p>Обновить документацию</p></li>
+                      </ol>
+                    </section>
+                    <section id="id17">
+                      <h3>
+                        <strong>НИЗКИЙ ПРИОРИТЕТ:</strong
+                        ><a
+                          class="headerlink"
+                          href="#id17"
+                          title="Link to this heading"
+                          ></a
+                        >
+                      </h3>
+                      <ol class="arabic simple">
+                        <li><p>Оптимизировать производительность</p></li>
+                        <li><p>Добавить дополнительные workflow</p></li>
+                        <li><p>Расширить мониторинг</p></li>
+                      </ol>
+                    </section>
+                  </section>
+                  <section id="id18">
+                    <h2>
+                      🔗 <strong>Ссылки на стандарты</strong
+                      ><a
+                        class="headerlink"
+                        href="#id18"
+                        title="Link to this heading"
+                        ></a
+                      >
+                    </h2>
+                    <ul class="simple">
+                      <li>
+                        <p>
+                          <strong
+                            >[TDD Documentation Standard](…/…/…/4. dev · design
+                            · qa/4.1 tdd documentation standard 22 may 2025 1830
+                            cet by ai assistant.md)</strong
+                          >
+                          - для создания качественного кода
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <strong
+                            >[FROM-THE-END Standard](…/…/…/1. process · goalmap
+                            · task · incidents · tickets · qa/1.4
+                            from-the-end.process.checkilst.md)</strong
+                          >
+                          - для системного подхода
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          <strong
+                            >[MCP Workflow Standard](…/…/…/4. dev · design ·
+                            qa/4.1 mcp workflow standard.md)</strong
+                          >
+                          - для архитектуры workflow
+                        </p>
+                      </li>
+                    </ul>
+                    <hr class="docutils" />
+                    <p>
+                      <strong>Статус:</strong> Анализ завершен, план исправления
+                      готов <strong>Следующий шаг:</strong> Исправить
+                      критические ошибки в mcp_server.py
+                    </p>
+                  </section>
+                </section>
+              </div>
+            </div>
+            <footer>
+              <hr />
+
+              <div role="contentinfo">
+                <p>&#169; Copyright 2024, AI Assistant.</p>
+              </div>
+
+              Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using
+              a
+              <a href="https://github.com/readthedocs/sphinx_rtd_theme"
+                >theme</a
+              >
+              provided by <a href="https://readthedocs.org">Read the Docs</a>.
+            </footer>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script>
+      jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+      });
+    </script>
+  </body>
+</html>

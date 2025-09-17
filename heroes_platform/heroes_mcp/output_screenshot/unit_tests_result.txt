@@ -1,0 +1,101 @@
+/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/pytest_asyncio/plugin.py:211: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform darwin -- Python 3.11.5, pytest-8.3.5, pluggy-1.6.0 -- /Library/Frameworks/Python.framework/Versions/3.11/bin/python3
+cachedir: .pytest_cache
+metadata: {'Python': '3.11.5', 'Platform': 'macOS-15.4-arm64-arm-64bit', 'Packages': {'pytest': '8.3.5', 'pluggy': '1.6.0'}, 'Plugins': {'html': '4.1.1', 'asyncio': '1.1.0', 'xdist': '3.8.0', 'metadata': '3.1.1', 'anyio': '4.10.0', 'hypothesis': '6.138.2', 'cov': '6.2.1', 'playwright': '0.7.0', 'mock': '3.14.1', 'base-url': '2.1.0', 'langsmith': '0.4.14'}, 'Base URL': ''}
+hypothesis profile 'default'
+rootdir: /Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/heroes-platform/mcp_server
+configfile: pytest.ini
+plugins: html-4.1.1, asyncio-1.1.0, xdist-3.8.0, metadata-3.1.1, anyio-4.10.0, hypothesis-6.138.2, cov-6.2.1, playwright-0.7.0, mock-3.14.1, base-url-2.1.0, langsmith-0.4.14
+asyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 10 items
+
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_read_spreadsheet_with_valid_id FAILED [ 10%]
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_read_spreadsheet_with_invalid_id PASSED [ 20%]
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_read_formulas_with_valid_id FAILED [ 30%]
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_update_spreadsheet_with_valid_data FAILED [ 40%]
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_workflow_atomic_functions PASSED [ 50%]
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_workflow_size_limit PASSED [ 60%]
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_workflow_mcp_commands_limit PASSED [ 70%]
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_workflow_validation_methods PASSED [ 80%]
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_workflow_error_handling PASSED [ 90%]
+workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_workflow_async_support PASSED [100%]
+
+=================================== FAILURES ===================================
+__ TestGoogleSheetsWorkflow.test_google_sheets_read_spreadsheet_with_valid_id __
+
+self = <test_google_sheets_workflow.TestGoogleSheetsWorkflow object at 0x1124076d0>
+
+    @pytest.mark.asyncio
+    async def test_google_sheets_read_spreadsheet_with_valid_id(self):
+        """GIVEN valid spreadsheet_id WHEN read_spreadsheet THEN return data"""
+        # Тест должен ПАДАТЬ - workflow еще не существует
+        from workflows.google_sheets_workflow import GoogleSheetsWorkflow
+    
+        workflow = GoogleSheetsWorkflow()
+        result = await workflow.read_spreadsheet("test_spreadsheet_id", "A1:B10")
+    
+        # Проверяем что результат содержит данные
+        assert result is not None
+        assert isinstance(result, str)
+    
+        # Проверяем что результат можно распарсить как JSON
+        data = json.loads(result)
+        assert "success" in data
+>       assert data["success"] is True
+E       assert False is True
+
+workflows/tests/unit/test_google_sheets_workflow.py:31: AssertionError
+___ TestGoogleSheetsWorkflow.test_google_sheets_read_formulas_with_valid_id ____
+
+self = <test_google_sheets_workflow.TestGoogleSheetsWorkflow object at 0x1123b6e50>
+
+    @pytest.mark.asyncio
+    async def test_google_sheets_read_formulas_with_valid_id(self):
+        """GIVEN valid spreadsheet_id WHEN read_formulas THEN return formulas"""
+        # Тест должен ПАДАТЬ
+        from workflows.google_sheets_workflow import GoogleSheetsWorkflow
+    
+        workflow = GoogleSheetsWorkflow()
+        result = await workflow.read_formulas("test_spreadsheet_id", "A1:B10")
+    
+        assert result is not None
+        assert isinstance(result, str)
+    
+        data = json.loads(result)
+        assert "success" in data
+>       assert data["success"] is True
+E       assert False is True
+
+workflows/tests/unit/test_google_sheets_workflow.py:65: AssertionError
+_ TestGoogleSheetsWorkflow.test_google_sheets_update_spreadsheet_with_valid_data _
+
+self = <test_google_sheets_workflow.TestGoogleSheetsWorkflow object at 0x11240c9d0>
+
+    @pytest.mark.asyncio
+    async def test_google_sheets_update_spreadsheet_with_valid_data(self):
+        """GIVEN valid data WHEN update_spreadsheet THEN return success"""
+        # Тест должен ПАДАТЬ
+        from workflows.google_sheets_workflow import GoogleSheetsWorkflow
+    
+        workflow = GoogleSheetsWorkflow()
+        test_values = json.dumps([["test", "data"], ["more", "data"]])
+        result = await workflow.update_spreadsheet("test_spreadsheet_id", "A1:B2", test_values)
+    
+        assert result is not None
+        assert isinstance(result, str)
+    
+        data = json.loads(result)
+        assert "success" in data
+>       assert data["success"] is True
+E       assert False is True
+
+workflows/tests/unit/test_google_sheets_workflow.py:83: AssertionError
+=========================== short test summary info ============================
+FAILED workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_read_spreadsheet_with_valid_id
+FAILED workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_read_formulas_with_valid_id
+FAILED workflows/tests/unit/test_google_sheets_workflow.py::TestGoogleSheetsWorkflow::test_google_sheets_update_spreadsheet_with_valid_data
+========================= 3 failed, 7 passed in 2.08s ==========================

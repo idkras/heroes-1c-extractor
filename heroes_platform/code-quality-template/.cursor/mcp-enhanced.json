@@ -1,0 +1,180 @@
+{
+  "mcpServers": {
+    "task-master-ai": {
+      "command": "npx",
+      "args": ["-y", "--package=task-master-ai", "task-master-ai"],
+      "env": {
+        "ANTHROPIC_API_KEY": "ANTHROPIC_API_KEY_HERE",
+        "PERPLEXITY_API_KEY": "PERPLEXITY_API_KEY_HERE",
+        "OPENAI_API_KEY": "OPENAI_API_KEY_HERE",
+        "GOOGLE_API_KEY": "GOOGLE_API_KEY_HERE",
+        "XAI_API_KEY": "XAI_API_KEY_HERE",
+        "OPENROUTER_API_KEY": "OPENROUTER_API_KEY_HERE",
+        "MISTRAL_API_KEY": "MISTRAL_API_KEY_HERE",
+        "AZURE_OPENAI_API_KEY": "AZURE_OPENAI_API_KEY_HERE",
+        "OLLAMA_API_KEY": "OLLAMA_API_KEY_HERE"
+      },
+      "postTaskExecution": {
+        "runTests": true,
+        "takeScreenshot": true,
+        "manualReview": true,
+        "updateDocumentation": true,
+        "commitChanges": true,
+        "validateAgainstGoals": true,
+        "reportToChat": true
+      }
+    },
+    "n8n-mcp": {
+      "command": "npx",
+      "args": ["n8n-mcp"],
+      "env": {
+        "MCP_MODE": "stdio",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true",
+        "N8N_API_URL": "https://flow.rick.ai/api/v1",
+        "N8N_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMjI4Zjk2Ny00YmRhLTQzN2ItOGJhOC0xNzhmNzQwMTlkYzUiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzUyNDQyNTM1LCJleHAiOjE3NTQ5NTY4MDB9.z1Hgduiq_aQokOmCKPvsGn1np9_eMK8LKj5obfv808Y"
+      }
+    },
+    "playwright-mcp": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp"],
+      "env": {
+        "PLAYWRIGHT_BROWSERS_PATH": "0"
+      }
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "enabled": true
+    },
+    "advising-platform": {
+      "command": "python3",
+      "args": ["-m", "advising_platform.src.mcp.mcp_orchestrator"],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/advising_platform"
+      }
+    },
+    "heroes-docs-server": {
+      "command": "python3",
+      "args": ["advising_platform/src/api/app.py", "--port", "8001"],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/advising_platform",
+        "FLASK_ENV": "development"
+      }
+    },
+    "heroes-gpt-workflow": {
+      "command": "python3",
+      "args": ["advising_platform/src/api/app.py", "--port", "8000"],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/advising_platform",
+        "FLASK_ENV": "development"
+      }
+    },
+    "standards-mcp-workflow": {
+      "command": "python3",
+      "args": ["advising_platform/src/api/app.py", "--port", "8002"],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/advising_platform",
+        "FLASK_ENV": "development"
+      }
+    },
+    "system-graph-server": {
+      "command": "python3",
+      "args": ["advising_platform/src/api/app.py", "--port", "8004"],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/advising_platform",
+        "FLASK_ENV": "development"
+      }
+    },
+    "duckdb-cache-api": {
+      "command": "python3",
+      "args": ["advising_platform/src/api/app.py", "--port", "5004"],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/advising_platform",
+        "FLASK_ENV": "development"
+      }
+    },
+    "mcp-http-adapter": {
+      "command": "python3",
+      "args": [
+        "advising_platform/src/api/mcp_http_adapter.py",
+        "--port",
+        "5005"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/advising_platform",
+        "FLASK_ENV": "development"
+      }
+    }
+  },
+  "validationRules": {
+    "postTaskChecks": {
+      "runTests": "python3 -m pytest advising_platform/tests/",
+      "takeScreenshot": "node advising_platform/scripts/test_n8n_visualization.js",
+      "manualReview": "compare_screenshot_with_original",
+      "updateDocumentation": "update_n8n_todo_md",
+      "commitChanges": "git add . && git commit -m 'feat: task completion'",
+      "validateAgainstGoals": "check_against_release_goals",
+      "reportToChat": "output_findings_to_chat"
+    },
+    "mandatorySteps": [
+      "runTests",
+      "takeScreenshot",
+      "manualReview",
+      "updateDocumentation",
+      "commitChanges",
+      "validateAgainstGoals",
+      "reportToChat"
+    ],
+    "validationCriteria": {
+      "visualCompliance": "screenshot_matches_original_n8n",
+      "functionalCompliance": "all_tests_pass",
+      "goalCompliance": "result_meets_release_goals",
+      "documentationCompliance": "n8n_todo_updated"
+    },
+    "mcpWorkflowValidation": {
+      "serverHealthCheck": "curl -f http://localhost:5005/health",
+      "commandValidation": "curl -f http://localhost:5005/mcp/commands",
+      "integrationTest": "python3 advising_platform/tests/test_mcp_integration.py",
+      "registryCompliance": "python3 advising_platform/scripts/validate_registry_compliance.py"
+    }
+  },
+  "workflowServers": {
+    "heroes-docs-server": {
+      "port": 8001,
+      "description": "Documentation server for HeroesGPT workflow",
+      "healthCheck": "http://localhost:8001/health",
+      "status": "running"
+    },
+    "heroes-gpt-workflow": {
+      "port": 8000,
+      "description": "Main AI workflow server for HeroesGPT analysis",
+      "healthCheck": "http://localhost:8000/health",
+      "status": "running"
+    },
+    "standards-mcp-workflow": {
+      "port": 8002,
+      "description": "Standards MCP workflow server",
+      "healthCheck": "http://localhost:8002/health",
+      "status": "running"
+    },
+    "system-graph-server": {
+      "port": 8004,
+      "description": "System architecture visualization server",
+      "healthCheck": "http://localhost:8004/health",
+      "status": "running"
+    },
+    "duckdb-cache-api": {
+      "port": 5004,
+      "description": "DuckDB cache API for standards data",
+      "healthCheck": "http://localhost:5004/health",
+      "status": "running"
+    },
+    "mcp-http-adapter": {
+      "port": 5005,
+      "description": "Unified MCP HTTP adapter - single entry point",
+      "healthCheck": "http://localhost:5005/health",
+      "status": "running"
+    }
+  }
+}

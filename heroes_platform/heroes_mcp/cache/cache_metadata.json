@@ -1,0 +1,85 @@
+{
+  "entries": {
+    "ad929a35d043360f63abdc15bd0f6a2dc7a7c31538a105ca4ec2647c34ac736c": {
+      "command": "performance-monitor",
+      "created_at": "2025-08-18T17:47:34.447201",
+      "size": 146,
+      "execution_time": 0.002841949462890625
+    },
+    "5a0caa2c5f4eff6a78927706b53c15b3fe6f58338f1e82199bb2427a3bfea12d": {
+      "command": "telegram-workflow",
+      "created_at": "2025-08-18T17:49:46.557674",
+      "size": 206,
+      "execution_time": 126.45429301261902
+    },
+    "1a09a81c4d6547beffb6012d8a2116cdf20612106aa8d78c47d32e1aa94fac6a": {
+      "command": "telegram-workflow",
+      "created_at": "2025-08-18T17:51:53.097443",
+      "size": 4342,
+      "execution_time": 119.7839949131012
+    },
+    "a998a7d7c84844441e615d83073be1e06e272914720ea8da8ae980abdea08f93": {
+      "command": "telegram-workflow",
+      "created_at": "2025-08-18T17:52:42.652089",
+      "size": 137,
+      "execution_time": 0.0005578994750976562
+    },
+    "5b665f134c87b165d4f94ac8a51ebd2299695977dd7a7e8f361b8c25b7305c42": {
+      "command": "telegram-workflow",
+      "created_at": "2025-08-18T17:53:38.377230",
+      "size": 137,
+      "execution_time": 0.0005109310150146484
+    },
+    "da802e435c036449add25700be28b45ddae99b74f1eb72d084a7e1d9380b306a": {
+      "command": "telegram-workflow",
+      "created_at": "2025-08-18T17:54:08.251811",
+      "size": 137,
+      "execution_time": 0.0005950927734375
+    },
+    "0809128df89e7d7442cd344eb2d262b61064a3ef539f7cd511e1cfbb22c52a79": {
+      "command": "telegram-workflow",
+      "created_at": "2025-08-18T17:55:07.490313",
+      "size": 1584,
+      "execution_time": 1.4005141258239746
+    },
+    "26f74abf3b0c9d9ea8e06686f834271f6f7d7c21b348bd924087416bc06d5851": {
+      "command": "telegram-workflow",
+      "created_at": "2025-08-18T17:57:22.682374",
+      "size": 187,
+      "execution_time": 127.8218560218811
+    },
+    "f4accc58f6a8b39f3c0bb07852714fb9f0950c92031695e01dd9ea591cf58f0b": {
+      "command": "standards-management",
+      "created_at": "2025-08-18T18:11:17.298281",
+      "size": 12732,
+      "execution_time": 0.009943962097167969
+    },
+    "1aca9349ef1ad3d42d1d2644226f89dbf4a59631e4ba9c08df414bf1f09eca5c": {
+      "command": "telegram-workflow",
+      "created_at": "2025-08-18T18:27:20.834389",
+      "size": 346,
+      "execution_time": 0.0014252662658691406
+    },
+    "02ef20c4e27c9cc3c3f5b149dc387c3c5a4aa254078593bf23c227cc326954cd": {
+      "command": "heroes-gpt-workflow",
+      "created_at": "2025-08-18T19:08:16.505759",
+      "size": 11763,
+      "execution_time": 0.10266900062561035
+    },
+    "97e7bf6e6d9a6863183ecd2bd836f627b432fd738233993405a03c8295ad6c71": {
+      "command": "hypothesis-workflow",
+      "created_at": "2025-08-18T19:08:24.165629",
+      "size": 167,
+      "execution_time": 0.0009112358093261719
+    },
+    "6f351dff4f358c570f48bf823a9886a1089e7075e922a585eca0695fe13c0dc9": {
+      "command": "performance-monitor",
+      "created_at": "2025-08-18T19:08:34.713232",
+      "size": 975,
+      "execution_time": 0.0006968975067138672
+    }
+  },
+  "total_size": 32859,
+  "created_at": "2025-08-18T17:47:34.445244",
+  "last_cleanup": "2025-08-18T17:47:34.445252"
+}

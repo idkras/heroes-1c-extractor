@@ -1,0 +1,68 @@
+name: MCP Server Tests
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'heroes-platform/heroes-mcp/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'heroes-platform/heroes-mcp/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v5
+    
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        cd heroes-platform/heroes-mcp
+        python -m pip install --upgrade pip
+        pip install pytest asyncio
+    
+    - name: Run health check
+      run: |
+        cd heroes-platform/heroes-mcp
+        python scripts/mcp_health_check.py
+    
+    - name: Run quality tests
+      run: |
+        cd heroes-platform/heroes-mcp
+        python tests/quality/test_mcp_commands_quality.py
+    
+    - name: Run cross-check tests
+      run: |
+        cd heroes-platform/heroes-mcp
+        python tests/cross_check/test_cursor_integration.py
+    
+    - name: Run comprehensive tests
+      run: |
+        cd heroes-platform/heroes-mcp
+        python tests/comprehensive/test_all_mcp_commands.py
+    
+    - name: Run edge cases tests
+      run: |
+        cd heroes-platform/heroes-mcp
+        python tests/edge_cases/test_error_scenarios.py
+    
+    - name: Run all tests with pytest
+      run: |
+        cd heroes-platform/heroes-mcp
+        python -m pytest tests/ -v --tb=short
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          heroes-platform/heroes-mcp/mcp_monitor.log
+          heroes-platform/heroes-mcp/test-results/

@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "heroes-mcp": {
+      "command": "python3",
+      "args": ["{HEROES_PLATFORM_PATH}/heroes_mcp/src/heroes_mcp_server.py"],
+      "env": {
+        "PYTHONPATH": "{HEROES_PLATFORM_PATH}"
+      }
+    },
+    "n8n-mcp": {
+      "command": "python3",
+      "args": ["{HEROES_PLATFORM_PATH}/shared/credentials_wrapper.py", "n8n", "node", "{HEROES_PLATFORM_PATH}/n8n-mcp/dist/mcp/index.js"],
+      "env": {
+        "PYTHONPATH": "{HEROES_PLATFORM_PATH}"
+      }
+    },
+    "telegram-mcp": {
+      "command": "python3",
+      "args": ["{HEROES_PLATFORM_PATH}/shared/credentials_wrapper.py", "telegram", "python3", "{HEROES_PLATFORM_PATH}/telegram-mcp/telegram_mcp_server.py"],
+      "env": {
+        "PYTHONPATH": "{HEROES_PLATFORM_PATH}"
+      }
+    },
+    "google-sheets-mcp": {
+      "command": "python3",
+      "args": ["{HEROES_PLATFORM_PATH}/shared/mcp_google_sheets_server.py"],
+      "env": {
+        "PYTHONPATH": "{HEROES_PLATFORM_PATH}"
+      }
+    }
+  }
+}

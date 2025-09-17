@@ -1,0 +1,88 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-json
+      - id: check-toml
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        language_version: python3.11
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.270
+    hooks:
+      - id: ruff
+        args: [--fix]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.3.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-all]
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: [-r, .]
+
+  - repo: https://github.com/PyCQA/safety
+    rev: v2.3.5
+    hooks:
+      - id: safety
+        args: [check]
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.3.1
+    hooks:
+      - id: pyupgrade
+        args: [--py311-plus]
+
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.12.0
+    hooks:
+      - id: isort
+        args: [--profile=black]
+
+  # Custom validation hooks
+  - repo: local
+    hooks:
+      - id: validate-mcp-commands
+        name: Validate MCP Commands
+        entry: python -c "import sys; from pathlib import Path; sys.path.append(str(Path('mcp_server/src'))); from mcp_server import mcp; print('✅ MCP Commands validation passed')"
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: validate-standards
+        name: Validate Standards
+        entry: python -c "import sys; from pathlib import Path; sys.path.append(str(Path('mcp_server/src'))); from mcp_server import standards_audit; result = standards_audit(); print('✅ Standards validation passed')"
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: validate-actual-outcome
+        name: Validate Actual Outcome
+        entry: python -c "import sys; from pathlib import Path; sys.path.append(str(Path('mcp_server/src'))); from mcp_server import validate_actual_outcome; result = validate_actual_outcome('https://github.com', take_screenshot=False); print('✅ validate_actual_outcome validation passed')"
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: generate-api-docs
+        name: Generate API Documentation
+        entry: mkdocs build
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+        working_dir: heroes-platform

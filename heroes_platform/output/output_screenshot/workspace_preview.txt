@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "name": "🎯 Heroes Platform",
+      "path": "./heroes-platform"
+    },
+    {
+      "name": "🤖 Heroes GPT Bot",
+      "path": "./[heroes-gpt-bot]"
+    },
+    {
+      "name": "📚 Rick.ai Knowledge",
+      "path": "./[rick.ai]"
+    },
+    {
+      "name": "📋 Standards",
+      "path": "./[standards .md]"
+    },
+    {
+      "name": "📝 Todo & Incidents",

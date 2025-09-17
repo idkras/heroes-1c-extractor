@@ -1,0 +1,1602 @@
+[
+  {
+    "post_id": "68ac180b5b7b0800018b307a",
+    "blog": "2025",
+    "title": "Инструкция: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:20.022844",
+    "batch": 1
+  },
+  {
+    "post_id": "68ac0e2c5b7b0800018b3071",
+    "blog": "2025",
+    "title": "ИСПРАВЛЕННЫЙ ТЕСТ: Гибридная стратегия для обоих блогов",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:20.218969",
+    "batch": 2
+  },
+  {
+    "post_id": "68ac0dfe5b7b0800018b306a",
+    "blog": "2025",
+    "title": "ФИНАЛЬНЫЙ ТЕСТ: Гибридная стратегия Lexical + HTML",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:20.442406",
+    "batch": 3
+  },
+  {
+    "post_id": "68ac0dca5b7b0800018b3061",
+    "blog": "2025",
+    "title": "Тест unified + remark-parse Lexical конвертера",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:20.619482",
+    "batch": 4
+  },
+  {
+    "post_id": "68ac0b445b7b0800018b305a",
+    "blog": "2025",
+    "title": "Тест сложного Markdown → Mobiledoc с таблицами и картинками",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:20.782820",
+    "batch": 5
+  },
+  {
+    "post_id": "68ac0b045b7b0800018b3051",
+    "blog": "2025",
+    "title": "Тест сложного Markdown → HTML с таблицами и картинками",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:22.984102",
+    "batch": 6
+  },
+  {
+    "post_id": "68ac09ee5b7b0800018b3048",
+    "blog": "2025",
+    "title": "adjust_appmetrica_integration.md - ФИНАЛЬНЫЙ ТЕСТ",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:23.175057",
+    "batch": 7
+  },
+  {
+    "post_id": "68ac09df5b7b0800018b3044",
+    "blog": "2025",
+    "title": "Тест отладки API 3",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:23.346946",
+    "batch": 8
+  },
+  {
+    "post_id": "68a0f9b15b7b0800018b2d93",
+    "blog": "2025",
+    "title": "[MIGRATED] Смотрите демо-видео и познакомьтесь с возможностями сквозной аналитики Rick.ai",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:23.739883",
+    "batch": 9
+  },
+  {
+    "post_id": "68abfdb25b7b0800018b2fdd",
+    "blog": "2025",
+    "title": "Тест правильной структуры",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:23.951496",
+    "batch": 10
+  },
+  {
+    "post_id": "68abfd2b5b7b0800018b2fd6",
+    "blog": "2025",
+    "title": "Тест Lexical формата",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:26.139752",
+    "batch": 11
+  },
+  {
+    "post_id": "68abfcea5b7b0800018b2fcf",
+    "blog": "2025",
+    "title": "Тест правильного API",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:26.389717",
+    "batch": 12
+  },
+  {
+    "post_id": "68abfcab5b7b0800018b2fc8",
+    "blog": "2025",
+    "title": "Тест исправленного кода",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:26.612878",
+    "batch": 13
+  },
+  {
+    "post_id": "68abfc5a5b7b0800018b2fc3",
+    "blog": "2025",
+    "title": "Тест Markdown напрямую",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:26.821648",
+    "batch": 14
+  },
+  {
+    "post_id": "68abfab45b7b0800018b2fbc",
+    "blog": "2025",
+    "title": "Тест исправленного кода Ghost v5.0",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:27.003871",
+    "batch": 15
+  },
+  {
+    "post_id": "68abf9075b7b0800018b2fb5",
+    "blog": "2025",
+    "title": "Инструкция: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:29.188746",
+    "batch": 16
+  },
+  {
+    "post_id": "68abf8d25b7b0800018b2fae",
+    "blog": "2025",
+    "title": "Тест Ghost v5.0 API",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:29.323871",
+    "batch": 17
+  },
+  {
+    "post_id": "68abf7f95b7b0800018b2fa7",
+    "blog": "2025",
+    "title": "Тест mobiledoc формата",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:29.512351",
+    "batch": 18
+  },
+  {
+    "post_id": "68abf5d95b7b0800018b2fa0",
+    "blog": "2025",
+    "title": "Исследование: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:29.706632",
+    "batch": 19
+  },
+  {
+    "post_id": "68abf5c15b7b0800018b2f99",
+    "blog": "2025",
+    "title": "Тест преобразования Markdown в HTML",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:29.939491",
+    "batch": 20
+  },
+  {
+    "post_id": "68abf43a5b7b0800018b2f92",
+    "blog": "2025",
+    "title": "Исследование: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:32.100682",
+    "batch": 21
+  },
+  {
+    "post_id": "68abf2805b7b0800018b2f8a",
+    "blog": "2025",
+    "title": "E2E Acceptance Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:32.265760",
+    "batch": 22
+  },
+  {
+    "post_id": "68abf2805b7b0800018b2f82",
+    "blog": "2025",
+    "title": "AI QA Acceptance Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:32.399819",
+    "batch": 23
+  },
+  {
+    "post_id": "68abf27f5b7b0800018b2f7b",
+    "blog": "2025",
+    "title": "Custom Options Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:32.512910",
+    "batch": 24
+  },
+  {
+    "post_id": "68abf27f5b7b0800018b2f74",
+    "blog": "2025",
+    "title": "Document Adaptation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:32.651547",
+    "batch": 25
+  },
+  {
+    "post_id": "68abf27e5b7b0800018b2f6c",
+    "blog": "2025",
+    "title": "User Acceptance Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:34.830878",
+    "batch": 26
+  },
+  {
+    "post_id": "68abf27e5b7b0800018b2f64",
+    "blog": "2025",
+    "title": "E2E Integration Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:35.005997",
+    "batch": 27
+  },
+  {
+    "post_id": "68abf27d5b7b0800018b2f5c",
+    "blog": "2025",
+    "title": "AI QA Integration Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:35.244141",
+    "batch": 28
+  },
+  {
+    "post_id": "68abf27c5b7b0800018b2f55",
+    "blog": "2025",
+    "title": "Performance Test 2",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:35.453014",
+    "batch": 29
+  },
+  {
+    "post_id": "68abf27c5b7b0800018b2f4e",
+    "blog": "2025",
+    "title": "Performance Test 1",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:35.780477",
+    "batch": 30
+  },
+  {
+    "post_id": "68abf27c5b7b0800018b2f47",
+    "blog": "2025",
+    "title": "Performance Test 0",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:37.898046",
+    "batch": 31
+  },
+  {
+    "post_id": "68abf27b5b7b0800018b2f40",
+    "blog": "2025",
+    "title": "Dual Sync Test Document",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:38.047487",
+    "batch": 32
+  },
+  {
+    "post_id": "68abf27b5b7b0800018b2f38",
+    "blog": "2025",
+    "title": "Complete Workflow Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:38.215330",
+    "batch": 33
+  },
+  {
+    "post_id": "68abf27a5b7b0800018b2f34",
+    "blog": "2025",
+    "title": "E2E Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:38.360344",
+    "batch": 34
+  },
+  {
+    "post_id": "68abf27a5b7b0800018b2f30",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:38.531639",
+    "batch": 35
+  },
+  {
+    "post_id": "68abf27a5b7b0800018b2f2c",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:40.689938",
+    "batch": 36
+  },
+  {
+    "post_id": "68abf2795b7b0800018b2f28",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:40.831736",
+    "batch": 37
+  },
+  {
+    "post_id": "68abf2785b7b0800018b2f20",
+    "blog": "2025",
+    "title": "E2E Validation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:40.963408",
+    "batch": 38
+  },
+  {
+    "post_id": "68abf2785b7b0800018b2f19",
+    "blog": "2025",
+    "title": "Dual Publishing Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:41.153478",
+    "batch": 39
+  },
+  {
+    "post_id": "68abf2775b7b0800018b2f11",
+    "blog": "2025",
+    "title": "AI QA Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:41.298386",
+    "batch": 40
+  },
+  {
+    "post_id": "68abf2765b7b0800018b2f0a",
+    "blog": "2025",
+    "title": "Test Document Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:43.477622",
+    "batch": 41
+  },
+  {
+    "post_id": "68abf2765b7b0800018b2f02",
+    "blog": "2025",
+    "title": "Test Analysis Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:43.628728",
+    "batch": 42
+  },
+  {
+    "post_id": "68abf1e85b7b0800018b2efa",
+    "blog": "2025",
+    "title": "E2E Acceptance Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:43.787367",
+    "batch": 43
+  },
+  {
+    "post_id": "68abf1e85b7b0800018b2ef2",
+    "blog": "2025",
+    "title": "AI QA Acceptance Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:43.940675",
+    "batch": 44
+  },
+  {
+    "post_id": "68abf1e75b7b0800018b2eeb",
+    "blog": "2025",
+    "title": "Custom Options Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:44.130762",
+    "batch": 45
+  },
+  {
+    "post_id": "68abf1e75b7b0800018b2ee4",
+    "blog": "2025",
+    "title": "Document Adaptation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:46.302757",
+    "batch": 46
+  },
+  {
+    "post_id": "68abf1e65b7b0800018b2ed8",
+    "blog": "2025",
+    "title": "User Acceptance Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:46.466974",
+    "batch": 47
+  },
+  {
+    "post_id": "68abf1e55b7b0800018b2ed0",
+    "blog": "2025",
+    "title": "E2E Integration Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:46.638841",
+    "batch": 48
+  },
+  {
+    "post_id": "68abf1e55b7b0800018b2ec8",
+    "blog": "2025",
+    "title": "AI QA Integration Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:46.782997",
+    "batch": 49
+  },
+  {
+    "post_id": "68abf1e55b7b0800018b2ec1",
+    "blog": "2025",
+    "title": "Performance Test 2",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:46.932292",
+    "batch": 50
+  },
+  {
+    "post_id": "68abf1e45b7b0800018b2eba",
+    "blog": "2025",
+    "title": "Performance Test 1",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:49.077400",
+    "batch": 51
+  },
+  {
+    "post_id": "68abf1e45b7b0800018b2eb1",
+    "blog": "2025",
+    "title": "Performance Test 0",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:49.228449",
+    "batch": 52
+  },
+  {
+    "post_id": "68abf1e35b7b0800018b2eaa",
+    "blog": "2025",
+    "title": "Dual Sync Test Document",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:49.376729",
+    "batch": 53
+  },
+  {
+    "post_id": "68abf1e35b7b0800018b2ea0",
+    "blog": "2025",
+    "title": "Complete Workflow Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:49.603482",
+    "batch": 54
+  },
+  {
+    "post_id": "68abf1dd5b7b0800018b2e9c",
+    "blog": "2025",
+    "title": "E2E Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:49.819940",
+    "batch": 55
+  },
+  {
+    "post_id": "68abf1dd5b7b0800018b2e98",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:51.972625",
+    "batch": 56
+  },
+  {
+    "post_id": "68abf1dc5b7b0800018b2e94",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:52.125018",
+    "batch": 57
+  },
+  {
+    "post_id": "68abf1db5b7b0800018b2e90",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:52.272456",
+    "batch": 58
+  },
+  {
+    "post_id": "68abf1db5b7b0800018b2e88",
+    "blog": "2025",
+    "title": "E2E Validation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:52.459123",
+    "batch": 59
+  },
+  {
+    "post_id": "68abf1da5b7b0800018b2e81",
+    "blog": "2025",
+    "title": "Dual Publishing Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:52.623233",
+    "batch": 60
+  },
+  {
+    "post_id": "68abf1da5b7b0800018b2e79",
+    "blog": "2025",
+    "title": "AI QA Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:54.771129",
+    "batch": 61
+  },
+  {
+    "post_id": "68abf1d95b7b0800018b2e72",
+    "blog": "2025",
+    "title": "Test Document Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:54.916263",
+    "batch": 62
+  },
+  {
+    "post_id": "68abf1d85b7b0800018b2e6a",
+    "blog": "2025",
+    "title": "Test Analysis Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:55.094039",
+    "batch": 63
+  },
+  {
+    "post_id": "68abf1b75b7b0800018b2e66",
+    "blog": "2025",
+    "title": "E2E Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:55.208849",
+    "batch": 64
+  },
+  {
+    "post_id": "68abf1b75b7b0800018b2e62",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:55.393648",
+    "batch": 65
+  },
+  {
+    "post_id": "68abf1b65b7b0800018b2e5e",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:57.564123",
+    "batch": 66
+  },
+  {
+    "post_id": "68abf1b55b7b0800018b2e5a",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:57.761907",
+    "batch": 67
+  },
+  {
+    "post_id": "68abf1b05b7b0800018b2e50",
+    "blog": "2025",
+    "title": "E2E Validation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:57.945423",
+    "batch": 68
+  },
+  {
+    "post_id": "68abf1af5b7b0800018b2e49",
+    "blog": "2025",
+    "title": "Dual Publishing Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:58.149548",
+    "batch": 69
+  },
+  {
+    "post_id": "68abf1af5b7b0800018b2e3d",
+    "blog": "2025",
+    "title": "AI QA Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:44:58.288906",
+    "batch": 70
+  },
+  {
+    "post_id": "68abf1ae5b7b0800018b2e36",
+    "blog": "2025",
+    "title": "Test Document Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:00.451799",
+    "batch": 71
+  },
+  {
+    "post_id": "68abf1ad5b7b0800018b2e2c",
+    "blog": "2025",
+    "title": "Test Analysis Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:00.699976",
+    "batch": 72
+  },
+  {
+    "post_id": "68abf0ec5b7b0800018b2e28",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:00.856488",
+    "batch": 73
+  },
+  {
+    "post_id": "68abf0ec5b7b0800018b2e24",
+    "blog": "2025",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:00.991181",
+    "batch": 74
+  },
+  {
+    "post_id": "68abf0e45b7b0800018b2e1d",
+    "blog": "2025",
+    "title": "Test Document",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:01.137606",
+    "batch": 75
+  },
+  {
+    "post_id": "68a89c475b7b0800018b2e16",
+    "blog": "2025",
+    "title": "Исследование: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:03.290552",
+    "batch": 76
+  },
+  {
+    "post_id": "68a89c3b5b7b0800018b2e0b",
+    "blog": "2025",
+    "title": "Test Document",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:03.462107",
+    "batch": 77
+  },
+  {
+    "post_id": "68a0f9b95b7b0800018b2e06",
+    "blog": "2025",
+    "title": "[MIGRATED] Конверсия — самая недооцененная и невезучая метрика: как неправильно считают конверсию и принимают неверные решения. Часть 1",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:03.630979",
+    "batch": 78
+  },
+  {
+    "post_id": "68a0f9b95b7b0800018b2e01",
+    "blog": "2025",
+    "title": "[MIGRATED] Конверсия — самая недооцененная и невезучая метрика: как неправильно считают конверсию и принимают неверные решения. Часть 2",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:03.902620",
+    "batch": 79
+  },
+  {
+    "post_id": "68a0f9b85b7b0800018b2dfc",
+    "blog": "2025",
+    "title": "[MIGRATED] Метрики bounce rate, средняя длительность сессии и количество страниц на сессию плохо подходят для оценки эффективности кампаний",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:04.031044",
+    "batch": 80
+  },
+  {
+    "post_id": "68a0f9b85b7b0800018b2df7",
+    "blog": "2025",
+    "title": "[MIGRATED] Ошибки в работе с каналами привлечения в Google Analytics",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:06.212721",
+    "batch": 81
+  },
+  {
+    "post_id": "68a0f9b85b7b0800018b2df2",
+    "blog": "2025",
+    "title": "[MIGRATED] Неверные расчеты воронок и конверсий",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:06.381097",
+    "batch": 82
+  },
+  {
+    "post_id": "68a0f9b75b7b0800018b2ded",
+    "blog": "2025",
+    "title": "[MIGRATED] Звезда смерти: 10 причин, почему самописные системы сквозной аналитики делают долго и дорого, а они все равно не работают",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:06.504994",
+    "batch": 83
+  },
+  {
+    "post_id": "68a0f9b75b7b0800018b2de8",
+    "blog": "2025",
+    "title": "[MIGRATED] Без сквозной аналитики маркетолог делает неверные выводы",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:06.791924",
+    "batch": 84
+  },
+  {
+    "post_id": "68a0f9b75b7b0800018b2de3",
+    "blog": "2025",
+    "title": "[MIGRATED] Google Analytics считает метрики по сессиям: такой расчет провоцирует ошибки",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:06.990432",
+    "batch": 85
+  },
+  {
+    "post_id": "68a0f9b65b7b0800018b2dde",
+    "blog": "2025",
+    "title": "[MIGRATED] Как настроить сквозную аналитику в Google Analytics с помощью Rick.ai",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:09.202703",
+    "batch": 86
+  },
+  {
+    "post_id": "68a0f9b65b7b0800018b2dd9",
+    "blog": "2025",
+    "title": "[MIGRATED] Rick.ai ежедневно проверяет корректность настройки аналитики. И показывает, как и что нужно исправить.",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:09.495962",
+    "batch": 87
+  },
+  {
+    "post_id": "68a0f9b65b7b0800018b2dd4",
+    "blog": "2025",
+    "title": "[MIGRATED] Какую модель атрибуции выбрать, чтобы оценить эффективность кампаний?",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:09.595268",
+    "batch": 88
+  },
+  {
+    "post_id": "68a0f9b55b7b0800018b2dcf",
+    "blog": "2025",
+    "title": "[MIGRATED] 4 способа посчитать конверсию отдела продаж и сделать неверные выводы в онлайн-маркетинге",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:09.689252",
+    "batch": 89
+  },
+  {
+    "post_id": "68a0f9b55b7b0800018b2dca",
+    "blog": "2025",
+    "title": "[MIGRATED] Почему ассоциированные конверсии — зло, и их нельзя использовать",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:09.808395",
+    "batch": 90
+  },
+  {
+    "post_id": "68a0f9b45b7b0800018b2dc5",
+    "blog": "2025",
+    "title": "[MIGRATED] Мультиканальная аналитика или как маркетологу быть уверенным, что кампания неэффективна",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:11.922401",
+    "batch": 91
+  },
+  {
+    "post_id": "68a0f9b45b7b0800018b2dc0",
+    "blog": "2025",
+    "title": "[MIGRATED] Как быстро подключить Rick.ai: от доступа к Google Analytics до проверки точности данных",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:12.109244",
+    "batch": 92
+  },
+  {
+    "post_id": "68a0f9b45b7b0800018b2dbb",
+    "blog": "2025",
+    "title": "[MIGRATED] Как понять, что Rick.ai мне подойдет и я смогу получать пользу от сквозной аналитики",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:12.261611",
+    "batch": 93
+  },
+  {
+    "post_id": "68a0f9b35b7b0800018b2db6",
+    "blog": "2025",
+    "title": "[MIGRATED] Почему есть расхождения в заказах и оплатах между Facebook* Ads и Rick.ai? И почему Facebook* завышает ценность кампаний?",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:12.392971",
+    "batch": 94
+  },
+  {
+    "post_id": "68a0f9b35b7b0800018b2db1",
+    "blog": "2025",
+    "title": "[MIGRATED] Ошибки на миллионы рублей: или 10 способов посчитать свои метрики, чтобы никогда не выйти на план продаж",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:12.531928",
+    "batch": 95
+  },
+  {
+    "post_id": "68a0f9b35b7b0800018b2dac",
+    "blog": "2025",
+    "title": "[MIGRATED] Как быстро проверить расхождение между целями Google Analytics и реальным числом пользователей",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:14.696950",
+    "batch": 96
+  },
+  {
+    "post_id": "68a0f9b25b7b0800018b2da7",
+    "blog": "2025",
+    "title": "[MIGRATED] Цели Google Analytics устарели: как быстро проверить расхождения между целями, лидами и заказами, и что использовать вместо целей?",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:14.837167",
+    "batch": 97
+  },
+  {
+    "post_id": "68a0f9b25b7b0800018b2da2",
+    "blog": "2025",
+    "title": "[MIGRATED] Расширенная электронная коммерция Google Analytics\nскрывает ваши проблемы и точки роста. Рассказываем, как себя проверить",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:15.025610",
+    "batch": 98
+  },
+  {
+    "post_id": "68a0f9b15b7b0800018b2d9d",
+    "blog": "2025",
+    "title": "[MIGRATED] Быстрый способ следить за планом продаж и изменением целевых метрик. Или как пользоваться виджетом «в динамике»",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:15.180192",
+    "batch": 99
+  },
+  {
+    "post_id": "68a0f9b15b7b0800018b2d98",
+    "blog": "2025",
+    "title": "[MIGRATED] Как сохранить бюджет и выявить кампании, которые никогда не окупятся?",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:15.340473",
+    "batch": 100
+  },
+  {
+    "post_id": "68ac180d539684532dc42471",
+    "blog": "2022_RU",
+    "title": "Инструкция: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:17.787646",
+    "batch": 101
+  },
+  {
+    "post_id": "68ac0e2c539684532dc42468",
+    "blog": "2022_RU",
+    "title": "ИСПРАВЛЕННЫЙ ТЕСТ: Гибридная стратегия для обоих блогов",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:17.978567",
+    "batch": 102
+  },
+  {
+    "post_id": "68ac0b44539684532dc42461",
+    "blog": "2022_RU",
+    "title": "Тест сложного Markdown → Mobiledoc с таблицами и картинками",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:18.135216",
+    "batch": 103
+  },
+  {
+    "post_id": "68ac0b04539684532dc42458",
+    "blog": "2022_RU",
+    "title": "Тест сложного Markdown → HTML с таблицами и картинками",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:18.299874",
+    "batch": 104
+  },
+  {
+    "post_id": "68ac09ef539684532dc4244f",
+    "blog": "2022_RU",
+    "title": "adjust_appmetrica_integration.md - ФИНАЛЬНЫЙ ТЕСТ",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:18.460418",
+    "batch": 105
+  },
+  {
+    "post_id": "68abfceb539684532dc423fb",
+    "blog": "2022_RU",
+    "title": "Тест правильного API",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:20.603239",
+    "batch": 106
+  },
+  {
+    "post_id": "68abfab5539684532dc423f4",
+    "blog": "2022_RU",
+    "title": "Тест исправленного кода Ghost v5.0",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:20.739140",
+    "batch": 107
+  },
+  {
+    "post_id": "68abf908539684532dc423ed",
+    "blog": "2022_RU",
+    "title": "Инструкция: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:20.953298",
+    "batch": 108
+  },
+  {
+    "post_id": "68abf5da539684532dc423e6",
+    "blog": "2022_RU",
+    "title": "Исследование: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:21.092359",
+    "batch": 109
+  },
+  {
+    "post_id": "68abf5c2539684532dc423df",
+    "blog": "2022_RU",
+    "title": "Тест преобразования Markdown в HTML",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:21.228526",
+    "batch": 110
+  },
+  {
+    "post_id": "68abf43b539684532dc423d8",
+    "blog": "2022_RU",
+    "title": "Исследование: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:23.373467",
+    "batch": 111
+  },
+  {
+    "post_id": "68abf281539684532dc423d0",
+    "blog": "2022_RU",
+    "title": "E2E Acceptance Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:23.494587",
+    "batch": 112
+  },
+  {
+    "post_id": "68abf280539684532dc423c8",
+    "blog": "2022_RU",
+    "title": "AI QA Acceptance Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:23.634940",
+    "batch": 113
+  },
+  {
+    "post_id": "68abf280539684532dc423c1",
+    "blog": "2022_RU",
+    "title": "Custom Options Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:23.789164",
+    "batch": 114
+  },
+  {
+    "post_id": "68abf27f539684532dc423ba",
+    "blog": "2022_RU",
+    "title": "Document Adaptation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:23.934147",
+    "batch": 115
+  },
+  {
+    "post_id": "68abf27e539684532dc423b2",
+    "blog": "2022_RU",
+    "title": "User Acceptance Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:26.074514",
+    "batch": 116
+  },
+  {
+    "post_id": "68abf27e539684532dc423aa",
+    "blog": "2022_RU",
+    "title": "E2E Integration Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:26.200188",
+    "batch": 117
+  },
+  {
+    "post_id": "68abf27d539684532dc423a2",
+    "blog": "2022_RU",
+    "title": "AI QA Integration Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:26.344557",
+    "batch": 118
+  },
+  {
+    "post_id": "68abf27d539684532dc4239b",
+    "blog": "2022_RU",
+    "title": "Performance Test 2",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:26.484834",
+    "batch": 119
+  },
+  {
+    "post_id": "68abf27c539684532dc42394",
+    "blog": "2022_RU",
+    "title": "Performance Test 1",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:26.598740",
+    "batch": 120
+  },
+  {
+    "post_id": "68abf27c539684532dc4238d",
+    "blog": "2022_RU",
+    "title": "Performance Test 0",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:28.724076",
+    "batch": 121
+  },
+  {
+    "post_id": "68abf27b539684532dc42386",
+    "blog": "2022_RU",
+    "title": "Dual Sync Test Document",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:28.855670",
+    "batch": 122
+  },
+  {
+    "post_id": "68abf27b539684532dc4237e",
+    "blog": "2022_RU",
+    "title": "Complete Workflow Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:28.980466",
+    "batch": 123
+  },
+  {
+    "post_id": "68abf27a539684532dc4237a",
+    "blog": "2022_RU",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:29.090778",
+    "batch": 124
+  },
+  {
+    "post_id": "68abf279539684532dc42372",
+    "blog": "2022_RU",
+    "title": "E2E Validation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:29.209945",
+    "batch": 125
+  },
+  {
+    "post_id": "68abf278539684532dc4236b",
+    "blog": "2022_RU",
+    "title": "Dual Publishing Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:31.355400",
+    "batch": 126
+  },
+  {
+    "post_id": "68abf278539684532dc42363",
+    "blog": "2022_RU",
+    "title": "AI QA Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:31.483973",
+    "batch": 127
+  },
+  {
+    "post_id": "68abf277539684532dc4235c",
+    "blog": "2022_RU",
+    "title": "Test Document Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:31.618275",
+    "batch": 128
+  },
+  {
+    "post_id": "68abf276539684532dc42354",
+    "blog": "2022_RU",
+    "title": "Test Analysis Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:31.785912",
+    "batch": 129
+  },
+  {
+    "post_id": "68abf1e9539684532dc4234c",
+    "blog": "2022_RU",
+    "title": "E2E Acceptance Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:31.911949",
+    "batch": 130
+  },
+  {
+    "post_id": "68abf1e8539684532dc42344",
+    "blog": "2022_RU",
+    "title": "AI QA Acceptance Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:34.038010",
+    "batch": 131
+  },
+  {
+    "post_id": "68abf1e8539684532dc4233d",
+    "blog": "2022_RU",
+    "title": "Custom Options Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:34.154892",
+    "batch": 132
+  },
+  {
+    "post_id": "68abf1e7539684532dc42336",
+    "blog": "2022_RU",
+    "title": "Document Adaptation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:34.279913",
+    "batch": 133
+  },
+  {
+    "post_id": "68abf1e6539684532dc4232a",
+    "blog": "2022_RU",
+    "title": "User Acceptance Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:34.419375",
+    "batch": 134
+  },
+  {
+    "post_id": "68abf1e6539684532dc42322",
+    "blog": "2022_RU",
+    "title": "E2E Integration Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:34.551110",
+    "batch": 135
+  },
+  {
+    "post_id": "68abf1e5539684532dc4231a",
+    "blog": "2022_RU",
+    "title": "AI QA Integration Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:36.704587",
+    "batch": 136
+  },
+  {
+    "post_id": "68abf1e5539684532dc42313",
+    "blog": "2022_RU",
+    "title": "Performance Test 2",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:36.816959",
+    "batch": 137
+  },
+  {
+    "post_id": "68abf1e4539684532dc4230c",
+    "blog": "2022_RU",
+    "title": "Performance Test 1",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:36.937835",
+    "batch": 138
+  },
+  {
+    "post_id": "68abf1e4539684532dc42303",
+    "blog": "2022_RU",
+    "title": "Performance Test 0",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:37.067550",
+    "batch": 139
+  },
+  {
+    "post_id": "68abf1e4539684532dc422fc",
+    "blog": "2022_RU",
+    "title": "Dual Sync Test Document",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:37.233903",
+    "batch": 140
+  },
+  {
+    "post_id": "68abf1e3539684532dc422f2",
+    "blog": "2022_RU",
+    "title": "Complete Workflow Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:39.579478",
+    "batch": 141
+  },
+  {
+    "post_id": "68abf1dc539684532dc422ee",
+    "blog": "2022_RU",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:39.696974",
+    "batch": 142
+  },
+  {
+    "post_id": "68abf1db539684532dc422e6",
+    "blog": "2022_RU",
+    "title": "E2E Validation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:39.818460",
+    "batch": 143
+  },
+  {
+    "post_id": "68abf1db539684532dc422df",
+    "blog": "2022_RU",
+    "title": "Dual Publishing Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:39.937430",
+    "batch": 144
+  },
+  {
+    "post_id": "68abf1da539684532dc422d7",
+    "blog": "2022_RU",
+    "title": "AI QA Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:40.085944",
+    "batch": 145
+  },
+  {
+    "post_id": "68abf1d9539684532dc422d0",
+    "blog": "2022_RU",
+    "title": "Test Document Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:42.215167",
+    "batch": 146
+  },
+  {
+    "post_id": "68abf1d8539684532dc422c8",
+    "blog": "2022_RU",
+    "title": "Test Analysis Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:42.343019",
+    "batch": 147
+  },
+  {
+    "post_id": "68abf1b6539684532dc422c4",
+    "blog": "2022_RU",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:42.484068",
+    "batch": 148
+  },
+  {
+    "post_id": "68abf1b0539684532dc422ba",
+    "blog": "2022_RU",
+    "title": "E2E Validation Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:42.637161",
+    "batch": 149
+  },
+  {
+    "post_id": "68abf1b0539684532dc422b3",
+    "blog": "2022_RU",
+    "title": "Dual Publishing Test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:42.751255",
+    "batch": 150
+  },
+  {
+    "post_id": "68abf1af539684532dc422a7",
+    "blog": "2022_RU",
+    "title": "AI QA Test Analysis",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:44.882793",
+    "batch": 151
+  },
+  {
+    "post_id": "68abf1ae539684532dc422a0",
+    "blog": "2022_RU",
+    "title": "Test Document Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:45.014664",
+    "batch": 152
+  },
+  {
+    "post_id": "68abf1ad539684532dc42294",
+    "blog": "2022_RU",
+    "title": "Test Analysis Title",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:45.134709",
+    "batch": 153
+  },
+  {
+    "post_id": "68abf0ed539684532dc42290",
+    "blog": "2022_RU",
+    "title": "Test Post",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:45.275262",
+    "batch": 154
+  },
+  {
+    "post_id": "68abf0e5539684532dc42289",
+    "blog": "2022_RU",
+    "title": "Test Document",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:45.393800",
+    "batch": 155
+  },
+  {
+    "post_id": "68a89c47539684532dc42282",
+    "blog": "2022_RU",
+    "title": "Исследование: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:47.566412",
+    "batch": 156
+  },
+  {
+    "post_id": "68a89c3c539684532dc42277",
+    "blog": "2022_RU",
+    "title": "Test Document",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:47.691631",
+    "batch": 157
+  },
+  {
+    "post_id": "617a6f76caf00c4f0778b303",
+    "blog": "2022_RU",
+    "title": "Кейс Нетологии и Rick.ai: высвободили 500 000 р. рекламного бюджета в месяц, на +94% приросли по продажам из ретаргетинга, и не только. Рассказывает CMO",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:47.838639",
+    "batch": 158
+  },
+  {
+    "post_id": "61729678caf00c4f0778b0fe",
+    "blog": "2022_RU",
+    "title": "Тест",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:47.956520",
+    "batch": 159
+  },
+  {
+    "post_id": "60fe7f32caf00c4f0778a8e5",
+    "blog": "2022_RU",
+    "title": "Драфт для меню-плашки 2",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:48.086967",
+    "batch": 160
+  },
+  {
+    "post_id": "6086ac37caf00c4f0778a2cd",
+    "blog": "2022_RU",
+    "title": "Смотрите демо-видео и познакомьтесь с возможностями сквозной аналитики Rick.ai (Vimeo)",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:50.275591",
+    "batch": 161
+  },
+  {
+    "post_id": "60890ccdcaf00c4f0778a50f",
+    "blog": "2022_RU",
+    "title": "Смотрите демо-видео и познакомьтесь с возможностями сквозной аналитики Rick.ai (Youtube)",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:50.404023",
+    "batch": 162
+  },
+  {
+    "post_id": "602a8d7f7a2464329c29ffa9",
+    "blog": "2022_RU",
+    "title": "Подключение самописной CRM",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:50.522529",
+    "batch": 163
+  },
+  {
+    "post_id": "602a88397a2464329c29ff86",
+    "blog": "2022_RU",
+    "title": "Code coloring test",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:50.670019",
+    "batch": 164
+  },
+  {
+    "post_id": "60095f0b7a2464329c29fe7f",
+    "blog": "2022_RU",
+    "title": "Тест стороннего ролика вимео",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:50.792389",
+    "batch": 165
+  },
+  {
+    "post_id": "60072c207a2464329c29fe64",
+    "blog": "2022_RU",
+    "title": "Тестирую нормальный ролик vimeo",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:52.913093",
+    "batch": 166
+  },
+  {
+    "post_id": "5fb66f277a2464329c29faf6",
+    "blog": "2022_RU",
+    "title": "Тестирую сценарии с таймкодами на vimeo и wistia",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:53.057379",
+    "batch": 167
+  },
+  {
+    "post_id": "5f9a82e97a2464329c29f791",
+    "blog": "2022_RU",
+    "title": "Как перейти на Рика с текущего решения сквозной аналитики",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:53.178792",
+    "batch": 168
+  },
+  {
+    "post_id": "5afd848945e90379f82c3d07",
+    "blog": "2022_RU",
+    "title": "Как выводы Рика помогают маркетологам больше зарабатывать",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:53.308664",
+    "batch": 169
+  },
+  {
+    "post_id": "5b04330e554bb964d00791e6",
+    "blog": "2022_RU",
+    "title": "Тесты html-вставок",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:53.444792",
+    "batch": 170
+  },
+  {
+    "post_id": "5e84a2c8d0f21333515649bb",
+    "blog": "2022_RU",
+    "title": "Как записать ga clientId из Tilda в сделку AmoCRM",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:55.575984",
+    "batch": 171
+  },
+  {
+    "post_id": "5b041ca5554bb964d00791cf",
+    "blog": "2022_RU",
+    "title": "Как Рик анализирует эффективность  рекламных каналов и кампаний",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:55.698106",
+    "batch": 172
+  },
+  {
+    "post_id": "68ac09a1539684532dc42448",
+    "blog": "2022_RU",
+    "title": "Тест Lexical формата с published_at",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:55.815868",
+    "batch": 173
+  },
+  {
+    "post_id": "68ac0967539684532dc42441",
+    "blog": "2022_RU",
+    "title": "Тест Lexical формата - ИСПРАВЛЕННЫЙ",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:55.934584",
+    "batch": 174
+  },
+  {
+    "post_id": "68ac08e7539684532dc4243a",
+    "blog": "2022_RU",
+    "title": "Тест Lexical формата",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:56.059111",
+    "batch": 175
+  },
+  {
+    "post_id": "68ac074b539684532dc42433",
+    "blog": "2022_RU",
+    "title": "Инструкция: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:58.208631",
+    "batch": 176
+  },
+  {
+    "post_id": "68ac070e539684532dc4242c",
+    "blog": "2022_RU",
+    "title": "Тест mobiledoc формата",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:58.368127",
+    "batch": 177
+  },
+  {
+    "post_id": "68ac0680539684532dc42425",
+    "blog": "2022_RU",
+    "title": "Тест статуса публикации",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:58.489042",
+    "batch": 178
+  },
+  {
+    "post_id": "68ac063f539684532dc4241e",
+    "blog": "2022_RU",
+    "title": "Инструкция: Интеграция Adjust с AppMetrica для UTM-трекинга",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:58.599642",
+    "batch": 179
+  },
+  {
+    "post_id": "68ac061d539684532dc42417",
+    "blog": "2022_RU",
+    "title": "Тест: adjust_appmetrica_integration.md",
+    "success": true,
+    "timestamp": "2025-08-25T16:45:58.763021",
+    "batch": 180
+  },
+  {
+    "post_id": "68ac0051539684532dc42410",
+    "blog": "2022_RU",
+    "title": "Тест публикации",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:00.891861",
+    "batch": 181
+  },
+  {
+    "post_id": "68abfeb9539684532dc42409",
+    "blog": "2022_RU",
+    "title": "Тест простого HTML",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:01.024183",
+    "batch": 182
+  },
+  {
+    "post_id": "68abfe13539684532dc42402",
+    "blog": "2022_RU",
+    "title": "Тест dual publish",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:01.217762",
+    "batch": 183
+  },
+  {
+    "post_id": "628791e680421e7406ac8aa1",
+    "blog": "2022_RU",
+    "title": "Кейс LegionFarm и Rick.ai: высвободили $4 000 рекламного бюджета в месяц, ввели регистрацию в корзине и подняли конверсию на 5%",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:01.371840",
+    "batch": 184
+  },
+  {
+    "post_id": "6192683ccaf00c4f0778b3d1",
+    "blog": "2022_RU",
+    "title": "Кейс Маруси и Rick.ai: в 2,5 раза увеличили конверсию в заказ из ретаргетинга, подняли продажи в городах на 100-300%. Рассказывает performance-маркетолог",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:01.546393",
+    "batch": 185
+  },
+  {
+    "post_id": "61767df0caf00c4f0778b10f",
+    "blog": "2022_RU",
+    "title": "Кейс Нетологии и Rick.ai: высвободили 500 000 р. рекламного бюджета в месяц, на +94% приросли по продажам из ретаргетинга, и не только. Рассказывает CMO",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:03.704434",
+    "batch": 186
+  },
+  {
+    "post_id": "5fabb6bf7a2464329c29f7dd",
+    "blog": "2022_RU",
+    "title": "Смотрите демо-видео и познакомьтесь с возможностями сквозной аналитики Rick.ai",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:03.838102",
+    "batch": 187
+  },
+  {
+    "post_id": "614ace96caf00c4f0778ad04",
+    "blog": "2022_RU",
+    "title": "Как сохранить бюджет и выявить кампании, которые никогда не окупятся?",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:03.980230",
+    "batch": 188
+  },
+  {
+    "post_id": "611e2f76caf00c4f0778aaad",
+    "blog": "2022_RU",
+    "title": "Быстрый способ следить за планом продаж и изменением целевых метрик. Или как пользоваться виджетом «в динамике»",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:04.115549",
+    "batch": 189
+  },
+  {
+    "post_id": "60fe7ee2caf00c4f0778a8df",
+    "blog": "2022_RU",
+    "title": "Расширенная электронная коммерция Google Analytics\nскрывает ваши проблемы и точки роста. Рассказываем, как себя проверить",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:04.266881",
+    "batch": 190
+  },
+  {
+    "post_id": "608814c4caf00c4f0778a2f3",
+    "blog": "2022_RU",
+    "title": "Цели Google Analytics устарели: как быстро проверить расхождения между целями, лидами и заказами, и что использовать вместо целей?",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:06.421982",
+    "batch": 191
+  },
+  {
+    "post_id": "608052b5caf00c4f07789e3c",
+    "blog": "2022_RU",
+    "title": "Как быстро проверить расхождение между целями Google Analytics и реальным числом пользователей",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:06.597789",
+    "batch": 192
+  },
+  {
+    "post_id": "604b5bbb7a2464329c29fff6",
+    "blog": "2022_RU",
+    "title": "Ошибки на миллионы рублей: или 10 способов посчитать свои метрики, чтобы никогда не выйти на план продаж",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:06.721308",
+    "batch": 193
+  },
+  {
+    "post_id": "5fe1ff437a2464329c29fb8c",
+    "blog": "2022_RU",
+    "title": "Почему есть расхождения в заказах и оплатах между Facebook* Ads и Rick.ai? И почему Facebook* завышает ценность кампаний?",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:06.873765",
+    "batch": 194
+  },
+  {
+    "post_id": "5f90437c7a2464329c29f238",
+    "blog": "2022_RU",
+    "title": "Как понять, что Rick.ai мне подойдет и я смогу получать пользу от сквозной аналитики",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:07.002558",
+    "batch": 195
+  },
+  {
+    "post_id": "5afda69545e90379f82c3d0a",
+    "blog": "2022_RU",
+    "title": "Как быстро подключить Rick.ai: от доступа к Google Analytics до проверки точности данных",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:09.198003",
+    "batch": 196
+  },
+  {
+    "post_id": "5eb6cb4bd0f21333515649f9",
+    "blog": "2022_RU",
+    "title": "Мультиканальная аналитика или как маркетологу быть уверенным, что кампания неэффективна",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:09.352105",
+    "batch": 197
+  },
+  {
+    "post_id": "5e5e2958d0f21333515645d2",
+    "blog": "2022_RU",
+    "title": "Почему ассоциированные конверсии — зло, и их нельзя использовать",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:09.693109",
+    "batch": 198
+  },
+  {
+    "post_id": "5df10e2dd0f213335156431e",
+    "blog": "2022_RU",
+    "title": "4 способа посчитать конверсию отдела продаж и сделать неверные выводы в онлайн-маркетинге",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:09.825804",
+    "batch": 199
+  },
+  {
+    "post_id": "5be05be8cee19879f8178702",
+    "blog": "2022_RU",
+    "title": "Какую модель атрибуции выбрать, чтобы оценить эффективность кампаний?",
+    "success": true,
+    "timestamp": "2025-08-25T16:46:09.962940",
+    "batch": 200
+  }
+]

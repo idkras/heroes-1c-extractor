@@ -1,0 +1,44 @@
+{
+  "mcpServers": {
+    "telegram-mcp": {
+      "command": "python3",
+      "args": [
+        "credentials_wrapper.py",
+        "telegram",
+        "python3",
+        "main.py"
+      ],
+      "cwd": "${workspaceFolder}/heroes-platform/telegram-mcp"
+    },
+    "n8n-mcp": {
+      "command": "python3",
+      "args": [
+        "credentials_wrapper.py",
+        "n8n",
+        "node",
+        "dist/mcp/index.js"
+      ],
+      "cwd": "${workspaceFolder}/heroes-platform/n8n-mcp"
+    },
+    "playwright-mcp": {
+      "command": "python3",
+      "args": [
+        "credentials_wrapper.py",
+        "playwright",
+        "python3",
+        "playwright_mcp_server.py"
+      ],
+      "cwd": "${workspaceFolder}/heroes-platform/playwright-mcp"
+    },
+    "hh-mcp": {
+      "command": "python3",
+      "args": [
+        "credentials_wrapper.py",
+        "hh",
+        "python3",
+        "hh_mcp_server.py"
+      ],
+      "cwd": "${workspaceFolder}/heroes-platform/hh-mcp"
+    }
+  }
+}

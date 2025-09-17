@@ -1,0 +1,12 @@
+{
+  "2025": {
+    "url": "http://5.75.239.205/",
+    "api_key": "your_admin_key_here",
+    "api_version": "v5.0"
+  },
+  "2022_RU": {
+    "url": "https://rick.ai/blog/ru",
+    "api_key": "your_admin_key_here", 
+    "api_version": "v2"
+  }
+}
