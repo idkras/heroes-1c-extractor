@@ -1,2 +1,0 @@
-[console_scripts]
-heroes-1c-extract = src.cli:main

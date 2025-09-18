@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "analysis_date": "2025-09-18T22:55:43.218432",
+    "total_documents": 25,
+    "source_file": "data/results/all_available_data.json"
+  },
+  "movement_analysis": {
+    "поступления": {
+      "items": [
+        {
+          "doc_id": "_DOCUMENT163_1",
+          "table": "_DOCUMENT163",
+          "date": "N/A",
+          "number": "00000053131",
+          "content": "Флор на Магазин ПЦ022 (Чеховский) от 16.08.2015",
+          "type": "поступление",
+          "destination": "ПЦ022 (Чеховский)"
+        },
+        {
+          "doc_id": "_DOCUMENT163_5",
+          "table": "_DOCUMENT163",
+          "date": "N/A",
+          "number": "00000073287",
+          "content": "Флор на Магазин ФМ502 (Новые черемушки) от 28.02.2022 ##Сформировано через веб-сервис по заказу ФМ (Цепова Анна Александровна)##",
+          "type": "поступление",
+          "destination": "ФМ502 (Новые черемушки)"
+        },
+        {
+          "doc_id": "_DOCUMENT154_1",
+          "table": "_DOCUMENT154",
+          "date": "N/A",
+          "number": "00000025351",
+          "content": "Моно на Магазин ПЦ036 (Южный) от 10.09.2017",
+          "type": "поступление",
+          "destination": "ПЦ036 (Южный)"
+        },
+        {
+          "doc_id": "_DOCUMENT154_3",
+          "table": "_DOCUMENT154",
+          "date": "N/A",
+          "number": "00000026798",
+          "content": "Флор на Магазин ПЦ024 (Медведково) от 17.09.2023",
+          "type": "поступление",
+          "destination": "ПЦ024 (Медведково)"
+        },
+        {
+          "doc_id": "_DOCUMENT154_5",
+          "table": "_DOCUMENT154",
+          "date": "N/A",
+          "number": "00000012097",
+          "content": "Декор на Магазин ПЦ005 (Пушкинский) от 24.05.2021",
+          "type": "поступление",
+          "destination": "ПЦ005 (Пушкинский)"
+        }
+      ],
+      "total": 5,
+      "description": "Поступления товаров на склады"
+    },
+    "перемещения": {
+      "items": [],
+      "total": 0,
+      "description": "Перемещения между складами и магазинами"
+    },
+    "реализация": {
+      "items": [],
+      "total": 0,
+      "description": "Реализация товаров через различные каналы"
+    },
+    "интернет_продажи": {
+      "items": [
+        {
+          "doc_id": "_DOCUMENT163_2",
+          "table": "_DOCUMENT163",
+          "date": "N/A",
+          "number": "00000182413",
+          "content": "Интернет-заказ №226581",
+          "type": "интернет_продажа",
+          "order_number": "226581"
+        },
+        {
+          "doc_id": "_DOCUMENT163_3",
+          "table": "_DOCUMENT163",
+          "date": "N/A",
+          "number": "00000045214",
+          "content": "Интернет-заказ №48938",
+          "type": "интернет_продажа",
+          "order_number": "48938"
+        },
+        {
+          "doc_id": "_DOCUMENT163_4",
+          "table": "_DOCUMENT163",
+          "date": "N/A",
+          "number": "00000091720",
+          "content": "Интернет-заказ №70594",
+          "type": "интернет_продажа",
+          "order_number": "70594"
+        }
+      ],
+      "total": 3,
+      "description": "Продажи через интернет-магазин"
+    }
+  },
+  "summary": {
+    "receipts": 5,
+    "transfers": 0,
+    "sales": 0,
+    "internet_sales": 3
+  }
+}

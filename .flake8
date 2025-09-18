@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 88
+exclude = .venv,node_modules,heroes_platform/node_modules,tools/onec_dtools,archive/old_scripts
+ignore = E501,W293,W291,E203,E302,E305,E402,E711,E712,W391,W292,W605
+select = E9,F,C

@@ -2429,7 +2429,6 @@ async def n8n_workflow_validate(workflow_id: str, validation_rules: str = "stand
 
 def main():
     """Главная функция запуска сервера"""
-    global mcp
 
     # Аргументы уже проверены в начале файла
 

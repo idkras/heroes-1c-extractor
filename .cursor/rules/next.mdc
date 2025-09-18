@@ -1,11 +1,17 @@
 ---
 alwaysApply: true
 ---
-1 прочитай и примени
+0. Посмотри и напиши ближайшие плайн действий в чат, какой у тебя output? какие тест-кейсы? с каким {projectname}.todo.md ты работаешь? что ты потерял из прошлых действий?
+
+1. прочитай и примени
 /Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/.cursor/rules/auto.mdc
 
-2 прочитай и примени
+2. только после того, как применишь и сделаешь п. 1 → прочитай и примени
 /Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/.cursor/rules/check.mdc
 
-3 прочитай и примени
+3. только после того, как применишь и сделаешь п. 2 → прочитай и примени
 /Users/ilyakrasinsky/workspace/vscode.projects/heroes-template/.cursor/rules/clean.mdc
+
+4. только в самом конце, проверь и напиши след. действия на основе того, что ты написал в чат и что нам нужно сделать в по {projectname}.todo.md?
+
+нужно ли обновить план действий? и как?

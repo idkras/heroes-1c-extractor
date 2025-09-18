@@ -59,7 +59,7 @@ def get_service_credentials(service: str) -> dict:
     if service not in service_credentials:
         print(f"ERROR: Unknown service: {service}", file=sys.stderr)
         print(f"Available services: {', '.join(service_credentials.keys())}", file=sys.stderr)
-        sys.exit(1)
+        return {}
     
     credentials = {}
     # Silent credential loading to avoid JSON-RPC interference
@@ -73,14 +73,14 @@ def get_service_credentials(service: str) -> dict:
     
     return credentials
 
-def main():
+def main() -> int:
     """Main wrapper function"""
     if len(sys.argv) < 3:
         print("Usage: python credentials_wrapper.py SERVICE COMMAND [ARGS...]", file=sys.stderr)
         print("Examples:", file=sys.stderr)
         print("  python credentials_wrapper.py telegram python main.py", file=sys.stderr)
         print("  python credentials_wrapper.py n8n node dist/mcp/index.js", file=sys.stderr)
-        sys.exit(1)
+        return 1
     
     service = sys.argv[1]
     command = sys.argv[2]
@@ -104,13 +104,14 @@ def main():
                                stdin=sys.stdin, 
                                stdout=sys.stdout, 
                                stderr=sys.stderr)
-        sys.exit(process.returncode)
+        return process.returncode
     except KeyboardInterrupt:
         print("\n🛑 Stopped by user", file=sys.stderr)
-        sys.exit(1)
+        return 1
     except FileNotFoundError:
         print(f"ERROR: Command not found: {command}", file=sys.stderr)
-        sys.exit(1)
+        return 1
 
 if __name__ == "__main__":
-    main()
+    exit_code = main()
+    sys.exit(exit_code)
