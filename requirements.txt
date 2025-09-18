@@ -11,7 +11,7 @@ coverage==7.10.6
 flake8==7.3.0
 frozenlist==1.7.0
 h11==0.16.0
--e git+https://github.com/idkras/heroes-1c-extractor.git@cde01e5a154f64b5689c5163a1c7ed6741756a16#egg=heroes_1c_extractor
+# Удалена циклическая зависимость - проект не должен ссылаться сам на себя
 httpcore==1.0.9
 httpx==0.28.1
 httpx-sse==0.4.1
@@ -55,3 +55,7 @@ typing-inspection==0.4.1
 typing_extensions==4.15.0
 uvicorn==0.35.0
 yarl==1.20.1
+# Parquet + DuckDB для оптимизированного хранения и аналитики
+pyarrow>=21.0.0
+duckdb>=1.4.0
+pandas>=2.0.0

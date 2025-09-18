@@ -1,0 +1,32 @@
+{
+  "_DOCUMENTJOURNAL5354": {
+    "total_records_in_table": 4458509,
+    "extracted_records": 0,
+    "blob_fields_found": [],
+    "sample_data": []
+  },
+  "_DOCUMENTJOURNAL5287": {
+    "total_records_in_table": 2798531,
+    "extracted_records": 0,
+    "blob_fields_found": [],
+    "sample_data": []
+  },
+  "_DOCUMENTJOURNAL5321": {
+    "total_records_in_table": 973975,
+    "extracted_records": 0,
+    "blob_fields_found": [],
+    "sample_data": []
+  },
+  "_DOCUMENT138": {
+    "total_records_in_table": 861178,
+    "extracted_records": 0,
+    "blob_fields_found": [],
+    "sample_data": []
+  },
+  "_DOCUMENT156": {
+    "total_records_in_table": 571213,
+    "extracted_records": 0,
+    "blob_fields_found": [],
+    "sample_data": []
+  }
+}

@@ -1,0 +1,528 @@
+{
+  "metadata": {
+    "report_date": "2025-09-18T22:55:56.121926",
+    "release": "Второй релиз - Анализ BLOB данных и цветов",
+    "status": "completed",
+    "source_files": [
+      "data/results/all_available_data.json",
+      "data/results/blob_analysis_complete.json",
+      "data/results/channels_analysis.json",
+      "data/results/bouquet_types_analysis.json",
+      "data/results/inventory_movement_map.json"
+    ]
+  },
+  "executive_summary": {
+    "total_documents_analyzed": 25,
+    "blob_fields_found": 17,
+    "channels_identified": 4,
+    "bouquet_types_found": 4,
+    "movement_types_identified": 2
+  },
+  "key_findings": {
+    "channels": {
+      "интернет_магазин": 3,
+      "магазины_пц": 4,
+      "магазины_фм": 1,
+      "флористические_услуги": 0
+    },
+    "bouquet_types": {
+      "флористические_букеты": 3,
+      "моно_букеты": 1,
+      "декоративные_композиции": 1,
+      "интернет_заказы": 3
+    },
+    "movement": {
+      "поступления": 5,
+      "интернет_продажи": 3,
+      "перемещения": 0,
+      "реализация": 0
+    }
+  },
+  "detailed_analysis": {
+    "blob_analysis": {
+      "metadata": {
+        "analysis_date": "2025-09-18T22:54:09.668583",
+        "total_documents": 25,
+        "source_file": "data/results/all_available_data.json"
+      },
+      "colors_analysis": {
+        "розовые": [],
+        "голубые": [],
+        "красные": [],
+        "белые": [],
+        "цвет": [],
+        "букет": []
+      },
+      "bouquet_types_analysis": {
+        "флористический букет": [],
+        "флористическая композиция": [],
+        "моно букеты": [],
+        "яндекс букеты": [],
+        "флор": [
+          {
+            "doc_id": "_DOCUMENT163_1",
+            "table": "_DOCUMENT163",
+            "field": "_FLD4229",
+            "content": "Флор на Магазин ПЦ022 (Чеховский) от 16.08.2015",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT163_5",
+            "table": "_DOCUMENT163",
+            "field": "_FLD4229",
+            "content": "Флор на Магазин ФМ502 (Новые черемушки) от 28.02.2022 ##Сформировано через веб-сервис по заказу ФМ (Цепова Анна Александровна)##",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT154_3",
+            "table": "_DOCUMENT154",
+            "field": "_FLD3772",
+            "content": "Флор на Магазин ПЦ024 (Медведково) от 17.09.2023",
+            "date": "N/A"
+          }
+        ],
+        "моно": [
+          {
+            "doc_id": "_DOCUMENT154_1",
+            "table": "_DOCUMENT154",
+            "field": "_FLD3772",
+            "content": "Моно на Магазин ПЦ036 (Южный) от 10.09.2017",
+            "date": "N/A"
+          }
+        ],
+        "декор": [
+          {
+            "doc_id": "_DOCUMENT154_5",
+            "table": "_DOCUMENT154",
+            "field": "_FLD3772",
+            "content": "Декор на Магазин ПЦ005 (Пушкинский) от 24.05.2021",
+            "date": "N/A"
+          }
+        ]
+      },
+      "channels_analysis": {
+        "интернет": [
+          {
+            "doc_id": "_DOCUMENT163_2",
+            "table": "_DOCUMENT163",
+            "field": "_FLD4229",
+            "content": "Интернет-заказ №226581",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT163_3",
+            "table": "_DOCUMENT163",
+            "field": "_FLD4229",
+            "content": "Интернет-заказ №48938",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT163_4",
+            "table": "_DOCUMENT163",
+            "field": "_FLD4229",
+            "content": "Интернет-заказ №70594",
+            "date": "N/A"
+          }
+        ],
+        "яндекс": [],
+        "магазин": [
+          {
+            "doc_id": "_DOCUMENT163_1",
+            "table": "_DOCUMENT163",
+            "field": "_FLD4229",
+            "content": "Флор на Магазин ПЦ022 (Чеховский) от 16.08.2015",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT163_5",
+            "table": "_DOCUMENT163",
+            "field": "_FLD4229",
+            "content": "Флор на Магазин ФМ502 (Новые черемушки) от 28.02.2022 ##Сформировано через веб-сервис по заказу ФМ (Цепова Анна Александровна)##",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT154_1",
+            "table": "_DOCUMENT154",
+            "field": "_FLD3772",
+            "content": "Моно на Магазин ПЦ036 (Южный) от 10.09.2017",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT154_3",
+            "table": "_DOCUMENT154",
+            "field": "_FLD3772",
+            "content": "Флор на Магазин ПЦ024 (Медведково) от 17.09.2023",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT154_5",
+            "table": "_DOCUMENT154",
+            "field": "_FLD3772",
+            "content": "Декор на Магазин ПЦ005 (Пушкинский) от 24.05.2021",
+            "date": "N/A"
+          }
+        ],
+        "склад": [],
+        "фм": [
+          {
+            "doc_id": "_DOCUMENT163_5",
+            "table": "_DOCUMENT163",
+            "field": "_FLD4229",
+            "content": "Флор на Магазин ФМ502 (Новые черемушки) от 28.02.2022 ##Сформировано через веб-сервис по заказу ФМ (Цепова Анна Александровна)##",
+            "date": "N/A"
+          }
+        ],
+        "пц": [
+          {
+            "doc_id": "_DOCUMENT163_1",
+            "table": "_DOCUMENT163",
+            "field": "_FLD4229",
+            "content": "Флор на Магазин ПЦ022 (Чеховский) от 16.08.2015",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT154_1",
+            "table": "_DOCUMENT154",
+            "field": "_FLD3772",
+            "content": "Моно на Магазин ПЦ036 (Южный) от 10.09.2017",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT154_3",
+            "table": "_DOCUMENT154",
+            "field": "_FLD3772",
+            "content": "Флор на Магазин ПЦ024 (Медведково) от 17.09.2023",
+            "date": "N/A"
+          },
+          {
+            "doc_id": "_DOCUMENT154_5",
+            "table": "_DOCUMENT154",
+            "field": "_FLD3772",
+            "content": "Декор на Магазин ПЦ005 (Пушкинский) от 24.05.2021",
+            "date": "N/A"
+          }
+        ]
+      },
+      "summary": {
+        "colors_found": 0,
+        "bouquet_types_found": 5,
+        "channels_found": 13
+      }
+    },
+    "channels_analysis": {
+      "metadata": {
+        "analysis_date": "2025-09-18T22:54:40.842166",
+        "total_documents": 25,
+        "source_file": "data/results/all_available_data.json"
+      },
+      "channels_analysis": {
+        "интернет_магазин": {
+          "orders": [
+            {
+              "doc_id": "_DOCUMENT163_2",
+              "order_number": "226581",
+              "date": "N/A",
+              "content": "Интернет-заказ №226581"
+            },
+            {
+              "doc_id": "_DOCUMENT163_3",
+              "order_number": "48938",
+              "date": "N/A",
+              "content": "Интернет-заказ №48938"
+            },
+            {
+              "doc_id": "_DOCUMENT163_4",
+              "order_number": "70594",
+              "date": "N/A",
+              "content": "Интернет-заказ №70594"
+            }
+          ],
+          "total_orders": 3,
+          "description": "Прямые продажи через интернет-магазин"
+        },
+        "магазины_пц": {
+          "stores": [
+            {
+              "doc_id": "_DOCUMENT163_1",
+              "store_code": "022",
+              "store_name": "Чеховский",
+              "date": "N/A",
+              "content": "Флор на Магазин ПЦ022 (Чеховский) от 16.08.2015"
+            },
+            {
+              "doc_id": "_DOCUMENT154_1",
+              "store_code": "036",
+              "store_name": "Южный",
+              "date": "N/A",
+              "content": "Моно на Магазин ПЦ036 (Южный) от 10.09.2017"
+            },
+            {
+              "doc_id": "_DOCUMENT154_3",
+              "store_code": "024",
+              "store_name": "Медведково",
+              "date": "N/A",
+              "content": "Флор на Магазин ПЦ024 (Медведково) от 17.09.2023"
+            },
+            {
+              "doc_id": "_DOCUMENT154_5",
+              "store_code": "005",
+              "store_name": "Пушкинский",
+              "date": "N/A",
+              "content": "Декор на Магазин ПЦ005 (Пушкинский) от 24.05.2021"
+            }
+          ],
+          "total_stores": 4,
+          "description": "Магазины ПЦ (Пункты выдачи)"
+        },
+        "магазины_фм": {
+          "stores": [
+            {
+              "doc_id": "_DOCUMENT163_5",
+              "store_code": "502",
+              "store_name": "Новые черемушки",
+              "date": "N/A",
+              "content": "Флор на Магазин ФМ502 (Новые черемушки) от 28.02.2022 ##Сформировано через веб-сервис по заказу ФМ (Цепова Анна Александровна)##"
+            }
+          ],
+          "total_stores": 1,
+          "description": "Магазины ФМ (Флористические магазины)"
+        },
+        "флористические_услуги": {
+          "services": [],
+          "total_services": 0,
+          "description": "Флористические услуги и декор"
+        }
+      },
+      "summary": {
+        "internet_orders": 3,
+        "pc_stores": 4,
+        "fm_stores": 1,
+        "floristic_services": 0
+      }
+    },
+    "bouquet_analysis": {
+      "metadata": {
+        "analysis_date": "2025-09-18T22:55:32.681926",
+        "total_documents": 25,
+        "source_file": "data/results/all_available_data.json"
+      },
+      "bouquet_analysis": {
+        "флористические_букеты": {
+          "items": [
+            {
+              "doc_id": "_DOCUMENT163_1",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000053131",
+              "content": "Флор на Магазин ПЦ022 (Чеховский) от 16.08.2015",
+              "store_info": "ПЦ022 (Чеховский)"
+            },
+            {
+              "doc_id": "_DOCUMENT163_5",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000073287",
+              "content": "Флор на Магазин ФМ502 (Новые черемушки) от 28.02.2022 ##Сформировано через веб-сервис по заказу ФМ (Цепова Анна Александровна)##",
+              "store_info": "ФМ502 (Новые черемушки)"
+            },
+            {
+              "doc_id": "_DOCUMENT154_3",
+              "table": "_DOCUMENT154",
+              "date": "N/A",
+              "number": "00000026798",
+              "content": "Флор на Магазин ПЦ024 (Медведково) от 17.09.2023",
+              "store_info": "ПЦ024 (Медведково)"
+            }
+          ],
+          "total": 3,
+          "description": "Флористические букеты (Флор)"
+        },
+        "моно_букеты": {
+          "items": [
+            {
+              "doc_id": "_DOCUMENT154_1",
+              "table": "_DOCUMENT154",
+              "date": "N/A",
+              "number": "00000025351",
+              "content": "Моно на Магазин ПЦ036 (Южный) от 10.09.2017",
+              "store_info": "ПЦ036 (Южный)"
+            }
+          ],
+          "total": 1,
+          "description": "Моно букеты (одноцветные)"
+        },
+        "декоративные_композиции": {
+          "items": [
+            {
+              "doc_id": "_DOCUMENT154_5",
+              "table": "_DOCUMENT154",
+              "date": "N/A",
+              "number": "00000012097",
+              "content": "Декор на Магазин ПЦ005 (Пушкинский) от 24.05.2021",
+              "store_info": "ПЦ005 (Пушкинский)"
+            }
+          ],
+          "total": 1,
+          "description": "Декоративные композиции"
+        },
+        "интернет_заказы": {
+          "items": [
+            {
+              "doc_id": "_DOCUMENT163_2",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000182413",
+              "content": "Интернет-заказ №226581",
+              "order_number": "226581"
+            },
+            {
+              "doc_id": "_DOCUMENT163_3",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000045214",
+              "content": "Интернет-заказ №48938",
+              "order_number": "48938"
+            },
+            {
+              "doc_id": "_DOCUMENT163_4",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000091720",
+              "content": "Интернет-заказ №70594",
+              "order_number": "70594"
+            }
+          ],
+          "total": 3,
+          "description": "Интернет-заказы"
+        }
+      },
+      "summary": {
+        "floristic_bouquets": 3,
+        "mono_bouquets": 1,
+        "decorative_compositions": 1,
+        "internet_orders": 3
+      }
+    },
+    "movement_analysis": {
+      "metadata": {
+        "analysis_date": "2025-09-18T22:55:43.218432",
+        "total_documents": 25,
+        "source_file": "data/results/all_available_data.json"
+      },
+      "movement_analysis": {
+        "поступления": {
+          "items": [
+            {
+              "doc_id": "_DOCUMENT163_1",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000053131",
+              "content": "Флор на Магазин ПЦ022 (Чеховский) от 16.08.2015",
+              "type": "поступление",
+              "destination": "ПЦ022 (Чеховский)"
+            },
+            {
+              "doc_id": "_DOCUMENT163_5",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000073287",
+              "content": "Флор на Магазин ФМ502 (Новые черемушки) от 28.02.2022 ##Сформировано через веб-сервис по заказу ФМ (Цепова Анна Александровна)##",
+              "type": "поступление",
+              "destination": "ФМ502 (Новые черемушки)"
+            },
+            {
+              "doc_id": "_DOCUMENT154_1",
+              "table": "_DOCUMENT154",
+              "date": "N/A",
+              "number": "00000025351",
+              "content": "Моно на Магазин ПЦ036 (Южный) от 10.09.2017",
+              "type": "поступление",
+              "destination": "ПЦ036 (Южный)"
+            },
+            {
+              "doc_id": "_DOCUMENT154_3",
+              "table": "_DOCUMENT154",
+              "date": "N/A",
+              "number": "00000026798",
+              "content": "Флор на Магазин ПЦ024 (Медведково) от 17.09.2023",
+              "type": "поступление",
+              "destination": "ПЦ024 (Медведково)"
+            },
+            {
+              "doc_id": "_DOCUMENT154_5",
+              "table": "_DOCUMENT154",
+              "date": "N/A",
+              "number": "00000012097",
+              "content": "Декор на Магазин ПЦ005 (Пушкинский) от 24.05.2021",
+              "type": "поступление",
+              "destination": "ПЦ005 (Пушкинский)"
+            }
+          ],
+          "total": 5,
+          "description": "Поступления товаров на склады"
+        },
+        "перемещения": {
+          "items": [],
+          "total": 0,
+          "description": "Перемещения между складами и магазинами"
+        },
+        "реализация": {
+          "items": [],
+          "total": 0,
+          "description": "Реализация товаров через различные каналы"
+        },
+        "интернет_продажи": {
+          "items": [
+            {
+              "doc_id": "_DOCUMENT163_2",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000182413",
+              "content": "Интернет-заказ №226581",
+              "type": "интернет_продажа",
+              "order_number": "226581"
+            },
+            {
+              "doc_id": "_DOCUMENT163_3",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000045214",
+              "content": "Интернет-заказ №48938",
+              "type": "интернет_продажа",
+              "order_number": "48938"
+            },
+            {
+              "doc_id": "_DOCUMENT163_4",
+              "table": "_DOCUMENT163",
+              "date": "N/A",
+              "number": "00000091720",
+              "content": "Интернет-заказ №70594",
+              "type": "интернет_продажа",
+              "order_number": "70594"
+            }
+          ],
+          "total": 3,
+          "description": "Продажи через интернет-магазин"
+        }
+      },
+      "summary": {
+        "receipts": 5,
+        "transfers": 0,
+        "sales": 0,
+        "internet_sales": 3
+      }
+    }
+  },
+  "recommendations": [
+    "Продолжить анализ больших таблиц для поиска цветов",
+    "Исследовать связанные таблицы для полной картины движения товаров",
+    "Проанализировать справочники номенклатуры для классификации букетов",
+    "Создать временные ряды для анализа трендов продаж"
+  ],
+  "next_steps": [
+    "Третий релиз: Анализ больших таблиц и поиск цветов",
+    "Извлечение данных из связанных таблиц",
+    "Создание полной карты движения товаров",
+    "Анализ временных трендов и сезонности"
+  ]
+}

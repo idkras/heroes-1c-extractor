@@ -1,0 +1,26 @@
+[
+  {
+    "document_id":"DOC001",
+    "document_type":"sale",
+    "amount":1000.0,
+    "date":"2024-01-01",
+    "store":"Store A",
+    "flower_type":"rose"
+  },
+  {
+    "document_id":"DOC002",
+    "document_type":"purchase",
+    "amount":2000.0,
+    "date":"2024-01-02",
+    "store":"Store B",
+    "flower_type":"tulip"
+  },
+  {
+    "document_id":"DOC003",
+    "document_type":"transfer",
+    "amount":1500.0,
+    "date":"2024-01-03",
+    "store":"Store C",
+    "flower_type":"chrysanthemum"
+  }
+]

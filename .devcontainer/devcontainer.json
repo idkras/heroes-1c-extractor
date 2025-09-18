@@ -1,141 +1,67 @@
 {
-  "name": "Heroes 1C Extractor Development Environment",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
-  
-  "features": {
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "18"
-    }
-  },
-
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-python.python",
-        "ms-python.pylint",
-        "ms-python.black-formatter",
-        "ms-toolsai.jupyter",
-        "ms-toolsai.jupyter-keymap",
-        "ms-toolsai.jupyter-renderers",
-        "ms-toolsai.vscode-jupyter-cell-tags",
-        "ms-toolsai.vscode-jupyter-slideshow",
-        "ms-vscode.vscode-json",
-        "redhat.vscode-yaml",
-        "ms-vscode-remote.remote-containers",
-        "github.copilot",
-        "github.copilot-chat",
-        "charliermarsh.ruff",
-        "esbenp.prettier-vscode",
-        "eamodio.gitlens",
-        "mhutchie.git-graph",
-        "tamasfe.even-better-toml",
-        "vscode-icons-team.vscode-icons",
-        "streetsidesoftware.code-spell-checker",
-        "davidanson.vscode-markdownlint",
-        "yzhang.markdown-all-in-one",
-        "shd101wyy.markdown-preview-enhanced",
-        "bierner.markdown-mermaid",
-        "vscode-pdf.pdf"
-      ],
-      "settings": {
-        "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "python.terminal.activateEnvironment": true,
-        "python.linting.enabled": true,
-        "python.linting.pylintEnabled": true,
-        "python.formatting.provider": "black",
-        "python.formatting.blackArgs": ["--line-length=88"],
-        "jupyter.askForKernelRestart": false,
-        "jupyter.interactiveWindow.creationMode": "perFile",
-        "python.analysis.extraPaths": [
-          "./src",
-          "./heroes_platform/src",
-          "./heroes_platform/heroes_mcp",
-          "./heroes_platform/heroes_mcp/src",
-          "./heroes_platform/heroes_mcp/workflows",
-          "./heroes_platform/utils",
-          "./heroes_platform/scripts"
-        ],
-        "python.analysis.typeCheckingMode": "off",
-        "python.analysis.diagnosticMode": "workspace",
-        "python.analysis.autoImportCompletions": true,
-        "python.analysis.indexing": true,
-        "python.analysis.logLevel": "Warning",
-        "python.analysis.stubPath": "./typings",
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-          "source.organizeImports": "explicit",
-          "source.fixAll": "explicit"
-        },
-        "[python]": {
-          "editor.defaultFormatter": "charliermarsh.ruff"
-        },
-        "ruff.lint.args": [
-          "--config=pyproject.toml"
-        ],
-        "ruff.format.args": [
-          "--config=pyproject.toml"
-        ],
-        "files.exclude": {
-          "**/.git": true,
-          "**/.svn": true,
-          "**/.hg": true,
-          "**/CVS": true,
-          "**/.DS_Store": true,
-          "**/Thumbs.db": true,
-          "**/.venv": true,
-          "**/.mypy_cache": true,
-          "**/.pytest_cache": true,
-          "**/.ruff_cache": true,
-          "**/__pycache__": true
-        },
-        "search.exclude": {
-          "**/.venv": true,
-          "**/.mypy_cache": true,
-          "**/.pytest_cache": true,
-          "**/.ruff_cache": true,
-          "**/__pycache__": true
+    "name": "Heroes 1C Extractor",
+    "image": "mcr.microsoft.com/devcontainers/python:3.11",
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.pylint",
+                "ms-python.black-formatter",
+                "ms-python.isort",
+                "ms-python.mypy-type-checker",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.vscode-jupyter-cell-tags",
+                "ms-toolsai.vscode-jupyter-slideshow"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.linting.flake8Enabled": true,
+                "python.formatting.provider": "black",
+                "python.sortImports.args": ["--profile", "black"],
+                "python.analysis.typeCheckingMode": "strict",
+                "python.analysis.autoImportCompletions": true,
+                "python.analysis.autoSearchPaths": true,
+                "python.analysis.diagnosticMode": "workspace",
+                "python.analysis.stubPath": "./typings",
+                "python.analysis.extraPaths": [
+                    "./src",
+                    "./tests"
+                ]
+            }
         }
-      }
+    },
+    "postCreateCommand": "pip install -r requirements.txt",
+    "postStartCommand": "echo 'Heroes 1C Extractor environment ready!'",
+    "remoteUser": "vscode",
+    "workspaceFolder": "/workspaces/heroes-1c-extractor",
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/workspaces/heroes-1c-extractor,type=bind,consistency=cached"
+    ],
+    "runArgs": [
+        "--init"
+    ],
+    "containerEnv": {
+        "PYTHONPATH": "/workspaces/heroes-1c-extractor/src:/workspaces/heroes-1c-extractor/tests",
+        "PYTHONUNBUFFERED": "1"
+    },
+    "remoteEnv": {
+        "PYTHONPATH": "${containerWorkspaceFolder}/src:${containerWorkspaceFolder}/tests"
+    },
+    "forwardPorts": [8000, 8888],
+    "portsAttributes": {
+        "8000": {
+            "label": "FastAPI Server",
+            "onAutoForward": "notify"
+        },
+        "8888": {
+            "label": "Jupyter Notebook",
+            "onAutoForward": "notify"
+        }
     }
-  },
-
-  "postCreateCommand": "bash .devcontainer/post-create.sh",
-  
-  "remoteUser": "vscode",
-  
-  "mounts": [
-    "source=${localWorkspaceFolder}/.venv,target=/workspaces/heroes-1c-extractor/.venv,type=bind,consistency=cached",
-    "source=${localWorkspaceFolder}/data,target=/workspaces/heroes-1c-extractor/data,type=bind,consistency=cached",
-    "source=${localWorkspaceFolder}/logs,target=/workspaces/heroes-1c-extractor/logs,type=bind,consistency=cached"
-  ],
-
-  "containerEnv": {
-    "PYTHONPATH": "/workspaces/heroes-1c-extractor/src:/workspaces/heroes-1c-extractor/heroes_platform:/workspaces/heroes-1c-extractor",
-    "VIRTUAL_ENV": "/workspaces/heroes-1c-extractor/.venv",
-    "PATH": "/workspaces/heroes-1c-extractor/.venv/bin:${containerEnv:PATH}"
-  },
-
-  "forwardPorts": [8888, 8000, 5432, 3000],
-  
-  "portsAttributes": {
-    "8888": {
-      "label": "Jupyter Lab",
-      "onAutoForward": "notify"
-    },
-    "8000": {
-      "label": "FastAPI Server",
-      "onAutoForward": "notify"
-    },
-    "3000": {
-      "label": "Development Server",
-      "onAutoForward": "notify"
-    },
-    "5432": {
-      "label": "PostgreSQL",
-      "onAutoForward": "silent"
-    }
-  }
 }

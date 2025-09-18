@@ -1,0 +1,20 @@
+{
+  "extraction_summary": {
+    "timestamp": "2025-09-18T22:47:40.975639",
+    "total_documents": 30,
+    "total_journals": 6,
+    "total_registers": 5,
+    "total_references": 8,
+    "success_rate": 100.0
+  },
+  "files_created": [
+    "data/results/all_documents.json",
+    "data/results/all_documents.xml",
+    "data/results/all_journals.json",
+    "data/results/all_journals.xml",
+    "data/results/all_registers.json",
+    "data/results/all_registers.xml",
+    "data/results/all_references.json",
+    "data/results/all_references.xml"
+  ]
+}

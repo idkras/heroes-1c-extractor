@@ -1,0 +1,46 @@
+{
+  "critical_tables": {
+    "_DOCUMENTJOURNAL5354": [],
+    "_DOCUMENTJOURNAL5287": [],
+    "_DOCUMENTJOURNAL5321": [],
+    "_DOCUMENT138": [],
+    "_DOCUMENT156": []
+  },
+  "reference_tables": {
+    "_REFERENCE10": [],
+    "_REFERENCE10002": [],
+    "_REFERENCE10003": [],
+    "_REFERENCE10004": []
+  },
+  "metadata": {
+    "extraction_date": "2025-09-19T00:10:34.109259",
+    "total_tables": 9,
+    "total_records": 0,
+    "business_fields": [
+      "_FLD4227",
+      "_DATE_TIME",
+      "_POSTED",
+      "_FLD4238",
+      "_FLD4225",
+      "_MARKED",
+      "_FLD4240",
+      "_FLD4226",
+      "_FLD4239",
+      "_NUMBER"
+    ],
+    "technical_fields": [
+      "_FLD8015",
+      "_FLD13609",
+      "_FLD9885",
+      "_FLD8070",
+      "_FLD10654",
+      "_FLD10651",
+      "_FLD14340",
+      "_FLD12950",
+      "_FLD8205",
+      "_VERSION",
+      "_FLD12955"
+    ],
+    "source_file": "data/raw/1Cv8.1CD"
+  }
+}

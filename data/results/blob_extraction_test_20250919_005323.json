@@ -1,0 +1,252 @@
+{
+  "_DOCUMENT104": {
+    "total_records": 233032,
+    "blob_fields_found": [
+      "_FLD1906",
+      "_FLD1915",
+      "_FLD1933",
+      "_FLD13768"
+    ],
+    "blob_results": {
+      "_FLD1906": {
+        "extraction_methods": [
+          "str"
+        ],
+        "content_length": 56,
+        "quality_score": 0.25,
+        "encoding": "unknown",
+        "errors": [
+          "onec_dtools method error: generator raised StopIteration",
+          "value method error: generator raised StopIteration",
+          "iterator method error: generator raised StopIteration"
+        ],
+        "preview": "<onec_dtools.database_reader.Blob object at 0x104fe3410>"
+      },
+      "_FLD1915": {
+        "extraction_methods": [
+          "onec_dtools"
+        ],
+        "content_length": 35,
+        "quality_score": 0.35,
+        "encoding": "string",
+        "errors": [],
+        "preview": "[Номер документа на сайте: 168390] "
+      },
+      "_FLD1933": {
+        "extraction_methods": [
+          "str"
+        ],
+        "content_length": 56,
+        "quality_score": 0.25,
+        "encoding": "unknown",
+        "errors": [
+          "onec_dtools method error: generator raised StopIteration",
+          "value method error: generator raised StopIteration",
+          "iterator method error: generator raised StopIteration"
+        ],
+        "preview": "<onec_dtools.database_reader.Blob object at 0x104fe36d0>"
+      },
+      "_FLD13768": {
+        "extraction_methods": [
+          "str"
+        ],
+        "content_length": 56,
+        "quality_score": 0.25,
+        "encoding": "unknown",
+        "errors": [
+          "onec_dtools method error: generator raised StopIteration",
+          "value method error: generator raised StopIteration",
+          "iterator method error: generator raised StopIteration"
+        ],
+        "preview": "<onec_dtools.database_reader.Blob object at 0x104fe3990>"
+      }
+    }
+  },
+  "_DOCUMENT137": {
+    "total_records": 227566,
+    "blob_fields_found": [
+      "_FLD3015"
+    ],
+    "blob_results": {
+      "_FLD3015": {
+        "extraction_methods": [
+          "onec_dtools"
+        ],
+        "content_length": 32,
+        "quality_score": 0.32,
+        "encoding": "string",
+        "errors": [],
+        "preview": "PC6  ЧЕК ВЫГРУЖЕН  от 19.08.2021"
+      }
+    }
+  },
+  "_DOCUMENT138": {
+    "total_records": 861178,
+    "blob_fields_found": [
+      "_FLD3108"
+    ],
+    "blob_results": {
+      "_FLD3108": {
+        "extraction_methods": [
+          "onec_dtools"
+        ],
+        "content_length": 87,
+        "quality_score": 0.5,
+        "encoding": "string",
+        "errors": [],
+        "preview": "##Перемещение флористического декора с СФ на склад ИМ для монобукетов во флор. упаковке"
+      }
+    }
+  },
+  "_DOCUMENT156": {
+    "total_records": 571213,
+    "blob_fields_found": [
+      "_FLD3980",
+      "_FLD3981",
+      "_FLD3982",
+      "_FLD3986"
+    ],
+    "blob_results": {
+      "_FLD3980": {
+        "extraction_methods": [
+          "onec_dtools"
+        ],
+        "content_length": 28,
+        "quality_score": 0.28,
+        "encoding": "string",
+        "errors": [],
+        "preview": "Ермаковой Татьяны Викторовны"
+      },
+      "_FLD3981": {
+        "extraction_methods": [
+          "onec_dtools"
+        ],
+        "content_length": 102,
+        "quality_score": 0.4,
+        "encoding": "string",
+        "errors": [],
+        "preview": "п.4.17 «Снятие остатка из ККМ и закрытие кассовой смены» стандарта \"Порядок ведения кассовых операций\""
+      },
+      "_FLD3982": {
+        "extraction_methods": [
+          "onec_dtools"
+        ],
+        "content_length": 1000,
+        "quality_score": 0.4,
+        "encoding": "string",
+        "errors": [],
+        "preview": "4604 916368 Химкинским УВД Московская обл 10,07,2003                                                                                                                                                    "
+      },
+      "_FLD3986": {
+        "extraction_methods": [
+          "str"
+        ],
+        "content_length": 56,
+        "quality_score": 0.25,
+        "encoding": "unknown",
+        "errors": [
+          "onec_dtools method error: generator raised StopIteration",
+          "value method error: generator raised StopIteration",
+          "iterator method error: generator raised StopIteration"
+        ],
+        "preview": "<onec_dtools.database_reader.Blob object at 0x105128650>"
+      }
+    }
+  },
+  "_DOCUMENT163": {
+    "total_records": 527194,
+    "blob_fields_found": [
+      "_FLD4229",
+      "_FLD4243",
+      "_FLD4254",
+      "_FLD4255",
+      "_FLD4256"
+    ],
+    "blob_results": {
+      "_FLD4229": {
+        "extraction_methods": [
+          "onec_dtools"
+        ],
+        "content_length": 47,
+        "quality_score": 0.4,
+        "encoding": "string",
+        "errors": [],
+        "preview": "Флор на Магазин ПЦ022 (Чеховский) от 16.08.2015"
+      },
+      "_FLD4243": {
+        "extraction_methods": [
+          "str"
+        ],
+        "content_length": 56,
+        "quality_score": 0.25,
+        "encoding": "unknown",
+        "errors": [
+          "onec_dtools method error: generator raised StopIteration",
+          "value method error: generator raised StopIteration",
+          "iterator method error: generator raised StopIteration"
+        ],
+        "preview": "<onec_dtools.database_reader.Blob object at 0x105128f10>"
+      },
+      "_FLD4254": {
+        "extraction_methods": [
+          "str"
+        ],
+        "content_length": 56,
+        "quality_score": 0.25,
+        "encoding": "unknown",
+        "errors": [
+          "onec_dtools method error: generator raised StopIteration",
+          "value method error: generator raised StopIteration",
+          "iterator method error: generator raised StopIteration"
+        ],
+        "preview": "<onec_dtools.database_reader.Blob object at 0x105129390>"
+      },
+      "_FLD4255": {
+        "extraction_methods": [
+          "str"
+        ],
+        "content_length": 56,
+        "quality_score": 0.25,
+        "encoding": "unknown",
+        "errors": [
+          "onec_dtools method error: generator raised StopIteration",
+          "value method error: generator raised StopIteration",
+          "iterator method error: generator raised StopIteration"
+        ],
+        "preview": "<onec_dtools.database_reader.Blob object at 0x105129190>"
+      },
+      "_FLD4256": {
+        "extraction_methods": [
+          "str"
+        ],
+        "content_length": 56,
+        "quality_score": 0.25,
+        "encoding": "unknown",
+        "errors": [
+          "onec_dtools method error: generator raised StopIteration",
+          "value method error: generator raised StopIteration",
+          "iterator method error: generator raised StopIteration"
+        ],
+        "preview": "<onec_dtools.database_reader.Blob object at 0x105129250>"
+      }
+    }
+  },
+  "_DOCUMENT184": {
+    "total_records": 463822,
+    "blob_fields_found": [
+      "_FLD4936"
+    ],
+    "blob_results": {
+      "_FLD4936": {
+        "extraction_methods": [
+          "onec_dtools"
+        ],
+        "content_length": 18,
+        "quality_score": 0.18,
+        "encoding": "string",
+        "errors": [],
+        "preview": "пост 22.06 приор 1"
+      }
+    }
+  }
+}
