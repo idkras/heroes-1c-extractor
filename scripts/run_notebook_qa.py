@@ -176,9 +176,10 @@ def run_notebook_execution_test() -> bool:
                 conn = duckdb.connect(str(duckdb_file))
                 tables = conn.execute("SHOW TABLES").fetchall()
                 for (table_name,) in tables:
-                    count = conn.execute(
+                    result = conn.execute(
                         f"SELECT COUNT(*) FROM {table_name}"
-                    ).fetchone()[0]
+                    ).fetchone()
+                    count = result[0] if result else 0
                     print(f"  Таблица {table_name}: {count:,} записей")
                 conn.close()
             else:

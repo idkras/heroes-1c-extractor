@@ -98,7 +98,9 @@ class TestNotebookQA:
             
             # Проверяем основную таблицу documents
             for table_name, in tables:
-                count = conn.execute(f'SELECT COUNT(*) FROM {table_name}').fetchone()[0]
+                result = conn.execute(f'SELECT COUNT(*) FROM {table_name}').fetchone()
+                assert result is not None, f"Не удалось получить количество записей для таблицы {table_name}"
+                count = result[0]
                 assert count > 0, f"Таблица {table_name} пустая"
             
             conn.close()
