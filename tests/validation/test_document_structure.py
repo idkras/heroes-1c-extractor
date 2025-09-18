@@ -232,7 +232,7 @@ class TestDocumentStructure:
         conn = duckdb.connect(str(self.duckdb_path))
         
         # Проверяем, что есть документы с полными данными
-        complete_docs = conn.execute("""
+        result = conn.execute("""
             SELECT COUNT(*) 
             FROM documents 
             WHERE document_type != 'Неизвестно'
@@ -240,13 +240,17 @@ class TestDocumentStructure:
               AND store_name != 'N/A'
               AND total_amount > 0
         """).fetchone()
+        assert result is not None, "Не удалось получить количество полных документов"
+        complete_docs = result[0]
         
         # Проверяем, что есть документы с BLOB данными
-        blob_docs = conn.execute("""
+        result = conn.execute("""
             SELECT COUNT(*) 
             FROM documents 
             WHERE blob_content != '' AND blob_content IS NOT NULL
         """).fetchone()
+        assert result is not None, "Не удалось получить количество документов с BLOB данными"
+        blob_docs = result[0]
         
         # Проверяем, что есть документы с датами
         result = conn.execute("""

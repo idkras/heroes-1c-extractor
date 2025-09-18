@@ -96,56 +96,7 @@ ci: install test-all ## Проверка для CI/CD
 # Отчет о качестве
 quality-report: ## Генерация отчета о качестве
 	@echo "📊 Генерация отчета о качестве..."
-	$(PYTHON) -c "
-	import pandas as pd
-	from pathlib import Path
-	
-	print('📊 ОТЧЕТ О КАЧЕСТВЕ NOTEBOOK')
-	print('=' * 50)
-	
-	# Проверяем данные
-	parquet_file = Path('data/results/parquet/documents.parquet')
-	duckdb_file = Path('data/results/duckdb/analysis.duckdb')
-	
-	if parquet_file.exists():
-		df = pd.read_parquet(parquet_file)
-		print(f'✅ Parquet файл: {len(df):,} записей, {len(df.columns)} колонок')
-		
-		# Метрики качества
-		total_records = len(df)
-		valid_records = len(df.dropna())
-		accuracy = (valid_records / total_records) * 100
-		
-		print(f'📈 Точность данных: {accuracy:.1f}%')
-		print(f'📈 Полнота данных: {valid_records:,}/{total_records:,} записей')
-		
-		# Проверяем обязательные поля
-		required_fields = ['id', 'table_name', 'field__NUMBER']
-		for field in required_fields:
-			if field in df.columns:
-				completeness = (df[field].notna().sum() / len(df)) * 100
-				print(f'📈 Полнота поля {field}: {completeness:.1f}%')
-	else:
-		print('❌ Parquet файл не найден')
-		
-	if duckdb_file.exists():
-		import duckdb
-		conn = duckdb.connect(str(duckdb_file))
-		tables = conn.execute('SHOW TABLES').fetchall()
-		print(f'✅ DuckDB файл: {len(tables)} таблиц')
-		for table_name, in tables:
-			count = conn.execute(f'SELECT COUNT(*) FROM {table_name}').fetchone()[0]
-			print(f'  📊 {table_name}: {count:,} записей')
-		conn.close()
-	else:
-		print('❌ DuckDB файл не найден')
-		
-	print('\\n🎯 СТАТУС КАЧЕСТВА:')
-	print('✅ Синтаксис notebook: OK')
-	print('✅ Данные из 1С: OK')
-	print('✅ Метрики качества: OK')
-	print('✅ Производительность: OK')
-	"
+	$(PYTHON) scripts/run_notebook_qa.py --type ai_metrics
 
 # По умолчанию
 .DEFAULT_GOAL := help
