@@ -1,16 +1,15 @@
 import hashlib
+import logging
 import os
 import secrets
 from typing import Optional
 
+from app.modules.users.user_model import User
+from app.modules.users.user_preferences_model import UserPreferences
 from fastapi import HTTPException
 from google.cloud import secretmanager
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-
-from app.modules.users.user_model import User
-from app.modules.users.user_preferences_model import UserPreferences
-import logging
 
 logger = logging.getLogger(__name__)
 

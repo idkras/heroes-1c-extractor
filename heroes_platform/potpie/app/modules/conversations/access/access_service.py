@@ -1,14 +1,11 @@
-from typing import List
-
-from fastapi import HTTPException
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
-
-from app.modules.utils.email_helper import is_valid_email
 from app.modules.conversations.conversation.conversation_model import (
     Conversation,
     Visibility,
 )
+from app.modules.utils.email_helper import is_valid_email
+from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 
 class ShareChatServiceError(Exception):
@@ -23,7 +20,7 @@ class ShareChatService:
         self,
         conversation_id: str,
         user_id: str,
-        recipient_emails: List[str] = None,
+        recipient_emails: list[str] = None,
         visibility: Visibility = None,
     ) -> str:
         chat = (
@@ -77,7 +74,7 @@ class ShareChatService:
             self.db.rollback()
             raise ShareChatServiceError(f"Failed to update shared chat: {str(e)}")
 
-    async def get_shared_emails(self, conversation_id: str, user_id: str) -> List[str]:
+    async def get_shared_emails(self, conversation_id: str, user_id: str) -> list[str]:
         chat = (
             self.db.query(Conversation)
             .filter_by(id=conversation_id, user_id=user_id)
@@ -91,7 +88,7 @@ class ShareChatService:
         return chat.shared_with_emails or []
 
     async def remove_access(
-        self, conversation_id: str, user_id: str, emails_to_remove: List[str]
+        self, conversation_id: str, user_id: str, emails_to_remove: list[str]
     ) -> bool:
         """Remove access for specified emails from a conversation."""
         chat = (

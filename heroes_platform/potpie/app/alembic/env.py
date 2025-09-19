@@ -4,11 +4,10 @@ from logging.config import fileConfig
 
 from alembic import context
 from alembic.operations import ops  # type: ignore
-from dotenv import load_dotenv
-from sqlalchemy import engine_from_config, pool  # type: ignore
-
 from app.core.base_model import Base
 from app.core.models import *  # noqa
+from dotenv import load_dotenv
+from sqlalchemy import engine_from_config, pool  # type: ignore
 
 target_metadata = Base.metadata  # type: ignore
 # Load environment variables from .env

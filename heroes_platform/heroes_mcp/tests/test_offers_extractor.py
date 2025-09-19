@@ -4,10 +4,9 @@
 HeroesGPT Landing Analysis Standard v1.8 Compliance Testing
 """
 
-import asyncio
-import json
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from heroes_gpt_offers_extractor import OffersExtractor
 
 

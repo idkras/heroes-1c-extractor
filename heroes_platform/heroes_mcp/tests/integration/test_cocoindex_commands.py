@@ -9,7 +9,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 
 class TestCocoIndexCommands:
@@ -18,7 +18,7 @@ class TestCocoIndexCommands:
     def __init__(self):
         self.server_path = Path(__file__).parent.parent.parent / "src" / "mcp_server.py"
 
-    def test_cocoindex_search_existing_files(self) -> Dict[str, Any]:
+    def test_cocoindex_search_existing_files(self) -> dict[str, Any]:
         """Test cocoindex_search_existing_files command"""
 
         # Prepare JSON-RPC requests sequence
@@ -96,7 +96,7 @@ class TestCocoIndexCommands:
                 "error": str(e),
             }
 
-    def test_cocoindex_validate_file_creation(self) -> Dict[str, Any]:
+    def test_cocoindex_validate_file_creation(self) -> dict[str, Any]:
         """Test cocoindex_validate_file_creation command"""
 
         # Prepare JSON-RPC requests sequence
@@ -177,7 +177,7 @@ class TestCocoIndexCommands:
                 "error": str(e),
             }
 
-    def test_cocoindex_get_functionality_map(self) -> Dict[str, Any]:
+    def test_cocoindex_get_functionality_map(self) -> dict[str, Any]:
         """Test cocoindex_get_functionality_map command"""
 
         # Prepare JSON-RPC requests sequence
@@ -252,7 +252,7 @@ class TestCocoIndexCommands:
                 "error": str(e),
             }
 
-    def test_cocoindex_analyze_duplicates(self) -> Dict[str, Any]:
+    def test_cocoindex_analyze_duplicates(self) -> dict[str, Any]:
         """Test cocoindex_analyze_duplicates command"""
 
         # Prepare JSON-RPC requests sequence
@@ -327,7 +327,7 @@ class TestCocoIndexCommands:
                 "error": str(e),
             }
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all CocoIndex command tests"""
 
         print("🔍 Testing CocoIndex Commands Integration...")
@@ -344,7 +344,7 @@ class TestCocoIndexCommands:
         total_tests = len(tests)
         success_rate = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
 
-        print(f"📊 CocoIndex Commands Test Results:")
+        print("📊 CocoIndex Commands Test Results:")
         print(f"Passed: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
 
         for test in tests:

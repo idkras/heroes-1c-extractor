@@ -1,10 +1,8 @@
 import os
-from typing import Dict, List
-
-from sqlalchemy import delete, or_
-from sqlalchemy.orm import Session
 
 from app.modules.search.search_models import SearchIndex
+from sqlalchemy import delete, or_
+from sqlalchemy.orm import Session
 
 
 class SearchService:
@@ -15,7 +13,7 @@ class SearchService:
     async def commit_indices(self):
         self.db.commit()
 
-    async def search_codebase(self, project_id: str, query: str) -> List[Dict]:
+    async def search_codebase(self, project_id: str, query: str) -> list[dict]:
         # Split the query into words
         query_words = query.lower().split()
 
@@ -70,7 +68,7 @@ class SearchService:
         return formatted_results[:10]
 
     def _calculate_relevance(
-        self, result: SearchIndex, query_words: List[str]
+        self, result: SearchIndex, query_words: list[str]
     ) -> float:
         relevance = 0
 
@@ -97,7 +95,7 @@ class SearchService:
 
         return relevance
 
-    def _determine_match_type(self, result: SearchIndex, query_words: List[str]) -> str:
+    def _determine_match_type(self, result: SearchIndex, query_words: list[str]) -> str:
         if all(word in result.content.lower() for word in query_words):
             return "Exact Match"
         return "Partial Match"
@@ -114,7 +112,7 @@ class SearchService:
         self.db.execute(delete_stmt)
         self.db.commit()
 
-    async def bulk_create_search_indices(self, nodes: List[Dict]):
+    async def bulk_create_search_indices(self, nodes: list[dict]):
         # Create index entries for all nodes in bulk
         self.db.bulk_insert_mappings(SearchIndex, nodes)
 

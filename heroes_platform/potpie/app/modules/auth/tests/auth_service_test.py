@@ -1,9 +1,10 @@
 import os
+from unittest.mock import MagicMock, patch
+
 import pytest
 import requests
-from unittest.mock import patch, MagicMock
-from fastapi import HTTPException
 from app.modules.auth.auth_service import AuthService
+from fastapi import HTTPException
 
 
 class TestAuthService:

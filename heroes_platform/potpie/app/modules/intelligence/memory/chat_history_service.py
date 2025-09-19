@@ -1,17 +1,16 @@
 import logging
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
-
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
-from uuid6 import uuid7
+from typing import Optional
 
 from app.modules.conversations.message.message_model import (
     Message,
     MessageStatus,
     MessageType,
 )
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+from uuid6 import uuid7
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +22,11 @@ class ChatHistoryServiceError(Exception):
 class ChatHistoryService:
     def __init__(self, db: Session):
         self.db = db
-        self.message_buffer: Dict[str, Dict[str, str]] = {}
+        self.message_buffer: dict[str, dict[str, str]] = {}
 
     def get_session_history(
         self, user_id: str, conversation_id: str
-    ) -> List[BaseMessage]:
+    ) -> list[BaseMessage]:
         try:
             messages = (
                 self.db.query(Message)
@@ -69,7 +68,7 @@ class ChatHistoryService:
         content: str,
         message_type: MessageType,
         sender_id: Optional[str] = None,
-        citations: Optional[List[str]] = None,
+        citations: Optional[list[str]] = None,
     ):
         if conversation_id not in self.message_buffer:
             self.message_buffer[conversation_id] = {"content": "", "citations": []}

@@ -1,8 +1,7 @@
 import os
+import re
 
 import resend
-
-import re
 
 
 class EmailHelper:

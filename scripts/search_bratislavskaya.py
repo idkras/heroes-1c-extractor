@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import json
-import os
-import sys
 from datetime import datetime
 
 from onec_dtools.database_reader import DatabaseReader
@@ -51,7 +48,7 @@ def search_bratislavskaya_documents():
         with open("data/raw/1Cv8.1CD", "rb") as f:
             db = DatabaseReader(f)
 
-            print(f"✅ База данных открыта успешно!")
+            print("✅ База данных открыта успешно!")
             print(f"📊 Количество таблиц: {len(db.tables)}")
 
             results = {
@@ -69,7 +66,7 @@ def search_bratislavskaya_documents():
                 "братиславская",
                 "братиславская",
                 "братиславская",
-                "братиславская"
+                "братиславская",
             ]
 
             print("\n🔍 Поиск по ключевым словам")
@@ -77,11 +74,11 @@ def search_bratislavskaya_documents():
 
             # Анализируем основные таблицы документов
             document_tables = [
-                '_DOCUMENT163',  # Акты выполненных работ
-                '_DOCUMENT184',  # Счета-фактуры
-                '_DOCUMENT154',  # Накладные
-                '_DOCUMENT137',  # Дополнительные документы
-                '_DOCUMENT12259' # Служебные документы
+                "_DOCUMENT163",  # Акты выполненных работ
+                "_DOCUMENT184",  # Счета-фактуры
+                "_DOCUMENT154",  # Накладные
+                "_DOCUMENT137",  # Дополнительные документы
+                "_DOCUMENT12259",  # Служебные документы
             ]
 
             for table_name in document_tables:
@@ -98,7 +95,7 @@ def search_bratislavskaya_documents():
                             if not row.is_empty:
                                 # Получаем данные записи
                                 row_data = row.as_dict()
-                                
+
                                 # Ищем ключевые слова в полях
                                 found_keywords = []
                                 for field_name, value in row_data.items():
@@ -107,15 +104,17 @@ def search_bratislavskaya_documents():
                                         for keyword in search_keywords:
                                             if keyword.lower() in value_str:
                                                 found_keywords.append(keyword)
-                                
+
                                 # Ищем в BLOB полях
                                 blob_content = ""
                                 for field_name, value in row_data.items():
-                                    if hasattr(value, '__class__') and 'Blob' in str(value.__class__):
+                                    if hasattr(value, "__class__") and "Blob" in str(
+                                        value.__class__,
+                                    ):
                                         content = safe_get_blob_content(value)
                                         if content:
                                             blob_content += content.lower()
-                                
+
                                 for keyword in search_keywords:
                                     if keyword.lower() in blob_content:
                                         found_keywords.append(f"{keyword} (в BLOB)")
@@ -126,10 +125,14 @@ def search_bratislavskaya_documents():
                                         "row_index": i,
                                         "fields": row_data,
                                         "found_keywords": found_keywords,
-                                        "blob_content": blob_content[:500] if blob_content else ""
+                                        "blob_content": blob_content[:500]
+                                        if blob_content
+                                        else "",
                                     }
                                     found_documents.append(document)
-                                    print(f"   ✅ Найден документ {i}: {found_keywords}")
+                                    print(
+                                        f"   ✅ Найден документ {i}: {found_keywords}",
+                                    )
 
                         except Exception as e:
                             print(f"   ⚠️ Ошибка при анализе записи {i}: {e}")
@@ -140,18 +143,27 @@ def search_bratislavskaya_documents():
                         print(f"   📋 Найдено документов: {len(found_documents)}")
 
             # Сохраняем результаты
-            with open('data/results/bratislavskaya_search.json', 'w', encoding='utf-8') as f:
+            with open(
+                "data/results/bratislavskaya_search.json",
+                "w",
+                encoding="utf-8",
+            ) as f:
                 json.dump(results, f, ensure_ascii=False, indent=2)
 
-            print(f"\n📄 Результаты сохранены в: data/results/bratislavskaya_search.json")
-            print(f"📊 Всего найдено документов: {len(results['bratislavskaya_documents'])}")
+            print(
+                "\n📄 Результаты сохранены в: data/results/bratislavskaya_search.json",
+            )
+            print(
+                f"📊 Всего найдено документов: {len(results['bratislavskaya_documents'])}",
+            )
 
             return results
 
     except Exception as e:
         print(f"❌ Ошибка: {e}")
         import traceback
-        print(f"🔍 Детали ошибки:")
+
+        print("🔍 Детали ошибки:")
         traceback.print_exc()
         return None
 

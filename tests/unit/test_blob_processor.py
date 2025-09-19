@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Unit тесты для BlobProcessor
@@ -216,7 +215,7 @@ class TestBlobProcessor:
         # Arrange
         mock_field = Mock()
         mock_field.configure_mock(
-            __str__=Mock(return_value="<onec_dtools.database_reader.Blob object>")
+            __str__=Mock(return_value="<onec_dtools.database_reader.Blob object>"),
         )
 
         # Act

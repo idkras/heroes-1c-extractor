@@ -3,7 +3,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-
 from app.core.database import get_db
 from app.modules.auth.auth_service import AuthService
 from app.modules.intelligence.prompts.prompt_controller import PromptController
@@ -12,10 +11,9 @@ from app.modules.intelligence.prompts.prompt_schema import (
     PromptListResponse,
     PromptResponse,
     PromptUpdate,
+    RequestModel,
 )
 from app.modules.intelligence.prompts.prompt_service import PromptService
-from app.modules.intelligence.prompts.prompt_schema import RequestModel
-
 
 router = APIRouter()
 
@@ -91,5 +89,4 @@ class PromptAPI:
         db: Session = Depends(get_db),
         user=Depends(AuthService.check_auth),
     ):
-
         return await PromptController.enhance_prompt(request_body, db, user)

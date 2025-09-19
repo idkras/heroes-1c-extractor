@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Общие утилиты для работы с BLOB данными в 1С
@@ -7,12 +6,12 @@
 Интегрирован с новым BlobProcessor для обратной совместимости
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from src.utils import blob_processor
 
 
-def safe_get_blob_content(value: Any) -> Optional[str]:
+def safe_get_blob_content(value: Any) -> str | None:
     """
     JTBD:
     Как система обратной совместимости, я хочу предоставить старый интерфейс для извлечения BLOB данных,
@@ -43,7 +42,7 @@ def is_blob_field(field_value: Any) -> bool:
     return blob_processor.is_blob_field(field_value)
 
 
-def extract_blob_content_safe(record_data: dict, field_name: str) -> Optional[str]:
+def extract_blob_content_safe(record_data: dict, field_name: str) -> str | None:
     """
     Безопасно извлекает содержимое BLOB поля из записи
 

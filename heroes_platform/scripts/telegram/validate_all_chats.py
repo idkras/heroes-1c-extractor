@@ -16,6 +16,7 @@ from pathlib import Path
 @dataclass
 class ChatInfo:
     """Информация о чате"""
+
     id: int
     title: str
     username: str = ""
@@ -23,13 +24,14 @@ class ChatInfo:
     last_message_date: str = ""
     is_target: bool = False
 
+
 class TelegramValidator:
     """Валидатор Telegram чатов"""
 
     def __init__(self):
         self.target_chats = [
             "[EasyPay] IFS - процессинг иностранных платежей",
-            "R-Founders Finance + Илья"
+            "R-Founders Finance + Илья",
         ]
         self.chats: list[ChatInfo] = []
 
@@ -38,23 +40,32 @@ class TelegramValidator:
         try:
             api_id = subprocess.run(
                 'security find-generic-password -s "telegram_api_id" -a "ilyakrasinsky" -w',
-                shell=True, capture_output=True, text=True, check=True
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=True,
             ).stdout.strip()
 
             api_hash = subprocess.run(
                 'security find-generic-password -s "telegram_api_hash" -a "ilyakrasinsky" -w',
-                shell=True, capture_output=True, text=True, check=True
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=True,
             ).stdout.strip()
 
             session_string = subprocess.run(
                 'security find-generic-password -s "telegram_session" -a "ilyakrasinsky" -w',
-                shell=True, capture_output=True, text=True, check=True
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=True,
             ).stdout.strip()
 
             return {
                 "api_id": api_id,
                 "api_hash": api_hash,
-                "session_string": session_string
+                "session_string": session_string,
             }
         except Exception as e:
             print(f"❌ Error getting credentials: {e}")
@@ -73,14 +84,16 @@ class TelegramValidator:
             client = TelegramClient(
                 StringSession(credentials["session_string"]),
                 int(credentials["api_id"]),
-                credentials["api_hash"]
+                credentials["api_hash"],
             )
 
             await client.start()
             me = await client.get_me()
             await client.disconnect()
 
-            print(f"✅ Connected to Telegram as: {me.first_name} (@{me.username or 'no username'})")
+            print(
+                f"✅ Connected to Telegram as: {me.first_name} (@{me.username or 'no username'})"
+            )
             return True
 
         except Exception as e:
@@ -100,7 +113,7 @@ class TelegramValidator:
             client = TelegramClient(
                 StringSession(credentials["session_string"]),
                 int(credentials["api_id"]),
-                credentials["api_hash"]
+                credentials["api_hash"],
             )
 
             await client.start()
@@ -112,8 +125,12 @@ class TelegramValidator:
                     title=dialog.name,
                     username=getattr(dialog.entity, "username", ""),
                     participants_count=getattr(dialog.entity, "participants_count", 0),
-                    last_message_date=dialog.date.strftime("%Y-%m-%d") if dialog.date else "",
-                    is_target=any(target in dialog.name for target in self.target_chats)
+                    last_message_date=dialog.date.strftime("%Y-%m-%d")
+                    if dialog.date
+                    else "",
+                    is_target=any(
+                        target in dialog.name for target in self.target_chats
+                    ),
                 )
                 chats.append(chat_info)
 
@@ -137,7 +154,7 @@ class TelegramValidator:
             client = TelegramClient(
                 StringSession(credentials["session_string"]),
                 int(credentials["api_id"]),
-                credentials["api_hash"]
+                credentials["api_hash"],
             )
 
             await client.start()
@@ -169,16 +186,18 @@ class TelegramValidator:
 
             chat_data = []
             for chat in chats:
-                chat_data.append({
-                    "id": chat.id,
-                    "title": chat.title,
-                    "username": chat.username,
-                    "participants_count": chat.participants_count,
-                    "last_message_date": chat.last_message_date,
-                    "is_target": chat.is_target
-                })
+                chat_data.append(
+                    {
+                        "id": chat.id,
+                        "title": chat.title,
+                        "username": chat.username,
+                        "participants_count": chat.participants_count,
+                        "last_message_date": chat.last_message_date,
+                        "is_target": chat.is_target,
+                    }
+                )
 
-            with open(output_file, 'w', encoding='utf-8') as f:
+            with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(chat_data, f, indent=2, ensure_ascii=False)
 
             print(f"✅ Chat list saved to: {output_file}")
@@ -188,9 +207,9 @@ class TelegramValidator:
 
     def print_summary(self, chats: list[ChatInfo]):
         """Вывести сводку по чатам"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("📊 CHAT VALIDATION SUMMARY")
-        print("="*60)
+        print("=" * 60)
 
         print(f"Total chats found: {len(chats)}")
 
@@ -202,15 +221,18 @@ class TelegramValidator:
             for chat in target_chats:
                 print(f"  - {chat.title} (ID: {chat.id})")
 
-        print(f"\n📅 Recent chats (last 30 days): {len([c for c in chats if c.last_message_date])}")
+        print(
+            f"\n📅 Recent chats (last 30 days): {len([c for c in chats if c.last_message_date])}"
+        )
         print(f"👥 Group chats: {len([c for c in chats if c.participants_count > 0])}")
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
+
 
 async def main():
     """Главная функция валидации"""
     print("🔍 Telegram Chat Validation")
-    print("="*50)
+    print("=" * 50)
 
     validator = TelegramValidator()
 
@@ -247,9 +269,10 @@ async def main():
         else:
             print(f"❌ Export test failed for {chat.title}")
 
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     print("🎉 Validation completed!")
     print("Check the generated files for detailed results.")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

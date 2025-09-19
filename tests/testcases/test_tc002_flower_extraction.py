@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Автоматизированный тест-кейс TC-002: Извлечение данных о цветах и товарах
@@ -33,7 +32,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
 
         # Проверяем наличие файлов с данными о товарах
         data_files = list(self.results_dir.glob("*.json")) + list(
-            self.results_dir.glob("*.xml")
+            self.results_dir.glob("*.xml"),
         )
         self.assertGreater(len(data_files), 0, "Не найдены файлы с данными о товарах")
 
@@ -48,7 +47,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
         for file_path in self.results_dir.rglob("*"):
             if file_path.is_file() and file_path.suffix in [".json", ".xml"]:
                 try:
-                    with open(file_path, "r", encoding="utf-8") as f:
+                    with open(file_path, encoding="utf-8") as f:
                         if file_path.suffix == ".json":
                             data = json.load(f)
                             content = str(data).lower()
@@ -76,7 +75,9 @@ class TestTC002FlowerExtraction(unittest.TestCase):
 
         # Проверяем критерии успеха
         self.assertGreaterEqual(
-            len(found_flowers), 3, f"Найдено цветов: {len(found_flowers)}, ожидалось ≥3"
+            len(found_flowers),
+            3,
+            f"Найдено цветов: {len(found_flowers)}, ожидалось ≥3",
         )
         self.assertGreaterEqual(
             len(found_quantities),
@@ -84,12 +85,14 @@ class TestTC002FlowerExtraction(unittest.TestCase):
             f"Найдено количеств: {len(found_quantities)}, ожидалось ≥3",
         )
         self.assertGreaterEqual(
-            len(found_prices), 3, f"Найдено цен: {len(found_prices)}, ожидалось ≥3"
+            len(found_prices),
+            3,
+            f"Найдено цен: {len(found_prices)}, ожидалось ≥3",
         )
 
         print(f"✅ Найдено цветов: {len(found_flowers)}/{len(self.expected_flowers)}")
         print(
-            f"✅ Найдено количеств: {len(found_quantities)}/{len(self.expected_quantities)}"
+            f"✅ Найдено количеств: {len(found_quantities)}/{len(self.expected_quantities)}",
         )
         print(f"✅ Найдено цен: {len(found_prices)}/{len(self.expected_prices)}")
 
@@ -108,7 +111,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
             if processed_count >= 1000:
                 break
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     data = json.load(f)
                     if isinstance(data, list):
                         processed_count += len(data)
@@ -122,7 +125,9 @@ class TestTC002FlowerExtraction(unittest.TestCase):
 
         # Проверяем время выполнения (≤3 минуты = 180 секунд)
         self.assertLessEqual(
-            execution_time, 180, f"Время выполнения {execution_time:.2f}с > 180с"
+            execution_time,
+            180,
+            f"Время выполнения {execution_time:.2f}с > 180с",
         )
 
         print(f"✅ Обработано позиций: {processed_count}")
@@ -147,7 +152,9 @@ class TestTC002FlowerExtraction(unittest.TestCase):
                 found_tables.append(table)
                 # Проверяем, что файл не пустой
                 self.assertGreater(
-                    json_file.stat().st_size, 0, f"Файл {table}.json пустой"
+                    json_file.stat().st_size,
+                    0,
+                    f"Файл {table}.json пустой",
                 )
 
             # Проверяем Parquet файлы
@@ -155,11 +162,15 @@ class TestTC002FlowerExtraction(unittest.TestCase):
             if parquet_file.exists():
                 found_tables.append(f"{table}_parquet")
                 self.assertGreater(
-                    parquet_file.stat().st_size, 0, f"Файл {table}.parquet пустой"
+                    parquet_file.stat().st_size,
+                    0,
+                    f"Файл {table}.parquet пустой",
                 )
 
         self.assertGreaterEqual(
-            len(found_tables), 3, f"Найдено таблиц: {len(found_tables)}, ожидалось ≥3"
+            len(found_tables),
+            3,
+            f"Найдено таблиц: {len(found_tables)}, ожидалось ≥3",
         )
 
         print(f"✅ Найдено таблиц документов: {len(found_tables)}")
@@ -176,7 +187,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
         # Сканируем файлы на наличие ключевых слов
         for file_path in self.results_dir.rglob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read().lower()
 
                 if any(keyword in content for keyword in inventory_keywords):
@@ -201,7 +212,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
         blob_data_found = False
         for file_path in self.results_dir.rglob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     data = json.load(f)
 
                 # Проверяем структуру данных (должны быть документы с BLOB полями)
@@ -234,7 +245,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
         # Сканируем все файлы
         for file_path in self.results_dir.rglob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read().lower()
 
                 for flower in self.expected_flowers:
@@ -249,7 +260,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
         self.assertGreaterEqual(coverage, 0.7, f"Покрытие цветов {coverage:.2%} < 70%")
 
         print(
-            f"✅ Найдено цветов: {len(found_flowers)}/{len(self.expected_flowers)} ({coverage:.2%})"
+            f"✅ Найдено цветов: {len(found_flowers)}/{len(self.expected_flowers)} ({coverage:.2%})",
         )
 
     def test_success_criteria_actual_balances(self):
@@ -260,7 +271,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
 
         for file_path in self.results_dir.rglob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read().lower()
 
                 if any(keyword in content for keyword in balance_keywords):
@@ -284,7 +295,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
 
         for file_path in self.results_dir.rglob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read().lower()
 
                 if any(keyword in content for keyword in price_keywords):
@@ -309,7 +320,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
 
         for file_path in self.results_dir.rglob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read().lower()
 
                 if any(keyword in content for keyword in movement_keywords):
@@ -330,7 +341,7 @@ class TestTC002FlowerExtraction(unittest.TestCase):
 
         for file_path in self.results_dir.rglob("*.json"):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read().lower()
 
                 if any(keyword in content for keyword in supplier_keywords):

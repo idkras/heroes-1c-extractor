@@ -3,8 +3,8 @@
 Тестовый скрипт для проверки Active Validation Protocol команд
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 
 # Добавляем путь к модулям
@@ -15,9 +15,9 @@ import sys
 
 sys.path.append("src")
 from heroes_mcp.src.heroes_mcp_server import (
-    registry_output_validate,
     registry_docs_audit,
     registry_gap_report,
+    registry_output_validate,
     registry_release_block,
 )
 

@@ -3,17 +3,16 @@ import logging
 import os
 import shutil
 import tarfile
-from typing import Any, Tuple
+from typing import Any
 
 import requests
-from fastapi import HTTPException
-from git import GitCommandError, Repo
-from sqlalchemy.orm import Session
-
 from app.modules.code_provider.code_provider_service import CodeProviderService
 from app.modules.parsing.graph_construction.parsing_schema import RepoDetails
 from app.modules.projects.projects_schema import ProjectStatusEnum
 from app.modules.projects.projects_service import ProjectService
+from fastapi import HTTPException
+from git import GitCommandError, Repo
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ class ParseHelper:
 
     async def clone_or_copy_repository(
         self, repo_details: RepoDetails, user_id: str
-    ) -> Tuple[Any, str, Any]:
+    ) -> tuple[Any, str, Any]:
         owner = None
         auth = None
         repo = None
@@ -75,7 +74,7 @@ class ParseHelper:
     def is_text_file(self, file_path):
         def open_text_file(file_path):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     f.read(1024)
                 return True
             except UnicodeDecodeError:
@@ -194,7 +193,7 @@ class ParseHelper:
                     logger.error(f"Error removing temporary directory: {e}")
                     pass
 
-        except (IOError, tarfile.TarError, shutil.Error) as e:
+        except (OSError, tarfile.TarError, shutil.Error) as e:
             logger.error(f"Error handling tarball: {e}")
             return e
         finally:
@@ -237,7 +236,7 @@ class ParseHelper:
                     file_path = os.path.join(root, file)
                     ext = os.path.splitext(file)[1].lower()
                     try:
-                        with open(file_path, "r", encoding="utf-8") as f:
+                        with open(file_path, encoding="utf-8") as f:
                             content = f.read()
                             total_chars += len(content)
                             if ext == ".cs":
@@ -531,7 +530,7 @@ class ParseHelper:
 
             is_up_to_date = current_commit_id == latest_commit_id
             logger.info(
-                f"""Project {project_id} commit status for branch {branch_name}: {'Up to date' if is_up_to_date else 'Outdated'}"
+                f"""Project {project_id} commit status for branch {branch_name}: {"Up to date" if is_up_to_date else "Outdated"}"
             Current commit ID: {current_commit_id}
             Latest commit ID: {latest_commit_id}"""
             )

@@ -12,22 +12,20 @@ Testing Pyramid Compliance:
 - E2E Tests: Полный workflow
 """
 
-import pytest
 import os
-import tempfile
 import subprocess
-from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
-from typing import Dict, Any
 
 # Import the module to test
 import sys
+from unittest.mock import Mock, patch
+
+import pytest
 
 sys.path.append("src")
 from shared.credentials_manager import (
-    CredentialsManager,
     CredentialConfig,
     CredentialResult,
+    CredentialsManager,
     get_credential,
     store_credential,
 )

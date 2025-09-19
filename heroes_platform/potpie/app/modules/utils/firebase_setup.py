@@ -17,7 +17,7 @@ class FirebaseSetup:
         try:
             # Check if the Base64 encoded file exists and read it.
             if os.path.exists(base64_file_path):
-                with open(base64_file_path, "r") as file:
+                with open(base64_file_path) as file:
                     service_account_base64 = file.read()
 
                 # Decode the Base64 content and parse it as JSON.
@@ -28,7 +28,7 @@ class FirebaseSetup:
                 logging.info("Loaded Firebase credentials from Base64 encoded file.")
             elif os.path.exists(json_file_path):
                 # If the Base64 file does not exist, check for the JSON file.
-                with open(json_file_path, "r") as file:
+                with open(json_file_path) as file:
                     service_account_json = json.load(file)
                 logging.info("Loaded Firebase credentials from JSON file.")
             else:

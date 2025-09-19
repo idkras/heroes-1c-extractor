@@ -1,11 +1,18 @@
 import enum
 
-from sqlalchemy import TIMESTAMP, Boolean, CheckConstraint, Column
-from sqlalchemy import Enum as SQLAEnum
-from sqlalchemy import ForeignKey, String, Text, func
-from sqlalchemy.orm import relationship
-
 from app.core.base_model import Base
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    CheckConstraint,
+    Column,
+    ForeignKey,
+    String,
+    Text,
+    func,
+)
+from sqlalchemy import Enum as SQLAEnum
+from sqlalchemy.orm import relationship
 
 
 class MessageStatus(str, enum.Enum):

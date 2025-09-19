@@ -9,16 +9,16 @@ TDD Documentation Standard v2.5 Compliance:
 - Testing Pyramid Compliance (unit, integration, e2e)
 """
 
-import pytest
 import os
-import subprocess
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from shared.credentials_manager import CredentialsManager, CredentialResult
+from shared.credentials_manager import CredentialResult, CredentialsManager
 
 
 class TestUserProfiles:

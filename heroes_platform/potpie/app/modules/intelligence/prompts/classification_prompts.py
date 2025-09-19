@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Dict
 
 from pydantic import BaseModel
 
@@ -24,7 +23,7 @@ class ClassificationResponse(BaseModel):
 
 
 class ClassificationPrompts:
-    CLASSIFICATION_PROMPTS: Dict[AgentType, str] = {
+    CLASSIFICATION_PROMPTS: dict[AgentType, str] = {
         AgentType.QNA: """You are a query classifier. Your task is to determine if a given query can be answered using general knowledge and chat history (LLM_SUFFICIENT) or if it requires additional context from a specialized agent (AGENT_REQUIRED).
         Given:
         - query: The user's current query
@@ -527,9 +526,7 @@ class ClassificationPrompts:
         """,
     }
 
-    REDUNDANT_INHIBITION_TAIL: str = (
-        "\n\nReturn ONLY JSON content, and nothing else. Don't provide reason or any other text in the response."
-    )
+    REDUNDANT_INHIBITION_TAIL: str = "\n\nReturn ONLY JSON content, and nothing else. Don't provide reason or any other text in the response."
 
     @classmethod
     def get_classification_prompt(cls, agent_type: AgentType) -> str:

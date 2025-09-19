@@ -6,10 +6,11 @@ JTBD: Как тестировщик, я хочу проверить интегр
 чтобы убедиться в корректности работы registry команд в реальной среде.
 """
 
-import pytest
 import json
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add workflows directory to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -22,7 +23,6 @@ class TestRegistryIntegration:
         """GIVEN MCP request WHEN call registry THEN workflow executes"""
         # Test that MCP server can call registry workflow
         from workflows.registry_workflow import RegistryWorkflow
-        from heroes_mcp.src.heroes_mcp_server import registry_compliance_check
 
         # Test workflow directly
         workflow = RegistryWorkflow()
@@ -112,8 +112,9 @@ class TestRegistryIntegration:
 
     def test_registry_workflow_atomic_functions(self):
         """GIVEN workflow WHEN check functions THEN all functions ≤60 lines (optimized version)"""
-        from workflows.registry_workflow import RegistryWorkflow
         import inspect
+
+        from workflows.registry_workflow import RegistryWorkflow
 
         workflow = RegistryWorkflow()
 
@@ -139,9 +140,9 @@ class TestRegistryIntegration:
             ]
 
             # Method should be ≤60 lines (optimized version allows longer methods)
-            assert (
-                len(code_lines) <= 60
-            ), f"Method {method_name} has {len(code_lines)} lines, should be ≤60"
+            assert len(code_lines) <= 60, (
+                f"Method {method_name} has {len(code_lines)} lines, should be ≤60"
+            )
 
 
 if __name__ == "__main__":

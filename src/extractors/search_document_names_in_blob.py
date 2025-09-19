@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import json
 import logging
 import os
 import sys
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +22,7 @@ from onec_dtools.database_reader import DatabaseReader
 from src.utils.blob_utils import safe_get_blob_content
 
 
-def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
+def search_document_names_in_blob() -> dict[str, Any] | None:
     """
     Поиск названий документов в BLOB полях
     ЦЕЛЬ: Найти реальные названия документов для понимания их назначения
@@ -38,7 +37,7 @@ def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
 
             print("✅ База данных открыта успешно!")
 
-            results: Dict[str, Any] = {
+            results: dict[str, Any] = {
                 "document_names": {},
                 "blob_content_samples": {},
                 "metadata": {
@@ -81,13 +80,15 @@ def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
 
             # Анализируем топ-30 таблиц документов
             sorted_documents = sorted(
-                document_tables.items(), key=lambda x: x[1], reverse=True
+                document_tables.items(),
+                key=lambda x: x[1],
+                reverse=True,
             )
 
             print("\n🔍 Анализируем топ-30 таблиц документов...")
 
             for i, (table_name, record_count) in enumerate(sorted_documents[:30]):
-                print(f"\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
+                print(f"\n📋 {i + 1:2d}. {table_name} ({record_count:,} записей)")
 
                 try:
                     table = db.tables[table_name]
@@ -105,7 +106,7 @@ def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
                                     # Ищем BLOB поля
                                     for field_name, field_value in record_data.items():
                                         if str(field_value).startswith(
-                                            "<onec_dtools.database_reader.Blob"
+                                            "<onec_dtools.database_reader.Blob",
                                         ):
                                             content = safe_get_blob_content(field_value)
                                             if content and len(content) > 10:
@@ -120,7 +121,7 @@ def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
                                                             in content.lower()
                                                         ):
                                                             found_names.add(
-                                                                f"{keyword}: {variation}"
+                                                                f"{keyword}: {variation}",
                                                             )
 
                                                 # Сохраняем образец BLOB содержимого
@@ -128,20 +129,20 @@ def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
                                                     {
                                                         "field": field_name,
                                                         "content": content[:200],
-                                                    }
+                                                    },
                                                 )
 
                                     # Ищем в обычных полях
                                     for field_name, field_value in record_data.items():
                                         if not str(field_value).startswith(
-                                            "<onec_dtools.database_reader.Blob"
+                                            "<onec_dtools.database_reader.Blob",
                                         ):
                                             field_str = str(field_value).lower()
                                             for keyword, variations in keywords.items():
                                                 for variation in variations:
                                                     if variation.lower() in field_str:
                                                         found_names.add(
-                                                            f"{keyword}: {variation}"
+                                                            f"{keyword}: {variation}",
                                                         )
 
                             except Exception as e:
@@ -159,7 +160,7 @@ def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
                             print("    🔍 Образцы BLOB содержимого:")
                             for sample in blob_samples[:3]:
                                 print(
-                                    f"        📋 {sample['field']}: {sample['content']}..."
+                                    f"        📋 {sample['field']}: {sample['content']}...",
                                 )
 
                         # Сохраняем информацию о таблице
@@ -202,7 +203,7 @@ def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
                                         "table_name": table_name,
                                         "record_count": table_info["record_count"],
                                         "found_keywords": table_info["found_keywords"],
-                                    }
+                                    },
                                 )
                                 break
 
@@ -210,7 +211,7 @@ def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
                     print(f"    ✅ Найдено таблиц: {len(matching_tables)}")
                     for match in matching_tables:
                         print(
-                            f"        📋 {match['table_name']} ({match['record_count']:,} записей)"
+                            f"        📋 {match['table_name']} ({match['record_count']:,} записей)",
                         )
                         print(f"            🎯 {', '.join(match['found_keywords'])}")
                     keyword_results[keyword] = matching_tables
@@ -231,7 +232,7 @@ def search_document_names_in_blob() -> Optional[Dict[str, Any]]:
             print("\n📊 ИТОГОВАЯ СТАТИСТИКА:")
             print(f"    📋 Проанализировано таблиц: {len(results['document_names'])}")
             print(
-                f"    🔍 Найдено таблиц с ключевыми словами: {sum(1 for info in results['document_names'].values() if info['found_keywords'])}"
+                f"    🔍 Найдено таблиц с ключевыми словами: {sum(1 for info in results['document_names'].values() if info['found_keywords'])}",
             )
 
             # Показываем найденные ключевые слова

@@ -42,15 +42,17 @@ class GhostJWTGenerator:
         try:
             import jwt
         except ImportError as e:
-            raise ImportError("PyJWT library is required. Install with: pip install PyJWT") from e
+            raise ImportError(
+                "PyJWT library is required. Install with: pip install PyJWT"
+            ) from e
 
         try:
             # Clean and split API key
-            api_key = re.sub(r'\s+', '', api_key)
-            if ':' not in api_key:
+            api_key = re.sub(r"\s+", "", api_key)
+            if ":" not in api_key:
                 raise ValueError("Admin key must be in 'id:secret' format")
 
-            key_id, secret = api_key.split(':', 1)
+            key_id, secret = api_key.split(":", 1)
 
             # ✅ КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Convert secret to hex bytes
             secret_bytes = None
@@ -66,18 +68,20 @@ class GhostJWTGenerator:
                 payload = {
                     "iat": current_time - self.default_iat_offset,
                     "exp": current_time + self.default_expiry,
-                    "aud": "/v2/admin/"  # Correct audience for v2
+                    "aud": "/v2/admin/",  # Correct audience for v2
                 }
             else:  # v5.0
                 payload = {
                     "iat": current_time - self.default_iat_offset,
                     "exp": current_time + self.default_expiry,
-                    "aud": "/admin/"  # Correct audience for v5.0
+                    "aud": "/admin/",  # Correct audience for v5.0
                 }
 
             # Generate JWT token with kid in header (correct format)
             headers = {"kid": key_id, "alg": "HS256", "typ": "JWT"}
-            token = jwt.encode(payload, secret_bytes, algorithm='HS256', headers=headers)
+            token = jwt.encode(
+                payload, secret_bytes, algorithm="HS256", headers=headers
+            )
             return str(token)
 
         except Exception as e:
@@ -97,6 +101,7 @@ class GhostJWTGenerator:
         """
         try:
             import jwt
+
             # Decode without verification to check structure
             decoded = jwt.decode(token, options={"verify_signature": False})
             required_fields = ["iat", "exp", "aud"]
@@ -117,12 +122,13 @@ class GhostJWTGenerator:
         """
         try:
             import jwt
+
             decoded = jwt.decode(token, options={"verify_signature": False})
             return {
                 "audience": decoded.get("aud"),
                 "issued_at": decoded.get("iat"),
                 "expires_at": decoded.get("exp"),
-                "key_id": decoded.get("kid")
+                "key_id": decoded.get("kid"),
             }
         except Exception:
             return None

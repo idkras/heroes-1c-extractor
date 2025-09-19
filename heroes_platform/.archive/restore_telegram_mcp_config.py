@@ -23,7 +23,9 @@ def restore_telegram_mcp_config():
             config = json.load(f)
 
         # Получаем путь к Python из виртуального окружения telegram-mcp
-        telegram_venv_python = Path(__file__).parent / "telegram-mcp" / ".venv" / "bin" / "python3"
+        telegram_venv_python = (
+            Path(__file__).parent / "telegram-mcp" / ".venv" / "bin" / "python3"
+        )
 
         if not telegram_venv_python.exists():
             print("❌ Telegram MCP virtual environment not found")
@@ -39,7 +41,7 @@ def restore_telegram_mcp_config():
         # Добавляем telegram-mcp конфигурацию
         config["mcpServers"]["telegram-mcp"] = {
             "command": str(telegram_venv_python),
-            "args": [str(main_keychain_path)]
+            "args": [str(main_keychain_path)],
         }
 
         print("✅ Added telegram-mcp config:")
@@ -47,7 +49,7 @@ def restore_telegram_mcp_config():
         print(f"   Args: {main_keychain_path}")
 
         # Сохраняем обновленную конфигурацию
-        with open(cursor_config_path, 'w') as f:
+        with open(cursor_config_path, "w") as f:
             json.dump(config, f, indent=2)
 
         print("✅ Telegram MCP configuration restored successfully")
@@ -56,6 +58,7 @@ def restore_telegram_mcp_config():
     except Exception as e:
         print(f"❌ Error restoring telegram-mcp config: {e}")
         return False
+
 
 def rename_main_keychain_file():
     """Переименовать main_keychain.py в более понятное название"""
@@ -81,7 +84,7 @@ def rename_main_keychain_file():
             if "telegram-mcp" in config["mcpServers"]:
                 config["mcpServers"]["telegram-mcp"]["args"] = [str(new_path)]
 
-                with open(cursor_config_path, 'w') as f:
+                with open(cursor_config_path, "w") as f:
                     json.dump(config, f, indent=2)
 
                 print(f"✅ Updated MCP config to use {new_path.name}")
@@ -91,6 +94,7 @@ def rename_main_keychain_file():
     except Exception as e:
         print(f"❌ Error renaming file: {e}")
         return False
+
 
 def main():
     print("🔄 Restoring Telegram MCP Configuration...")
@@ -110,7 +114,10 @@ def main():
     if config_restored and file_renamed:
         print("\n🎉 Success!")
         print("telegram-mcp configuration restored with better file naming")
-        print("File is now called 'telegram_mcp_server.py' instead of 'main_keychain.py'")
+        print(
+            "File is now called 'telegram_mcp_server.py' instead of 'main_keychain.py'"
+        )
+
 
 if __name__ == "__main__":
     main()

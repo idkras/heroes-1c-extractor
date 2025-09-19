@@ -17,7 +17,10 @@ def test_pyproject_toml_structure():
         assert "[tool." in content
 
         # Check project metadata
-        assert 'name = "heroes-platform"' in content or 'name = "heroes_platform"' in content
+        assert (
+            'name = "heroes-platform"' in content
+            or 'name = "heroes_platform"' in content
+        )
         assert 'version = "1.0.0"' in content
         assert "description" in content
 
@@ -37,12 +40,7 @@ def test_gitignore_structure():
             content = f.read()
 
         # Check for critical exclusions
-        required_exclusions = [
-            ".venv",
-            "__pycache__",
-            ".DS_Store",
-            "*.py[cod]"
-        ]
+        required_exclusions = [".venv", "__pycache__", ".DS_Store", "*.py[cod]"]
 
         for exclusion in required_exclusions:
             assert exclusion in content, f"Missing exclusion: {exclusion}"
@@ -53,11 +51,7 @@ def test_gitignore_structure():
 
 def test_required_directories():
     """Test that required directories exist."""
-    required_dirs = [
-        "tests",
-        "heroes_mcp",
-        "src"
-    ]
+    required_dirs = ["tests", "heroes_mcp", "src"]
 
     for dir_path in required_dirs:
         assert os.path.exists(dir_path), f"Required directory {dir_path} not found"
@@ -68,10 +62,7 @@ def test_mcp_server_structure():
     mcp_server_path = "heroes_mcp"
 
     if os.path.exists(mcp_server_path):
-        required_mcp_files = [
-            "src/heroes_mcp_server.py",
-            "README.md"
-        ]
+        required_mcp_files = ["src/heroes_mcp_server.py", "README.md"]
 
         for file_path in required_mcp_files:
             full_path = os.path.join(mcp_server_path, file_path)

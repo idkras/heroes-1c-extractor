@@ -1,21 +1,21 @@
+import io
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
-import io
 
-from app.modules.media.media_service import MediaService, MediaServiceError
-from app.modules.media.media_schema import (
-    AttachmentUploadResponse,
-    AttachmentAccessResponse,
-    AttachmentInfo,
-)
 from app.modules.conversations.access.access_service import ShareChatService
 from app.modules.conversations.conversation.conversation_schema import (
     ConversationAccessType,
 )
+from app.modules.media.media_schema import (
+    AttachmentAccessResponse,
+    AttachmentInfo,
+    AttachmentUploadResponse,
+)
+from app.modules.media.media_service import MediaService, MediaServiceError
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +192,7 @@ class MediaController:
             logger.error(f"Error deleting attachment: {str(e)}")
             raise HTTPException(status_code=500, detail="Failed to delete attachment")
 
-    async def get_message_attachments(self, message_id: str) -> List[AttachmentInfo]:
+    async def get_message_attachments(self, message_id: str) -> list[AttachmentInfo]:
         """Get all attachments for a message"""
         try:
             # Check access to the message

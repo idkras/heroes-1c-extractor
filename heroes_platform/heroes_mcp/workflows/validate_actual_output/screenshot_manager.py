@@ -28,7 +28,13 @@ class ScreenshotManager:
         self.output_dir = project_root / "output_screenshot"
         self.output_dir.mkdir(exist_ok=True)
 
-    async def create_screenshot(self, url: str, output_type: str = "validation", outcome: str = "success", description: str = "screenshot") -> Optional[dict[str, Any]]:
+    async def create_screenshot(
+        self,
+        url: str,
+        output_type: str = "validation",
+        outcome: str = "success",
+        description: str = "screenshot",
+    ) -> Optional[dict[str, Any]]:
         """Создание скриншота с правильным именованием (≤20 строк)"""
         try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -71,27 +77,28 @@ class ScreenshotManager:
             # Создаем простой PNG файл через PIL или fallback
             try:
                 from PIL import Image, ImageDraw, ImageFont
-                
+
                 # Создаем изображение 800x600
-                img = Image.new('RGB', (800, 600), color='white')
+                img = Image.new("RGB", (800, 600), color="white")
                 draw = ImageDraw.Draw(img)
-                
+
                 # Добавляем текст
                 text = f"Screenshot placeholder for {url}\nCreated: {datetime.now().isoformat()}\nStatus: Fallback mode (Playwright not available)"
-                draw.text((10, 10), text, fill='black')
-                
+                draw.text((10, 10), text, fill="black")
+
                 # Сохраняем как PNG
-                img.save(filepath, 'PNG')
-                
+                img.save(filepath, "PNG")
+
             except ImportError:
                 # Fallback: создаем простой PNG файл
-                import struct
                 with open(filepath, "wb") as f:
                     # Простой PNG заголовок
-                    f.write(b'\x89PNG\r\n\x1a\n')
+                    f.write(b"\x89PNG\r\n\x1a\n")
                     # Минимальный PNG файл
-                    f.write(b'\x00\x00\x00\rIHDR\x00\x00\x03\x20\x00\x00\x02X\x08\x02\x00\x00\x00')
-                    f.write(b'\x00\x00\x00\x00IEND\xaeB`\x82')
+                    f.write(
+                        b"\x00\x00\x00\rIHDR\x00\x00\x03\x20\x00\x00\x02X\x08\x02\x00\x00\x00"
+                    )
+                    f.write(b"\x00\x00\x00\x00IEND\xaeB`\x82")
 
             return {
                 "filepath": str(filepath),
@@ -104,11 +111,7 @@ class ScreenshotManager:
             }
         except Exception as e:
             logger.error(f"Placeholder creation failed: {e}")
-            return {
-                "success": False,
-                "error": str(e),
-                "status": "failed"
-            }
+            return {"success": False, "error": str(e), "status": "failed"}
 
     async def _call_playwright_mcp(self, url: str, filepath: str) -> dict[str, Any]:
         """Вызов Playwright MCP сервера (≤20 строк)"""

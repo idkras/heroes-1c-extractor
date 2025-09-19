@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 from src.utils.base_extractor import BaseExtractor
 
@@ -16,7 +15,7 @@ class QualityDocumentsExtractor(BaseExtractor):
     чтобы получить данные для анализа качества цветов и флористики.
     """
 
-    def extract(self) -> Optional[Dict[str, Any]]:
+    def extract(self) -> dict[str, Any] | None:
         """
         JTBD:
         Как система извлечения документов качества, я хочу найти все документы о качестве товаров,
@@ -29,7 +28,7 @@ class QualityDocumentsExtractor(BaseExtractor):
         print("🎯 ЦЕЛЬ: Найти первичные данные по качеству товаров")
         print("=" * 60)
 
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "quality_documents": [],
             "found_keywords": [],
             "metadata": self.create_metadata(),
@@ -40,7 +39,8 @@ class QualityDocumentsExtractor(BaseExtractor):
 
         # Используем DocumentAnalyzer для анализа таблиц документов
         document_analysis_results = self.document_analyzer.analyze_document_tables(
-            self.db, max_tables=15
+            self.db,
+            max_tables=15,
         )
 
         for table_analysis in document_analysis_results:
@@ -55,19 +55,20 @@ class QualityDocumentsExtractor(BaseExtractor):
             for doc_analysis in table_analysis.document_analysis:
                 # Используем KeywordSearcher для поиска ключевых слов качества
                 keyword_result = self.keyword_searcher.search_quality_keywords(
-                    doc_analysis.sample_data
+                    doc_analysis.sample_data,
                 )
 
                 if keyword_result.found_keywords:
                     print(
-                        f"    🎯 Найдены ключевые слова: {keyword_result.found_keywords}"
+                        f"    🎯 Найдены ключевые слова: {keyword_result.found_keywords}",
                     )
 
                     # Сохраняем найденную запись
                     record_index = 0
                     if doc_analysis.analysis_metadata:
                         record_index = doc_analysis.analysis_metadata.get(
-                            "record_index", 0
+                            "record_index",
+                            0,
                         )
 
                     quality_record = {
@@ -86,7 +87,7 @@ class QualityDocumentsExtractor(BaseExtractor):
 
             if quality_records:
                 print(
-                    f"    ✅ Найдено {len(quality_records)} записей с ключевыми словами"
+                    f"    ✅ Найдено {len(quality_records)} записей с ключевыми словами",
                 )
 
                 # Сохраняем результаты анализа таблицы
@@ -106,7 +107,8 @@ class QualityDocumentsExtractor(BaseExtractor):
 
         # Используем DocumentAnalyzer для анализа справочников
         reference_analysis_results = self.document_analyzer.analyze_reference_tables(
-            self.db, max_tables=10
+            self.db,
+            max_tables=10,
         )
 
         for table_analysis in reference_analysis_results:
@@ -119,12 +121,12 @@ class QualityDocumentsExtractor(BaseExtractor):
             for doc_analysis in table_analysis.document_analysis:
                 # Используем KeywordSearcher для поиска ключевых слов качества
                 keyword_result = self.keyword_searcher.search_quality_keywords(
-                    doc_analysis.sample_data
+                    doc_analysis.sample_data,
                 )
 
                 if keyword_result.found_keywords:
                     print(
-                        f"    🎯 Найдены ключевые слова: {keyword_result.found_keywords}"
+                        f"    🎯 Найдены ключевые слова: {keyword_result.found_keywords}",
                     )
 
                     # Добавляем найденные ключевые слова в общий список
@@ -159,7 +161,7 @@ class QualityDocumentsExtractor(BaseExtractor):
 
                             if keyword_result.found_keywords:
                                 print(
-                                    f"    🎯 Запись {i+1}: найдены ключевые слова: {keyword_result.found_keywords}"
+                                    f"    🎯 Запись {i + 1}: найдены ключевые слова: {keyword_result.found_keywords}",
                                 )
 
                                 # Сохраняем найденную запись
@@ -185,7 +187,7 @@ class QualityDocumentsExtractor(BaseExtractor):
 
                 if quality_records:
                     print(
-                        f"    ✅ Найдено {len(quality_records)} записей с ключевыми словами"
+                        f"    ✅ Найдено {len(quality_records)} записей с ключевыми словами",
                     )
 
                     # Сохраняем результаты анализа журнала
@@ -204,14 +206,14 @@ class QualityDocumentsExtractor(BaseExtractor):
 
         # Обновляем общую статистику
         results["metadata"]["total_quality_documents"] = len(
-            results["quality_documents"]
+            results["quality_documents"],
         )
 
         # Сохраняем результаты
         self.save_results("quality_documents_search.json", results)
 
         print(
-            f"📊 Найдено документов с качеством: {results['metadata']['total_quality_documents']}"
+            f"📊 Найдено документов с качеством: {results['metadata']['total_quality_documents']}",
         )
         print(f"🎯 Найдено ключевых слов: {len(results['found_keywords'])}")
 
@@ -221,7 +223,7 @@ class QualityDocumentsExtractor(BaseExtractor):
         return results
 
 
-def search_quality_documents() -> Optional[Dict[str, Any]]:
+def search_quality_documents() -> dict[str, Any] | None:
     """
     JTBD:
     Returns:

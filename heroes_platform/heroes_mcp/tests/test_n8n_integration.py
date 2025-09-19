@@ -3,12 +3,10 @@
 Tests for n8n integration
 """
 
-import json
-import pytest
-import asyncio
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import AsyncMock, Mock, patch
 
-from src.n8n_integration import N8nConfig, N8nIntegration, N8nWorkflow, N8nNode
+import pytest
+from src.n8n_integration import N8nConfig, N8nIntegration, N8nNode, N8nWorkflow
 
 
 class TestN8nConfig:
@@ -337,7 +335,7 @@ class TestN8nIntegration:
 
 def test_get_n8n_integration():
     """Test get_n8n_integration function"""
-    from src.n8n_integration import get_n8n_integration, _n8n_integration
+    from src.n8n_integration import _n8n_integration, get_n8n_integration
 
     # Initially should be None
     assert get_n8n_integration() is None
@@ -355,7 +353,7 @@ def test_get_n8n_integration():
 
 def test_init_n8n_integration():
     """Test init_n8n_integration function"""
-    from src.n8n_integration import init_n8n_integration, get_n8n_integration
+    from src.n8n_integration import get_n8n_integration, init_n8n_integration
 
     config = N8nConfig(base_url="http://test.com")
     integration = init_n8n_integration(config)

@@ -9,12 +9,12 @@ from app.modules.intelligence.agents.custom_agents.custom_agent_controller impor
 from app.modules.intelligence.agents.custom_agents.custom_agent_schema import (
     Agent,
     AgentCreate,
-    AgentUpdate,
-    PromptBasedAgentRequest,
-    AgentSharingRequest,
-    ListAgentsRequest,
-    RevokeAgentAccessRequest,
     AgentSharesResponse,
+    AgentSharingRequest,
+    AgentUpdate,
+    ListAgentsRequest,
+    PromptBasedAgentRequest,
+    RevokeAgentAccessRequest,
 )
 from app.modules.utils.APIRouter import APIRouter
 from app.modules.utils.logger import setup_logger

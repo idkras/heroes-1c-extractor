@@ -244,7 +244,8 @@ class ValidationWorkflow:
 
         # Обновляем общий score
         scores = [
-            v["score"] for v in validation_results["detailed_validation"].values()  # type: ignore
+            v["score"]
+            for v in validation_results["detailed_validation"].values()  # type: ignore
         ]
         validation_results["validation_score"] = (
             sum(scores) / len(scores) if scores else 0.0

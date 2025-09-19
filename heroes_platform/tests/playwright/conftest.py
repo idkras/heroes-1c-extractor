@@ -2,9 +2,9 @@
 Playwright Test Configuration
 """
 
-import pytest
-import asyncio
 from pathlib import Path
+
+import pytest
 from playwright.async_api import async_playwright
 
 
@@ -39,16 +39,16 @@ def test_data():
             "url": "https://idkras.github.io/rickai-docs/technical/adjust_appmetrica_integration/",
             "expected_elements": [
                 ".md-header",
-                ".md-nav--primary", 
+                ".md-nav--primary",
                 ".md-content",
                 "details[open]",
                 "pre code",
-                "table"
+                "table",
             ],
             "critical_defects": [
                 "vertical_text_rendering",
                 "overlapping_elements",
-                "broken_css_layout"
-            ]
+                "broken_css_layout",
+            ],
         }
     }

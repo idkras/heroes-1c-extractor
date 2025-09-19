@@ -24,7 +24,7 @@ def run_test_file(test_file_path):
     # Ищем функции, начинающиеся с test_
     test_functions = []
     for name in dir(module):
-        if name.startswith('test_') and callable(getattr(module, name)):
+        if name.startswith("test_") and callable(getattr(module, name)):
             test_functions.append(name)
 
     print(f"Found {len(test_functions)} test functions")

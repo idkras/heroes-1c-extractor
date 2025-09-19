@@ -20,11 +20,7 @@ class TestProjectStructure:
         JTBD: Как система валидации, я хочу проверять наличие обязательных файлов,
         чтобы гарантировать полноту проекта.
         """
-        required_files = [
-            "pyproject.toml",
-            "README.md",
-            ".gitignore"
-        ]
+        required_files = ["pyproject.toml", "README.md", ".gitignore"]
 
         for file_path in required_files:
             assert os.path.exists(file_path), f"Required file {file_path} not found"
@@ -34,10 +30,7 @@ class TestProjectStructure:
         JTBD: Как система валидации, я хочу проверять наличие обязательных директорий,
         чтобы обеспечить правильную организацию кода.
         """
-        required_dirs = [
-            "tests",
-            "docs"
-        ]
+        required_dirs = ["tests", "docs"]
 
         for dir_path in required_dirs:
             assert os.path.exists(dir_path), f"Required directory {dir_path} not found"
@@ -65,7 +58,9 @@ class TestProjectStructure:
 
         # Проверяем наличие __init__.py в поддиректориях
         assert (unit_dir / "__init__.py").exists(), "tests/unit/__init__.py not found"
-        assert (integration_dir / "__init__.py").exists(), "tests/integration/__init__.py not found"
+        assert (integration_dir / "__init__.py").exists(), (
+            "tests/integration/__init__.py not found"
+        )
         assert (e2e_dir / "__init__.py").exists(), "tests/e2e/__init__.py not found"
 
     def test_pyproject_toml_structure(self):
@@ -84,11 +79,13 @@ class TestProjectStructure:
             "[build-system]",
             "[tool.pytest.ini_options]",
             "[tool.black]",
-            "[tool.ruff]"
+            "[tool.ruff]",
         ]
 
         for section in required_sections:
-            assert section in content, f"Required section {section} not found in pyproject.toml"
+            assert section in content, (
+                f"Required section {section} not found in pyproject.toml"
+            )
 
     def test_gitignore_exclusions(self):
         """
@@ -108,11 +105,13 @@ class TestProjectStructure:
             "*.py[cod]",
             ".pytest_cache",
             ".mypy_cache",
-            ".ruff_cache"
+            ".ruff_cache",
         ]
 
         for exclusion in critical_exclusions:
-            assert exclusion in content, f"Critical exclusion {exclusion} not found in .gitignore"
+            assert exclusion in content, (
+                f"Critical exclusion {exclusion} not found in .gitignore"
+            )
 
 
 class TestImportStructure:
@@ -128,6 +127,7 @@ class TestImportStructure:
         """
         try:
             import pydantic
+
             assert pydantic.__version__ >= "2.0.0"
         except ImportError:
             pytest.fail("Pydantic not installed or version too old")
@@ -139,6 +139,7 @@ class TestImportStructure:
         """
         try:
             import pytest
+
             assert pytest.__version__ >= "6.0.0"
         except ImportError:
             pytest.fail("Pytest not installed or version too old")

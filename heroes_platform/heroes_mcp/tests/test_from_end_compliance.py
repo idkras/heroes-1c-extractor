@@ -12,7 +12,6 @@ import asyncio
 import json
 import sys
 from datetime import datetime
-from pathlib import Path
 
 # Добавляем путь к src для импорта
 sys.path.append("src")

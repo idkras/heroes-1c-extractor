@@ -137,7 +137,9 @@ class OffersExtractor:
             }
 
             if self.session:
-                async with self.session.get(url, headers=headers, timeout=30) as response:  # type: ignore
+                async with self.session.get(
+                    url, headers=headers, timeout=30
+                ) as response:  # type: ignore
                     response.raise_for_status()
                     content = await response.text()
                     logger.info(f"✅ Контент загружен: {len(content)} символов")
@@ -145,7 +147,7 @@ class OffersExtractor:
         except Exception as e:
             logger.error(f"❌ Ошибка загрузки {url}: {e}")
             return None
-        
+
         return None  # Fallback if session is None
 
     def _extract_text_elements(self, html_content: str) -> list[dict[str, str]]:
@@ -179,7 +181,7 @@ class OffersExtractor:
 
         # Извлекаем meta description (legacy improvement)
         meta_desc = soup.find("meta", attrs={"name": "description"})
-        if meta_desc and hasattr(meta_desc, 'get') and meta_desc.get("content"):
+        if meta_desc and hasattr(meta_desc, "get") and meta_desc.get("content"):
             elements.append(
                 {
                     "text": meta_desc.get("content"),  # type: ignore
@@ -199,7 +201,9 @@ class OffersExtractor:
                             "text": text,
                             "type": "header",
                             "tag": tag,
-                            "element": element.name if hasattr(element, 'name') else str(element),  # type: ignore
+                            "element": element.name
+                            if hasattr(element, "name")
+                            else str(element),  # type: ignore
                         }
                     )
 
@@ -211,8 +215,12 @@ class OffersExtractor:
                     {
                         "text": text,
                         "type": "content",
-                        "tag": element.name if hasattr(element, 'name') else str(element),  # type: ignore
-                        "element": element.name if hasattr(element, 'name') else str(element),  # type: ignore
+                        "tag": element.name
+                        if hasattr(element, "name")
+                        else str(element),  # type: ignore
+                        "element": element.name
+                        if hasattr(element, "name")
+                        else str(element),  # type: ignore
                     }
                 )
 
@@ -220,22 +228,26 @@ class OffersExtractor:
         for element in soup.find_all(["button", "a", "input"]):
             text = (
                 element.get_text(strip=True)
-                or (element.get("value", "") if hasattr(element, 'get') else "")
-                or (element.get("placeholder", "") if hasattr(element, 'get') else "")
+                or (element.get("value", "") if hasattr(element, "get") else "")
+                or (element.get("placeholder", "") if hasattr(element, "get") else "")
             )
             if text:
                 elements.append(
                     {
                         "text": text,
                         "type": "cta",
-                        "tag": element.name if hasattr(element, 'name') else str(element),  # type: ignore
-                        "element": element.name if hasattr(element, 'name') else str(element),  # type: ignore
+                        "tag": element.name
+                        if hasattr(element, "name")
+                        else str(element),  # type: ignore
+                        "element": element.name
+                        if hasattr(element, "name")
+                        else str(element),  # type: ignore
                     }
                 )
 
         # Извлекаем meta информацию
         for element in soup.find_all("meta"):
-            content = element.get("content", "") if hasattr(element, 'get') else ""
+            content = element.get("content", "") if hasattr(element, "get") else ""
             if content:
                 elements.append(
                     {"text": content, "type": "meta", "tag": "meta", "element": "meta"}

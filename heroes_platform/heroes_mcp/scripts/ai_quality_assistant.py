@@ -16,7 +16,7 @@ import json
 import logging
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from rich.console import Console
 from rich.table import Table
@@ -58,7 +58,11 @@ class AIQualityAssistant:
         """Analyze and improve documentation"""
         console.print("[yellow]📚 Analyzing documentation...[/yellow]")
 
-        results: Dict[str, List[str]] = {"missing_docstrings": [], "outdated_docs": [], "suggestions": []}
+        results: dict[str, list[str]] = {
+            "missing_docstrings": [],
+            "outdated_docs": [],
+            "suggestions": [],
+        }
 
         # Check for missing docstrings
         for py_file in self.src_path.rglob("*.py"):
@@ -115,7 +119,7 @@ class AIQualityAssistant:
         """Run security vulnerability scan"""
         console.print("[yellow]🔒 Running security scan...[/yellow]")
 
-        results: Dict[str, List[str]] = {"vulnerabilities": [], "suggestions": []}
+        results: dict[str, list[str]] = {"vulnerabilities": [], "suggestions": []}
 
         try:
             # Run bandit
@@ -145,7 +149,7 @@ class AIQualityAssistant:
         """Analyze code performance patterns"""
         console.print("[yellow]⚡ Analyzing performance...[/yellow]")
 
-        results: Dict[str, List[str]] = {"performance_issues": [], "suggestions": []}
+        results: dict[str, list[str]] = {"performance_issues": [], "suggestions": []}
 
         # Check for common performance anti-patterns
         performance_patterns = [
@@ -169,7 +173,7 @@ class AIQualityAssistant:
         """Analyze code style and formatting"""
         console.print("[yellow]🎨 Analyzing code style...[/yellow]")
 
-        results: Dict[str, List[str]] = {"style_issues": [], "suggestions": []}
+        results: dict[str, list[str]] = {"style_issues": [], "suggestions": []}
 
         try:
             # Run ruff

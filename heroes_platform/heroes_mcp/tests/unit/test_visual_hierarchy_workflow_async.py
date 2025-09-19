@@ -3,14 +3,14 @@ Unit tests for VisualHierarchyWorkflow - Async version
 Following TDD Documentation Standard and MCP Workflow Standard v4.1
 """
 
-import pytest
 import json
-import asyncio
-import aiohttp
-from unittest.mock import Mock, patch, MagicMock, AsyncMock
-import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+import sys
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 from workflows.visual_hierarchy_workflow import VisualHierarchyWorkflow
 
 
@@ -181,7 +181,6 @@ class TestVisualHierarchyMCPIntegrationAsync:
         mock_session.get.return_value = MockResponseContext(mock_response)
 
         with patch("aiohttp.ClientSession", return_value=mock_session):
-
             # Act
             result = await mcp_analyze("https://example.com", "landing")
 

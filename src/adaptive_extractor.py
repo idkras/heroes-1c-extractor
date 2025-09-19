@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Адаптивный извлекатель для разных типов таблиц 1С
@@ -12,11 +11,12 @@ import time
 from datetime import datetime
 
 sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "tools", "onec_dtools")
+    0,
+    os.path.join(os.path.dirname(__file__), "..", "tools", "onec_dtools"),
 )
 
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from onec_dtools.database_reader import DatabaseReader
 
@@ -39,7 +39,7 @@ try:
 except ImportError:
     PARQUET_DUCKDB_AVAILABLE = False
     logger.warning(
-        "⚠️ Parquet/DuckDB не установлены. Установите: pip install pandas pyarrow duckdb"
+        "⚠️ Parquet/DuckDB не установлены. Установите: pip install pandas pyarrow duckdb",
     )
 
 
@@ -89,10 +89,12 @@ class AdaptiveExtractor:
         }
 
     def analyze_table_structure(
-        self, table_name: str, row_dict: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self,
+        table_name: str,
+        row_dict: dict[str, Any],
+    ) -> dict[str, Any]:
         """Анализирует структуру таблицы и определяет бизнес-поля"""
-        analysis: Dict[str, Any] = {
+        analysis: dict[str, Any] = {
             "table_name": table_name,
             "total_fields": len(row_dict),
             "business_fields": {},
@@ -149,8 +151,8 @@ class AdaptiveExtractor:
         logger.info(
             f"📊 {table_name}: {current_record:,}/{total_records:,} ({progress_percent:.1f}%) | "
             f"Скорость: {records_per_second:.1f} зап/сек | "
-            f"Осталось: {estimated_remaining/60:.1f} мин | "
-            f"Ошибки: {error_count}"
+            f"Осталось: {estimated_remaining / 60:.1f} мин | "
+            f"Ошибки: {error_count}",
         )
 
         # Обновляем статистику
@@ -158,7 +160,11 @@ class AdaptiveExtractor:
         self.extraction_stats["last_checkpoint"] = current_record
 
     def log_error(
-        self, table_name: str, record_index: int, error_type: str, error_message: str
+        self,
+        table_name: str,
+        record_index: int,
+        error_type: str,
+        error_message: str,
     ) -> None:
         """Логирует ошибки с детальной информацией"""
         self.extraction_stats["failed_records"] += 1
@@ -167,7 +173,7 @@ class AdaptiveExtractor:
 
         logger.error(f"❌ {table_name}[{record_index}]: {error_type} - {error_message}")
 
-    def save_checkpoint(self, table_name: str, records: List[Dict[str, Any]]) -> None:
+    def save_checkpoint(self, table_name: str, records: list[dict[str, Any]]) -> None:
         """Сохраняет checkpoint для восстановления"""
         checkpoint_file = f"checkpoint_{table_name}_{len(records)}.json"
         try:
@@ -186,11 +192,11 @@ class AdaptiveExtractor:
                 )
             logger.info(f"💾 Checkpoint сохранен: {checkpoint_file}")
         except Exception as e:
-            logger.error(f"❌ Ошибка сохранения checkpoint: {str(e)}")
+            logger.error(f"❌ Ошибка сохранения checkpoint: {e!s}")
 
-    def extract_blob_content(self, blob_obj: Any) -> Dict[str, Any]:
+    def extract_blob_content(self, blob_obj: Any) -> dict[str, Any]:
         """Извлекает содержимое BLOB поля"""
-        blob_data: Dict[str, Any] = {
+        blob_data: dict[str, Any] = {
             "field_type": str(type(blob_obj)),
             "size": 0,
             "extraction_methods": [],
@@ -213,7 +219,7 @@ class AdaptiveExtractor:
                                     "length": len(content),
                                 }
                                 blob_data["extraction_methods"].append(
-                                    f"value_{encoding}"
+                                    f"value_{encoding}",
                                 )
                                 blob_data["size"] = len(blob_value)
                                 break
@@ -249,7 +255,7 @@ class AdaptiveExtractor:
                 except Exception as e:
                     # Другие ошибки при доступе к value
                     blob_data["value"] = {
-                        "content": f"BLOB access error: {str(e)}",
+                        "content": f"BLOB access error: {e!s}",
                         "type": "blob_error",
                         "length": 0,
                     }
@@ -266,9 +272,9 @@ class AdaptiveExtractor:
                 blob_data["size"] = len(str(blob_obj))
 
         except Exception as e:
-            blob_data["error"] = f"Ошибка извлечения: {str(e)}"
+            blob_data["error"] = f"Ошибка извлечения: {e!s}"
             blob_data["value"] = {
-                "content": f"ERROR: {str(e)}",
+                "content": f"ERROR: {e!s}",
                 "type": "error",
                 "length": 0,
             }
@@ -276,8 +282,11 @@ class AdaptiveExtractor:
         return blob_data
 
     def extract_table_data(
-        self, table_name: str, table: Any, max_records: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
+        self,
+        table_name: str,
+        table: Any,
+        max_records: int | None = None,
+    ) -> list[dict[str, Any]]:
         """Извлекает данные из таблицы с адаптивной логикой"""
         print(f"   🔄 Извлечение {table_name}...")
         print(f"      📊 Всего записей: {len(table):,}")
@@ -316,12 +325,12 @@ class AdaptiveExtractor:
                         f"🔍 Анализ записи {i}: {analysis['total_fields']} полей, "
                         f"{len(analysis['amount_fields'])} сумм, "
                         f"{len(analysis['quantity_fields'])} количеств, "
-                        f"{len(analysis['blob_fields'])} BLOB"
+                        f"{len(analysis['blob_fields'])} BLOB",
                     )
 
                 # Создаем запись
-                record: Dict[str, Any] = {
-                    "id": f"{table_name}_{i+1}",
+                record: dict[str, Any] = {
+                    "id": f"{table_name}_{i + 1}",
                     "table_name": table_name,
                     "row_index": i + 1,
                     "fields": {},
@@ -384,11 +393,11 @@ class AdaptiveExtractor:
                                 "size": 0,
                                 "extraction_methods": [],
                                 "value": {
-                                    "content": f"BLOB extraction error: {str(e)}",
+                                    "content": f"BLOB extraction error: {e!s}",
                                     "type": "blob_error",
                                     "length": 0,
                                 },
-                                "error": f"Ошибка извлечения: {str(e)}",
+                                "error": f"Ошибка извлечения: {e!s}",
                             }
                             record["blobs"][key] = blob_data
                             record["extraction_stats"]["total_blobs"] += 1
@@ -419,18 +428,19 @@ class AdaptiveExtractor:
         # Финальная статистика
         elapsed_time = time.time() - self.extraction_stats["start_time"]
         logger.info(
-            f"✅ {table_name} завершена: {successful_records:,} записей за {elapsed_time/60:.1f} мин"
+            f"✅ {table_name} завершена: {successful_records:,} записей за {elapsed_time / 60:.1f} мин",
         )
         logger.info(
-            f"📊 Статистика: {successful_records:,} успешных, {error_count} ошибок"
+            f"📊 Статистика: {successful_records:,} успешных, {error_count} ошибок",
         )
 
         print(f"      ✅ Извлечено {successful_records:,} записей из {table_name}")
         return records
 
     def extract_critical_tables(
-        self, db: DatabaseReader
-    ) -> Dict[str, List[Dict[str, Any]]]:
+        self,
+        db: DatabaseReader,
+    ) -> dict[str, list[dict[str, Any]]]:
         """Извлекает критические таблицы"""
         critical_tables = [
             "_DOCUMENTJOURNAL5354",  # 4,458,509 записей
@@ -456,7 +466,7 @@ class AdaptiveExtractor:
 
         return results
 
-    def save_to_parquet(self, results: Dict[str, List[Dict[str, Any]]]) -> None:
+    def save_to_parquet(self, results: dict[str, list[dict[str, Any]]]) -> None:
         """Сохраняет результаты в Parquet формат"""
         if not PARQUET_DUCKDB_AVAILABLE:
             logger.error("❌ Parquet/DuckDB не доступны")
@@ -489,7 +499,8 @@ class AdaptiveExtractor:
                     for key, blob_data in record.get("blobs", {}).items():
                         row_data[f"blob_{key}_size"] = blob_data.get("size", 0)
                         row_data[f"blob_{key}_type"] = blob_data.get("value", {}).get(
-                            "type", "unknown"
+                            "type",
+                            "unknown",
                         )
                         # Добавляем содержимое BLOB для анализа
                         blob_content = blob_data.get("value", {}).get("content", "")
@@ -512,7 +523,7 @@ class AdaptiveExtractor:
                     df.to_parquet(parquet_file, engine="pyarrow")
                     parquet_files[table_name] = parquet_file
                     logger.info(
-                        f"✅ {table_name}: {len(df):,} записей → {parquet_file}"
+                        f"✅ {table_name}: {len(df):,} записей → {parquet_file}",
                     )
 
             # Создаем основной Parquet файл
@@ -522,9 +533,9 @@ class AdaptiveExtractor:
                 # Здесь можно объединить все таблицы в один файл
 
         except Exception as e:
-            logger.error(f"❌ Ошибка сохранения в Parquet: {str(e)}")
+            logger.error(f"❌ Ошибка сохранения в Parquet: {e!s}")
 
-    def save_to_duckdb(self, results: Dict[str, List[Dict[str, Any]]]) -> None:
+    def save_to_duckdb(self, results: dict[str, list[dict[str, Any]]]) -> None:
         """Сохраняет результаты в DuckDB"""
         if not PARQUET_DUCKDB_AVAILABLE:
             logger.error("❌ Parquet/DuckDB не доступны")
@@ -559,7 +570,8 @@ class AdaptiveExtractor:
                     for key, blob_data in record.get("blobs", {}).items():
                         row_data[f"blob_{key}_size"] = blob_data.get("size", 0)
                         row_data[f"blob_{key}_type"] = blob_data.get("value", {}).get(
-                            "type", "unknown"
+                            "type",
+                            "unknown",
                         )
 
                     # Добавляем статистику извлечения
@@ -583,24 +595,24 @@ class AdaptiveExtractor:
 
             # Создаем индексы для быстрого поиска
             logger.info("🔍 Создание индексов...")
-            for table_name in results.keys():
+            for table_name in results:
                 try:
                     conn.execute(
-                        f"CREATE INDEX IF NOT EXISTS idx_{table_name}_id ON {table_name}(id)"
+                        f"CREATE INDEX IF NOT EXISTS idx_{table_name}_id ON {table_name}(id)",
                     )
                     conn.execute(
-                        f"CREATE INDEX IF NOT EXISTS idx_{table_name}_table ON {table_name}(table_name)"
+                        f"CREATE INDEX IF NOT EXISTS idx_{table_name}_table ON {table_name}(table_name)",
                     )
                 except Exception as e:
                     logger.warning(
-                        f"⚠️ Не удалось создать индекс для {table_name}: {str(e)}"
+                        f"⚠️ Не удалось создать индекс для {table_name}: {e!s}",
                     )
 
             conn.close()
             logger.info("✅ DuckDB база данных создана: complete_1c_database.duckdb")
 
         except Exception as e:
-            logger.error(f"❌ Ошибка создания DuckDB: {str(e)}")
+            logger.error(f"❌ Ошибка создания DuckDB: {e!s}")
 
 
 def main() -> None:
@@ -648,7 +660,7 @@ def main() -> None:
         print("   🗄️ complete_1c_database.duckdb - индексированная база данных")
 
     except Exception as e:
-        print(f"❌ Ошибка: {str(e)}")
+        print(f"❌ Ошибка: {e!s}")
         import traceback
 
         traceback.print_exc()

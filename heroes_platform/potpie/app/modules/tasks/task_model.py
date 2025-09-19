@@ -1,10 +1,9 @@
 import enum
 from datetime import datetime
 
+from app.core.base_model import Base
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-
-from app.core.base_model import Base
 
 
 class TaskType(enum.Enum):

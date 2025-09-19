@@ -2,9 +2,8 @@
 Tests for Telegram MCP modules
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 
 class TestTelegramMCP:
@@ -40,69 +39,69 @@ class TestTelegramMCP:
         file_path = Path("../../telegram-mcp/setup_project.py")
         assert file_path.exists(), "setup_project.py should exist"
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_chat_exporter_content(self, mock_open):
         """Test chat_exporter.py content structure"""
         mock_file = Mock()
         mock_file.read.return_value = "class TelegramChatExporter: pass"
         mock_open.return_value.__enter__.return_value = mock_file
-        
-        with open("../telegram-mcp/chat_exporter.py", "r") as f:
+
+        with open("../telegram-mcp/chat_exporter.py") as f:
             content = f.read()
         assert "class" in content
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_keychain_integration_content(self, mock_open):
         """Test keychain_integration.py content structure"""
         mock_file = Mock()
         mock_file.read.return_value = "class MacKeychainCredentials: pass"
         mock_open.return_value.__enter__.return_value = mock_file
-        
-        with open("../telegram-mcp/keychain_integration.py", "r") as f:
+
+        with open("../telegram-mcp/keychain_integration.py") as f:
             content = f.read()
         assert "class" in content
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_main_content(self, mock_open):
         """Test main.py content structure"""
         mock_file = Mock()
         mock_file.read.return_value = "async def main(): pass"
         mock_open.return_value.__enter__.return_value = mock_file
-        
-        with open("../telegram-mcp/main.py", "r") as f:
+
+        with open("../telegram-mcp/main.py") as f:
             content = f.read()
         assert "async" in content
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_telegram_mcp_server_content(self, mock_open):
         """Test telegram_mcp_server.py content structure"""
         mock_file = Mock()
         mock_file.read.return_value = "class TelegramMCPServer: pass"
         mock_open.return_value.__enter__.return_value = mock_file
-        
-        with open("../telegram-mcp/telegram_mcp_server.py", "r") as f:
+
+        with open("../telegram-mcp/telegram_mcp_server.py") as f:
             content = f.read()
         assert "class" in content
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_setup_mcp_config_content(self, mock_open):
         """Test setup_mcp_config.py content structure"""
         mock_file = Mock()
         mock_file.read.return_value = "def setup_mcp_config(): pass"
         mock_open.return_value.__enter__.return_value = mock_file
-        
-        with open("../telegram-mcp/setup_mcp_config.py", "r") as f:
+
+        with open("../telegram-mcp/setup_mcp_config.py") as f:
             content = f.read()
         assert "def" in content
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_setup_project_content(self, mock_open):
         """Test setup_project.py content structure"""
         mock_file = Mock()
         mock_file.read.return_value = "def setup_project(): pass"
         mock_open.return_value.__enter__.return_value = mock_file
-        
-        with open("../telegram-mcp/setup_project.py", "r") as f:
+
+        with open("../telegram-mcp/setup_project.py") as f:
             content = f.read()
         assert "def" in content
 
@@ -115,22 +114,24 @@ class TestTelegramMCP:
         # Check for important files
         important_files = [
             "chat_exporter.py",
-            "keychain_integration.py", 
+            "keychain_integration.py",
             "main.py",
             "telegram_mcp_server.py",
             "setup_mcp_config.py",
-            "setup_project.py"
+            "setup_project.py",
         ]
 
         for file_name in important_files:
             file_path = telegram_dir / file_name
-            assert file_path.exists(), f"Important file {file_name} should exist in ../telegram-mcp"
+            assert file_path.exists(), (
+                f"Important file {file_name} should exist in ../telegram-mcp"
+            )
 
     def test_docker_files_exist(self):
         """Test that Docker files exist"""
         docker_files = [
             "../telegram-mcp/docker-compose.yml",
-            "../telegram-mcp/Dockerfile"
+            "../telegram-mcp/Dockerfile",
         ]
 
         for file_path in docker_files:

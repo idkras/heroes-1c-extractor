@@ -1,9 +1,10 @@
 import asyncio
-from typing import Dict, Any
+from typing import Any
+
+from app.modules.intelligence.provider.provider_service import ProviderService
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-from app.modules.intelligence.provider.provider_service import ProviderService
 
 
 class ThinkToolInput(BaseModel):
@@ -21,7 +22,7 @@ class ThinkTool:
         self.user_id = user_id
         self.provider_service = ProviderService(sql_db, user_id)
 
-    async def arun(self, thought: str) -> Dict[str, Any]:
+    async def arun(self, thought: str) -> dict[str, Any]:
         """Process the thought using structured thinking asynchronously."""
         prompt = """
         ## Using the think tool
@@ -86,7 +87,7 @@ class ThinkTool:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def run(self, thought: str) -> Dict[str, Any]:
+    def run(self, thought: str) -> dict[str, Any]:
         """Synchronous wrapper for arun."""
         try:
             # Check if we're already in an event loop

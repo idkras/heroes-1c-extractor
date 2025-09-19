@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import json
 import os
-import sys
 from datetime import datetime
 
 
@@ -30,7 +28,7 @@ def search_bratislavskaya_in_results():
         "братиславская",
         "братиславская",
         "братиславская",
-        "братиславская"
+        "братиславская",
     ]
 
     # Файлы для поиска
@@ -39,36 +37,46 @@ def search_bratislavskaya_in_results():
         "data/results/real_blob_data.json",
         "data/results/final_documents.json",
         "data/results/retail_sales_analysis.json",
-        "data/results/search_documents_results.json"
+        "data/results/search_documents_results.json",
     ]
 
     for file_path in result_files:
         if os.path.exists(file_path):
             print(f"\n📊 Анализ файла: {file_path}")
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     data = json.load(f)
-                
+
                 results["metadata"]["source_files"].append(file_path)
-                
+
                 # Поиск в структуре данных
-                found_documents = search_in_data_structure(data, search_keywords, file_path)
-                
+                found_documents = search_in_data_structure(
+                    data,
+                    search_keywords,
+                    file_path,
+                )
+
                 if found_documents:
                     results["bratislavskaya_documents"].extend(found_documents)
                     print(f"   ✅ Найдено документов: {len(found_documents)}")
                 else:
-                    print(f"   ❌ Документы не найдены")
-                    
+                    print("   ❌ Документы не найдены")
+
             except Exception as e:
                 print(f"   ⚠️ Ошибка при чтении файла: {e}")
                 continue
 
     # Сохраняем результаты
-    with open('data/results/bratislavskaya_search_results.json', 'w', encoding='utf-8') as f:
+    with open(
+        "data/results/bratislavskaya_search_results.json",
+        "w",
+        encoding="utf-8",
+    ) as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 
-    print(f"\n📄 Результаты сохранены в: data/results/bratislavskaya_search_results.json")
+    print(
+        "\n📄 Результаты сохранены в: data/results/bratislavskaya_search_results.json",
+    )
     print(f"📊 Всего найдено документов: {len(results['bratislavskaya_documents'])}")
 
     return results
@@ -79,7 +87,7 @@ def search_in_data_structure(data, keywords, file_path):
     Рекурсивный поиск ключевых слов в структуре данных
     """
     found_documents = []
-    
+
     def search_recursive(obj, path=""):
         if isinstance(obj, dict):
             for key, value in obj.items():
@@ -93,14 +101,16 @@ def search_in_data_structure(data, keywords, file_path):
             obj_lower = obj.lower()
             for keyword in keywords:
                 if keyword.lower() in obj_lower:
-                    found_documents.append({
-                        "file_path": file_path,
-                        "path": path,
-                        "content": obj,
-                        "keyword": keyword
-                    })
+                    found_documents.append(
+                        {
+                            "file_path": file_path,
+                            "path": path,
+                            "content": obj,
+                            "keyword": keyword,
+                        },
+                    )
                     print(f"   🔍 Найдено '{keyword}' в {path}: {obj[:100]}...")
-    
+
     search_recursive(data)
     return found_documents
 

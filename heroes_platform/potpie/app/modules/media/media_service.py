@@ -1,19 +1,19 @@
-import os
-import logging
-from typing import Optional, Dict, Any, List, Union
-from io import BytesIO
 import base64
+import logging
+import os
+from io import BytesIO
+from typing import Any, Optional, Union
 
-from PIL import Image
+from fastapi import HTTPException, UploadFile
 from google.cloud import storage
 from google.cloud.exceptions import NotFound
+from PIL import Image
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, UploadFile
 from uuid6 import uuid7
 
 from app.modules.media.media_model import (
-    MessageAttachment,
     AttachmentType,
+    MessageAttachment,
     StorageProvider,
 )
 from app.modules.media.media_schema import AttachmentInfo, AttachmentUploadResponse
@@ -188,7 +188,7 @@ class MediaService:
 
     async def _process_image(
         self, file_data: bytes, mime_type: str
-    ) -> tuple[bytes, Dict[str, Any]]:
+    ) -> tuple[bytes, dict[str, Any]]:
         """Process and potentially resize image"""
         try:
             img = Image.open(BytesIO(file_data))
@@ -388,7 +388,7 @@ class MediaService:
             raise MediaServiceError(f"Failed to delete attachment: {str(e)}")
 
     async def update_message_attachments(
-        self, message_id: str, attachment_ids: List[str]
+        self, message_id: str, attachment_ids: list[str]
     ) -> None:
         """Update message to link with uploaded attachments"""
         try:
@@ -428,7 +428,7 @@ class MediaService:
 
     async def get_message_attachments(
         self, message_id: str, include_download_urls: bool = True
-    ) -> List[AttachmentInfo]:
+    ) -> list[AttachmentInfo]:
         """Get all attachments for a specific message with optional signed URLs"""
         try:
             attachments = (
@@ -506,7 +506,7 @@ class MediaService:
 
     async def get_message_images_as_base64(
         self, message_id: str
-    ) -> Dict[str, Dict[str, Union[str, int]]]:
+    ) -> dict[str, dict[str, Union[str, int]]]:
         """Get all images for a message as base64 dict with metadata"""
         try:
             attachments = await self.get_message_attachments(
@@ -551,7 +551,7 @@ class MediaService:
 
     async def get_conversation_recent_images(
         self, conversation_id: str, limit: int = 10
-    ) -> Dict[str, Dict[str, Union[str, int]]]:
+    ) -> dict[str, dict[str, Union[str, int]]]:
         """Get recent images from conversation history for multimodal context"""
         try:
             from app.modules.conversations.message.message_model import (
@@ -595,7 +595,7 @@ class MediaService:
                 f"Failed to get recent conversation images: {str(e)}"
             )
 
-    async def test_multimodal_functionality(self, attachment_id: str) -> Dict[str, Any]:
+    async def test_multimodal_functionality(self, attachment_id: str) -> dict[str, Any]:
         """Test method to verify multimodal functionality"""
         try:
             # Get attachment info

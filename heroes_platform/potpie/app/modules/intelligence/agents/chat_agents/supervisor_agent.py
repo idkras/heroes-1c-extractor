@@ -1,16 +1,18 @@
+from collections.abc import AsyncGenerator
+
 from app.modules.intelligence.provider.provider_service import (
     ProviderService,
 )
+
+from ..chat_agent import AgentWithInfo, ChatAgent, ChatAgentResponse, ChatContext
 from .auto_router_agent import AutoRouterAgent
-from ..chat_agent import ChatAgent, ChatAgentResponse, ChatContext, AgentWithInfo
-from typing import AsyncGenerator, Dict
 
 
 class SupervisorAgent(ChatAgent):
     def __init__(
         self,
         llm_provider: ProviderService,
-        agents: Dict[str, AgentWithInfo],
+        agents: dict[str, AgentWithInfo],
     ):
         self.agent = AutoRouterAgent(llm_provider, agents=agents)
 

@@ -3,26 +3,26 @@ from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from app.modules.conversations.conversation.conversation_model import Conversation
+from app.modules.conversations.message.message_model import (
+    Message,
+    MessageStatus,
+)
+from app.modules.conversations.message.message_schema import MessageResponse
+from app.modules.intelligence.agents.agents_service import AgentsService
+from app.modules.intelligence.agents.custom_agents.custom_agent_model import CustomAgent
 from app.modules.intelligence.prompts.prompt_schema import (
     PromptCreate,
     PromptListResponse,
     PromptResponse,
     PromptUpdate,
+    RequestModel,
 )
 from app.modules.intelligence.prompts.prompt_service import (
     PromptNotFoundError,
     PromptService,
     PromptServiceError,
 )
-from app.modules.intelligence.agents.agents_service import AgentsService
-from app.modules.intelligence.prompts.prompt_schema import RequestModel
-from app.modules.conversations.conversation.conversation_model import Conversation
-from app.modules.intelligence.agents.custom_agents.custom_agent_model import CustomAgent
-from app.modules.conversations.message.message_model import (
-    Message,
-    MessageStatus,
-)
-from app.modules.conversations.message.message_schema import MessageResponse
 from app.modules.intelligence.provider.provider_service import ProviderService
 from app.modules.intelligence.tools.tool_service import ToolService
 
@@ -93,7 +93,6 @@ class PromptController:
         db: Session,
         user: dict,
     ) -> str:
-
         messages = (
             db.query(Message)
             .filter_by(conversation_id=request_body.conversation_id)

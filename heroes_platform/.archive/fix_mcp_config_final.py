@@ -22,6 +22,7 @@ def get_venv_python_path():
         print("❌ Virtual environment Python not found")
         return None
 
+
 def fix_cursor_config():
     """Исправить конфигурацию Cursor для использования обновленного mcp_server.py"""
     cursor_config_path = Path.home() / ".cursor" / "mcp.json"
@@ -41,7 +42,9 @@ def fix_cursor_config():
             return False
 
         # Путь к обновленному mcp_server.py
-        mcp_server_path = Path(__file__).parent / "platform" / "mcp_server" / "src" / "mcp_server.py"
+        mcp_server_path = (
+            Path(__file__).parent / "platform" / "mcp_server" / "src" / "mcp_server.py"
+        )
 
         if not mcp_server_path.exists():
             print(f"❌ MCP server not found at: {mcp_server_path}")
@@ -58,7 +61,7 @@ def fix_cursor_config():
             return False
 
         # Сохраняем обновленную конфигурацию
-        with open(cursor_config_path, 'w') as f:
+        with open(cursor_config_path, "w") as f:
             json.dump(config, f, indent=2)
 
         print("✅ Cursor MCP configuration fixed successfully")
@@ -68,12 +71,15 @@ def fix_cursor_config():
         print(f"❌ Error fixing Cursor config: {e}")
         return False
 
+
 def test_mcp_server():
     """Протестировать обновленный MCP сервер"""
     print("🧪 Testing updated MCP server...")
 
     try:
-        mcp_server_path = Path(__file__).parent / "platform" / "mcp_server" / "src" / "mcp_server.py"
+        mcp_server_path = (
+            Path(__file__).parent / "platform" / "mcp_server" / "src" / "mcp_server.py"
+        )
 
         # Тестируем сервер
         result = subprocess.run(
@@ -81,7 +87,7 @@ def test_mcp_server():
             shell=True,
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent
+            cwd=Path(__file__).parent,
         )
 
         if result.returncode == 0:
@@ -96,6 +102,7 @@ def test_mcp_server():
     except Exception as e:
         print(f"❌ Error testing MCP server: {e}")
         return False
+
 
 def main():
     print("🔧 Final MCP Configuration Fix...")
@@ -126,7 +133,10 @@ def main():
         print("2. Check MCP Tools settings")
         print("3. Test telegram-mcp commands")
         print("\n🎉 Configuration updated successfully!")
-        print("Now telegram-mcp will use the integrated mcp_server.py instead of the old project")
+        print(
+            "Now telegram-mcp will use the integrated mcp_server.py instead of the old project"
+        )
+
 
 if __name__ == "__main__":
     main()

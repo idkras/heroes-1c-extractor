@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 
 def get_tool_run_message(tool_name: str):
@@ -63,11 +63,11 @@ def get_tool_response_message(tool_name: str):
             return "Data queried successfully"
 
 
-def get_tool_call_info_content(tool_name: str, args: Dict[str, Any]) -> str:
+def get_tool_call_info_content(tool_name: str, args: dict[str, Any]) -> str:
     match tool_name:
         case "GetCodeanddocstringFromProbableNodeName":
             node_names = args.get("probable_node_names")
-            if isinstance(node_names, List):
+            if isinstance(node_names, list):
                 return "-> checking following nodes: \n" + "\n- ".join(node_names)
             return "-> checking probable nodes"
         case "Getcodechanges":
@@ -76,7 +76,7 @@ def get_tool_call_info_content(tool_name: str, args: Dict[str, Any]) -> str:
             return ""
         case "AskKnowledgeGraphQueries":
             queries = args.get("queries")
-            if isinstance(queries, List):
+            if isinstance(queries, list):
                 return "".join([f"\n- {query}" for query in queries])
             return ""
         case "GetCodeanddocstringFromMultipleNodeIDs":
@@ -107,15 +107,15 @@ def get_tool_call_info_content(tool_name: str, args: Dict[str, Any]) -> str:
             return ""
 
 
-def get_tool_result_info_content(tool_name: str, content: List[Any] | str | Any) -> str:
+def get_tool_result_info_content(tool_name: str, content: list[Any] | str | Any) -> str:
     match tool_name:
         case "GetCodeanddocstringFromProbableNodeName":
-            if isinstance(content, List):
+            if isinstance(content, list):
                 try:
                     res = "\n-> retrieved code snippets: \n" + "\n- content:\n".join(
                         [
                             f"""
-```{str(node.get('code_content'))[:min(len(str(node.get('code_content'))),600)]+" ..."}
+```{str(node.get("code_content"))[: min(len(str(node.get("code_content"))), 600)] + " ..."}
 ```
 """
                             for node in content
@@ -132,15 +132,15 @@ def get_tool_result_info_content(tool_name: str, content: List[Any] | str | Any)
         case "AskKnowledgeGraphQueries":
             return "\n docstrings retrieved for the queries"
         case "GetCodeanddocstringFromMultipleNodeIDs":
-            if isinstance(content, Dict):
+            if isinstance(content, dict):
                 res = content.values()
                 text = ""
                 for item in res:
-                    if item and isinstance(item, Dict):
+                    if item and isinstance(item, dict):
                         path = item.get("relative_file_path")
                         code_content = item.get("code_content")
                         if code_content:
-                            text += f"{path}\n```{code_content[:min(len(code_content),300)]}``` \n"
+                            text += f"{path}\n```{code_content[: min(len(code_content), 300)]}``` \n"
                         elif item.get("error") != None:
                             text += f"Error: {item.get('error')} \n"
                 return text
@@ -150,7 +150,7 @@ def get_tool_result_info_content(tool_name: str, content: List[Any] | str | Any)
                 return f"""-> fetched successfully
 ```
 ---------------
-{content[:min(len(content),600)]} ...
+{content[: min(len(content), 600)]} ...
 ---------------
 ```
             """
@@ -158,15 +158,15 @@ def get_tool_result_info_content(tool_name: str, content: List[Any] | str | Any)
         case "GetNodeNeighboursFromNodeID":
             return "successful"
         case "WebpageContentExtractor":
-            if isinstance(content, Dict):
+            if isinstance(content, dict):
                 res = content.get("content")
                 if isinstance(res, str):
                     return res[: min(len(res), 600)] + " ..."
             return ""
         case "GitHubContentFetcher":
-            if isinstance(content, Dict):
+            if isinstance(content, dict):
                 _content = content.get("content")
-                if isinstance(_content, Dict):
+                if isinstance(_content, dict):
                     title = _content.get("title")
                     status = _content.get("state")
                     body = _content.get("body")
@@ -181,7 +181,7 @@ description:
                     return res[: min(len(res), 600)] + " ..."
             return ""
         case "GetCodeanddocstringFromNodeID":
-            if isinstance(content, Dict):
+            if isinstance(content, dict):
                 path = content.get("file_path")
                 code = content.get("code_content")
                 res = f"""
@@ -191,7 +191,7 @@ description:
                 return res[: min(len(res), 600)] + " ..."
             return ""
         case "fetch_file":
-            if isinstance(content, Dict):
+            if isinstance(content, dict):
                 if not content.get("success"):
                     return "Failed to fetch content"
                 else:
@@ -199,15 +199,15 @@ description:
 ```{content.get("content")}```
                 """
         case "analyze_code_structure":
-            if isinstance(content, Dict):
+            if isinstance(content, dict):
                 if not content.get("success"):
                     return "Failed to analyze code structure"
                 else:
                     return f"""
-{[ f''' {element.get("type")}: {element.get("name")} ''' for element in content.get("elements")]}
+{[f''' {element.get("type")}: {element.get("name")} ''' for element in content.get("elements")]}
 """
         case "WebSearchTool":
-            if isinstance(content, Dict):
+            if isinstance(content, dict):
                 res = content.get("content")
                 if isinstance(res, str):
                     return res[: min(len(res), 600)] + " ..."

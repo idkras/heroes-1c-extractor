@@ -7,12 +7,12 @@ Cursor Cross-Check Tests for MCP Commands
 
 import asyncio
 import json
+import logging
 import subprocess
 import sys
 import time
-import logging
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +32,8 @@ class CursorCrossChecker:
         }
 
     async def test_command_in_cursor(
-        self, command_name: str, arguments: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_name: str, arguments: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         JTBD: Как разработчик, я хочу проверить что MCP команда работает в реальном Cursor,
         чтобы убедиться что пользователь получит ожидаемый результат.
@@ -41,7 +41,7 @@ class CursorCrossChecker:
 
         # 🔍 REFLECTION CHECKPOINT 1 - Cross-check setup
         logger.info(f"REFLECTION: Starting Cursor cross-check for {command_name}")
-        logger.info(f"REFLECTION: Testing in real Cursor environment")
+        logger.info("REFLECTION: Testing in real Cursor environment")
 
         start_time = time.time()
 
@@ -84,7 +84,7 @@ class CursorCrossChecker:
             }
 
     async def execute_in_cursor(
-        self, command_name: str, arguments: Dict[str, Any]
+        self, command_name: str, arguments: dict[str, Any]
     ) -> Any:
         """Execute MCP command in Cursor-like environment"""
 

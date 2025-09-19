@@ -63,8 +63,9 @@ class TestCocoIndexFlows(unittest.TestCase):
 
         # Create test markdown file
         self.test_file = os.path.join(self.markdown_dir, "test_document.md")
-        with open(self.test_file, 'w', encoding='utf-8') as f:
-            f.write("""# Test Document
+        with open(self.test_file, "w", encoding="utf-8") as f:
+            f.write(
+                """# Test Document
 
 This is a test document for cocoindex testing.
 
@@ -79,7 +80,8 @@ This is the second section with more content.
 ### Subsection
 
 This is a subsection with additional content.
-""")
+"""
+            )
 
     def tearDown(self):
         """Clean up test environment."""
@@ -109,6 +111,7 @@ This is a subsection with additional content.
         # Check if functions are decorated with flow_def
         # The decorator returns Flow objects
         from cocoindex.flow import Flow
+
         self.assertIsInstance(flows.simple_flow.simple_text_flow, Flow)
         self.assertIsInstance(flows.quickstart.text_embedding_flow, Flow)
         print("✅ Flow definitions properly decorated")
@@ -164,7 +167,7 @@ More content.
 """
 
         # Test basic string operations that cocoindex would use
-        lines = test_content.split('\n')
+        lines = test_content.split("\n")
         self.assertGreater(len(lines), 0)
 
         # Test chunking logic (simplified)
@@ -172,12 +175,12 @@ More content.
         current_chunk = []
         for line in lines:
             current_chunk.append(line)
-            if len('\n'.join(current_chunk)) > 100:  # Simple chunk size limit
-                chunks.append('\n'.join(current_chunk))
+            if len("\n".join(current_chunk)) > 100:  # Simple chunk size limit
+                chunks.append("\n".join(current_chunk))
                 current_chunk = []
 
         if current_chunk:
-            chunks.append('\n'.join(current_chunk))
+            chunks.append("\n".join(current_chunk))
 
         self.assertGreater(len(chunks), 0)
         print(f"✅ Markdown parsing test passed: {len(chunks)} chunks created")

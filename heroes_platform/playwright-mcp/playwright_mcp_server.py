@@ -9,18 +9,18 @@ MCP сервер для автоматизации браузера с помо�
 import asyncio
 import json
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
-from mcp.types import Tool, TextContent
+from mcp.types import TextContent, Tool
 
 # Инициализация MCP сервера
 server = Server("playwright-mcp")
 
+
 @server.list_tools()
-async def list_tools() -> List[Tool]:
+async def list_tools() -> list[Tool]:
     """Список доступных инструментов Playwright MCP"""
     return [
         Tool(
@@ -31,26 +31,26 @@ async def list_tools() -> List[Tool]:
                 "properties": {
                     "url": {
                         "type": "string",
-                        "description": "URL страницы для скриншота"
+                        "description": "URL страницы для скриншота",
                     },
                     "width": {
                         "type": "integer",
                         "description": "Ширина окна браузера",
-                        "default": 1920
+                        "default": 1920,
                     },
                     "height": {
-                        "type": "integer", 
+                        "type": "integer",
                         "description": "Высота окна браузера",
-                        "default": 1080
+                        "default": 1080,
                     },
                     "full_page": {
                         "type": "boolean",
                         "description": "Скриншот всей страницы",
-                        "default": True
-                    }
+                        "default": True,
+                    },
                 },
-                "required": ["url"]
-            }
+                "required": ["url"],
+            },
         ),
         Tool(
             name="playwright_navigate",
@@ -58,18 +58,15 @@ async def list_tools() -> List[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "url": {
-                        "type": "string",
-                        "description": "URL для навигации"
-                    },
+                    "url": {"type": "string", "description": "URL для навигации"},
                     "wait_for": {
                         "type": "string",
                         "description": "Селектор для ожидания загрузки",
-                        "default": "body"
-                    }
+                        "default": "body",
+                    },
                 },
-                "required": ["url"]
-            }
+                "required": ["url"],
+            },
         ),
         Tool(
             name="playwright_click",
@@ -79,15 +76,12 @@ async def list_tools() -> List[Tool]:
                 "properties": {
                     "selector": {
                         "type": "string",
-                        "description": "CSS селектор элемента"
+                        "description": "CSS селектор элемента",
                     },
-                    "url": {
-                        "type": "string",
-                        "description": "URL страницы"
-                    }
+                    "url": {"type": "string", "description": "URL страницы"},
                 },
-                "required": ["selector", "url"]
-            }
+                "required": ["selector", "url"],
+            },
         ),
         Tool(
             name="playwright_fill",
@@ -95,21 +89,12 @@ async def list_tools() -> List[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "selector": {
-                        "type": "string",
-                        "description": "CSS селектор поля"
-                    },
-                    "text": {
-                        "type": "string",
-                        "description": "Текст для заполнения"
-                    },
-                    "url": {
-                        "type": "string",
-                        "description": "URL страницы"
-                    }
+                    "selector": {"type": "string", "description": "CSS селектор поля"},
+                    "text": {"type": "string", "description": "Текст для заполнения"},
+                    "url": {"type": "string", "description": "URL страницы"},
                 },
-                "required": ["selector", "text", "url"]
-            }
+                "required": ["selector", "text", "url"],
+            },
         ),
         Tool(
             name="playwright_get_text",
@@ -119,22 +104,20 @@ async def list_tools() -> List[Tool]:
                 "properties": {
                     "selector": {
                         "type": "string",
-                        "description": "CSS селектор элемента"
+                        "description": "CSS селектор элемента",
                     },
-                    "url": {
-                        "type": "string",
-                        "description": "URL страницы"
-                    }
+                    "url": {"type": "string", "description": "URL страницы"},
                 },
-                "required": ["selector", "url"]
-            }
-        )
+                "required": ["selector", "url"],
+            },
+        ),
     ]
 
+
 @server.call_tool()
-async def call_tool(name: str, arguments: Dict[str, Any]) -> List[TextContent]:
+async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
     """Обработка вызовов инструментов"""
-    
+
     if name == "playwright_screenshot":
         return await handle_screenshot(arguments)
     elif name == "playwright_navigate":
@@ -146,19 +129,17 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> List[TextContent]:
     elif name == "playwright_get_text":
         return await handle_get_text(arguments)
     else:
-        return [TextContent(
-            type="text",
-            text=f"Неизвестный инструмент: {name}"
-        )]
+        return [TextContent(type="text", text=f"Неизвестный инструмент: {name}")]
 
-async def handle_screenshot(arguments: Dict[str, Any]) -> List[TextContent]:
+
+async def handle_screenshot(arguments: dict[str, Any]) -> list[TextContent]:
     """Обработка скриншота"""
     try:
         url = arguments.get("url")
         width = arguments.get("width", 1920)
         height = arguments.get("height", 1080)
         full_page = arguments.get("full_page", True)
-        
+
         # Здесь должна быть логика Playwright
         # Пока возвращаем заглушку
         result = {
@@ -166,127 +147,123 @@ async def handle_screenshot(arguments: Dict[str, Any]) -> List[TextContent]:
             "url": url,
             "screenshot_path": f"screenshot_{hash(url)}.png",
             "dimensions": {"width": width, "height": height},
-            "full_page": full_page
+            "full_page": full_page,
         }
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2, ensure_ascii=False)
-        )]
-        
-    except Exception as e:
-        return [TextContent(
-            type="text",
-            text=f"Ошибка при создании скриншота: {str(e)}"
-        )]
 
-async def handle_navigate(arguments: Dict[str, Any]) -> List[TextContent]:
+        return [
+            TextContent(
+                type="text", text=json.dumps(result, indent=2, ensure_ascii=False)
+            )
+        ]
+
+    except Exception as e:
+        return [
+            TextContent(type="text", text=f"Ошибка при создании скриншота: {str(e)}")
+        ]
+
+
+async def handle_navigate(arguments: dict[str, Any]) -> list[TextContent]:
     """Обработка навигации"""
     try:
         url = arguments.get("url")
         wait_for = arguments.get("wait_for", "body")
-        
+
         result = {
             "status": "success",
             "url": url,
             "wait_for": wait_for,
-            "message": "Навигация выполнена успешно"
+            "message": "Навигация выполнена успешно",
         }
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2, ensure_ascii=False)
-        )]
-        
-    except Exception as e:
-        return [TextContent(
-            type="text",
-            text=f"Ошибка при навигации: {str(e)}"
-        )]
 
-async def handle_click(arguments: Dict[str, Any]) -> List[TextContent]:
+        return [
+            TextContent(
+                type="text", text=json.dumps(result, indent=2, ensure_ascii=False)
+            )
+        ]
+
+    except Exception as e:
+        return [TextContent(type="text", text=f"Ошибка при навигации: {str(e)}")]
+
+
+async def handle_click(arguments: dict[str, Any]) -> list[TextContent]:
     """Обработка клика"""
     try:
         selector = arguments.get("selector")
         url = arguments.get("url")
-        
+
         result = {
             "status": "success",
             "selector": selector,
             "url": url,
-            "message": "Клик выполнен успешно"
+            "message": "Клик выполнен успешно",
         }
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2, ensure_ascii=False)
-        )]
-        
-    except Exception as e:
-        return [TextContent(
-            type="text",
-            text=f"Ошибка при клике: {str(e)}"
-        )]
 
-async def handle_fill(arguments: Dict[str, Any]) -> List[TextContent]:
+        return [
+            TextContent(
+                type="text", text=json.dumps(result, indent=2, ensure_ascii=False)
+            )
+        ]
+
+    except Exception as e:
+        return [TextContent(type="text", text=f"Ошибка при клике: {str(e)}")]
+
+
+async def handle_fill(arguments: dict[str, Any]) -> list[TextContent]:
     """Обработка заполнения поля"""
     try:
         selector = arguments.get("selector")
         text = arguments.get("text")
         url = arguments.get("url")
-        
+
         result = {
             "status": "success",
             "selector": selector,
             "text": text,
             "url": url,
-            "message": "Поле заполнено успешно"
+            "message": "Поле заполнено успешно",
         }
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2, ensure_ascii=False)
-        )]
-        
-    except Exception as e:
-        return [TextContent(
-            type="text",
-            text=f"Ошибка при заполнении поля: {str(e)}"
-        )]
 
-async def handle_get_text(arguments: Dict[str, Any]) -> List[TextContent]:
+        return [
+            TextContent(
+                type="text", text=json.dumps(result, indent=2, ensure_ascii=False)
+            )
+        ]
+
+    except Exception as e:
+        return [TextContent(type="text", text=f"Ошибка при заполнении поля: {str(e)}")]
+
+
+async def handle_get_text(arguments: dict[str, Any]) -> list[TextContent]:
     """Обработка получения текста"""
     try:
         selector = arguments.get("selector")
         url = arguments.get("url")
-        
+
         result = {
             "status": "success",
             "selector": selector,
             "url": url,
             "text": "Пример текста элемента",
-            "message": "Текст получен успешно"
+            "message": "Текст получен успешно",
         }
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2, ensure_ascii=False)
-        )]
-        
+
+        return [
+            TextContent(
+                type="text", text=json.dumps(result, indent=2, ensure_ascii=False)
+            )
+        ]
+
     except Exception as e:
-        return [TextContent(
-            type="text",
-            text=f"Ошибка при получении текста: {str(e)}"
-        )]
+        return [TextContent(type="text", text=f"Ошибка при получении текста: {str(e)}")]
+
 
 async def main():
     """Главная функция сервера"""
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
-            read_stream,
-            write_stream,
-            server.create_initialization_options()
+            read_stream, write_stream, server.create_initialization_options()
         )
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--test":
@@ -294,10 +271,10 @@ if __name__ == "__main__":
         print("Доступные инструменты:")
         for tool in [
             "playwright_screenshot",
-            "playwright_navigate", 
+            "playwright_navigate",
             "playwright_click",
             "playwright_fill",
-            "playwright_get_text"
+            "playwright_get_text",
         ]:
             print(f"  - {tool}")
         print("SUCCESS: Playwright MCP Server готов к работе")

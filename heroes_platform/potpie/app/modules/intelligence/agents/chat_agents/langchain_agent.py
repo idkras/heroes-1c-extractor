@@ -1,20 +1,20 @@
 import json
 import re
-from typing import Any, List, AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Any
 
 from app.modules.intelligence.provider.provider_service import (
-    ProviderService,
     AgentProvider,
+    ProviderService,
 )
-from .crewai_agent import AgentConfig, TaskConfig
 from app.modules.utils.logger import setup_logger
 from langchain_core.messages import AIMessage
-from ..chat_agent import ChatAgent, ChatAgentResponse, ChatContext
+from langchain_core.runnables import RunnableConfig
+from langgraph.prebuilt import ToolExecutor, create_react_agent
 from pydantic import BaseModel
 
-from langgraph.prebuilt import create_react_agent, ToolExecutor
-from langchain_core.runnables import RunnableConfig
-
+from ..chat_agent import ChatAgent, ChatAgentResponse, ChatContext
+from .crewai_agent import AgentConfig, TaskConfig
 
 logger = setup_logger(__name__)
 
@@ -29,7 +29,7 @@ class LangchainRagAgent(ChatAgent):
         self,
         llm_provider: ProviderService,
         config: AgentConfig,
-        tools: List[Any],
+        tools: list[Any],
     ):
         """Initialize the agent with configuration and tools"""
 

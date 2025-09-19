@@ -1,15 +1,14 @@
-import os
 import asyncio
 import logging
-from typing import Any, Dict, Optional
+import os
+from typing import Any, Optional
 
 import instructor
 import litellm
-from pydantic import BaseModel, Field
-from langchain_core.tools import StructuredTool
-from sqlalchemy.orm import Session
-
 from app.modules.intelligence.provider.provider_service import ProviderService
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 
 class WebSearchToolInput(BaseModel):
@@ -66,7 +65,7 @@ class WebSearchTool:
             }
             return response
 
-    def _make_llm_call(self, query: str) -> Dict[str, Any]:
+    def _make_llm_call(self, query: str) -> dict[str, Any]:
         try:
             messages = [{"role": "user", "content": query}]
             provider_service = ProviderService(self.sql_db, self.user_id)

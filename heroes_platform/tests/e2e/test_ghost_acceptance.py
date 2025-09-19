@@ -8,9 +8,6 @@ FROM-THE-END Standard v2.9 Integration
 """
 
 import pytest
-import asyncio
-from unittest.mock import Mock, patch
-from pathlib import Path
 
 from heroes_mcp.workflows.ghost_integration import GhostIntegrationWorkflow
 
@@ -28,11 +25,13 @@ class TestGhostAcceptance:
         """
         # [reflection] Validate acceptance test setup
         print("REFLECTION: Setting up Ghost acceptance test environment")
-        
+
         self.workflow = GhostIntegrationWorkflow()
-        
+
         # [reflection] Check if workflow initialized properly
-        assert self.workflow is not None, "Workflow not initialized for acceptance tests"
+        assert self.workflow is not None, (
+            "Workflow not initialized for acceptance tests"
+        )
         print("REFLECTION: Ghost acceptance test environment initialized successfully")
 
     @pytest.mark.asyncio
@@ -43,18 +42,18 @@ class TestGhostAcceptance:
         """
         # [reflection] User can publish analysis acceptance test
         print("REFLECTION: Testing user can publish analysis to both blogs")
-        
+
         # Business requirement: User can publish analysis to both blogs
         analysis_data = {
             "command": "ghost_publish_analysis",
             "analysis_data": "<h1>User Acceptance Test</h1><p>Testing user can publish analysis to both blogs.</p>",
             "title": "User Acceptance Test Analysis",
             "tags": ["user", "acceptance", "test"],
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         result = await self.workflow.execute(analysis_data)
-        
+
         # [reflection] Validate business requirement
         assert result is not None, "User should be able to publish analysis"
         print("REFLECTION: User can publish analysis to both blogs validated")
@@ -67,7 +66,7 @@ class TestGhostAcceptance:
         """
         # [reflection] User can publish document with adaptation acceptance test
         print("REFLECTION: Testing user can publish document with adaptation")
-        
+
         # Business requirement: User can publish documents with content adaptation
         document_data = {
             "command": "ghost_publish_document",
@@ -78,14 +77,16 @@ class TestGhostAcceptance:
             "adaptation_options": {
                 "language": "auto",
                 "format": "auto",
-                "seo_optimization": True
-            }
+                "seo_optimization": True,
+            },
         }
-        
+
         result = await self.workflow.execute(document_data)
-        
+
         # [reflection] Validate business requirement
-        assert result is not None, "User should be able to publish document with adaptation"
+        assert result is not None, (
+            "User should be able to publish document with adaptation"
+        )
         print("REFLECTION: User can publish document with adaptation validated")
 
     @pytest.mark.asyncio
@@ -96,16 +97,12 @@ class TestGhostAcceptance:
         """
         # [reflection] User can check integration status acceptance test
         print("REFLECTION: Testing user can check integration status")
-        
+
         # Business requirement: User can check integration status
-        status_data = {
-            "command": "ghost_integration",
-            "action": "status",
-            "config": {}
-        }
-        
+        status_data = {"command": "ghost_integration", "action": "status", "config": {}}
+
         result = await self.workflow.execute(status_data)
-        
+
         # [reflection] Validate business requirement
         assert result is not None, "User should be able to check integration status"
         print("REFLECTION: User can check integration status validated")
@@ -118,18 +115,16 @@ class TestGhostAcceptance:
         """
         # [reflection] User can test integration functionality acceptance test
         print("REFLECTION: Testing user can test integration functionality")
-        
+
         # Business requirement: User can test integration functionality
-        test_data = {
-            "command": "ghost_integration",
-            "action": "test",
-            "config": {}
-        }
-        
+        test_data = {"command": "ghost_integration", "action": "test", "config": {}}
+
         result = await self.workflow.execute(test_data)
-        
+
         # [reflection] Validate business requirement
-        assert result is not None, "User should be able to test integration functionality"
+        assert result is not None, (
+            "User should be able to test integration functionality"
+        )
         print("REFLECTION: User can test integration functionality validated")
 
     @pytest.mark.asyncio
@@ -140,20 +135,22 @@ class TestGhostAcceptance:
         """
         # [reflection] User can handle errors gracefully acceptance test
         print("REFLECTION: Testing user can handle errors gracefully")
-        
+
         # Business requirement: User can handle errors gracefully
         invalid_data = {
             "command": "ghost_publish_analysis",
             "analysis_data": "",  # Invalid empty content
             "title": "",  # Invalid empty title
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         result = await self.workflow.execute(invalid_data)
-        
+
         # [reflection] Validate business requirement
         assert result is not None, "User should receive response even for invalid data"
-        assert "error" in result or "success" in result, "User should get error or success response"
+        assert "error" in result or "success" in result, (
+            "User should get error or success response"
+        )
         print("REFLECTION: User can handle errors gracefully validated")
 
     @pytest.mark.asyncio
@@ -164,7 +161,7 @@ class TestGhostAcceptance:
         """
         # [reflection] User can publish with custom options acceptance test
         print("REFLECTION: Testing user can publish with custom options")
-        
+
         # Business requirement: User can publish with custom options
         custom_data = {
             "command": "ghost_publish_document",
@@ -177,12 +174,12 @@ class TestGhostAcceptance:
                 "meta_title": "Custom SEO Title",
                 "meta_description": "Custom SEO Description",
                 "tags": ["custom", "options", "test"],
-                "author": "Test Author"
-            }
+                "author": "Test Author",
+            },
         }
-        
+
         result = await self.workflow.execute(custom_data)
-        
+
         # [reflection] Validate business requirement
         assert result is not None, "User should be able to publish with custom options"
         print("REFLECTION: User can publish with custom options validated")
@@ -197,18 +194,18 @@ class TestGhostAcceptance:
         """
         # [reflection] AI QA acceptance validation test
         print("REFLECTION: Starting AI QA acceptance validation")
-        
+
         # Test acceptance criteria with AI QA checkpoints
         acceptance_data = {
             "command": "ghost_publish_analysis",
             "analysis_data": "<h1>AI QA Acceptance Test</h1><p>Testing AI QA acceptance validation.</p>",
             "title": "AI QA Acceptance Test",
             "tags": ["ai-qa", "acceptance", "test"],
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         result = await self.workflow.execute(acceptance_data)
-        
+
         # [reflection] Validate AI QA acceptance
         assert result is not None, "AI QA acceptance should return result"
         print("REFLECTION: AI QA acceptance validation completed")
@@ -222,15 +219,15 @@ class TestGhostAcceptance:
         """
         # [reflection] Artefact comparison challenge for acceptance
         print("REFLECTION: Starting artefact comparison challenge for acceptance")
-        
+
         # Define reference of truth for acceptance criteria
         reference_structure = {
             "user_requirements": list,
             "business_requirements": list,
             "acceptance_criteria": list,
-            "test_results": dict
+            "test_results": dict,
         }
-        
+
         # Test actual acceptance structure
         test_acceptance = {
             "user_requirements": [
@@ -239,29 +236,31 @@ class TestGhostAcceptance:
                 "User can check integration status",
                 "User can test integration functionality",
                 "User can handle errors gracefully",
-                "User can publish with custom options"
+                "User can publish with custom options",
             ],
             "business_requirements": [
                 "Dual blog publishing",
                 "Content adaptation",
                 "Status monitoring",
                 "Error handling",
-                "Custom options"
+                "Custom options",
             ],
             "acceptance_criteria": [
                 "All user requirements met",
                 "All business requirements met",
                 "Error handling works",
-                "Performance acceptable"
+                "Performance acceptable",
             ],
-            "test_results": {"status": "passed"}
+            "test_results": {"status": "passed"},
         }
-        
+
         # [reflection] Compare with reference
         for key, expected_type in reference_structure.items():
             assert key in test_acceptance, f"Missing key in acceptance: {key}"
-            assert isinstance(test_acceptance[key], expected_type), f"Wrong type for {key}"
-        
+            assert isinstance(test_acceptance[key], expected_type), (
+                f"Wrong type for {key}"
+            )
+
         print("REFLECTION: Artefact comparison challenge for acceptance completed")
 
     @pytest.mark.asyncio
@@ -272,18 +271,18 @@ class TestGhostAcceptance:
         """
         # [reflection] End-to-end acceptance validation
         print("REFLECTION: Starting end-to-end acceptance validation")
-        
+
         # Test complete acceptance flow
         acceptance_data = {
             "command": "ghost_publish_analysis",
             "analysis_data": "<h1>E2E Acceptance Test</h1><p>End-to-end acceptance validation test.</p>",
             "title": "E2E Acceptance Test",
             "tags": ["e2e", "acceptance", "test"],
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         result = await self.workflow.execute(acceptance_data)
-        
+
         # [reflection] Validate end-to-end acceptance result
         assert result is not None, "E2E acceptance validation should return result"
         print("REFLECTION: End-to-end acceptance validation completed")
@@ -297,11 +296,13 @@ class TestGhostAcceptance:
         """
         # [reflection] Quality metrics validation for acceptance
         print("REFLECTION: Testing quality metrics compliance for acceptance")
-        
+
         # Test coverage validation
-        test_methods = [method for method in dir(self) if method.startswith('test_')]
-        assert len(test_methods) >= 6, "Should have at least 6 test methods for acceptance"
-        
+        test_methods = [method for method in dir(self) if method.startswith("test_")]
+        assert len(test_methods) >= 6, (
+            "Should have at least 6 test methods for acceptance"
+        )
+
         # Test acceptance criteria coverage
         acceptance_criteria = [
             "publish_analysis_to_both_blogs",
@@ -309,13 +310,15 @@ class TestGhostAcceptance:
             "check_integration_status",
             "test_integration_functionality",
             "handle_errors_gracefully",
-            "publish_with_custom_options"
+            "publish_with_custom_options",
         ]
-        
+
         for criterion in acceptance_criteria:
             test_method = f"test_user_can_{criterion}"
-            assert hasattr(self, test_method), f"Missing acceptance test for: {criterion}"
-        
+            assert hasattr(self, test_method), (
+                f"Missing acceptance test for: {criterion}"
+            )
+
         print("REFLECTION: Quality metrics compliance for acceptance validated")
 
     # 🔄 REFLECTION CHECKPOINT SUMMARY
@@ -327,7 +330,7 @@ class TestGhostAcceptance:
         """
         # [reflection] Final reflection checkpoint for acceptance
         print("REFLECTION: Final reflection checkpoint for acceptance")
-        
+
         # Validate all reflection checkpoints passed
         reflection_points = [
             "test setup",
@@ -340,8 +343,10 @@ class TestGhostAcceptance:
             "AI QA validation",
             "artefact comparison",
             "end-to-end validation",
-            "quality metrics"
+            "quality metrics",
         ]
-        
-        print(f"REFLECTION: All {len(reflection_points)} reflection checkpoints for acceptance validated")
+
+        print(
+            f"REFLECTION: All {len(reflection_points)} reflection checkpoints for acceptance validated"
+        )
         print("REFLECTION: Ghost acceptance tests completed successfully")

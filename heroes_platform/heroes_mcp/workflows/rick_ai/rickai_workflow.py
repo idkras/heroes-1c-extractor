@@ -192,14 +192,18 @@ class RickAIWorkflow:
         """Полный цикл исследования (≤20 строк)"""
         try:
             print("🚀 Запуск Rick.ai Research Loop")
-            print(f"📋 Параметры: company={company_alias}, app={app_id}, widget={widget_id}")
+            print(
+                f"📋 Параметры: company={company_alias}, app={app_id}, widget={widget_id}"
+            )
             self.workflow_state["start_time"] = datetime.now().isoformat()
 
             # Stage 1: Authentication (автоматически из Mac Keychain если не указан)
             print("🔐 Этап 1: Аутентификация...")
             auth_result = await self.auth_manager.authenticate(session_cookie)
             if auth_result["status"] != "success":
-                print(f"❌ Ошибка аутентификации: {auth_result.get('message', 'Unknown error')}")
+                print(
+                    f"❌ Ошибка аутентификации: {auth_result.get('message', 'Unknown error')}"
+                )
                 return json.dumps(
                     {
                         "error": f"Authentication failed: {auth_result.get('message', 'Unknown error')}"
@@ -214,7 +218,9 @@ class RickAIWorkflow:
                 company_alias, app_id, widget_id
             )
             if data_result["status"] != "success":
-                print(f"❌ Ошибка получения данных: {data_result.get('message', 'Unknown error')}")
+                print(
+                    f"❌ Ошибка получения данных: {data_result.get('message', 'Unknown error')}"
+                )
                 return json.dumps(
                     {"error": "Data retrieval failed"}, ensure_ascii=False
                 )
@@ -255,13 +261,18 @@ class RickAIWorkflow:
         except Exception as e:
             return json.dumps({"error": str(e)}, ensure_ascii=False)
 
-    async def analyze_source_medium_enhanced(self, widget_data: str, standard_compliance: bool = False, show_progress: bool = False) -> str:
+    async def analyze_source_medium_enhanced(
+        self,
+        widget_data: str,
+        standard_compliance: bool = False,
+        show_progress: bool = False,
+    ) -> str:
         """Анализ всех строк виджета sourceMedium с Rick.ai error detection (≤20 строк)"""
         try:
             # Reflection checkpoint: Standard compliance validation
             if standard_compliance:
                 print("✅ Rick.ai Methodology Standard compliance validated")
-            
+
             # Analyze all rows with enhanced error detection and progress indication
             result = await self.analysis_manager.analyze_source_medium_enhanced(
                 widget_data, standard_compliance, show_progress
@@ -360,7 +371,7 @@ class RickAIWorkflow:
                 result = await self.analyze_source_medium_enhanced(
                     arguments.get("widget_data", ""),
                     arguments.get("standard_compliance", False),
-                    arguments.get("show_progress", False)
+                    arguments.get("show_progress", False),
                 )
                 return json.loads(result)
             elif command == "restore_ym_source_medium":

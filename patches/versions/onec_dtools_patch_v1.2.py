@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 ИСПРАВЛЕННЫЙ ПАТЧ ДЛЯ БИБЛИОТЕКИ ONEC_DTOOLS
@@ -10,111 +9,112 @@
 Версия: 1.2
 """
 
+
 def calc_field_size_patched(field_type: str, length: int) -> int:
     """
     Исправленный патч для calc_field_size с поддержкой всех типов полей 1С 8.3+
     """
-    
+
     # Классические типы полей 1С (существующие)
-    if field_type == 'B':
+    if field_type == "B":
         return length
-    elif field_type == 'L':
+    if field_type == "L":
         return 1
-    elif field_type == 'N':
+    if field_type == "N":
         return length // 2 + 1
-    elif field_type == 'NC':
+    if field_type == "NC":
         return length * 2
-    elif field_type == 'NVC':
+    if field_type == "NVC":
         return length * 2 + 2
-    elif field_type == 'RV':
+    if field_type == "RV":
         return 16
-    elif field_type == 'NT':
+    if field_type == "NT" or field_type == "I":
         return 8
-    elif field_type == 'I':
-        return 8
-    elif field_type == 'DT':
+    if field_type == "DT":
         return 7
-    
+
     # Обнаруженные типы полей в реальной базе данных
-    elif field_type == 'VB':  # Variable Binary - переменные бинарные данные
+    if field_type == "VB":  # Variable Binary - переменные бинарные данные
         return length  # Используем переданную длину
-    
+
     # Новые типы полей 1С 8.3+ (основные)
-    elif field_type == 'UUID':
+    if field_type == "UUID":
         return 16  # UUID всегда 16 байт
-    elif field_type == 'BLOB':
+    if field_type == "BLOB":
         return length  # Бинарные данные переменной длины
-    elif field_type == 'JSON':
+    if field_type == "JSON":
         return length  # JSON данные переменной длины
-    elif field_type == 'XML':
+    if field_type == "XML":
         return length  # XML данные переменной длины
-    elif field_type == 'BINARY':
+    if field_type == "BINARY":
         return length  # Бинарные данные переменной длины
-    elif field_type == 'TEXT':
+    if field_type == "TEXT":
         return length * 2  # Unicode текст (2 байта на символ)
-    elif field_type == 'DATE':
+    if field_type == "DATE":
         return 8  # Дата и время (8 байт)
-    elif field_type == 'DECIMAL':
+    if field_type == "DECIMAL":
         return 16  # Десятичное число высокой точности
-    elif field_type == 'MONEY':
+    if field_type == "MONEY":
         return 16  # Денежный тип высокой точности
-    elif field_type == 'BOOLEAN':
+    if field_type == "BOOLEAN":
         return 1  # Логический тип (1 байт)
-    
+
     # Расширенные типы полей 1С 8.3+
-    elif field_type == 'ARRAY':
+    if field_type == "ARRAY":
         return length  # Массив значений переменной длины
-    elif field_type == 'OBJECT':
+    if field_type == "OBJECT":
         return length  # Объект переменной длины
-    elif field_type == 'REFERENCE':
+    if field_type == "REFERENCE":
         return 16  # Ссылка на объект (UUID)
-    elif field_type == 'CATALOG':
+    if field_type == "CATALOG":
         return 16  # Справочник (UUID)
-    elif field_type == 'DOCUMENT':
+    if field_type == "DOCUMENT":
         return 16  # Документ (UUID)
-    elif field_type == 'ENUM':
+    if field_type == "ENUM":
         return 16  # Перечисление (UUID)
-    elif field_type == 'CONSTANT':
+    if field_type == "CONSTANT":
         return length  # Константа переменной длины
-    elif field_type == 'REGISTER':
+    if field_type == "REGISTER":
         return 16  # Регистр (UUID)
-    
+
     # Специальные типы полей 1С 8.3+
-    elif field_type == 'ACCOUNT':
+    if field_type == "ACCOUNT":
         return 16  # Счет (UUID)
-    elif field_type == 'MEASURE':
+    if field_type == "MEASURE":
         return 16  # Единица измерения (UUID)
-    elif field_type == 'CURRENCY':
+    if field_type == "CURRENCY":
         return 16  # Валюта (UUID)
-    elif field_type == 'LANGUAGE':
+    if field_type == "LANGUAGE":
         return 16  # Язык (UUID)
-    elif field_type == 'TIMEZONE':
+    if field_type == "TIMEZONE":
         return 16  # Часовой пояс (UUID)
-    elif field_type == 'COLOR':
+    if field_type == "COLOR":
         return 4  # Цвет (4 байта RGBA)
-    elif field_type == 'PICTURE':
+    if field_type == "PICTURE":
         return length  # Изображение переменной длины
-    elif field_type == 'SOUND':
+    if field_type == "SOUND":
         return length  # Звук переменной длины
-    elif field_type == 'VIDEO':
+    if field_type == "VIDEO":
         return length  # Видео переменной длины
-    
+
     # Типы безопасности 1С 8.3+
-    elif field_type == 'ARCHIVE':
+    if field_type == "ARCHIVE":
         return length  # Архив переменной длины
-    elif field_type == 'COMPRESSED':
+    if field_type == "COMPRESSED":
         return length  # Сжатые данные переменной длины
-    elif field_type == 'ENCRYPTED':
+    if field_type == "ENCRYPTED":
         return length  # Зашифрованные данные переменной длины
-    elif field_type == 'SIGNED':
+    if field_type == "SIGNED":
         return length  # Подписанные данные переменной длины
-    elif field_type == 'HASHED':
+    if field_type == "HASHED":
         return 32  # Хешированные данные (SHA-256)
-    
+
     # Неизвестные типы полей - используем разумное значение по умолчанию
-    else:
-        print(f'⚠️ Предупреждение: Неизвестный тип поля "{field_type}", используем длину {length}')
-        return length
+    print(
+        f'⚠️ Предупреждение: Неизвестный тип поля "{field_type}", используем длину {length}',
+    )
+    return length
+
 
 def apply_patch() -> bool:
     """
@@ -122,18 +122,19 @@ def apply_patch() -> bool:
     """
     try:
         import onec_dtools.database_reader as dr
-        
+
         # Заменяем оригинальную функцию на патченную
         dr.calc_field_size = calc_field_size_patched
-        
-        print('✅ Исправленный патч успешно применен к библиотеке onec_dtools')
-        print('📋 Добавлена поддержка типа VB (Variable Binary)')
+
+        print("✅ Исправленный патч успешно применен к библиотеке onec_dtools")
+        print("📋 Добавлена поддержка типа VB (Variable Binary)")
         return True
-        
+
     except Exception as e:
-        print(f'❌ Ошибка применения патча: {e}')
+        print(f"❌ Ошибка применения патча: {e}")
         return False
 
-if __name__ == '__main__':
-    print('🔧 Применение исправленного патча для библиотеки onec_dtools...')
+
+if __name__ == "__main__":
+    print("🔧 Применение исправленного патча для библиотеки onec_dtools...")
     apply_patch()

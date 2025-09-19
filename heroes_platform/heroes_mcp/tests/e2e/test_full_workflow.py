@@ -89,6 +89,7 @@ class TestMCPFullWorkflow:
     def test_mcp_server_initialization(self):
         """Test MCP server initialization and basic functionality"""
         import asyncio
+
         from heroes_mcp.src.heroes_mcp_server import mcp, server_info
 
         # Test server info
@@ -109,9 +110,9 @@ class TestMCPFullWorkflow:
             ]
 
             for tool_name in required_tools:
-                assert any(
-                    tool_name in tool.name for tool in tools
-                ), f"Required tool {tool_name} not found"
+                assert any(tool_name in tool.name for tool in tools), (
+                    f"Required tool {tool_name} not found"
+                )
 
         asyncio.run(test_tools())
 

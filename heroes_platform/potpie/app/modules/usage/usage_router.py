@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends
-
 from app.modules.auth.auth_service import AuthService
 from app.modules.usage.usage_controller import UsageController
 from app.modules.usage.usage_schema import UsageResponse
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
 

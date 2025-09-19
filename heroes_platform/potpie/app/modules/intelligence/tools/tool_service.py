@@ -1,20 +1,20 @@
-from typing import Dict, List
-
-from sqlalchemy.orm import Session
-
+from app.modules.intelligence.provider.provider_service import ProviderService
 from app.modules.intelligence.tools.change_detection.change_detection_tool import (
     get_change_detection_tool,
-)
-from app.modules.intelligence.tools.code_query_tools.get_code_file_structure import (
-    get_code_file_structure_tool,
-    GetCodeFileStructureTool,
 )
 from app.modules.intelligence.tools.code_query_tools.code_analysis import (
     universal_analyze_code_tool,
 )
+from app.modules.intelligence.tools.code_query_tools.get_code_file_structure import (
+    GetCodeFileStructureTool,
+    get_code_file_structure_tool,
+)
 from app.modules.intelligence.tools.code_query_tools.get_code_graph_from_node_id_tool import (
-    get_code_graph_from_node_id_tool,
     GetCodeGraphFromNodeIdTool,
+    get_code_graph_from_node_id_tool,
+)
+from app.modules.intelligence.tools.code_query_tools.get_file_content_by_path import (
+    fetch_file_tool,
 )
 from app.modules.intelligence.tools.code_query_tools.get_node_neighbours_from_node_id_tool import (
     get_node_neighbours_from_node_id_tool,
@@ -26,8 +26,8 @@ from app.modules.intelligence.tools.kg_based_tools.ask_knowledge_graph_queries_t
     get_ask_knowledge_graph_queries_tool,
 )
 from app.modules.intelligence.tools.kg_based_tools.get_code_from_multiple_node_ids_tool import (
-    get_code_from_multiple_node_ids_tool,
     GetCodeFromMultipleNodeIdsTool,
+    get_code_from_multiple_node_ids_tool,
 )
 from app.modules.intelligence.tools.kg_based_tools.get_code_from_node_id_tool import (
     get_code_from_node_id_tool,
@@ -38,27 +38,25 @@ from app.modules.intelligence.tools.kg_based_tools.get_code_from_probable_node_n
 from app.modules.intelligence.tools.kg_based_tools.get_nodes_from_tags_tool import (
     get_nodes_from_tags_tool,
 )
-from app.modules.intelligence.tools.code_query_tools.get_file_content_by_path import (
-    fetch_file_tool,
-)
-from app.modules.intelligence.tools.tool_schema import ToolInfo, ToolInfoWithParameters
-from app.modules.intelligence.tools.web_tools.github_tool import github_tool
-from app.modules.intelligence.tools.web_tools import (
-    github_create_branch,
-    github_update_branch,
-    github_create_pr,
-    github_add_pr_comment,
-)
-from app.modules.intelligence.tools.web_tools.webpage_extractor_tool import (
-    webpage_extractor_tool,
-)
 from app.modules.intelligence.tools.linear_tools import (
     get_linear_issue_tool,
     update_linear_issue_tool,
 )
+from app.modules.intelligence.tools.tool_schema import ToolInfo, ToolInfoWithParameters
+from app.modules.intelligence.tools.web_tools import (
+    github_add_pr_comment,
+    github_create_branch,
+    github_create_pr,
+    github_update_branch,
+)
+from app.modules.intelligence.tools.web_tools.github_tool import github_tool
 from app.modules.intelligence.tools.web_tools.web_search_tool import web_search_tool
-from app.modules.intelligence.provider.provider_service import ProviderService
+from app.modules.intelligence.tools.web_tools.webpage_extractor_tool import (
+    webpage_extractor_tool,
+)
 from langchain_core.tools import StructuredTool
+from sqlalchemy.orm import Session
+
 from .think_tool import think_tool
 
 
@@ -77,7 +75,7 @@ class ToolService:
         self.provider_service = ProviderService.create(db, user_id)
         self.tools = self._initialize_tools()
 
-    def get_tools(self, tool_names: List[str]) -> List[StructuredTool]:
+    def get_tools(self, tool_names: list[str]) -> list[StructuredTool]:
         """get tools if exists"""
         tools = []
         for tool_name in tool_names:
@@ -85,7 +83,7 @@ class ToolService:
                 tools.append(self.tools[tool_name])
         return tools
 
-    def _initialize_tools(self) -> Dict[str, StructuredTool]:
+    def _initialize_tools(self) -> dict[str, StructuredTool]:
         tools = {
             "get_code_from_probable_node_name": get_code_from_probable_node_name_tool(
                 self.db, self.user_id
@@ -139,7 +137,7 @@ class ToolService:
 
         return tools
 
-    def list_tools(self) -> List[ToolInfo]:
+    def list_tools(self) -> list[ToolInfo]:
         return [
             ToolInfo(
                 id=tool_id,
@@ -149,7 +147,7 @@ class ToolService:
             for tool_id, tool in self.tools.items()
         ]
 
-    def list_tools_with_parameters(self) -> Dict[str, ToolInfoWithParameters]:
+    def list_tools_with_parameters(self) -> dict[str, ToolInfoWithParameters]:
         return {
             tool_id: ToolInfoWithParameters(
                 id=tool_id,

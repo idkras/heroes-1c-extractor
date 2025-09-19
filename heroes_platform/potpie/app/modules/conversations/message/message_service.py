@@ -3,15 +3,14 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.orm import Session
-from uuid6 import uuid7
-
 from app.modules.conversations.message.message_model import (
     Message,
     MessageStatus,
     MessageType,
 )
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.orm import Session
+from uuid6 import uuid7
 
 logger = logging.getLogger(__name__)
 

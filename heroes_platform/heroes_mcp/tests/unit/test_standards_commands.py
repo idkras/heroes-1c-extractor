@@ -7,7 +7,7 @@ Following TDD Standard with reflection checkpoints
 import json
 import sys
 from pathlib import Path
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -66,16 +66,16 @@ class TestStandardsCommands:
 
             # THEN - проверка результата
             assert result is not None, "REFLECTION: Result should not be None"
-            assert "standards" in str(
-                result
-            ), "REFLECTION: Result should contain standards"
+            assert "standards" in str(result), (
+                "REFLECTION: Result should contain standards"
+            )
 
             # Parse JSON result
             data = json.loads(result)
             assert "standards" in data, "REFLECTION: JSON should contain standards key"
-            assert (
-                len(data["standards"]) >= 2
-            ), "REFLECTION: Should find at least 2 standards"
+            assert len(data["standards"]) >= 2, (
+                "REFLECTION: Should find at least 2 standards"
+            )
 
             # 🔍 REFLECTION CHECKPOINT 3 - Quality validation
             print("REFLECTION: Test completed successfully")

@@ -1,16 +1,16 @@
 import logging
 import os
 import random
-from typing import Dict, Any, Optional, Type, List
-from pydantic import BaseModel, Field
-from github import Github
-from github.GithubException import GithubException
-from github.Auth import AppAuth
-import requests
-from sqlalchemy.orm import Session
-from langchain_core.tools import StructuredTool
+from typing import Any, Optional
 
+import requests
 from app.core.config_provider import config_provider
+from github import Github
+from github.Auth import AppAuth
+from github.GithubException import GithubException
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 
 class GitHubCreatePullRequestInput(BaseModel):
@@ -27,11 +27,11 @@ class GitHubCreatePullRequestInput(BaseModel):
     )
     title: str = Field(..., description="The title of the pull request")
     body: str = Field(..., description="The body/description of the pull request")
-    reviewers: Optional[List[str]] = Field(
+    reviewers: Optional[list[str]] = Field(
         default=None,
         description="Optional list of GitHub usernames to request as reviewers",
     )
-    labels: Optional[List[str]] = Field(
+    labels: Optional[list[str]] = Field(
         default=None, description="Optional list of labels to apply to the pull request"
     )
 
@@ -45,9 +45,9 @@ class GitHubCreatePullRequestTool:
     Useful for proposing and collaborating on changes made in a branch.
     The tool will create a pull request from your specified head branch to the base branch.
     """
-    args_schema: Type[BaseModel] = GitHubCreatePullRequestInput
+    args_schema: type[BaseModel] = GitHubCreatePullRequestInput
 
-    gh_token_list: List[str] = []
+    gh_token_list: list[str] = []
 
     @classmethod
     def initialize_tokens(cls):
@@ -117,9 +117,9 @@ class GitHubCreatePullRequestTool:
         base_branch: str,
         title: str,
         body: str,
-        reviewers: Optional[List[str]] = None,
-        labels: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        reviewers: Optional[list[str]] = None,
+        labels: Optional[list[str]] = None,
+    ) -> dict[str, Any]:
         """
         Create a pull request in a GitHub repository.
 
@@ -207,9 +207,9 @@ class GitHubCreatePullRequestTool:
         base_branch: str,
         title: str,
         body: str,
-        reviewers: Optional[List[str]] = None,
-        labels: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        reviewers: Optional[list[str]] = None,
+        labels: Optional[list[str]] = None,
+    ) -> dict[str, Any]:
         """Async implementation of the tool."""
         # For simplicity, we're using the sync version in async context
         # In a production environment, you'd want to use aiohttp or similar

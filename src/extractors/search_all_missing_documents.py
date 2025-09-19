@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from onec_dtools.database_reader import DatabaseReader
 
@@ -13,7 +12,7 @@ from src.utils.blob_utils import is_blob_field, safe_get_blob_content
 logger = logging.getLogger(__name__)
 
 
-def search_all_missing_documents() -> Optional[Dict[str, Any]]:
+def search_all_missing_documents() -> dict[str, Any] | None:
     """
     Поиск всех недостающих документов для JTBD сценариев
     ЦЕЛЬ: Найти справочники, регистры, документы с цветами и типами букетов
@@ -28,7 +27,7 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
 
             print("✅ База данных открыта успешно!")
 
-            results: Dict[str, Any] = {
+            results: dict[str, Any] = {
                 "references": {},
                 "accumulation_registers": {},
                 "document_journals": {},
@@ -57,7 +56,9 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
 
             # Анализируем все справочники
             sorted_references = sorted(
-                reference_tables.items(), key=lambda x: x[1], reverse=True
+                reference_tables.items(),
+                key=lambda x: x[1],
+                reverse=True,
             )
 
             for i, (table_name, record_count) in enumerate(sorted_references):
@@ -85,7 +86,7 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
                                                     {
                                                         "field": field_name,
                                                         "content": content[:200],
-                                                    }
+                                                    },
                                                 )
 
                                     # Сохраняем образец записи
@@ -97,7 +98,7 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
                                                 for k, v in record_data.items()
                                                 if not is_blob_field(v)
                                             },
-                                        }
+                                        },
                                     )
 
                             except Exception as e:
@@ -109,7 +110,7 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
                             print("    🔍 BLOB поля ({len(blob_samples)}):")
                             for sample in blob_samples[:2]:
                                 print(
-                                    f"        📋 {sample['field']}: {sample['content']}..."
+                                    f"        📋 {sample['field']}: {sample['content']}...",
                                 )
 
                         # Сохраняем информацию о справочнике
@@ -140,7 +141,9 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
 
             # Анализируем все регистры накопления
             sorted_accumulation = sorted(
-                accumulation_tables.items(), key=lambda x: x[1], reverse=True
+                accumulation_tables.items(),
+                key=lambda x: x[1],
+                reverse=True,
             )
 
             for i, (table_name, record_count) in enumerate(sorted_accumulation):
@@ -167,7 +170,7 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
                                                 for k, v in record_data.items()
                                                 if not is_blob_field(v)
                                             },
-                                        }
+                                        },
                                     )
 
                             except Exception as e:
@@ -235,19 +238,21 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
 
             print("📊 Анализируем {len(document_tables)} таблиц документов...")
 
-            keyword_results: Dict[str, List[Dict[str, Any]]] = {
-                keyword: [] for keyword in jtbd_keywords.keys()
+            keyword_results: dict[str, list[dict[str, Any]]] = {
+                keyword: [] for keyword in jtbd_keywords
             }
 
             # Анализируем топ-50 таблиц документов
             sorted_documents = sorted(
-                document_tables.items(), key=lambda x: x[1], reverse=True
+                document_tables.items(),
+                key=lambda x: x[1],
+                reverse=True,
             )
 
             for i, (table_name, record_count) in enumerate(sorted_documents[:50]):
                 if i % 10 == 0:
                     print(
-                        f"    📊 Обработано таблиц: {i}/{min(50, len(sorted_documents))}"
+                        f"    📊 Обработано таблиц: {i}/{min(50, len(sorted_documents))}",
                     )
 
                 try:
@@ -288,7 +293,7 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
                                                                     "content_sample": content[
                                                                         :200
                                                                     ],
-                                                                }
+                                                                },
                                                             )
 
                                     # Ищем в обычных полях
@@ -308,9 +313,9 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
                                                                 "record_count": record_count,
                                                                 "field_name": field_name,
                                                                 "content_sample": str(
-                                                                    field_value
+                                                                    field_value,
                                                                 ),
-                                                            }
+                                                            },
                                                         )
 
                             except Exception as e:
@@ -334,7 +339,7 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
                     print("\n🎯 {keyword.upper()}: найдено {len(matches)} совпадений")
                     for match in matches[:3]:  # Показываем первые 3
                         print(
-                            f"    📋 {match['table_name']} ({match['record_count']:,} записей)"
+                            f"    📋 {match['table_name']} ({match['record_count']:,} записей)",
                         )
                         print("        📋 Поле: {match['field_name']}")
                         print("        📋 Образец: {match['content_sample']}...")
@@ -346,7 +351,9 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
 
             # Сохраняем все результаты
             with open(
-                "all_missing_documents_search.json", "w", encoding="utf-8"
+                "all_missing_documents_search.json",
+                "w",
+                encoding="utf-8",
             ) as file:
                 json.dump(results, file, ensure_ascii=False, indent=2, default=str)
 
@@ -356,10 +363,10 @@ def search_all_missing_documents() -> Optional[Dict[str, Any]]:
             print("\n📊 ИТОГОВАЯ СТАТИСТИКА:")
             print("    📋 Справочники: {len(results['references'])} типов")
             print(
-                f"    📋 Регистры накопления: {len(results['accumulation_registers'])} типов"
+                f"    📋 Регистры накопления: {len(results['accumulation_registers'])} типов",
             )
             print(
-                f"    🔍 Ключевые слова найдены: {sum(1 for v in keyword_results.values() if v)} из {len(jtbd_keywords)}"
+                f"    🔍 Ключевые слова найдены: {sum(1 for v in keyword_results.values() if v)} из {len(jtbd_keywords)}",
             )
 
             return results

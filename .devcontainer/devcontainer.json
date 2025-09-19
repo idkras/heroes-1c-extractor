@@ -20,10 +20,13 @@
             "settings": {
                 "python.defaultInterpreterPath": "/usr/local/bin/python",
                 "python.linting.enabled": true,
-                "python.linting.pylintEnabled": true,
+                "python.linting.pylintEnabled": false,
                 "python.linting.flake8Enabled": true,
                 "python.formatting.provider": "black",
-                "python.sortImports.args": ["--profile", "black"],
+                "python.sortImports.args": [
+                    "--profile",
+                    "black"
+                ],
                 "python.analysis.typeCheckingMode": "strict",
                 "python.analysis.autoImportCompletions": true,
                 "python.analysis.autoSearchPaths": true,
@@ -53,7 +56,10 @@
     "remoteEnv": {
         "PYTHONPATH": "${containerWorkspaceFolder}/src:${containerWorkspaceFolder}/tests"
     },
-    "forwardPorts": [8000, 8888],
+    "forwardPorts": [
+        8000,
+        8888
+    ],
     "portsAttributes": {
         "8000": {
             "label": "FastAPI Server",

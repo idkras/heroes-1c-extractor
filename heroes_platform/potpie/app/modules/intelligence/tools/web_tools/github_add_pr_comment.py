@@ -1,16 +1,16 @@
 import logging
 import os
 import random
-from typing import Dict, Any, Optional, Type, List
-from pydantic import BaseModel, Field
-from github import Github
-from github.GithubException import GithubException
-from github.Auth import AppAuth
-import requests
-from sqlalchemy.orm import Session
-from langchain_core.tools import StructuredTool
+from typing import Any, Optional
 
+import requests
 from app.core.config_provider import config_provider
+from github import Github
+from github.Auth import AppAuth
+from github.GithubException import GithubException
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 
 class GitHubPRComment(BaseModel):
@@ -44,7 +44,7 @@ class GitAddPRCommentsInput(BaseModel):
         ..., description="The full name of the repository (e.g., 'username/repo_name')"
     )
     pr_number: int = Field(..., description="The pull request number to comment on")
-    comments: List[GitHubPRComment] = Field(
+    comments: list[GitHubPRComment] = Field(
         ..., description="List of comments to add to the PR"
     )
     general_comment: Optional[str] = Field(
@@ -65,9 +65,9 @@ class GitAddPRCommentsTool:
     Can add general comments, specific file comments, reference code snippets, and suggest code changes.
     Supports full GitHub-style code review functionality.
     """
-    args_schema: Type[BaseModel] = GitAddPRCommentsInput
+    args_schema: type[BaseModel] = GitAddPRCommentsInput
 
-    gh_token_list: List[str] = []
+    gh_token_list: list[str] = []
 
     @classmethod
     def initialize_tokens(cls):
@@ -148,10 +148,10 @@ class GitAddPRCommentsTool:
         self,
         repo_name: str,
         pr_number: int,
-        comments: List[GitHubPRComment],
+        comments: list[GitHubPRComment],
         general_comment: Optional[str] = None,
         review_action: str = "COMMENT",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Add multiple comments to a GitHub pull request.
 
@@ -240,7 +240,7 @@ class GitAddPRCommentsTool:
 
                     review_comments.append(comment_data)
                 except Exception as e:
-                    errors.append(f"Error with comment {idx+1}: {str(e)}")
+                    errors.append(f"Error with comment {idx + 1}: {str(e)}")
 
             # If we have errors with any comments, return them
             if errors:
@@ -285,10 +285,10 @@ class GitAddPRCommentsTool:
         self,
         repo_name: str,
         pr_number: int,
-        comments: List[GitHubPRComment],
+        comments: list[GitHubPRComment],
         general_comment: Optional[str] = None,
         review_action: str = "COMMENT",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Async implementation of the tool."""
         # For simplicity, we're using the sync version in async context
         # In a production environment, you'd want to use aiohttp or similar

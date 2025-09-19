@@ -50,7 +50,7 @@ def test_mcp_initialize_and_tools_list():
     repo_root = Path(__file__).parents[3]
     server_src = repo_root / "heroes-platform" / "mcp_server" / "src"
     proj_src = repo_root / "src"
-    env["PYTHONPATH"] = f"{server_src}:{proj_src}:{env.get('PYTHONPATH','')}"
+    env["PYTHONPATH"] = f"{server_src}:{proj_src}:{env.get('PYTHONPATH', '')}"
 
     p = subprocess.Popen(
         [sys.executable, str(SERVER_PATH)],

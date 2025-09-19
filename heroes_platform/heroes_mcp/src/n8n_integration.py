@@ -414,7 +414,9 @@ class N8nIntegration:
                                     )
 
             errors = validation_result.get("errors", [])
-            validation_result["valid"] = len(errors) if isinstance(errors, list) else 0 == 0
+            validation_result["valid"] = (
+                len(errors) if isinstance(errors, list) else 0 == 0
+            )
 
             return validation_result
         except Exception as e:

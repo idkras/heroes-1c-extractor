@@ -1,13 +1,11 @@
-from typing import List
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from .provider_schema import (
+    AvailableModelsResponse,
     GetProviderResponse,
     ProviderInfo,
     SetProviderRequest,
-    AvailableModelsResponse,
 )
 from .provider_service import ProviderService
 
@@ -17,7 +15,7 @@ class ProviderController:
         self.service = ProviderService.create(db, user_id)
         self.user_id = user_id
 
-    async def list_available_llms(self) -> List[ProviderInfo]:
+    async def list_available_llms(self) -> list[ProviderInfo]:
         """List available LLM providers."""
         try:
             providers = await self.service.list_available_llms()

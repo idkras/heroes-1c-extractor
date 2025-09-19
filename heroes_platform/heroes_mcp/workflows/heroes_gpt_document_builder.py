@@ -14,11 +14,10 @@ Features:
 - Enhanced validation
 """
 
-import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +30,9 @@ class HeroesGPTDocumentBuilder:
         self.standard_version = "v1.8"
 
     def generate_markdown_document(
-        self, analysis_data: Dict[str, Any], output_path: str = None  # type: ignore
+        self,
+        analysis_data: dict[str, Any],
+        output_path: str = None,  # type: ignore
     ) -> str:
         """Генерирует полный markdown документ из данных анализа
 
@@ -69,11 +70,11 @@ class HeroesGPTDocumentBuilder:
     def _build_document_structure(
         self,
         landing_url: str,
-        business_context: Dict[str, Any],
-        stages: Dict[str, Any],
-        offers: List[Dict[str, Any]],
-        segments: List[Dict[str, Any]],
-        reflections: List[Dict[str, Any]],
+        business_context: dict[str, Any],
+        stages: dict[str, Any],
+        offers: list[dict[str, Any]],
+        segments: list[dict[str, Any]],
+        reflections: list[dict[str, Any]],
     ) -> str:
         """Строит структуру markdown документа"""
 
@@ -110,13 +111,13 @@ class HeroesGPTDocumentBuilder:
 
 ---
 
-*Документ сгенерирован HeroesGPT Landing Analysis Standard {self.standard_version}*  
-*Дата создания: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*
+*Документ сгенерирован HeroesGPT Landing Analysis Standard {self.standard_version}*
+*Дата создания: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}*
 """
 
         return full_document
 
-    def _build_header(self, landing_url: str, business_context: Dict[str, Any]) -> str:
+    def _build_header(self, landing_url: str, business_context: dict[str, Any]) -> str:
         """Строит заголовок документа"""
         business_type = business_context.get("type", "Unknown")
         target_audience = business_context.get("target_audience", "Unknown")
@@ -124,39 +125,41 @@ class HeroesGPTDocumentBuilder:
         return f"""# HeroesGPT Landing Analysis Report
 
 ## Анализируемый лендинг
-**URL:** {landing_url}  
-**Тип бизнеса:** {business_type}  
-**Целевая аудитория:** {target_audience}  
-**Стандарт:** HeroesGPT Landing Analysis Standard {self.standard_version}  
-**Дата анализа:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**URL:** {landing_url}
+**Тип бизнеса:** {business_type}
+**Целевая аудитория:** {target_audience}
+**Стандарт:** HeroesGPT Landing Analysis Standard {self.standard_version}
+**Дата анализа:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 ---
 
 """
 
     def _build_executive_summary(
-        self, stages: Dict[str, Any], offers: List[Dict[str, Any]]
+        self, stages: dict[str, Any], offers: list[dict[str, Any]]
     ) -> str:
         """Строит executive summary"""
         total_offers = len(offers)
-        completed_stages = len([s for s in stages.values() if s.get("completed", False)])
+        completed_stages = len(
+            [s for s in stages.values() if s.get("completed", False)]
+        )
 
         return f"""## Executive Summary
 
 ### Ключевые результаты анализа
 - **Всего этапов выполнено:** {completed_stages}
 - **Найдено предложений:** {total_offers}
-- **Статус анализа:** {'Завершен' if completed_stages > 5 else 'В процессе'}
+- **Статус анализа:** {"Завершен" if completed_stages > 5 else "В процессе"}
 
 ### Основные выводы
-Анализ лендинга проведен в соответствии со стандартом HeroesGPT v1.8. 
+Анализ лендинга проведен в соответствии со стандартом HeroesGPT v1.8.
 Выявлены ключевые предложения и сегменты аудитории для оптимизации конверсии.
 
 ---
 
 """
 
-    def _build_analysis_sections(self, stages: Dict[str, Any]) -> str:
+    def _build_analysis_sections(self, stages: dict[str, Any]) -> str:
         """Строит разделы анализа"""
         sections = []
 
@@ -167,7 +170,7 @@ class HeroesGPTDocumentBuilder:
 
         return "\n".join(sections)
 
-    def _build_stage_section(self, stage_name: str, stage_data: Dict[str, Any]) -> str:
+    def _build_stage_section(self, stage_name: str, stage_data: dict[str, Any]) -> str:
         """Строит раздел для конкретного этапа"""
         stage_title = stage_name.replace("_", " ").title()
         timestamp = stage_data.get("timestamp", "Unknown")
@@ -186,7 +189,7 @@ class HeroesGPTDocumentBuilder:
 
 """
 
-    def _extract_stage_results(self, stage_data: Dict[str, Any]) -> str:
+    def _extract_stage_results(self, stage_data: dict[str, Any]) -> str:
         """Извлекает ключевые результаты этапа"""
         results = []
 
@@ -194,9 +197,13 @@ class HeroesGPTDocumentBuilder:
         for key, value in stage_data.items():
             if key in ["offers", "segments", "classification", "analysis"]:
                 if isinstance(value, list) and value:
-                    results.append(f"- **{key.title()}:** {len(value)} элементов найдено")
+                    results.append(
+                        f"- **{key.title()}:** {len(value)} элементов найдено"
+                    )
                 elif isinstance(value, dict) and value:
-                    results.append(f"- **{key.title()}:** {len(value)} параметров проанализировано")
+                    results.append(
+                        f"- **{key.title()}:** {len(value)} параметров проанализировано"
+                    )
                 elif isinstance(value, str):
                     results.append(f"- **{key.title()}:** {value}")
 
@@ -206,7 +213,7 @@ class HeroesGPTDocumentBuilder:
         return "\n".join(results)
 
     def _build_recommendations(
-        self, offers: List[Dict[str, Any]], segments: List[Dict[str, Any]]
+        self, offers: list[dict[str, Any]], segments: list[dict[str, Any]]
     ) -> str:
         """Строит раздел рекомендаций"""
         if not offers and not segments:
@@ -241,7 +248,7 @@ class HeroesGPTDocumentBuilder:
 
         return "\n".join(recommendations)
 
-    def _build_reflection_section(self, reflections: List[Dict[str, Any]]) -> str:
+    def _build_reflection_section(self, reflections: list[dict[str, Any]]) -> str:
         """Строит раздел reflection checkpoints"""
         if not reflections:
             return ""
@@ -266,9 +273,11 @@ class HeroesGPTDocumentBuilder:
 
         return "\n".join(reflection_content)
 
-    def _build_conclusion(self, landing_url: str, stages: Dict[str, Any]) -> str:
+    def _build_conclusion(self, landing_url: str, stages: dict[str, Any]) -> str:
         """Строит заключение"""
-        completed_stages = len([s for s in stages.values() if s.get("completed", False)])
+        completed_stages = len(
+            [s for s in stages.values() if s.get("completed", False)]
+        )
         total_stages = len(stages)
 
         return f"""## Заключение
@@ -278,7 +287,7 @@ class HeroesGPTDocumentBuilder:
 
 **Статистика выполнения:**
 - Выполнено этапов: {completed_stages}/{total_stages}
-- Процент завершения: {(completed_stages/total_stages*100):.1f}%
+- Процент завершения: {(completed_stages / total_stages * 100):.1f}%
 
 ### Следующие шаги
 1. Реализовать выявленные рекомендации
@@ -306,27 +315,30 @@ class HeroesGPTDocumentBuilder:
             logger.error(f"Error saving markdown file: {e}")
             raise
 
-    def generate_quick_summary(self, analysis_data: Dict[str, Any]) -> str:
+    def generate_quick_summary(self, analysis_data: dict[str, Any]) -> str:
         """Генерирует краткое резюме анализа"""
         landing_url = analysis_data.get("landing_url", "Unknown")
         offers_count = len(analysis_data.get("offers", []))
         segments_count = len(analysis_data.get("segments", []))
-        stages_completed = len([
-            s for s in analysis_data.get("stages", {}).values() 
-            if s.get("completed", False)
-        ])
+        stages_completed = len(
+            [
+                s
+                for s in analysis_data.get("stages", {}).values()
+                if s.get("completed", False)
+            ]
+        )
 
         return f"""# Краткое резюме анализа
 
-**Лендинг:** {landing_url}  
-**Предложений найдено:** {offers_count}  
-**Сегментов выявлено:** {segments_count}  
-**Этапов выполнено:** {stages_completed}  
+**Лендинг:** {landing_url}
+**Предложений найдено:** {offers_count}
+**Сегментов выявлено:** {segments_count}
+**Этапов выполнено:** {stages_completed}
 
-**Статус:** {'Анализ завершен' if stages_completed > 5 else 'Анализ в процессе'}
+**Статус:** {"Анализ завершен" if stages_completed > 5 else "Анализ в процессе"}
 """
 
-    def validate_document_structure(self, markdown_content: str) -> Dict[str, Any]:
+    def validate_document_structure(self, markdown_content: str) -> dict[str, Any]:
         """Валидирует структуру markdown документа"""
         validation_result = {
             "valid": True,
@@ -382,7 +394,11 @@ def main():
             {"name": "enterprise", "size": "large"},
         ],
         "reflections": [
-            {"checkpoint": "Stage 1", "status": "completed", "timestamp": "2024-01-01T10:05:00"},
+            {
+                "checkpoint": "Stage 1",
+                "status": "completed",
+                "timestamp": "2024-01-01T10:05:00",
+            },
         ],
     }
 

@@ -1,6 +1,7 @@
 import json
 import logging
-from typing import Any, AsyncGenerator, List, Optional
+from collections.abc import AsyncGenerator
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
@@ -20,9 +21,8 @@ from app.modules.conversations.access.access_service import (
 from app.modules.conversations.conversation.conversation_controller import (
     ConversationController,
 )
-from app.modules.usage.usage_service import UsageService
 from app.modules.media.media_service import MediaService
-
+from app.modules.usage.usage_service import UsageService
 
 from .conversation.conversation_schema import (
     ConversationInfoResponse,
@@ -81,7 +81,7 @@ class ConversationAPI:
     @staticmethod
     @router.get(
         "/conversations/{conversation_id}/messages/",
-        response_model=List[MessageResponse],
+        response_model=list[MessageResponse],
     )
     async def get_conversation_messages(
         conversation_id: str,
@@ -101,7 +101,7 @@ class ConversationAPI:
         conversation_id: str,
         content: str = Form(...),
         node_ids: Optional[str] = Form(None),
-        images: Optional[List[UploadFile]] = File(None),
+        images: Optional[list[UploadFile]] = File(None),
         stream: bool = Query(True, description="Whether to stream the response"),
         db: Session = Depends(get_db),
         user=Depends(AuthService.check_auth),
@@ -291,7 +291,7 @@ async def share_chat(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/conversations/{conversation_id}/shared-emails", response_model=List[str])
+@router.get("/conversations/{conversation_id}/shared-emails", response_model=list[str])
 async def get_shared_emails(
     conversation_id: str,
     db: Session = Depends(get_db),

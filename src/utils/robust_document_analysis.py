@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 from onec_dtools.database_reader import DatabaseReader
 
 
-def safe_get_blob_content(value: Any) -> Optional[str]:
+def safe_get_blob_content(value: Any) -> str | None:
     """
     Безопасное извлечение содержимого BLOB поля
     """
@@ -41,7 +40,7 @@ def safe_get_blob_content(value: Any) -> Optional[str]:
     return None
 
 
-def analyze_documents_robust() -> Optional[Dict[str, Any]]:
+def analyze_documents_robust() -> dict[str, Any] | None:
     """
     Надежный анализ документов с улучшенной обработкой ошибок
     """
@@ -114,7 +113,7 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                 },
             }
 
-            results: Dict[str, Any] = {
+            results: dict[str, Any] = {
                 "documents_found": {},
                 "metadata": {
                     "extraction_date": datetime.now().isoformat(),
@@ -165,7 +164,7 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                     print(f"    📋 Поля: {len(fields)}")
 
                     # Ищем поля с ключевыми словами
-                    found_keywords: Dict[str, List[str]] = {}
+                    found_keywords: dict[str, list[str]] = {}
                     for doc_type, criteria in search_criteria.items():
                         found_keywords[doc_type] = []
                         for keyword in criteria["keywords"]:
@@ -176,7 +175,7 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                                 found_keywords[doc_type].extend(matching_fields)
 
                     # Ищем поля с условиями
-                    found_conditions: Dict[str, List[tuple]] = {}
+                    found_conditions: dict[str, list[tuple]] = {}
                     for doc_type, criteria in search_criteria.items():
                         found_conditions[doc_type] = []
                         for condition in criteria["conditions"]:
@@ -187,7 +186,7 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                                     for keyword in condition.lower().split()
                                 ):
                                     found_conditions[doc_type].append(
-                                        (condition, field)
+                                        (condition, field),
                                     )
 
                     # Анализируем значения полей
@@ -213,13 +212,14 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                                 if field in record:
                                     value = record[field]
                                     if hasattr(value, "value") or hasattr(
-                                        value, "__iter__"
+                                        value,
+                                        "__iter__",
                                     ):
                                         blob_fields.append(field)
                                         break
 
                     # Классифицируем документы
-                    document_classification: Dict[str, Dict[str, Any]] = {}
+                    document_classification: dict[str, dict[str, Any]] = {}
                     for doc_type, criteria in search_criteria.items():
                         score = 0
                         reasons = []
@@ -233,7 +233,7 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                         if found_conditions[doc_type]:
                             score += len(found_conditions[doc_type]) * 3
                             reasons.append(
-                                f"Найдены условия: {[c[0] for c in found_conditions[doc_type]]}"
+                                f"Найдены условия: {[c[0] for c in found_conditions[doc_type]]}",
                             )
 
                         # Проверяем значения полей
@@ -259,7 +259,7 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                         print("    🎯 Классификация документов:")
                         for doc_type, classification in document_classification.items():
                             print(
-                                f"      📄 {doc_type}: {classification.get('score', 0)} баллов"
+                                f"      📄 {doc_type}: {classification.get('score', 0)} баллов",
                             )
                             for reason in classification.get("reasons", [])[
                                 :2
@@ -281,7 +281,7 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                                     content = safe_get_blob_content(value)
                                     if content:
                                         print(
-                                            f"        Запись {i+1}: {content[:100]}..."
+                                            f"        Запись {i + 1}: {content[:100]}...",
                                         )
                                 except Exception as e:
                                     print(f"        ⚠️ Ошибка чтения {blob_field}: {e}")
@@ -302,7 +302,7 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                         int(results["metadata"].get("total_tables_analyzed", 0)) + 1
                     )
                     results["metadata"]["documents_analyzed"] = int(
-                        results["metadata"].get("documents_analyzed", 0)
+                        results["metadata"].get("documents_analyzed", 0),
                     ) + len(sample_records)
 
             # Сохраняем результаты
@@ -312,10 +312,10 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
 
             print(f"\n✅ Результаты сохранены в {output_file}")
             print(
-                f"📊 Проанализировано таблиц: {results['metadata'].get('total_tables_analyzed', 0)}"
+                f"📊 Проанализировано таблиц: {results['metadata'].get('total_tables_analyzed', 0)}",
             )
             print(
-                f"📊 Проанализировано документов: {results['metadata'].get('documents_analyzed', 0)}"
+                f"📊 Проанализировано документов: {results['metadata'].get('documents_analyzed', 0)}",
             )
 
             # Выводим краткую сводку
@@ -327,7 +327,7 @@ def analyze_documents_robust() -> Optional[Dict[str, Any]]:
                         "document_classification"
                     ].items():
                         print(
-                            f"    - {doc_type}: {classification.get('score', 0)} баллов"
+                            f"    - {doc_type}: {classification.get('score', 0)} баллов",
                         )
 
             return results

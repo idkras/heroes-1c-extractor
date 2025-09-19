@@ -3,20 +3,19 @@ import os
 import warnings
 from collections import namedtuple
 from pathlib import Path
-from typing import Optional, Type, Dict, Any, List
+from typing import Any, Optional
 
-from pydantic import BaseModel, Field
-from redis import Redis
-from sqlalchemy.orm import Session
+from app.core.config_provider import config_provider
+from app.modules.code_provider.code_provider_service import CodeProviderService
+from app.modules.projects.projects_service import ProjectService
 from grep_ast import filename_to_lang
+from pydantic import BaseModel, Field
 from pygments.lexers import guess_lexer_for_filename
 from pygments.token import Token
 from pygments.util import ClassNotFound
+from redis import Redis
+from sqlalchemy.orm import Session
 from tree_sitter_languages import get_language, get_parser
-
-from app.modules.code_provider.code_provider_service import CodeProviderService
-from app.modules.projects.projects_service import ProjectService
-from app.core.config_provider import config_provider
 
 # tree_sitter is throwing a FutureWarning
 warnings.simplefilter("ignore", category=FutureWarning)
@@ -57,7 +56,7 @@ class CodeElement(BaseModel):
     is_static: bool = False
     visibility: Optional[str] = None  # public, private, protected, internal
     language: str
-    parameters: List[str] = []
+    parameters: list[str] = []
     return_type: Optional[str] = None
 
 
@@ -105,7 +104,7 @@ class UniversalCodeAnalyzer:
 
         if code is None:
             try:
-                with open(fname, "r", encoding="utf-8") as f:
+                with open(fname, encoding="utf-8") as f:
                     code = f.read()
             except Exception as e:
                 logging.warning(f"Could not read file {fname}: {e}")
@@ -216,7 +215,7 @@ class UniversalCodeAnalyzer:
             return []
 
     def _extract_docstring_comment(
-        self, node_text: str, language: str, start_line: int, code_lines: List[str]
+        self, node_text: str, language: str, start_line: int, code_lines: list[str]
     ) -> Optional[str]:
         """Extract docstring or comment for a code element."""
         if language == "python":
@@ -331,7 +330,7 @@ class UniversalCodeAnalyzer:
         file_path: str = "unknown",
         include_methods: bool = True,
         include_private: bool = False,
-    ) -> List[CodeElement]:
+    ) -> list[CodeElement]:
         """Analyze source code and extract all code elements."""
         if not language:
             language = self.detect_language(file_path)
@@ -414,8 +413,7 @@ class UniversalCodeAnalyzer:
 
 class UniversalAnalyzeCodeTool:
     name: str = "analyze_code_structure_universal"
-    description: str = (
-        """Universal code structure analyzer that works with multiple programming languages using Tree-sitter.
+    description: str = """Universal code structure analyzer that works with multiple programming languages using Tree-sitter.
         Supports Python, JavaScript, TypeScript, Java, C++, C, Rust, Go, PHP, Ruby, and more.
 
         Extracts detailed information about:
@@ -434,8 +432,7 @@ class UniversalAnalyzeCodeTool:
 
         Returns a structured analysis of the code with all extractable elements.
         """
-    )
-    args_schema: Type[BaseModel] = UniversalAnalyzeCodeToolInput
+    args_schema: type[BaseModel] = UniversalAnalyzeCodeToolInput
 
     def __init__(self, sql_db: Session, user_id: str):
         self.sql_db = sql_db
@@ -445,7 +442,7 @@ class UniversalAnalyzeCodeTool:
         self.redis = Redis.from_url(config_provider.get_redis_url())
         self.analyzer = UniversalCodeAnalyzer()
 
-    def _get_project_details(self, project_id: str) -> Dict[str, str]:
+    def _get_project_details(self, project_id: str) -> dict[str, str]:
         details = self.project_service.get_project_from_db_by_id_sync(project_id)
         if not details or "project_name" not in details:
             raise ValueError(f"Cannot find repo details for project_id: {project_id}")
@@ -462,7 +459,7 @@ class UniversalAnalyzeCodeTool:
         include_methods: bool = True,
         include_private: bool = False,
         language: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             # Detect language if not provided
             if not language:
@@ -558,7 +555,7 @@ class UniversalAnalyzeCodeTool:
         include_methods: bool = True,
         include_private: bool = False,
         language: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         return self._run(
             project_id, file_path, include_methods, include_private, language
         )

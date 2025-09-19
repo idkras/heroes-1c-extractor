@@ -3,13 +3,6 @@ import os
 from datetime import datetime
 
 import requests
-from dotenv import load_dotenv
-from fastapi import Depends, Request
-from fastapi.responses import JSONResponse, Response
-from fastapi.exceptions import HTTPException
-
-from sqlalchemy.orm import Session
-
 from app.core.database import get_db
 from app.modules.auth.auth_schema import LoginRequest
 from app.modules.auth.auth_service import auth_handler
@@ -17,6 +10,11 @@ from app.modules.users.user_schema import CreateUser
 from app.modules.users.user_service import UserService
 from app.modules.utils.APIRouter import APIRouter
 from app.modules.utils.posthog_helper import PostHogClient
+from dotenv import load_dotenv
+from fastapi import Depends, Request
+from fastapi.exceptions import HTTPException
+from fastapi.responses import JSONResponse, Response
+from sqlalchemy.orm import Session
 
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", None)
 

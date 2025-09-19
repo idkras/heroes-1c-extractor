@@ -363,7 +363,9 @@ class DocValidator:
 
         if coverage["undocumented_items"]:  # type: ignore
             report.append("\n### Undocumented Items\n")  # type: ignore
-            for item in coverage["undocumented_items"][  # type: ignore
+            for item in coverage[
+                "undocumented_items"
+            ][  # type: ignore
                 :10
             ]:  # Показываем только первые 10
                 report.append(

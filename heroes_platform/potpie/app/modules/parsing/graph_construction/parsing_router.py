@@ -1,11 +1,10 @@
-from fastapi import Depends
-from sqlalchemy.orm import Session
-
 from app.core.database import get_db
 from app.modules.auth.auth_service import AuthService
 from app.modules.parsing.graph_construction.parsing_controller import ParsingController
 from app.modules.parsing.graph_construction.parsing_schema import ParsingRequest
 from app.modules.utils.APIRouter import APIRouter
+from fastapi import Depends
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 

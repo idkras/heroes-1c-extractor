@@ -1,3 +1,5 @@
+from collections.abc import AsyncGenerator
+
 from app.modules.intelligence.agents.chat_agents.adaptive_agent import AdaptiveAgent
 from app.modules.intelligence.agents.chat_agents.pydantic_agent import PydanticRagAgent
 from app.modules.intelligence.prompts.classification_prompts import AgentType
@@ -6,9 +8,9 @@ from app.modules.intelligence.provider.provider_service import (
     ProviderService,
 )
 from app.modules.intelligence.tools.tool_service import ToolService
-from ..crewai_agent import AgentConfig, CrewAIAgent, TaskConfig
+
 from ...chat_agent import ChatAgent, ChatAgentResponse, ChatContext
-from typing import AsyncGenerator
+from ..crewai_agent import AgentConfig, CrewAIAgent, TaskConfig
 
 
 class QnAAgent(ChatAgent):

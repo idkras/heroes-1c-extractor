@@ -1,15 +1,16 @@
-from typing import AsyncGenerator, Dict
+import logging
+from collections.abc import AsyncGenerator
+
 from app.modules.intelligence.agents.chat_agent import (
+    AgentWithInfo,
+    ChatAgent,
     ChatAgentResponse,
     ChatContext,
-    ChatAgent,
-    AgentWithInfo,
 )
 from app.modules.intelligence.provider.provider_service import (
     ProviderService,
 )
 from pydantic import BaseModel, Field
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class AutoRouterAgent(ChatAgent):
     def __init__(
         self,
         llm_provider: ProviderService,
-        agents: Dict[str, AgentWithInfo],
+        agents: dict[str, AgentWithInfo],
     ):
         self.llm_provider = llm_provider
         self.agents = agents

@@ -1,12 +1,13 @@
 import logging
-from typing import Optional, Type, Dict, Any
+from typing import Any, Optional
+
+from app.core.config_provider import config_provider
+from app.modules.code_provider.code_provider_service import CodeProviderService
+from app.modules.projects.projects_service import ProjectService
+from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
 from redis import Redis
 from sqlalchemy.orm import Session
-from langchain_core.tools import StructuredTool
-from app.modules.code_provider.code_provider_service import CodeProviderService
-from app.modules.projects.projects_service import ProjectService
-from app.core.config_provider import config_provider
 
 
 class FetchFileToolInput(BaseModel):
@@ -22,8 +23,7 @@ class FetchFileToolInput(BaseModel):
 
 class FetchFileTool:
     name: str = "fetch_file"
-    description: str = (
-        """Fetch file content from a repository using the project_id and file path.
+    description: str = """Fetch file content from a repository using the project_id and file path.
         Returns the content between optional start_line and end_line.
         Make sure the file exists before querying for it, confirm it by checking the file structure.
         File content is hashed for caching purposes. Cache won't be used if start_line or end_line are different.
@@ -67,8 +67,7 @@ class FetchFileTool:
         4:hello_world()
 
         """
-    )
-    args_schema: Type[BaseModel] = FetchFileToolInput
+    args_schema: type[BaseModel] = FetchFileToolInput
 
     def __init__(self, sql_db: Session, user_id: str, internal_call: bool = False):
         self.sql_db = sql_db
@@ -78,7 +77,7 @@ class FetchFileTool:
         self.redis = Redis.from_url(config_provider.get_redis_url())
         self.internal_call = internal_call
 
-    def _get_project_details(self, project_id: str) -> Dict[str, str]:
+    def _get_project_details(self, project_id: str) -> dict[str, str]:
         details = self.project_service.get_project_from_db_by_id_sync(project_id)
         if not details or "project_name" not in details:
             raise ValueError(f"Cannot find repo details for project_id: {project_id}")
@@ -94,14 +93,14 @@ class FetchFileTool:
         if include_line_number:
             lines = content.splitlines()
             numbered_lines = [
-                f"{starting_line+ i}:{line}" for i, line in enumerate(lines)
+                f"{starting_line + i}:{line}" for i, line in enumerate(lines)
             ]
             return "\n".join(numbered_lines)
         return content
 
     def _check_line_limits(
         self, content: str, start_line: Optional[int], end_line: Optional[int]
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Check if the content or requested range exceeds 1200 lines"""
         lines = content.splitlines()
         total_lines = len(lines)
@@ -139,7 +138,7 @@ class FetchFileTool:
         with_line_numbers: bool = False,
         start_line: Optional[int] = None,
         end_line: Optional[int] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             details = self._get_project_details(project_id)
             # Modify cache key to reflect that we're only caching the specific path
@@ -198,7 +197,7 @@ class FetchFileTool:
         file_path: str,
         start_line: Optional[int] = None,
         end_line: Optional[int] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         # Synchronously for compatibility, like GithubTool
         return self._run(project_id, file_path, start_line, end_line)
 

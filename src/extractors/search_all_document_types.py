@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import json
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from onec_dtools.database_reader import DatabaseReader
 
 from src.utils.blob_utils import is_blob_field
 
 
-def search_all_document_types() -> Optional[Dict[str, Any]]:
+def search_all_document_types() -> dict[str, Any] | None:
     """
     Поиск всех типов документов согласно уточненному плану
     ЦЕЛЬ: Отследить весь путь от сырья до цветочков в магазине
@@ -25,7 +24,7 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
 
             print("✅ База данных открыта успешно!")
 
-            results: Dict[str, Any] = {
+            results: dict[str, Any] = {
                 "document_types": {},
                 "references": {},
                 "accumulation_registers": {},
@@ -53,7 +52,9 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
 
             # Сортируем по количеству записей
             sorted_documents = sorted(
-                document_tables.items(), key=lambda x: x[1], reverse=True
+                document_tables.items(),
+                key=lambda x: x[1],
+                reverse=True,
             )
 
             # Анализируем топ-20 таблиц документов
@@ -84,7 +85,7 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
 
                             if blob_fields:
                                 print(
-                                    f"    🔍 BLOB поля ({len(blob_fields)}): {blob_fields[:5]}"
+                                    f"    🔍 BLOB поля ({len(blob_fields)}): {blob_fields[:5]}",
                                 )
 
                                 # Анализируем содержимое первого BLOB поля
@@ -95,7 +96,7 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
                                             content = blob_value.value
                                             if content and len(str(content)) > 0:
                                                 print(
-                                                    f"        📋 {blob_fields[0]}: {str(content)[:100]}..."
+                                                    f"        📋 {blob_fields[0]}: {str(content)[:100]}...",
                                                 )
                                     except Exception:
                                         print("        ⚠️ Ошибка чтения BLOB: {e}")
@@ -110,7 +111,7 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
                                     k: v
                                     for k, v in list(record_data.items())[:5]
                                     if not str(v).startswith(
-                                        "<onec_dtools.database_reader.Blob"
+                                        "<onec_dtools.database_reader.Blob",
                                     )
                                 },
                             }
@@ -135,7 +136,9 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
 
             # Анализируем топ-10 справочников
             sorted_references = sorted(
-                reference_tables.items(), key=lambda x: x[1], reverse=True
+                reference_tables.items(),
+                key=lambda x: x[1],
+                reverse=True,
             )
 
             for i, (table_name, record_count) in enumerate(sorted_references[:10]):
@@ -165,7 +168,7 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
 
                             if blob_fields:
                                 print(
-                                    f"    🔍 BLOB поля ({len(blob_fields)}): {blob_fields[:3]}"
+                                    f"    🔍 BLOB поля ({len(blob_fields)}): {blob_fields[:3]}",
                                 )
 
                             # Сохраняем информацию о справочнике
@@ -178,7 +181,7 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
                                     k: v
                                     for k, v in list(record_data.items())[:5]
                                     if not str(v).startswith(
-                                        "<onec_dtools.database_reader.Blob"
+                                        "<onec_dtools.database_reader.Blob",
                                     )
                                 },
                             }
@@ -203,7 +206,9 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
 
             # Анализируем все регистры накопления
             sorted_accumulation = sorted(
-                accumulation_tables.items(), key=lambda x: x[1], reverse=True
+                accumulation_tables.items(),
+                key=lambda x: x[1],
+                reverse=True,
             )
 
             for i, (table_name, record_count) in enumerate(sorted_accumulation):
@@ -234,7 +239,7 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
                                     k: v
                                     for k, v in list(record_data.items())[:5]
                                     if not str(v).startswith(
-                                        "<onec_dtools.database_reader.Blob"
+                                        "<onec_dtools.database_reader.Blob",
                                     )
                                 },
                             }
@@ -270,10 +275,10 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
                 print("\n🔍 Поиск: {keyword} - {description}")
 
                 matching_tables = []
-                for table_name in document_tables.keys():
+                for table_name in document_tables:
                     if keyword.lower() in table_name.lower():
                         matching_tables.append(
-                            (table_name, document_tables[table_name])
+                            (table_name, document_tables[table_name]),
                         )
 
                 if matching_tables:
@@ -290,7 +295,9 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
 
             # Сохраняем все результаты
             with open(
-                "all_document_types_analysis.json", "w", encoding="utf-8"
+                "all_document_types_analysis.json",
+                "w",
+                encoding="utf-8",
             ) as file:
                 json.dump(results, file, ensure_ascii=False, indent=2, default=str)
 
@@ -301,10 +308,10 @@ def search_all_document_types() -> Optional[Dict[str, Any]]:
             print("    📋 Документы: {len(results['document_types'])} типов")
             print("    📋 Справочники: {len(results['references'])} типов")
             print(
-                f"    📋 Регистры накопления: {len(results['accumulation_registers'])} типов"
+                f"    📋 Регистры накопления: {len(results['accumulation_registers'])} типов",
             )
             print(
-                f"    🔍 Ключевые слова найдены: {sum(1 for v in found_keywords.values() if v)} из {len(keywords)}"
+                f"    🔍 Ключевые слова найдены: {sum(1 for v in found_keywords.values() if v)} из {len(keywords)}",
             )
 
             return results

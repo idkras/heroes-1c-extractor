@@ -7,16 +7,15 @@ Comprehensive testing for all MCP commands with quality validation and cross-che
 
 import asyncio
 import logging
-import json
-from typing import Dict, List, Any
 import sys
 from pathlib import Path
+from typing import Any
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
 
-from quality.test_mcp_commands_quality import MCPCommandQualityTester
 from cross_check.test_cursor_integration import CursorCrossChecker
+from quality.test_mcp_commands_quality import MCPCommandQualityTester
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,7 @@ class ComprehensiveMCPTester:
         self.cross_checker = CursorCrossChecker()
         self.test_results = {}
 
-    async def test_all_commands(self) -> Dict[str, Any]:
+    async def test_all_commands(self) -> dict[str, Any]:
         """
         JTBD: Как тестировщик, я хочу проверить все MCP команды качественно,
         чтобы убедиться что система работает надежно.
@@ -103,7 +102,7 @@ class ComprehensiveMCPTester:
 
         return overall_results
 
-    def analyze_overall_results(self) -> Dict[str, Any]:
+    def analyze_overall_results(self) -> dict[str, Any]:
         """Analyze overall test results"""
 
         total_commands = len(self.test_results)
@@ -147,7 +146,7 @@ class ComprehensiveMCPTester:
             "command_details": self.test_results,
         }
 
-    def get_confident_commands(self) -> List[str]:
+    def get_confident_commands(self) -> list[str]:
         """Get list of commands we are confident work correctly"""
 
         confident_commands = []
@@ -158,7 +157,7 @@ class ComprehensiveMCPTester:
 
         return confident_commands
 
-    def generate_gap_report(self) -> Dict[str, Any]:
+    def generate_gap_report(self) -> dict[str, Any]:
         """Generate gap report for failed commands"""
 
         failed_commands = []
@@ -198,7 +197,7 @@ class ComprehensiveMCPTester:
             "recommendations": self.generate_recommendations(gap_analysis),
         }
 
-    def generate_recommendations(self, gap_analysis: Dict[str, Any]) -> List[str]:
+    def generate_recommendations(self, gap_analysis: dict[str, Any]) -> list[str]:
         """Generate recommendations based on gap analysis"""
 
         recommendations = []

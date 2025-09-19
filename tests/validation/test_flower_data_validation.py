@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Валидационные тесты для данных о цветах
@@ -30,13 +29,16 @@ class TestFlowerDataValidation(unittest.TestCase):
         # Проверяем наличие Parquet файлов с данными о цветах
         parquet_files = list(self.results_dir.glob("*.parquet"))
         self.assertGreater(
-            len(parquet_files), 0, "Не найдены Parquet файлы с данными о цветах"
+            len(parquet_files),
+            0,
+            "Не найдены Parquet файлы с данными о цветах",
         )
 
         # Проверяем наличие DuckDB базы
         duckdb_file = self.results_dir / "flowers_analytics.duckdb"
         self.assertTrue(
-            duckdb_file.exists(), "Не найдена DuckDB база с данными о цветах"
+            duckdb_file.exists(),
+            "Не найдена DuckDB база с данными о цветах",
         )
 
     def test_tc007_parquet_flower_data_quality(self):
@@ -55,7 +57,9 @@ class TestFlowerDataValidation(unittest.TestCase):
             if parquet_file.exists():
                 # Проверяем размер файла (должен быть > 0)
                 self.assertGreater(
-                    parquet_file.stat().st_size, 0, f"Файл {table}.parquet пустой"
+                    parquet_file.stat().st_size,
+                    0,
+                    f"Файл {table}.parquet пустой",
                 )
 
                 # Проверяем содержимое файла
@@ -64,7 +68,9 @@ class TestFlowerDataValidation(unittest.TestCase):
                 try:
                     df = pd.read_parquet(parquet_file)
                     self.assertGreater(
-                        len(df), 0, f"Таблица {table} не содержит данных"
+                        len(df),
+                        0,
+                        f"Таблица {table} не содержит данных",
                     )
 
                     # Проверяем наличие данных о цветах
@@ -105,7 +111,8 @@ class TestFlowerDataValidation(unittest.TestCase):
             for (table_name,) in tables:
                 result = conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()
                 self.assertIsNotNone(
-                    result, f"Не удалось получить результат для таблицы {table_name}"
+                    result,
+                    f"Не удалось получить результат для таблицы {table_name}",
                 )
                 if result is not None:
                     self.assertGreater(result[0], 0, f"Таблица {table_name} пустая")
@@ -115,8 +122,8 @@ class TestFlowerDataValidation(unittest.TestCase):
                     col[0] for col in conn.execute(f"DESCRIBE {table_name}").fetchall()
                 ]:
                     flower_query = f"""
-                    SELECT COUNT(*) FROM {table_name} 
-                    WHERE LOWER(content) LIKE '%роз%' 
+                    SELECT COUNT(*) FROM {table_name}
+                    WHERE LOWER(content) LIKE '%роз%'
                     OR LOWER(content) LIKE '%тюльпан%'
                     OR LOWER(content) LIKE '%хризантем%'
                     """
@@ -148,7 +155,7 @@ class TestFlowerDataValidation(unittest.TestCase):
         json_files = list(self.results_dir.glob("*.json"))
         for json_file in json_files:
             try:
-                with open(json_file, "r", encoding="utf-8") as f:
+                with open(json_file, encoding="utf-8") as f:
                     data = json.load(f)
 
                 # Ищем данные о цветах в содержимом
@@ -172,17 +179,21 @@ class TestFlowerDataValidation(unittest.TestCase):
         color_coverage = len(found_colors) / len(self.expected_colors)
 
         self.assertGreaterEqual(
-            flower_coverage, 0.5, f"Покрытие цветов {flower_coverage:.2%} < 50%"
+            flower_coverage,
+            0.5,
+            f"Покрытие цветов {flower_coverage:.2%} < 50%",
         )
         self.assertGreaterEqual(
-            color_coverage, 0.3, f"Покрытие цветов {color_coverage:.2%} < 30%"
+            color_coverage,
+            0.3,
+            f"Покрытие цветов {color_coverage:.2%} < 30%",
         )
 
         print(
-            f"Найдено цветов: {len(found_flowers)}/{len(self.expected_flowers)} ({flower_coverage:.2%})"
+            f"Найдено цветов: {len(found_flowers)}/{len(self.expected_flowers)} ({flower_coverage:.2%})",
         )
         print(
-            f"Найдено цветов: {len(found_colors)}/{len(self.expected_colors)} ({color_coverage:.2%})"
+            f"Найдено цветов: {len(found_colors)}/{len(self.expected_colors)} ({color_coverage:.2%})",
         )
 
     def test_flower_business_chain_validation(self):
@@ -196,7 +207,7 @@ class TestFlowerDataValidation(unittest.TestCase):
         for file_path in self.results_dir.rglob("*"):
             if file_path.is_file() and file_path.suffix in [".json", ".xml"]:
                 try:
-                    with open(file_path, "r", encoding="utf-8") as f:
+                    with open(file_path, encoding="utf-8") as f:
                         content = f.read().lower()
 
                     # Проверяем ключевые слова для разных этапов бизнеса

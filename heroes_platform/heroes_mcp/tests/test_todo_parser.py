@@ -5,18 +5,16 @@ Tests for Todo Parser Module
 Тесты для модуля парсинга todo файлов согласно TDD принципам.
 """
 
-import pytest
-from pathlib import Path
-from unittest.mock import Mock, patch
-import tempfile
-import json
-
 # Import the module to test
 import sys
+import tempfile
+from pathlib import Path
+
+import pytest
 
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
-from todo_parser import TodoParser, TodoValidator, TodoCriterion, TodoRelease
+from todo_parser import TodoCriterion, TodoParser, TodoRelease, TodoValidator
 
 
 class TestTodoCriterion:

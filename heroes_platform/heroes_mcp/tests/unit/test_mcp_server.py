@@ -4,7 +4,7 @@ Unit tests for MCP Server - Testing only implemented commands
 """
 
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -61,6 +61,7 @@ class TestHeroesMCPServer:
         assert result is not None
         # Parse JSON result
         import json
+
         data = json.loads(result)
         # Check for either "status" or "error" field
         assert "status" in data or "error" in data
@@ -70,11 +71,14 @@ class TestHeroesMCPServer:
         """Test standards_workflow_command get - real method"""
         import heroes_platform.heroes_mcp.src.heroes_mcp_server as mcp_server
 
-        result = await mcp_server.standards_workflow_command("get", name="test_standard")
+        result = await mcp_server.standards_workflow_command(
+            "get", name="test_standard"
+        )
 
         assert result is not None
         # Parse JSON result
         import json
+
         data = json.loads(result)
         # Check for either "status" or "error" field
         assert "status" in data or "error" in data
@@ -89,6 +93,7 @@ class TestHeroesMCPServer:
         assert result is not None
         # Parse JSON result
         import json
+
         data = json.loads(result)
         # Check for either "status" or "error" field
         assert "status" in data or "error" in data
@@ -103,6 +108,7 @@ class TestHeroesMCPServer:
         assert result is not None
         # Parse JSON result
         import json
+
         data = json.loads(result)
         # Check for either "status" or "error" field
         assert "status" in data or "error" in data
@@ -117,6 +123,7 @@ class TestHeroesMCPServer:
         assert result is not None
         # Parse JSON result
         import json
+
         data = json.loads(result)
         # Check for expected fields in common_mistakes_prevention response
         assert "domain" in data and "preventions" in data
@@ -197,12 +204,15 @@ class TestMCPServerIntegration:
         list_result = await mcp_server.standards_workflow_command("list")
         assert list_result is not None
         import json
+
         data = json.loads(list_result)
         # Check for either "status" or "error" field
         assert "status" in data or "error" in data
 
         # Test standards search
-        search_result = await mcp_server.standards_workflow_command("search", query="test")
+        search_result = await mcp_server.standards_workflow_command(
+            "search", query="test"
+        )
         assert search_result is not None
         data = json.loads(search_result)
         # Check for either "status" or "error" field

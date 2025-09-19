@@ -25,13 +25,16 @@ except ImportError:
 
 # Тестирование
 try:
-    from .tests.test_pdf_visual_quality import test_pdf_no_spacing_holes, test_pdf_proper_font_usage
+    from .tests.test_pdf_visual_quality import (
+        test_pdf_no_spacing_holes,
+        test_pdf_proper_font_usage,
+    )
 except ImportError:
     pass
 
 __all__ = [
-    'convert_md_to_pdf_refactored',
-    'convert_md_to_pdf_playwright',
-    'test_pdf_no_spacing_holes',
-    'test_pdf_proper_font_usage'
+    "convert_md_to_pdf_refactored",
+    "convert_md_to_pdf_playwright",
+    "test_pdf_no_spacing_holes",
+    "test_pdf_proper_font_usage",
 ]

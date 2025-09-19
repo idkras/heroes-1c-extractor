@@ -1,8 +1,7 @@
 import enum
 
-from sqlalchemy import ARRAY, TIMESTAMP, Column
+from sqlalchemy import ARRAY, TIMESTAMP, Column, ForeignKey, String, func
 from sqlalchemy import Enum as SQLAEnum
-from sqlalchemy import ForeignKey, String, func
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 

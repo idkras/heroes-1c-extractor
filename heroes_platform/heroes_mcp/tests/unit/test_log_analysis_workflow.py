@@ -9,26 +9,24 @@ Unit tests for LogAnalysisWorkflow
 - Тестирование граничных случаев
 """
 
-import pytest
-import tempfile
 import os
-from pathlib import Path
-from unittest.mock import patch, mock_open
 
 # Добавляем путь к workflows в sys.path
 import sys
-import os
+import tempfile
+
+import pytest
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "workflows"))
 
-import sys
 import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "workflows"))
 from log_analysis_workflow import (
-    LogAnalysisWorkflow,
     LogAnalysisInput,
     LogAnalysisResult,
+    LogAnalysisWorkflow,
 )
 
 

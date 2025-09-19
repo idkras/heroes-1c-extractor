@@ -1,4 +1,6 @@
 import json
+from collections.abc import AsyncGenerator
+
 from app.modules.intelligence.agents.chat_agents.adaptive_agent import AdaptiveAgent
 from app.modules.intelligence.agents.chat_agents.pydantic_agent import PydanticRagAgent
 from app.modules.intelligence.prompts.classification_prompts import AgentType
@@ -7,10 +9,10 @@ from app.modules.intelligence.provider.provider_service import (
     ProviderService,
 )
 from app.modules.intelligence.tools.tool_service import ToolService
-from ..crewai_agent import AgentConfig, CrewAIAgent, TaskConfig
-from ...chat_agent import ChatAgent, ChatAgentResponse, ChatContext
-from typing import AsyncGenerator, List
 from pydantic import BaseModel
+
+from ...chat_agent import ChatAgent, ChatAgentResponse, ChatContext
+from ..crewai_agent import AgentConfig, CrewAIAgent, TaskConfig
 
 
 class NodeContext(BaseModel):
@@ -73,7 +75,7 @@ class IntegrationTestAgent(ChatAgent):
 
         # Get graphs for each node to understand component relationships
         graphs = {}
-        all_node_contexts: List[NodeContext] = []
+        all_node_contexts: list[NodeContext] = []
 
         for node_id in ctx.node_ids:
             # Get the code graph for each node
@@ -85,7 +87,7 @@ class IntegrationTestAgent(ChatAgent):
             def extract_unique_node_contexts(node, visited=None):
                 if visited is None:
                     visited = set()
-                node_contexts: List[NodeContext] = []
+                node_contexts: list[NodeContext] = []
                 if node["id"] not in visited:
                     visited.add(node["id"])
                     node_contexts.append(
@@ -103,7 +105,7 @@ class IntegrationTestAgent(ChatAgent):
 
         # Remove duplicates while preserving order
         seen = set()
-        unique_node_contexts: List[NodeContext] = []
+        unique_node_contexts: list[NodeContext] = []
         for node in all_node_contexts:
             if node.node_id not in seen:
                 seen.add(node.node_id)

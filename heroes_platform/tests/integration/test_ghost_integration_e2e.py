@@ -8,12 +8,9 @@ FROM-THE-END Standard v2.9 Integration
 """
 
 import pytest
-import asyncio
-from unittest.mock import Mock, patch
-from pathlib import Path
 
-from src.integrations.ghost_cms.ghost_integration import GhostIntegration
 from src.integrations.ghost_cms.ghost_api_client import GhostAPIClient
+from src.integrations.ghost_cms.ghost_integration import GhostIntegration
 
 
 class TestGhostIntegrationE2E:
@@ -29,10 +26,10 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] Validate integration test setup
         print("REFLECTION: Setting up Ghost integration E2E test environment")
-        
+
         self.workflow = GhostIntegration()
         self.api_client = GhostAPIClient()
-        
+
         # [reflection] Check if components initialized properly
         assert self.workflow is not None, "Workflow not initialized"
         assert self.api_client is not None, "API client not initialized"
@@ -46,19 +43,19 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] Complete publication workflow test
         print("REFLECTION: Testing complete publication workflow")
-        
+
         # Test data
         analysis_data = {
             "command": "ghost_publish_analysis",
             "analysis_data": "<h1>Complete Workflow Test</h1><p>Testing complete publication workflow.</p>",
             "title": "Complete Workflow Test Analysis",
             "tags": ["workflow", "test", "integration"],
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         # Execute complete workflow
         result = await self.workflow.execute(analysis_data)
-        
+
         # [reflection] Validate complete workflow result
         assert result is not None, "Complete workflow should return result"
         print("REFLECTION: Complete publication workflow validated")
@@ -71,18 +68,18 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] Dual blog synchronization test
         print("REFLECTION: Testing dual blog synchronization")
-        
+
         # Test dual publishing
         document_data = {
             "command": "ghost_publish_document",
             "document_content": "<h1>Dual Sync Test</h1><p>Testing dual blog synchronization.</p>",
             "title": "Dual Sync Test Document",
             "document_type": "article",
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         result = await self.workflow.execute(document_data)
-        
+
         # [reflection] Validate dual synchronization
         assert result is not None, "Dual synchronization should return result"
         print("REFLECTION: Dual blog synchronization validated")
@@ -95,20 +92,22 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] Error recovery workflow test
         print("REFLECTION: Testing error recovery workflow")
-        
+
         # Test with invalid data
         invalid_data = {
             "command": "ghost_publish_analysis",
             "analysis_data": "",  # Invalid empty content
             "title": "",  # Invalid empty title
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         result = await self.workflow.execute(invalid_data)
-        
+
         # [reflection] Validate error recovery
         assert result is not None, "Error recovery should return result"
-        assert "error" in result or "success" in result, "Should handle errors gracefully"
+        assert "error" in result or "success" in result, (
+            "Should handle errors gracefully"
+        )
         print("REFLECTION: Error recovery workflow validated")
 
     @pytest.mark.asyncio
@@ -119,29 +118,31 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] Performance workflow test
         print("REFLECTION: Testing performance workflow")
-        
+
         import time
-        
+
         # Test performance with multiple operations
         start_time = time.time()
-        
+
         for i in range(3):
             test_data = {
                 "command": "ghost_publish_analysis",
                 "analysis_data": f"<h1>Performance Test {i}</h1><p>Performance test iteration {i}.</p>",
                 "title": f"Performance Test {i}",
                 "tags": ["performance", "test"],
-                "status": "draft"
+                "status": "draft",
             }
-            
+
             result = await self.workflow.execute(test_data)
             assert result is not None, f"Performance test {i} should return result"
-        
+
         end_time = time.time()
         execution_time = end_time - start_time
-        
+
         # [reflection] Validate performance
-        assert execution_time < 30.0, f"Performance test took {execution_time:.2f}s, should be <30s"
+        assert execution_time < 30.0, (
+            f"Performance test took {execution_time:.2f}s, should be <30s"
+        )
         print(f"REFLECTION: Performance workflow validated in {execution_time:.2f}s")
 
     @pytest.mark.asyncio
@@ -152,22 +153,22 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] Data persistence workflow test
         print("REFLECTION: Testing data persistence workflow")
-        
+
         # Test data saving
         test_post = {
             "title": "Persistence Test Post",
             "content": "Testing data persistence workflow.",
             "blog_type": "2025",
             "post_id": "persistence_test_id",
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         # Save data
         self.workflow._save_ghost_post(test_post)
-        
+
         # Load data
         loaded_posts = self.workflow._load_ghost_posts()
-        
+
         # [reflection] Validate data persistence
         assert isinstance(loaded_posts, list), "Loaded posts should be a list"
         print("REFLECTION: Data persistence workflow validated")
@@ -182,18 +183,18 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] AI QA integration workflow test
         print("REFLECTION: Starting AI QA integration workflow validation")
-        
+
         # Test complete workflow with AI QA checkpoints
         test_data = {
             "command": "ghost_publish_analysis",
             "analysis_data": "<h1>AI QA Integration Test</h1><p>Testing AI QA integration workflow.</p>",
             "title": "AI QA Integration Test",
             "tags": ["ai-qa", "integration", "test"],
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         result = await self.workflow.execute(test_data)
-        
+
         # [reflection] Validate AI QA integration
         assert result is not None, "AI QA integration should return result"
         print("REFLECTION: AI QA integration workflow validated")
@@ -207,28 +208,30 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] Artefact comparison challenge for integration
         print("REFLECTION: Starting artefact comparison challenge for integration")
-        
+
         # Define reference of truth for integration workflow
         reference_structure = {
             "workflow": object,
             "api_client": object,
             "success": bool,
-            "results": dict
+            "results": dict,
         }
-        
+
         # Test actual integration structure
         test_integration = {
             "workflow": self.workflow,
             "api_client": self.api_client,
             "success": True,
-            "results": {"test": "data"}
+            "results": {"test": "data"},
         }
-        
+
         # [reflection] Compare with reference
         for key, expected_type in reference_structure.items():
             assert key in test_integration, f"Missing key in integration: {key}"
-            assert isinstance(test_integration[key], expected_type), f"Wrong type for {key}"
-        
+            assert isinstance(test_integration[key], expected_type), (
+                f"Wrong type for {key}"
+            )
+
         print("REFLECTION: Artefact comparison challenge for integration completed")
 
     @pytest.mark.asyncio
@@ -239,18 +242,18 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] End-to-end integration validation
         print("REFLECTION: Starting end-to-end integration validation")
-        
+
         # Test complete integration flow
         test_data = {
             "command": "ghost_publish_analysis",
             "analysis_data": "<h1>E2E Integration Test</h1><p>End-to-end integration validation test.</p>",
             "title": "E2E Integration Test",
             "tags": ["e2e", "integration", "test"],
-            "status": "draft"
+            "status": "draft",
         }
-        
+
         result = await self.workflow.execute(test_data)
-        
+
         # [reflection] Validate end-to-end integration result
         assert result is not None, "E2E integration validation should return result"
         print("REFLECTION: End-to-end integration validation completed")
@@ -264,15 +267,19 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] Quality metrics validation for integration
         print("REFLECTION: Testing quality metrics compliance for integration")
-        
+
         # Test coverage validation
-        test_methods = [method for method in dir(self) if method.startswith('test_')]
-        assert len(test_methods) >= 8, "Should have at least 8 test methods for integration"
-        
+        test_methods = [method for method in dir(self) if method.startswith("test_")]
+        assert len(test_methods) >= 8, (
+            "Should have at least 8 test methods for integration"
+        )
+
         # Test integration component coverage
-        assert hasattr(self.workflow, 'execute'), "Workflow should have execute method"
-        assert hasattr(self.api_client, 'publish_post'), "API client should have publish_post method"
-        
+        assert hasattr(self.workflow, "execute"), "Workflow should have execute method"
+        assert hasattr(self.api_client, "publish_post"), (
+            "API client should have publish_post method"
+        )
+
         print("REFLECTION: Quality metrics compliance for integration validated")
 
     # 🔄 REFLECTION CHECKPOINT SUMMARY
@@ -284,7 +291,7 @@ class TestGhostIntegrationE2E:
         """
         # [reflection] Final reflection checkpoint for integration
         print("REFLECTION: Final reflection checkpoint for integration")
-        
+
         # Validate all reflection checkpoints passed
         reflection_points = [
             "test setup",
@@ -296,8 +303,10 @@ class TestGhostIntegrationE2E:
             "AI QA integration",
             "artefact comparison",
             "end-to-end validation",
-            "quality metrics"
+            "quality metrics",
         ]
-        
-        print(f"REFLECTION: All {len(reflection_points)} reflection checkpoints for integration validated")
+
+        print(
+            f"REFLECTION: All {len(reflection_points)} reflection checkpoints for integration validated"
+        )
         print("REFLECTION: Ghost integration E2E tests completed successfully")

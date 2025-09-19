@@ -4,13 +4,14 @@ Test script for Potpie integration with Heroes Platform
 """
 
 import asyncio
-import aiohttp
-import json
 import sys
 from pathlib import Path
 
+import aiohttp
+
 # Add heroes_platform to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
 
 class PotpieIntegrationTester:
     def __init__(self):
@@ -34,7 +35,9 @@ class PotpieIntegrationTester:
                     print("✅ Heroes Platform API is healthy")
                     return True
                 else:
-                    print(f"❌ Heroes Platform API health check failed: {response.status}")
+                    print(
+                        f"❌ Heroes Platform API health check failed: {response.status}"
+                    )
                     return False
         except Exception as e:
             print(f"❌ Heroes Platform API connection failed: {e}")
@@ -57,10 +60,14 @@ class PotpieIntegrationTester:
     async def test_potpie_available_agents(self):
         """Test Potpie available agents endpoint"""
         try:
-            async with self.session.get(f"{self.potpie_api_url}/api/v1/list-available-agents/?list_system_agents=true") as response:
+            async with self.session.get(
+                f"{self.potpie_api_url}/api/v1/list-available-agents/?list_system_agents=true"
+            ) as response:
                 if response.status == 200:
                     data = await response.json()
-                    print(f"✅ Potpie available agents: {len(data.get('agents', []))} agents found")
+                    print(
+                        f"✅ Potpie available agents: {len(data.get('agents', []))} agents found"
+                    )
                     return True
                 else:
                     print(f"❌ Potpie available agents check failed: {response.status}")
@@ -80,7 +87,9 @@ class PotpieIntegrationTester:
 
         # Test Potpie database
         try:
-            async with self.session.get(f"{self.potpie_api_url}/api/v1/health") as response:
+            async with self.session.get(
+                f"{self.potpie_api_url}/api/v1/health"
+            ) as response:
                 if response.status == 200:
                     print("✅ Potpie database connection is healthy")
                     return True
@@ -94,10 +103,9 @@ class PotpieIntegrationTester:
     async def test_integration_workflow(self):
         """Test basic integration workflow"""
         print("\n🔄 Testing integration workflow...")
-        
+
         # 1. Test Heroes Platform MCP tools
         try:
-            from heroes_platform.heroes_mcp.src.heroes_mcp_server import HeroesMCPServer
             print("✅ Heroes Platform MCP server can be imported")
         except Exception as e:
             print(f"❌ Heroes Platform MCP server import failed: {e}")
@@ -120,7 +128,7 @@ class PotpieIntegrationTester:
     async def run_all_tests(self):
         """Run all integration tests"""
         print("🧪 Starting Potpie Integration Tests...\n")
-        
+
         tests = [
             ("Heroes Platform Health", self.test_heroes_platform_health),
             ("Potpie Health", self.test_potpie_health),
@@ -128,7 +136,7 @@ class PotpieIntegrationTester:
             ("Database Connections", self.test_database_connections),
             ("Integration Workflow", self.test_integration_workflow),
         ]
-        
+
         results = []
         for test_name, test_func in tests:
             print(f"\n🔍 Testing: {test_name}")
@@ -138,21 +146,21 @@ class PotpieIntegrationTester:
             except Exception as e:
                 print(f"❌ Test {test_name} failed with exception: {e}")
                 results.append((test_name, False))
-        
+
         # Summary
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("📊 TEST SUMMARY")
-        print("="*50)
-        
+        print("=" * 50)
+
         passed = sum(1 for _, result in results if result)
         total = len(results)
-        
+
         for test_name, result in results:
             status = "✅ PASS" if result else "❌ FAIL"
             print(f"{status} {test_name}")
-        
+
         print(f"\n🎯 Results: {passed}/{total} tests passed")
-        
+
         if passed == total:
             print("🎉 All tests passed! Integration is working correctly.")
             return True
@@ -160,11 +168,13 @@ class PotpieIntegrationTester:
             print("⚠️  Some tests failed. Please check the configuration.")
             return False
 
+
 async def main():
     """Main test function"""
     async with PotpieIntegrationTester() as tester:
         success = await tester.run_all_tests()
         sys.exit(0 if success else 1)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

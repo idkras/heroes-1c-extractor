@@ -40,7 +40,9 @@ class TestDocumentAnalyzer:
 
         # Act
         result = self.analyzer.analyze_document_structure(
-            record_data, table_name, record_index
+            record_data,
+            table_name,
+            record_index,
         )
 
         # Assert
@@ -69,7 +71,9 @@ class TestDocumentAnalyzer:
 
         # Act
         result = self.analyzer.analyze_document_structure(
-            record_data, table_name, record_index
+            record_data,
+            table_name,
+            record_index,
         )
 
         # Assert
@@ -92,7 +96,9 @@ class TestDocumentAnalyzer:
 
         # Act
         result = self.analyzer.analyze_document_structure(
-            record_data, table_name, record_index
+            record_data,
+            table_name,
+            record_index,
         )
 
         # Assert
@@ -115,7 +121,9 @@ class TestDocumentAnalyzer:
 
         # Act
         result = self.analyzer.analyze_document_structure(
-            record_data, table_name, record_index
+            record_data,
+            table_name,
+            record_index,
         )
 
         # Assert

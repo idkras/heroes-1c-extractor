@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Optional, Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -14,7 +14,7 @@ class AttachmentInfo(BaseModel):
     file_size: int
     storage_path: Optional[str] = None  # Not exposed in API responses for security
     storage_provider: StorageProvider
-    file_metadata: Optional[Dict[str, Any]] = None
+    file_metadata: Optional[dict[str, Any]] = None
     created_at: datetime
     download_url: Optional[str] = None  # Signed URL for client access
 

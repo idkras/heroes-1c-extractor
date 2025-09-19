@@ -1,11 +1,10 @@
-from fastapi import Depends, Query
-from sqlalchemy.orm import Session
-
 from app.core.config_provider import config_provider
 from app.core.database import get_db
 from app.modules.auth.auth_service import AuthService
 from app.modules.code_provider.github.github_controller import GithubController
 from app.modules.utils.APIRouter import APIRouter
+from fastapi import Depends, Query
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 

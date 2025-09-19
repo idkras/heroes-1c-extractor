@@ -1,16 +1,14 @@
 import asyncio
-from typing import Dict, List
-
-from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, Field
 
 from app.modules.parsing.knowledge_graph.inference_schema import QueryResponse
 from app.modules.parsing.knowledge_graph.inference_service import InferenceService
 from app.modules.projects.projects_service import ProjectService
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
 
 
 class QueryRequest(BaseModel):
-    node_ids: List[str] = Field(description="A list of node ids to query")
+    node_ids: list[str] = Field(description="A list of node ids to query")
     project_id: str = Field(
         description="The project id metadata for the project being evaluated"
     )
@@ -20,7 +18,7 @@ class QueryRequest(BaseModel):
 
 
 class MultipleKnowledgeGraphQueriesInput(BaseModel):
-    queries: List[str] = Field(
+    queries: list[str] = Field(
         description="A list of natural language questions to ask the knowledge graph"
     )
     project_id: str = Field(
@@ -55,11 +53,11 @@ class KnowledgeGraphQueryTool:
         self.sql_db = sql_db
 
     async def ask_multiple_knowledge_graph_queries(
-        self, queries: List[QueryRequest]
-    ) -> Dict[str, str]:
+        self, queries: list[QueryRequest]
+    ) -> dict[str, str]:
         inference_service = InferenceService(self.sql_db, "dummy")
 
-        async def process_query(query_request: QueryRequest) -> List[QueryResponse]:
+        async def process_query(query_request: QueryRequest) -> list[QueryResponse]:
             # Call the query_vector_index method directly from InferenceService
             results = inference_service.query_vector_index(
                 query_request.project_id, query_request.query, query_request.node_ids
@@ -82,13 +80,13 @@ class KnowledgeGraphQueryTool:
         return results
 
     async def arun(
-        self, queries: List[str], project_id: str, node_ids: List[str] = []
-    ) -> Dict[str, str]:
+        self, queries: list[str], project_id: str, node_ids: list[str] = []
+    ) -> dict[str, str]:
         return await asyncio.to_thread(self.run, queries, project_id, node_ids)
 
     def run(
-        self, queries: List[str], project_id: str, node_ids: List[str] = []
-    ) -> Dict[str, str]:
+        self, queries: list[str], project_id: str, node_ids: list[str] = []
+    ) -> dict[str, str]:
         """
         Query the code knowledge graph using multiple natural language questions.
         The knowledge graph contains information about every function, class, and file in the codebase.

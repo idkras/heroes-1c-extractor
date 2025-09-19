@@ -2,17 +2,16 @@ import asyncio
 import logging
 import os
 import random
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import requests
+from app.core.config_provider import config_provider
 from github import Github
 from github.Auth import AppAuth
 from github.GithubException import UnknownObjectException
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-
-from app.core.config_provider import config_provider
 
 
 class GithubToolInput(BaseModel):
@@ -45,7 +44,7 @@ class GithubTool:
         Returns dictionary containing the issue/PR content, metadata, and success status.
         """
 
-    gh_token_list: List[str] = []
+    gh_token_list: list[str] = []
 
     @classmethod
     def initialize_tokens(cls):
@@ -70,7 +69,7 @@ class GithubTool:
         repo_name: str,
         issue_number: Optional[int] = None,
         is_pull_request: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         return await asyncio.to_thread(
             self.run, repo_name, issue_number, is_pull_request
         )
@@ -80,7 +79,7 @@ class GithubTool:
         repo_name: str,
         issue_number: Optional[int] = None,
         is_pull_request: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             repo_name = repo_name.strip('"')
             content = self._fetch_github_content(
@@ -146,7 +145,7 @@ class GithubTool:
 
     def _fetch_github_content(
         self, repo_name: str, issue_number: Optional[int], is_pull_request: bool
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[dict[str, Any]]:
         try:
             github = self._get_github_client(repo_name)
             repo = github.get_repo(repo_name)
