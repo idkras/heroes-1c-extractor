@@ -98,6 +98,9 @@ def test_auto_fix_script() -> bool:
         import importlib.util
 
         spec = importlib.util.spec_from_file_location("fix_linter_errors", script_file)
+        if spec is None or spec.loader is None:
+            print("❌ Не удалось загрузить модуль")
+            return False
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         print("✅ Скрипт fix_linter_errors.py работает корректно")

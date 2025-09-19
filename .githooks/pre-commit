@@ -20,12 +20,12 @@ echo "📁 Найдено измененных Python файлов: $(echo "$pyt
 for file in $python_files; do
     if [ -f "$file" ]; then
         echo "🔧 Исправление $file..."
-        
+
         # Запускаем ruff check с автоисправлением
         if command -v ruff >/dev/null 2>&1; then
             ruff check --fix "$file"
             ruff format "$file"
-            
+
             # Добавляем исправленный файл в индекс
             git add "$file"
         else

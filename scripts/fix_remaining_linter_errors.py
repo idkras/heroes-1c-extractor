@@ -231,7 +231,7 @@ def fix_datetime_usage(file_path: str) -> bool:
         return False
 
 
-def main():
+def main() -> bool:
     """Основная функция"""
     print("🔧 Исправление оставшихся ошибок линтера...")
 
@@ -301,6 +301,8 @@ def main():
 
     return error_count == 0
 
+
+# Удаляем дублированную функцию main
 
 if __name__ == "__main__":
     success = main()

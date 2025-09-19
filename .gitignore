@@ -118,3 +118,9 @@ tools/temp-tool1cd/
 tools/v8unpack/ 
 data/results/checkpoint__DOCUMENTJOURNAL5354_*.json
 temp/large_files/
+
+# Todo2 - AI-powered task management directories
+.cursor/rules/todo2-overview.mdc
+.cursor/rules/todo2.mdc
+.cursor/mcp.json
+.todo2/

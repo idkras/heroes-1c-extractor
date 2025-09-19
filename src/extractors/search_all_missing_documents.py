@@ -1,380 +1,208 @@
 #!/usr/bin/env python3
 
-import json
 import logging
 from datetime import datetime
 from typing import Any
 
-from onec_dtools.database_reader import DatabaseReader
-
-from src.utils.blob_utils import is_blob_field, safe_get_blob_content
+from src.extractors.base_extractor import BaseExtractor
 
 logger = logging.getLogger(__name__)
 
 
-def search_all_missing_documents() -> dict[str, Any] | None:
+class AllMissingDocumentsExtractor(BaseExtractor):
     """
     Поиск всех недостающих документов для JTBD сценариев
-    ЦЕЛЬ: Найти справочники, регистры, документы с цветами и типами букетов
+
+    JTBD:
+    Как система анализа недостающих данных, я хочу найти справочники, регистры, документы с цветами и типами букетов,
+    чтобы обеспечить полноту данных для JTBD сценариев.
     """
-    print("🔍 ПОИСК ВСЕХ НЕДОСТАЮЩИХ ДОКУМЕНТОВ")
-    print("🎯 ЦЕЛЬ: JTBD сценарии - цвета, типы букетов, склады, подразделения")
-    print("=" * 60)
 
-    try:
-        with open("raw/1Cv8.1CD", "rb") as f:
-            db = DatabaseReader(f)
+    def extract(self) -> dict[str, Any]:
+        """
+        Поиск всех недостающих документов для JTBD сценариев
+        ЦЕЛЬ: Найти справочники, регистры, документы с цветами и типами букетов
+        """
+        print("🔍 ПОИСК ВСЕХ НЕДОСТАЮЩИХ ДОКУМЕНТОВ")
+        print("🎯 ЦЕЛЬ: JTBD сценарии - цвета, типы букетов, склады, подразделения")
+        print("=" * 60)
 
-            print("✅ База данных открыта успешно!")
+        if self.db is None:
+            print("❌ База данных не открыта")
+            return {"error": "База данных не открыта"}
 
-            results: dict[str, Any] = {
-                "references": {},
-                "accumulation_registers": {},
-                "document_journals": {},
-                "keyword_search": {},
-                "metadata": {
-                    "extraction_date": datetime.now().isoformat(),
-                    "source_file": "raw/1Cv8.1CD",
-                    "total_tables": len(db.tables),
-                },
-            }
+        results: dict[str, Any] = {
+            "missing_documents": {},
+            "found_references": {},
+            "found_registers": {},
+            "jtbd_scenarios": {},
+            "metadata": {
+                "extraction_date": datetime.now().isoformat(),
+                "source_file": self.metadata["source_file"],
+                "total_tables": len(self.db.tables),
+            },
+        }
 
-            print("\n📊 Всего таблиц в базе: {len(db.tables):,}")
+        # JTBD ключевые слова для поиска
+        jtbd_keywords = {
+            "цвета": ["цвет", "красный", "белый", "розовый", "желтый", "синий"],
+            "букеты": [
+                "букет",
+                "композиция",
+                "аранжировка",
+                "свадебный",
+                "праздничный",
+            ],
+            "склады": ["склад", "хранилище", "холодильник", "температура"],
+            "подразделения": ["отдел", "подразделение", "магазин", "филиал"],
+            "поставщики": ["поставщик", "производитель", "ферма", "выращивание"],
+        }
 
-            # 1. ПОИСК СПРАВОЧНИКОВ
-            print("\n🔍 ЭТАП 1: Поиск справочников")
-            print("-" * 60)
+        # Получаем все типы таблиц
+        document_tables = self.get_document_tables()
+        reference_tables = self.get_reference_tables()
+        register_tables = self.get_register_tables()
 
-            reference_tables = {}
-            for table_name in db.tables.keys():
-                if table_name.startswith("_Reference"):
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        reference_tables[table_name] = len(table)
+        print(f"📄 Документы: {len(document_tables)}")
+        print(f"📚 Справочники: {len(reference_tables)}")
+        print(f"📊 Регистры: {len(register_tables)}")
 
-            print("📊 Найдено таблиц справочников: {len(reference_tables)}")
+        # Анализируем справочники на предмет JTBD данных
+        for table_name in reference_tables[:5]:  # Ограничиваем для тестирования
+            print(f"\n📚 Анализ справочника: {table_name}")
+            table = self.db.tables[table_name]
+            print(f"   📈 Всего записей: {len(table):,}")
 
-            # Анализируем все справочники
-            sorted_references = sorted(
-                reference_tables.items(),
-                key=lambda x: x[1],
-                reverse=True,
-            )
+            # Анализируем первые 20 записей
+            sample_size = min(20, len(table))
+            jtbd_matches = []
 
-            for i, (table_name, record_count) in enumerate(sorted_references):
-                print("\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
-
+            for i in range(sample_size):
                 try:
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        # Анализируем первые 3 записи
-                        sample_records = []
-                        blob_samples = []
+                    row = table[i]
+                    if not hasattr(row, "is_empty") or not row.is_empty:
+                        row_dict = row.as_dict() if hasattr(row, "as_dict") else {}
 
-                        for j in range(min(3, len(table))):
-                            try:
-                                record = table[j]
-                                if not record.is_empty:
-                                    record_data = record.as_dict()
-
-                                    # Ищем BLOB поля
-                                    for field_name, field_value in record_data.items():
-                                        if is_blob_field(field_value):
-                                            content = safe_get_blob_content(field_value)
-                                            if content and len(content) > 10:
-                                                blob_samples.append(
-                                                    {
-                                                        "field": field_name,
-                                                        "content": content[:200],
-                                                    },
-                                                )
-
-                                    # Сохраняем образец записи
-                                    sample_records.append(
-                                        {
-                                            "record_index": j,
-                                            "data": {
-                                                k: v
-                                                for k, v in record_data.items()
-                                                if not is_blob_field(v)
-                                            },
-                                        },
-                                    )
-
-                            except Exception as e:
-                                logger.warning(f"Ошибка при обработке BLOB: {e}")
-                                continue
-
-                        # Показываем образцы BLOB содержимого
-                        if blob_samples:
-                            print("    🔍 BLOB поля ({len(blob_samples)}):")
-                            for sample in blob_samples[:2]:
-                                print(
-                                    f"        📋 {sample['field']}: {sample['content']}...",
-                                )
-
-                        # Сохраняем информацию о справочнике
-                        ref_info = {
-                            "table_name": table_name,
-                            "record_count": record_count,
-                            "sample_records": sample_records,
-                            "blob_samples": blob_samples[:5],
-                        }
-                        results["references"][table_name] = ref_info
-
-                except Exception:
-                    print("    ⚠️ Ошибка анализа справочника: {e}")
-                    continue
-
-            # 2. ПОИСК РЕГИСТРОВ НАКОПЛЕНИЯ
-            print("\n🔍 ЭТАП 2: Поиск регистров накопления")
-            print("-" * 60)
-
-            accumulation_tables = {}
-            for table_name in db.tables.keys():
-                if table_name.startswith("_AccumRGT"):
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        accumulation_tables[table_name] = len(table)
-
-            print("📊 Найдено таблиц регистров накопления: {len(accumulation_tables)}")
-
-            # Анализируем все регистры накопления
-            sorted_accumulation = sorted(
-                accumulation_tables.items(),
-                key=lambda x: x[1],
-                reverse=True,
-            )
-
-            for i, (table_name, record_count) in enumerate(sorted_accumulation):
-                print("\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
-
-                try:
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        # Анализируем первые 2 записи
-                        sample_records = []
-
-                        for j in range(min(2, len(table))):
-                            try:
-                                record = table[j]
-                                if not record.is_empty:
-                                    record_data = record.as_dict()
-
-                                    # Сохраняем образец записи
-                                    sample_records.append(
-                                        {
-                                            "record_index": j,
-                                            "data": {
-                                                k: v
-                                                for k, v in record_data.items()
-                                                if not is_blob_field(v)
-                                            },
-                                        },
-                                    )
-
-                            except Exception as e:
-                                logger.warning(f"Ошибка при обработке BLOB: {e}")
-                                continue
-
-                        # Сохраняем информацию о регистре
-                        acc_info = {
-                            "table_name": table_name,
-                            "record_count": record_count,
-                            "sample_records": sample_records,
-                        }
-                        results["accumulation_registers"][table_name] = acc_info
-
-                except Exception:
-                    print("    ⚠️ Ошибка анализа регистра: {e}")
-                    continue
-
-            # 3. ПОИСК ДОКУМЕНТОВ ПО КЛЮЧЕВЫМ СЛОВАМ JTBD
-            print("\n🔍 ЭТАП 3: Поиск документов по ключевым словам JTBD")
-            print("-" * 60)
-
-            # Ключевые слова для JTBD сценариев
-            jtbd_keywords = {
-                "цвет": [
-                    "цвет",
-                    "розовый",
-                    "голубой",
-                    "красный",
-                    "белый",
-                    "желтый",
-                    "синий",
-                ],
-                "букет": [
-                    "букет",
-                    "флористический",
-                    "композиция",
-                    "моно",
-                    "яндекс букет",
-                ],
-                "склад": ["склад", "братиславский", "045", "подразделение", "магазин"],
-                "канал": [
-                    "яндекс маркет",
-                    "яндекс директ",
-                    "яндекс-еда",
-                    "интернет магазин",
-                ],
-                "качество": [
-                    "качество",
-                    "брак",
-                    "дефект",
-                    "некондиция",
-                    "стандарт",
-                    "премиум",
-                ],
-            }
-
-            # Поиск по всем таблицам документов
-            document_tables = {}
-            for table_name in db.tables.keys():
-                if table_name.startswith("_DOCUMENT"):
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        document_tables[table_name] = len(table)
-
-            print("📊 Анализируем {len(document_tables)} таблиц документов...")
-
-            keyword_results: dict[str, list[dict[str, Any]]] = {
-                keyword: [] for keyword in jtbd_keywords
-            }
-
-            # Анализируем топ-50 таблиц документов
-            sorted_documents = sorted(
-                document_tables.items(),
-                key=lambda x: x[1],
-                reverse=True,
-            )
-
-            for i, (table_name, record_count) in enumerate(sorted_documents[:50]):
-                if i % 10 == 0:
-                    print(
-                        f"    📊 Обработано таблиц: {i}/{min(50, len(sorted_documents))}",
-                    )
-
-                try:
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        # Анализируем первые 3 записи
-                        found_keywords = set()
-
-                        for j in range(min(3, len(table))):
-                            try:
-                                record = table[j]
-                                if not record.is_empty:
-                                    record_data = record.as_dict()
-
-                                    # Ищем ключевые слова в BLOB полях
-                                    for field_name, field_value in record_data.items():
-                                        if is_blob_field(field_value):
-                                            content = safe_get_blob_content(field_value)
-                                            if content and len(content) > 10:
-                                                # Ищем ключевые слова
-                                                for (
-                                                    keyword,
-                                                    variations,
-                                                ) in jtbd_keywords.items():
-                                                    for variation in variations:
-                                                        if (
-                                                            variation.lower()
-                                                            in content.lower()
-                                                        ):
-                                                            found_keywords.add(keyword)
-                                                            keyword_results[
-                                                                keyword
-                                                            ].append(
-                                                                {
-                                                                    "table_name": table_name,
-                                                                    "record_count": record_count,
-                                                                    "field_name": field_name,
-                                                                    "content_sample": content[
-                                                                        :200
-                                                                    ],
-                                                                },
-                                                            )
-
-                                    # Ищем в обычных полях
-                                    for field_name, field_value in record_data.items():
-                                        if not is_blob_field(field_value):
-                                            field_str = str(field_value).lower()
-                                            for (
-                                                keyword,
-                                                variations,
-                                            ) in jtbd_keywords.items():
-                                                for variation in variations:
-                                                    if variation.lower() in field_str:
-                                                        found_keywords.add(keyword)
-                                                        keyword_results[keyword].append(
-                                                            {
-                                                                "table_name": table_name,
-                                                                "record_count": record_count,
-                                                                "field_name": field_name,
-                                                                "content_sample": str(
-                                                                    field_value,
-                                                                ),
-                                                            },
-                                                        )
-
-                            except Exception as e:
-                                logger.warning(f"Ошибка при обработке BLOB: {e}")
-                                continue
-
-                        # Показываем найденные ключевые слова
-                        if found_keywords:
-                            print("    🎯 {table_name}: {', '.join(found_keywords)}")
+                        # Ищем JTBD ключевые слова
+                        for field_name, value in row_dict.items():
+                            if isinstance(value, str):
+                                for category, keywords in jtbd_keywords.items():
+                                    for keyword in keywords:
+                                        if keyword.lower() in value.lower():
+                                            jtbd_matches.append(
+                                                {
+                                                    "table_name": table_name,
+                                                    "field_name": field_name,
+                                                    "category": category,
+                                                    "keyword": keyword,
+                                                    "content": (
+                                                        value[:200] + "..."
+                                                        if len(value) > 200
+                                                        else value
+                                                    ),
+                                                    "row_index": i,
+                                                },
+                                            )
 
                 except Exception as e:
-                    logger.warning(f"Ошибка при обработке таблицы: {e}")
+                    logger.warning(
+                        f"Ошибка обработки записи {i} в таблице {table_name}: {e}",
+                    )
                     continue
 
-            # Показываем результаты поиска по ключевым словам
-            print("\n📊 РЕЗУЛЬТАТЫ ПОИСКА ПО КЛЮЧЕВЫМ СЛОВАМ:")
-            print("-" * 60)
+            if jtbd_matches:
+                results["found_references"][table_name] = {
+                    "total_records": len(table),
+                    "jtbd_matches": jtbd_matches[:10],  # Первые 10 совпадений
+                    "categories": list(
+                        set(match["category"] for match in jtbd_matches),
+                    ),
+                }
+                print(f"   ✅ Найдено {len(jtbd_matches)} JTBD совпадений")
 
-            for keyword, matches in keyword_results.items():
-                if matches:
-                    print("\n🎯 {keyword.upper()}: найдено {len(matches)} совпадений")
-                    for match in matches[:3]:  # Показываем первые 3
-                        print(
-                            f"    📋 {match['table_name']} ({match['record_count']:,} записей)",
-                        )
-                        print("        📋 Поле: {match['field_name']}")
-                        print("        📋 Образец: {match['content_sample']}...")
-                else:
-                    print("\n❌ {keyword.upper()}: не найдено")
+        # Анализируем регистры на предмет JTBD данных
+        for table_name in register_tables[:3]:  # Ограничиваем для тестирования
+            print(f"\n📊 Анализ регистра: {table_name}")
+            table = self.db.tables[table_name]
+            print(f"   📈 Всего записей: {len(table):,}")
 
-            # Сохраняем результаты поиска по ключевым словам
-            results["keyword_search"] = keyword_results
+            # Анализируем первые 10 записей
+            sample_size = min(10, len(table))
+            register_matches = []
 
-            # Сохраняем все результаты
-            with open(
-                "all_missing_documents_search.json",
-                "w",
-                encoding="utf-8",
-            ) as file:
-                json.dump(results, file, ensure_ascii=False, indent=2, default=str)
+            for i in range(sample_size):
+                try:
+                    row = table[i]
+                    if not hasattr(row, "is_empty") or not row.is_empty:
+                        row_dict = row.as_dict() if hasattr(row, "as_dict") else {}
 
-            print("\n✅ Результаты сохранены в all_missing_documents_search.json")
+                        # Ищем JTBD ключевые слова в регистрах
+                        for field_name, value in row_dict.items():
+                            if isinstance(value, str):
+                                for category, keywords in jtbd_keywords.items():
+                                    for keyword in keywords:
+                                        if keyword.lower() in value.lower():
+                                            register_matches.append(
+                                                {
+                                                    "table_name": table_name,
+                                                    "field_name": field_name,
+                                                    "category": category,
+                                                    "keyword": keyword,
+                                                    "content": (
+                                                        value[:200] + "..."
+                                                        if len(value) > 200
+                                                        else value
+                                                    ),
+                                                    "row_index": i,
+                                                },
+                                            )
 
-            # Итоговая статистика
-            print("\n📊 ИТОГОВАЯ СТАТИСТИКА:")
-            print("    📋 Справочники: {len(results['references'])} типов")
-            print(
-                f"    📋 Регистры накопления: {len(results['accumulation_registers'])} типов",
-            )
-            print(
-                f"    🔍 Ключевые слова найдены: {sum(1 for v in keyword_results.values() if v)} из {len(jtbd_keywords)}",
-            )
+                except Exception as e:
+                    logger.warning(
+                        f"Ошибка обработки записи {i} в таблице {table_name}: {e}",
+                    )
+                    continue
 
-            return results
+            if register_matches:
+                results["found_registers"][table_name] = {
+                    "total_records": len(table),
+                    "jtbd_matches": register_matches[:5],  # Первые 5 совпадений
+                    "categories": list(
+                        set(match["category"] for match in register_matches),
+                    ),
+                }
+                print(f"   ✅ Найдено {len(register_matches)} JTBD совпадений")
 
-    except Exception:
-        print("❌ Ошибка: {e}")
-        return None
+        # Создаем сводку JTBD сценариев
+        all_categories = set()
+        for ref_data in results["found_references"].values():
+            all_categories.update(ref_data.get("categories", []))
+        for reg_data in results["found_registers"].values():
+            all_categories.update(reg_data.get("categories", []))
+
+        results["jtbd_scenarios"] = {
+            "found_categories": list(all_categories),
+            "total_references": len(results["found_references"]),
+            "total_registers": len(results["found_registers"]),
+            "coverage_analysis": {
+                "цвета": "найдено" if "цвета" in all_categories else "не найдено",
+                "букеты": "найдено" if "букеты" in all_categories else "не найдено",
+                "склады": "найдено" if "склады" in all_categories else "не найдено",
+                "подразделения": (
+                    "найдено" if "подразделения" in all_categories else "не найдено"
+                ),
+                "поставщики": (
+                    "найдено" if "поставщики" in all_categories else "не найдено"
+                ),
+            },
+        }
+
+        return results
 
 
-if __name__ == "__main__":
-    search_all_missing_documents()
+def search_all_missing_documents() -> dict[str, Any]:
+    """
+    Функция-обертка для обратной совместимости
+    """
+    extractor = AllMissingDocumentsExtractor()
+    return extractor.run()

@@ -109,19 +109,52 @@ tags: standard, 1c, extraction, prostocvet
 
 ## 🔧 СПОСОБЫ ИЗВЛЕЧЕНИЯ ДАННЫХ
 
-### 1. Библиотека onec_dtools
+### 1. Библиотека onec_dtools (ОБНОВЛЕНО)
 **Основной инструмент** для работы с 1CD файлами:
+
+#### **ОФИЦИАЛЬНЫЙ РЕПОЗИТОРИЙ: Изучи основные моменты, когда читаешь этот документ! Что там есть важного, что мы делаем неверно в коде?**
+- **GitHub**: [https://github.com/Infactum/onec_dtools](https://github.com/Infactum/onec_dtools)
+
+
 
 #### **УСТАНОВКА И НАСТРОЙКА:**
 ```bash
 # Установка библиотеки
-pip3 install onec-dtools
+pip install onec_dtools
 
 # Проверка установки
 python3 -c "import onec_dtools; print('onec_dtools works!')"
 
 # Если не работает, добавить путь к библиотеке
 export PYTHONPATH="/Users/ilyakrasinsky/Library/Python/3.9/lib/python/site-packages:$PYTHONPATH"
+```
+
+#### **НОВЫЕ МЕТОДЫ BLOB ИЗВЛЕЧЕНИЯ:**
+```python
+# Правильное извлечение BLOB данных с использованием onec_dtools
+def extract_blob_with_onec_dtools(blob_obj):
+    """
+    ИСПРАВЛЕННОЕ извлечение BLOB с использованием onec_dtools
+    """
+    try:
+        if hasattr(blob_obj, "value"):
+            content = blob_obj.value
+            if isinstance(content, bytes):
+                # UTF-16 для NT полей (стандарт 1С)
+                try:
+                    return content.decode("utf-16")
+                except UnicodeDecodeError:
+                    # Fallback на UTF-8, CP1251
+                    for encoding in ["utf-8", "cp1251"]:
+                        try:
+                            return content.decode(encoding)
+                        except UnicodeDecodeError:
+                            continue
+                    return content.hex()
+            return str(content)
+    except Exception as e:
+        return f"Ошибка: {e}"
+    return None
 ```
 
 #### **ИСПОЛЬЗОВАНИЕ:**
@@ -237,11 +270,11 @@ def enhanced_safe_get_blob_content(blob_obj):
                 return ""  # Пустой BLOB
             elif blob_size > 100 * 1024 * 1024:  # 100MB
                 return f"BLOB слишком большой: {blob_size} байт"
-        
+
         # Получаем значение BLOB
         if hasattr(blob_obj, "value"):
             blob_value = blob_obj.value
-            
+
             # Обрабатываем в зависимости от типа данных
             if isinstance(blob_value, bytes):
                 # Для бинарных данных пробуем UTF-16 (стандарт для NT полей)
@@ -251,7 +284,7 @@ def enhanced_safe_get_blob_content(blob_obj):
                         return content
                 except UnicodeDecodeError:
                     pass
-                
+
                 # Если UTF-16 не сработал, пробуем другие кодировки
                 for encoding in ["utf-8", "cp1251", "latin1"]:
                     try:
@@ -260,24 +293,24 @@ def enhanced_safe_get_blob_content(blob_obj):
                             return content
                     except UnicodeDecodeError:
                         continue
-                
+
                 # Если все кодировки не сработали, используем hex
                 return blob_value.hex()
-                
+
             elif isinstance(blob_value, str):
                 # Для строковых данных
                 if blob_value and len(blob_value.strip()) > 0:
                     return blob_value
-                    
+
             else:
                 # Для других типов конвертируем в строку
                 content = str(blob_value)
                 if content and len(content.strip()) > 0:
                     return content
-                    
+
     except Exception as e:
         return f"Ошибка чтения BLOB: {e}"
-    
+
     return None
 ```
 
@@ -298,6 +331,62 @@ result = extractor.extract_blob_content(blob_obj, "flower")
 # - quality_score: оценка качества (0.0-1.0)
 # - errors: список ошибок
 # - metadata: дополнительная информация
+```
+
+---
+
+## 🔧 BLOBPROCESSOR - ЦЕНТРАЛИЗОВАННАЯ ОБРАБОТКА BLOB
+
+### Назначение:
+Централизованная обработка всех BLOB полей в 1С с использованием onec_dtools.
+
+### Архитектура:
+```python
+class BlobProcessor:
+    """
+    Централизованный процессор BLOB данных
+    """
+    def __init__(self):
+        self.extraction_methods = [
+            "onec_dtools_utf16",
+            "onec_dtools_utf8", 
+            "onec_dtools_cp1251",
+            "fallback_hex"
+        ]
+    
+    def extract_blob_content(self, blob_obj, context="", field_name=""):
+        """
+        Извлечение BLOB с множественными методами
+        """
+        # Реализация с onec_dtools
+```
+
+### Интеграция с BaseExtractor:
+```python
+# В BaseExtractor
+from src.utils.blob_processor import BlobProcessor
+
+class BaseExtractor:
+    def __init__(self):
+        self.blob_processor = BlobProcessor()
+    
+    def process_blob_field(self, blob_obj, field_name):
+        return self.blob_processor.extract_blob_content(blob_obj, field_name)
+```
+
+### Методы извлечения:
+1. **onec_dtools_utf16** - UTF-16 декодирование (стандарт NT полей)
+2. **onec_dtools_utf8** - UTF-8 декодирование
+3. **onec_dtools_cp1251** - CP1251 декодирование (русские тексты)
+4. **fallback_hex** - Hex представление для бинарных данных
+
+### Статистика и мониторинг:
+```python
+# Получение статистики
+stats = blob_processor.get_stats()
+print(f"Успешность: {stats['success_rate']:.1f}%")
+print(f"Методы: {stats['method_usage']}")
+print(f"Кодировки: {stats['encoding_stats']}")
 ```
 
 ---

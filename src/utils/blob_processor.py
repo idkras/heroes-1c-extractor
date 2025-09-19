@@ -6,8 +6,8 @@ BlobProcessor - централизованная обработка BLOB пол�
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Union
 from datetime import datetime
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +17,10 @@ class BlobExtractionResult:
     Результат извлечения BLOB данных
     """
 
-    def __init__(self, data: Dict[str, Any]):
+    def __init__(self, data: dict[str, Any]):
         self.field_name = data.get("field_name", "")
         self.context = data.get("context", "")
-        self.content = data.get("content", None)
+        self.content = data.get("content")
         self.content_type = data.get("content_type", "unknown")
         self.content_length = data.get("content_length", 0)
         self.quality_score = data.get("quality_score", 0.0)
@@ -28,7 +28,7 @@ class BlobExtractionResult:
         self.metadata = data.get("metadata", {})
         self.extraction_methods = data.get("extraction_methods", [])
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Преобразование в словарь"""
         return {
             "field_name": self.field_name,
@@ -64,7 +64,7 @@ class BlobProcessor:
             "fallback_hex",
         ]
 
-        self.stats: Dict[str, Any] = {
+        self.stats: dict[str, Any] = {
             "total_processed": 0,
             "successful_extractions": 0,
             "failed_extractions": 0,
@@ -73,7 +73,10 @@ class BlobProcessor:
         }
 
     def extract_blob_content(
-        self, blob_obj: Any, context: str = "", field_name: str = ""
+        self,
+        blob_obj: Any,
+        context: str = "",
+        field_name: str = "",
     ) -> BlobExtractionResult:
         """
         Извлечение BLOB содержимого с множественными методами
@@ -88,7 +91,7 @@ class BlobProcessor:
         """
         self.stats["total_processed"] += 1
 
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "field_name": field_name,
             "context": context,
             "extraction_methods": [],
@@ -116,7 +119,7 @@ class BlobProcessor:
                     result["quality_score"] = 0.0
                     result["extraction_methods"].append("empty_blob")
                     return BlobExtractionResult(result)
-                elif blob_size > 100 * 1024 * 1024:  # 100MB
+                if blob_size > 100 * 1024 * 1024:  # 100MB
                     result["errors"].append(f"BLOB слишком большой: {blob_size} байт")
                     result["content"] = f"BLOB слишком большой: {blob_size} байт"
                     result["content_type"] = "oversized"
@@ -159,14 +162,15 @@ class BlobProcessor:
                                 result["content_length"] = len(content)
                                 result["quality_score"] = 0.8
                                 result["extraction_methods"].append(
-                                    f"onec_dtools_{encoding}"
+                                    f"onec_dtools_{encoding}",
                                 )
                                 self.stats["successful_extractions"] += 1
                                 self.stats["method_usage"][
                                     f"onec_dtools_{encoding}"
                                 ] = (
                                     self.stats["method_usage"].get(
-                                        f"onec_dtools_{encoding}", 0
+                                        f"onec_dtools_{encoding}",
+                                        0,
                                     )
                                     + 1
                                 )
@@ -189,7 +193,7 @@ class BlobProcessor:
                     )
                     return BlobExtractionResult(result)
 
-                elif isinstance(blob_value, str):
+                if isinstance(blob_value, str):
                     # Для строковых данных
                     if blob_value and len(blob_value.strip()) > 0:
                         result["content"] = blob_value
@@ -248,21 +252,24 @@ class BlobProcessor:
         """
         try:
             # Проверяем типы, которые могут быть BLOB
-            if isinstance(field_value, bytes):
-                return True
-            elif hasattr(field_value, "value") and isinstance(field_value.value, bytes):
-                return True
-            elif hasattr(field_value, "__iter__") and not isinstance(
-                field_value, (str, int, float, bool)
+            if isinstance(field_value, bytes) or (
+                hasattr(field_value, "value") and isinstance(field_value.value, bytes)
             ):
                 return True
-            else:
-                return False
+            if hasattr(field_value, "__iter__") and not isinstance(
+                field_value,
+                (str, int, float, bool),
+            ):
+                return True
+            return False
         except Exception:
             return False
 
     def safe_get_blob_content(
-        self, blob_obj: Any, context: str = "", field_name: str = ""
+        self,
+        blob_obj: Any,
+        context: str = "",
+        field_name: str = "",
     ) -> BlobExtractionResult:
         """
         Безопасное извлечение BLOB содержимого с обработкой ошибок
@@ -294,7 +301,7 @@ class BlobProcessor:
             }
             return BlobExtractionResult(error_data)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """
         Получение статистики обработки
 
@@ -327,8 +334,10 @@ class BlobProcessor:
         }
 
     def process_multiple_blobs(
-        self, blob_objects: List[Any], context: str = ""
-    ) -> List[Dict[str, Any]]:
+        self,
+        blob_objects: list[Any],
+        context: str = "",
+    ) -> list[dict[str, Any]]:
         """
         Обработка множественных BLOB объектов
 
@@ -348,7 +357,7 @@ class BlobProcessor:
 
         return results
 
-    def analyze_blob_quality(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def analyze_blob_quality(self, results: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Анализ качества извлечения BLOB данных
 
@@ -361,7 +370,7 @@ class BlobProcessor:
         total_results = len(results)
         successful_results = sum(1 for r in results if r["quality_score"] > 0)
 
-        quality_analysis: Dict[str, Any] = {
+        quality_analysis: dict[str, Any] = {
             "total_blobs": total_results,
             "successful_blobs": successful_results,
             "success_rate": (
