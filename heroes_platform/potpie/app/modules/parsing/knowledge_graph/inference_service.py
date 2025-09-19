@@ -2,13 +2,9 @@ import asyncio
 import logging
 import os
 import re
-from typing import Dict, List, Optional
+from typing import Optional
 
 import tiktoken
-from neo4j import GraphDatabase
-from sentence_transformers import SentenceTransformer
-from sqlalchemy.orm import Session
-
 from app.core.config_provider import config_provider
 from app.modules.intelligence.provider.provider_service import (
     ProviderService,
@@ -19,6 +15,9 @@ from app.modules.parsing.knowledge_graph.inference_schema import (
 )
 from app.modules.projects.projects_service import ProjectService
 from app.modules.search.search_service import SearchService
+from neo4j import GraphDatabase
+from sentence_transformers import SentenceTransformer
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +80,7 @@ class InferenceService:
             encoding = tiktoken.get_encoding("cl100k_base")
         return len(encoding.encode(string, disallowed_special=set()))
 
-    def fetch_graph(self, repo_id: str) -> List[Dict]:
+    def fetch_graph(self, repo_id: str) -> list[dict]:
         batch_size = 500
         all_nodes = []
         with self.driver.session() as session:
@@ -103,7 +102,7 @@ class InferenceService:
         logger.info(f"DEBUGNEO4J: Fetched {len(all_nodes)} nodes for repo {repo_id}")
         return all_nodes
 
-    def get_entry_points(self, repo_id: str) -> List[str]:
+    def get_entry_points(self, repo_id: str) -> list[str]:
         batch_size = 400  # Define the batch size
         all_entry_points = []
         with self.driver.session() as session:
@@ -165,8 +164,8 @@ class InferenceService:
             return all_nodes_info
 
     def get_entry_points_for_nodes(
-        self, node_ids: List[str], repo_id: str
-    ) -> Dict[str, List[str]]:
+        self, node_ids: list[str], repo_id: str
+    ) -> dict[str, list[str]]:
         with self.driver.session() as session:
             result = session.run(
                 """
@@ -191,15 +190,15 @@ class InferenceService:
             }
 
     def batch_nodes(
-        self, nodes: List[Dict], max_tokens: int = 16000, model: str = "gpt-4"
-    ) -> List[List[DocstringRequest]]:
+        self, nodes: list[dict], max_tokens: int = 16000, model: str = "gpt-4"
+    ) -> list[list[DocstringRequest]]:
         batches = []
         current_batch = []
         current_tokens = 0
         node_dict = {node["node_id"]: node for node in nodes}
 
         def replace_referenced_text(
-            text: str, node_dict: Dict[str, Dict[str, str]]
+            text: str, node_dict: dict[str, dict[str, str]]
         ) -> str:
             pattern = r"Code replaced for brevity\. See node_id ([a-f0-9]+)"
             regex = re.compile(pattern)
@@ -255,8 +254,8 @@ class InferenceService:
     async def generate_docstrings_for_entry_points(
         self,
         all_docstrings,
-        entry_points_neighbors: Dict[str, List[str]],
-    ) -> Dict[str, DocstringResponse]:
+        entry_points_neighbors: dict[str, list[str]],
+    ) -> dict[str, DocstringResponse]:
         docstring_lookup = {
             d.node_id: d.docstring for d in all_docstrings["docstrings"]
         }
@@ -303,11 +302,11 @@ class InferenceService:
 
     def batch_entry_points(
         self,
-        entry_points_neighbors: Dict[str, List[str]],
-        docstring_lookup: Dict[str, str],
+        entry_points_neighbors: dict[str, list[str]],
+        docstring_lookup: dict[str, str],
         max_tokens: int = 16000,
         model: str = "gpt-4",
-    ) -> List[List[Dict[str, str]]]:
+    ) -> list[list[dict[str, str]]]:
         batches = []
         current_batch = []
         current_tokens = 0
@@ -347,7 +346,7 @@ class InferenceService:
         return batches
 
     async def generate_entry_point_response(
-        self, batch: List[Dict[str, str]]
+        self, batch: list[dict[str, str]]
     ) -> DocstringResponse:
         prompt = """
         You are an expert software architect with deep knowledge of distributed systems and cloud-native applications. Your task is to analyze entry points and their function flows in a codebase.
@@ -402,7 +401,7 @@ class InferenceService:
             logger.error(f"Entry point response generation failed: {e}")
             return DocstringResponse(docstrings=[])
 
-    async def generate_docstrings(self, repo_id: str) -> Dict[str, DocstringResponse]:
+    async def generate_docstrings(self, repo_id: str) -> dict[str, DocstringResponse]:
         logger.info(
             f"DEBUGNEO4J: Function: {self.generate_docstrings.__name__}, Repo ID: {repo_id}"
         )
@@ -486,7 +485,7 @@ class InferenceService:
         return updated_docstrings
 
     async def generate_response(
-        self, batch: List[DocstringRequest], repo_id: str
+        self, batch: list[DocstringRequest], repo_id: str
     ) -> DocstringResponse:
         base_prompt = """
         You are a senior software engineer with expertise in code analysis and documentation. Your task is to generate concise docstrings for each code snippet and tagging it based on its purpose. Approach this task methodically, following these steps:
@@ -589,7 +588,7 @@ class InferenceService:
         )
         return result
 
-    def generate_embedding(self, text: str) -> List[float]:
+    def generate_embedding(self, text: str) -> list[float]:
         embedding = self.embedding_model.encode(text)
         return embedding.tolist()
 
@@ -649,9 +648,9 @@ class InferenceService:
         self,
         project_id: str,
         query: str,
-        node_ids: Optional[List[str]] = None,
+        node_ids: Optional[list[str]] = None,
         top_k: int = 5,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         embedding = self.generate_embedding(query)
 
         with self.driver.session() as session:

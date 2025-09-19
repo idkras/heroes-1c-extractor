@@ -4,29 +4,28 @@ import os
 import random
 import re
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 import aiohttp
 import chardet
 import git
 import requests
-from fastapi import HTTPException
-from github import Github
-from github.Auth import AppAuth
-from sqlalchemy import func
-from sqlalchemy.orm import Session
-from redis import Redis
-
 from app.core.config_provider import config_provider
 from app.modules.projects.projects_model import Project
 from app.modules.projects.projects_service import ProjectService
 from app.modules.users.user_model import User
+from fastapi import HTTPException
+from github import Github
+from github.Auth import AppAuth
+from redis import Redis
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
 
 class GithubService:
-    gh_token_list: List[str] = []
+    gh_token_list: list[str] = []
 
     @classmethod
     def initialize_tokens(cls):
@@ -51,7 +50,7 @@ class GithubService:
         self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
         self.is_development_mode = config_provider.get_is_development_mode()
 
-    def get_github_repo_details(self, repo_name: str) -> Tuple[Github, Dict, str]:
+    def get_github_repo_details(self, repo_name: str) -> tuple[Github, dict, str]:
         private_key = (
             "-----BEGIN RSA PRIVATE KEY-----\n"
             + config_provider.get_github_key()
@@ -202,7 +201,7 @@ class GithubService:
             raise HTTPException(status_code=404, detail="User not found")
         return user.provider_info["access_token"]
 
-    def _parse_link_header(self, link_header: str) -> Dict[str, str]:
+    def _parse_link_header(self, link_header: str) -> dict[str, str]:
         """Parse GitHub Link header to extract pagination URLs."""
         links = {}
         if not link_header:
@@ -542,7 +541,7 @@ class GithubService:
         token = random.choice(cls.gh_token_list)
         return Github(token)
 
-    def get_repo(self, repo_name: str) -> Tuple[Github, Any]:
+    def get_repo(self, repo_name: str) -> tuple[Github, Any]:
         try:
             # Try authenticated access first
             github, _, _ = self.get_github_repo_details(repo_name)
@@ -644,7 +643,7 @@ class GithubService:
         current_depth: int = 0,
         base_path: Optional[str] = None,
         ref: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         exclude_extensions = [
             "png",
             "jpg",
@@ -737,7 +736,7 @@ class GithubService:
         return structure
 
     def _format_tree_structure(
-        self, structure: Dict[str, Any], root_path: str = ""
+        self, structure: dict[str, Any], root_path: str = ""
     ) -> str:
         """
         Creates a clear hierarchical structure using simple nested dictionaries.
@@ -748,7 +747,7 @@ class GithubService:
             root_path: Optional root path string (unused but kept for signature compatibility)
         """
 
-        def _format_node(node: Dict[str, Any], depth: int = 0) -> List[str]:
+        def _format_node(node: dict[str, Any], depth: int = 0) -> list[str]:
             output = []
             indent = "  " * depth
             if depth > 0:  # Skip root name

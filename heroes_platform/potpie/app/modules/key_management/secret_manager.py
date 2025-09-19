@@ -1,13 +1,13 @@
-import os
 import asyncio
 import functools
 import logging
-from typing import Literal, List, Dict, Optional
+import os
+from typing import Literal, Optional
 
+from cryptography.fernet import Fernet, InvalidToken
 from fastapi import Depends, HTTPException
 from google.cloud import secretmanager
 from sqlalchemy.orm import Session
-from cryptography.fernet import Fernet, InvalidToken
 
 from app.core.database import get_db
 from app.modules.auth.api_key_service import APIKeyService
@@ -15,11 +15,11 @@ from app.modules.auth.auth_service import AuthService
 from app.modules.key_management.secrets_schema import (
     APIKeyResponse,
     BaseSecret,
-    CreateSecretRequest,
-    UpdateSecretRequest,
-    IntegrationKey,
     CreateIntegrationKeyRequest,
+    CreateSecretRequest,
+    IntegrationKey,
     UpdateIntegrationKeyRequest,
+    UpdateSecretRequest,
 )
 from app.modules.users.user_preferences_model import UserPreferences
 from app.modules.utils.APIRouter import APIRouter
@@ -358,7 +358,7 @@ class SecretProcessor:
         return wrapper
 
     @staticmethod
-    def format_success_response(message: str, data: Optional[Dict] = None) -> Dict:
+    def format_success_response(message: str, data: Optional[dict] = None) -> dict:
         """Format a standardized success response"""
         response = {"message": message}
         if data:
@@ -416,7 +416,7 @@ class SecretProcessor:
     @staticmethod
     async def process_bulk_operation(
         operation_func,
-        services: List[str],
+        services: list[str],
         customer_id: str,
         service_type: str = "ai_provider",
         db: Session = None,

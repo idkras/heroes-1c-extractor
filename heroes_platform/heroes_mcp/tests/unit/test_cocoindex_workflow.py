@@ -9,14 +9,12 @@ JTBD: Как разработчик, я хочу тестировать CocoInde
 Принцип: Test-First Development
 """
 
-import unittest
-import json
-import tempfile
-from pathlib import Path
-from unittest.mock import patch, MagicMock
-
 # Добавляем путь к workflow
 import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
 
 sys.path.append(str(Path(__file__).parent.parent.parent / "workflows"))
 
@@ -476,8 +474,8 @@ class TestCocoIndexWorkflowIntegration(unittest.TestCase):
         JTBD: Как интеграционный тестировщик, я хочу проверить workflow с реальными файловыми операциями,
         чтобы убедиться в корректности работы с файловой системой.
         """
-        import tempfile
         import shutil
+        import tempfile
 
         # GIVEN - временная директория
         temp_dir = tempfile.mkdtemp()

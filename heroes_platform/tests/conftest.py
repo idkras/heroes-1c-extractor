@@ -4,11 +4,11 @@ JTBD: Как тестовая конфигурация, я хочу предос
 """
 
 from collections.abc import Generator
+from pathlib import Path
 from typing import Any
 from unittest.mock import Mock
 
 import pytest
-from pathlib import Path
 
 
 @pytest.fixture(scope="session")
@@ -21,7 +21,7 @@ def test_environment() -> dict[str, Any]:
         "TESTING": True,
         "DEBUG": False,
         "DATABASE_URL": "sqlite:///:memory:",
-        "LOG_LEVEL": "ERROR"
+        "LOG_LEVEL": "ERROR",
     }
 
 
@@ -49,7 +49,7 @@ def sample_project_data() -> dict[str, Any]:
         "version": "0.1.0",
         "description": "Test project for TDD validation",
         "author": "Test Author",
-        "email": "test@example.com"
+        "email": "test@example.com",
     }
 
 
@@ -90,14 +90,13 @@ def mock_file_system(tmp_path):
     return {
         "root": str(tmp_path),
         "test_file": str(test_file),
-        "test_dir": str(test_dir)
+        "test_dir": str(test_dir),
     }
 
 
 @pytest.fixture
 def screenshot_dir(tmp_path) -> Path:
     """Fixture for screenshot directory"""
-    from pathlib import Path
     screenshot_dir = tmp_path / "screenshots"
     screenshot_dir.mkdir(exist_ok=True)
     return screenshot_dir
@@ -107,13 +106,8 @@ def screenshot_dir(tmp_path) -> Path:
 def test_data() -> dict[str, Any]:
     """Fixture for test data"""
     return {
-        "rickai_docs": {
-            "url": "https://idkras.github.io/rickai-docs/"
-        },
-        "ghost_blogs": {
-            "2025": "http://5.75.239.205",
-            "2022_RU": "https://rick.ai"
-        }
+        "rickai_docs": {"url": "https://idkras.github.io/rickai-docs/"},
+        "ghost_blogs": {"2025": "http://5.75.239.205", "2022_RU": "https://rick.ai"},
     }
 
 
@@ -122,6 +116,7 @@ async def browser():
     """Fixture for Playwright browser"""
     try:
         from playwright.async_api import async_playwright
+
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             yield browser

@@ -1,17 +1,14 @@
-from typing import List
-
-from fastapi import Depends, APIRouter
-from sqlalchemy.orm import Session
-
 from app.core.database import get_db
 from app.modules.auth.auth_service import AuthService
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 from .provider_controller import ProviderController
 from .provider_schema import (
+    AvailableModelsResponse,
+    GetProviderResponse,
     ProviderInfo,
     SetProviderRequest,
-    GetProviderResponse,
-    AvailableModelsResponse,
 )
 
 router = APIRouter()
@@ -19,7 +16,7 @@ router = APIRouter()
 
 class ProviderAPI:
     @staticmethod
-    @router.get("/list-available-llms/", response_model=List[ProviderInfo])
+    @router.get("/list-available-llms/", response_model=list[ProviderInfo])
     async def list_available_llms(
         db: Session = Depends(get_db),
         user=Depends(AuthService.check_auth),

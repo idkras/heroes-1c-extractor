@@ -1,5 +1,5 @@
-from typing import Dict, Any
 import os
+from typing import Any
 
 # Default models
 DEFAULT_CHAT_MODEL = "openai/gpt-4o"
@@ -52,13 +52,13 @@ class LLMProviderConfig:
         self,
         provider: str,
         model: str,
-        default_params: Dict[str, Any],
+        default_params: dict[str, Any],
     ):
         self.provider = provider
         self.model = model
         self.default_params = default_params
 
-    def get_llm_params(self, api_key: str) -> Dict[str, Any]:
+    def get_llm_params(self, api_key: str) -> dict[str, Any]:
         """Build a complete parameter dictionary for LLM calls."""
         params = {
             "model": self.model,
@@ -81,7 +81,7 @@ def parse_model_string(model_string: str) -> tuple[str, str]:
         return "openai", DEFAULT_CHAT_MODEL
 
 
-def get_config_for_model(model_string: str) -> Dict[str, Any]:
+def get_config_for_model(model_string: str) -> dict[str, Any]:
     """Get configuration for a specific model, with fallback to defaults."""
     if model_string in MODEL_CONFIG_MAP:
         return MODEL_CONFIG_MAP[model_string]

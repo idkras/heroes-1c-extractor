@@ -1,10 +1,6 @@
-from datetime import datetime
 import os
-from typing import List, Optional
-
-from fastapi import Depends, Header, HTTPException, Query
-from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from datetime import datetime
+from typing import Optional
 
 from app.core.database import get_db
 from app.modules.auth.api_key_service import APIKeyService
@@ -27,18 +23,21 @@ from app.modules.intelligence.tools.tool_service import ToolService
 from app.modules.parsing.graph_construction.parsing_controller import ParsingController
 from app.modules.parsing.graph_construction.parsing_schema import ParsingRequest
 from app.modules.projects.projects_controller import ProjectController
+from app.modules.search.search_schema import SearchRequest, SearchResponse
+from app.modules.search.search_service import SearchService
+from app.modules.usage.usage_service import UsageService
 from app.modules.users.user_service import UserService
 from app.modules.utils.APIRouter import APIRouter
-from app.modules.usage.usage_service import UsageService
-from app.modules.search.search_service import SearchService
-from app.modules.search.search_schema import SearchRequest, SearchResponse
+from fastapi import Depends, Header, HTTPException, Query
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
 
 class SimpleConversationRequest(BaseModel):
-    project_ids: List[str]
-    agent_ids: List[str]
+    project_ids: list[str]
+    agent_ids: list[str]
 
 
 async def get_api_key_user(

@@ -129,7 +129,9 @@ class IncidentManagementWorkflow:
                 "priority": (
                     "P1"
                     if input_data.severity == "critical"
-                    else "P2" if input_data.severity == "high" else "P3"
+                    else "P2"
+                    if input_data.severity == "high"
+                    else "P3"
                 ),
             }
 

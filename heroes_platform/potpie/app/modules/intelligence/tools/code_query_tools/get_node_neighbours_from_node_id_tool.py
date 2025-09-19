@@ -1,18 +1,17 @@
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
+from app.core.config_provider import config_provider
 from langchain_core.tools import StructuredTool
 from neo4j import GraphDatabase
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from app.core.config_provider import config_provider
-
 
 class GetNodeNeighboursInput(BaseModel):
     project_id: str = Field(..., description="The repository ID (UUID)")
-    node_ids: List[str] = Field(
+    node_ids: list[str] = Field(
         ..., description="List of node IDs to retrieve neighbors for"
     )
 
@@ -52,10 +51,10 @@ class GetNodeNeighboursFromNodeIdTool:
             auth=(neo4j_config["username"], neo4j_config["password"]),
         )
 
-    async def arun(self, project_id: str, node_ids: List[str]) -> Dict[str, Any]:
+    async def arun(self, project_id: str, node_ids: list[str]) -> dict[str, Any]:
         return await asyncio.to_thread(self.run, project_id, node_ids)
 
-    def run(self, project_id: str, node_ids: List[str]) -> Dict[str, Any]:
+    def run(self, project_id: str, node_ids: list[str]) -> dict[str, Any]:
         """
         Run the tool to retrieve neighbors of the specified nodes.
 
@@ -79,8 +78,8 @@ class GetNodeNeighboursFromNodeIdTool:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
     def _get_neighbors(
-        self, project_id: str, node_ids: List[str]
-    ) -> Optional[List[Dict[str, Any]]]:
+        self, project_id: str, node_ids: list[str]
+    ) -> Optional[list[dict[str, Any]]]:
         """
         Retrieve neighbors from Neo4j within 2 hops in either direction.
 

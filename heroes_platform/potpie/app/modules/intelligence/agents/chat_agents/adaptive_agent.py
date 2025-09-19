@@ -1,21 +1,22 @@
-from typing import AsyncGenerator
-from langchain_core.output_parsers import PydanticOutputParser
+import logging
+from collections.abc import AsyncGenerator
+
 from app.modules.intelligence.agents.chat_agent import (
     ChatAgent,
     ChatAgentResponse,
     ChatContext,
 )
-from app.modules.intelligence.provider.provider_service import (
-    ProviderService,
-)
 from app.modules.intelligence.prompts.classification_prompts import (
+    AgentType,
     ClassificationPrompts,
     ClassificationResponse,
-    AgentType,
     ClassificationResult,
 )
 from app.modules.intelligence.prompts.prompt_service import PromptService, PromptType
-import logging
+from app.modules.intelligence.provider.provider_service import (
+    ProviderService,
+)
+from langchain_core.output_parsers import PydanticOutputParser
 
 logger = logging.getLogger(__name__)
 
@@ -126,5 +127,7 @@ class AdaptiveAgent(ChatAgent):
 
         # build llm response
         messages = await self._get_messages(ctx)
-        async for chunk in await self.llm_provider.call_llm(messages=messages, stream=True, config_type="chat"):  # type: ignore
+        async for chunk in await self.llm_provider.call_llm(
+            messages=messages, stream=True, config_type="chat"
+        ):  # type: ignore
             yield ChatAgentResponse(response=chunk, citations=[], tool_calls=[])

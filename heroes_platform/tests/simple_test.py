@@ -22,11 +22,7 @@ def test_project_files_exist():
     JTBD: Как валидатор проекта, я хочу проверить наличие обязательных файлов,
     чтобы убедиться в полноте проекта.
     """
-    required_files = [
-        "pyproject.toml",
-        "README.md",
-        ".gitignore"
-    ]
+    required_files = ["pyproject.toml", "README.md", ".gitignore"]
 
     for file_path in required_files:
         assert os.path.exists(file_path), f"Required file {file_path} not found"
@@ -75,14 +71,12 @@ def test_pyproject_toml_structure():
     content = pyproject_path.read_text()
 
     # Проверяем обязательные секции
-    required_sections = [
-        "[project]",
-        "[build-system]",
-        "[tool.pytest.ini_options]"
-    ]
+    required_sections = ["[project]", "[build-system]", "[tool.pytest.ini_options]"]
 
     for section in required_sections:
-        assert section in content, f"Required section {section} not found in pyproject.toml"
+        assert section in content, (
+            f"Required section {section} not found in pyproject.toml"
+        )
 
 
 def test_ci_cd_files_exist():

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Integration тесты для BLOB извлечения
@@ -53,7 +52,8 @@ class TestBlobExtractionIntegration(unittest.TestCase):
         self.assertIsNotNone(flower_data["extraction_result"].content)
         self.assertGreater(flower_data["extraction_result"].quality_score, 0.5)
         self.assertIn(
-            "onec_dtools", flower_data["extraction_result"].extraction_methods
+            "onec_dtools",
+            flower_data["extraction_result"].extraction_methods,
         )
 
         # Проверяем данные о цветах
@@ -157,7 +157,7 @@ class TestBlobExtractionIntegration(unittest.TestCase):
         mock_blob.value = None  # value не работает
         mock_blob.__iter__ = Mock(side_effect=StopIteration)  # iterator не работает
         mock_blob.__bytes__ = Mock(
-            side_effect=Exception("Bytes error")
+            side_effect=Exception("Bytes error"),
         )  # bytes не работает
         # Используем patch для __str__ метода
         with patch.object(mock_blob, "__str__", return_value="Fallback содержимое"):
@@ -166,7 +166,8 @@ class TestBlobExtractionIntegration(unittest.TestCase):
             # Проверяем, что fallback сработал
             self.assertIsNotNone(result.content)
             self.assertIn(
-                "onec_dtools", result.extraction_methods
+                "onec_dtools",
+                result.extraction_methods,
             )  # onec_dtools работает
 
         # Тестируем извлечение
@@ -309,12 +310,12 @@ class TestRealWorldScenarios(unittest.TestCase):
         Дата: 15.01.2025
         Поставщик: "Цветочная компания ООО"
         Адрес: г. Москва, ул. Цветочная, д. 1
-        
+
         Товары:
         - Розы красные: 50 штук по 174 рубля за штуку
         - Тюльпаны желтые: 30 штук по 120 рублей за штуку
         - Гвоздики белые: 20 штук по 80 рублей за штуку
-        
+
         Общая сумма: 8700 рублей
         НДС: 0 рублей
         Итого к оплате: 8700 рублей
@@ -351,11 +352,11 @@ class TestRealWorldScenarios(unittest.TestCase):
         Чек ККМ №001
         Дата: 16.01.2025, время: 15:30
         Кассир: Иванова А.А.
-        
+
         Товары:
         - Розы красные: 5 штук по 200 рублей за штуку
         - Тюльпаны желтые: 3 штуки по 150 рублей за штуку
-        
+
         Сумма: 1450 рублей
         Скидка: 5%
         Итого: 1377.50 рублей
@@ -389,12 +390,12 @@ class TestRealWorldScenarios(unittest.TestCase):
         Инвентаризация склада цветов
         Дата: 17.01.2025
         Склад: "Основной склад цветов"
-        
+
         Остатки:
         - Розы красные: 25 штук (остаток)
         - Тюльпаны желтые: 15 штук (остаток)
         - Гвоздики белые: 10 штук (остаток)
-        
+
         Общая стоимость остатков: 4350 рублей
         """
 

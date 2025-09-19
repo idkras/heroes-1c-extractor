@@ -60,9 +60,9 @@ class TestMCPPerformance:
         execution_time = time.time() - start_time
 
         # Should complete within 3 seconds
-        assert (
-            execution_time < 3.0
-        ), f"standards_search took {execution_time:.2f} seconds"
+        assert execution_time < 3.0, (
+            f"standards_search took {execution_time:.2f} seconds"
+        )
 
         # Verify result is valid JSON
         data = json.loads(result)
@@ -78,9 +78,9 @@ class TestMCPPerformance:
         execution_time = time.time() - start_time
 
         # Should complete within 10 seconds
-        assert (
-            execution_time < 10.0
-        ), f"standards_audit took {execution_time:.2f} seconds"
+        assert execution_time < 10.0, (
+            f"standards_audit took {execution_time:.2f} seconds"
+        )
 
         # Verify result is valid JSON
         data = json.loads(result)
@@ -109,9 +109,9 @@ class TestMCPPerformance:
         memory_increase = final_memory - initial_memory
 
         # Memory increase should be reasonable (< 100MB)
-        assert (
-            memory_increase < 100.0
-        ), f"Memory usage increased by {memory_increase:.2f} MB"
+        assert memory_increase < 100.0, (
+            f"Memory usage increased by {memory_increase:.2f} MB"
+        )
 
     def test_concurrent_operations(self):
         """Test concurrent operations performance"""
@@ -184,9 +184,9 @@ class TestMCPPerformance:
                 execution_time = time.time() - start_time
 
                 # Should complete within 1 second even with large dataset
-                assert (
-                    execution_time < 1.0
-                ), f"Large standards list took {execution_time:.2f} seconds"
+                assert execution_time < 1.0, (
+                    f"Large standards list took {execution_time:.2f} seconds"
+                )
 
                 # Verify result structure
                 data = json.loads(result)
@@ -220,9 +220,9 @@ class TestMCPResponseTime:
         response_time = time.time() - start_time
 
         # Should respond within 500ms
-        assert (
-            response_time < 0.5
-        ), f"telegram_get_credentials took {response_time:.3f} seconds"
+        assert response_time < 0.5, (
+            f"telegram_get_credentials took {response_time:.3f} seconds"
+        )
 
         # Verify result contains expected info
         assert "credentials" in result.lower()
@@ -236,9 +236,9 @@ class TestMCPResponseTime:
         response_time = time.time() - start_time
 
         # Should respond within 100ms
-        assert (
-            response_time < 0.1
-        ), f"ai_guidance_checklist took {response_time:.3f} seconds"
+        assert response_time < 0.1, (
+            f"ai_guidance_checklist took {response_time:.3f} seconds"
+        )
 
         # Verify result contains expected info
         import json

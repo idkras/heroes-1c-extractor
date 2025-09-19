@@ -1,6 +1,14 @@
 import os
-from typing import List, Optional
+from typing import Optional
 
+from pydantic import BaseModel
+
+from app.modules.intelligence.agents.chat_agents.adaptive_agent import (
+    PromptService,
+)
+from app.modules.intelligence.agents.chat_agents.supervisor_agent import (
+    SupervisorAgent,
+)
 from app.modules.intelligence.agents.chat_agents.system_agents.general_purpose_agent import (
     GeneralPurposeAgent,
 )
@@ -10,7 +18,10 @@ from app.modules.intelligence.agents.custom_agents.custom_agent_schema import (
 from app.modules.intelligence.agents.custom_agents.custom_agents_service import (
     CustomAgentService,
 )
+from app.modules.intelligence.provider.provider_service import ProviderService
+from app.modules.intelligence.tools.tool_service import ToolService
 from app.modules.utils.logger import setup_logger
+
 from .chat_agent import AgentWithInfo, ChatContext
 from .chat_agents.system_agents import (
     blast_radius_agent,
@@ -21,15 +32,6 @@ from .chat_agents.system_agents import (
     qna_agent,
     unit_test_agent,
 )
-from app.modules.intelligence.provider.provider_service import ProviderService
-from app.modules.intelligence.agents.chat_agents.adaptive_agent import (
-    PromptService,
-)
-from app.modules.intelligence.tools.tool_service import ToolService
-from app.modules.intelligence.agents.chat_agents.supervisor_agent import (
-    SupervisorAgent,
-)
-from pydantic import BaseModel
 
 logger = setup_logger(__name__)
 
@@ -143,7 +145,7 @@ class AgentsService:
 
     async def list_available_agents(
         self, current_user: dict, list_system_agents: bool
-    ) -> List[AgentInfo]:
+    ) -> list[AgentInfo]:
         system_agents = [
             AgentInfo(
                 id=id,

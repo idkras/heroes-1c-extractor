@@ -44,7 +44,7 @@ class RickAIDataManager:
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 "Referer": "https://rick.ai/",
                 "Origin": "https://rick.ai",
-                "X-Requested-With": "XMLHttpRequest"
+                "X-Requested-With": "XMLHttpRequest",
             }
             # Попробуем разные возможные endpoints для получения клиентов
             possible_endpoints = [
@@ -63,11 +63,18 @@ class RickAIDataManager:
                             if response.status == 200:
                                 try:
                                     data = await response.json()
-                                    return {"status": "success", "data": data, "endpoint": endpoint, "method": "GET"}
+                                    return {
+                                        "status": "success",
+                                        "data": data,
+                                        "endpoint": endpoint,
+                                        "method": "GET",
+                                    }
                                 except Exception as e:
                                     # Если не JSON, попробуем как GraphQL
                                     if "graphql" in endpoint:
-                                        logger.info(f"GraphQL endpoint {endpoint} returned HTML, trying GraphQL query")
+                                        logger.info(
+                                            f"GraphQL endpoint {endpoint} returned HTML, trying GraphQL query"
+                                        )
                                         # Попробуем GraphQL запрос для получения клиентов
                                         graphql_query = {
                                             "query": "query { companies { id name alias } }"
@@ -75,30 +82,57 @@ class RickAIDataManager:
                                         # Используем правильные заголовки для GraphQL
                                         gql_headers = headers.copy()
                                         gql_headers["Content-Type"] = "application/json"
-                                        async with session.post(url, headers=gql_headers, json=graphql_query) as gql_response:
+                                        async with session.post(
+                                            url, headers=gql_headers, json=graphql_query
+                                        ) as gql_response:
                                             if gql_response.status == 200:
                                                 gql_data = await gql_response.json()
-                                                return {"status": "success", "data": gql_data, "endpoint": endpoint, "method": "GraphQL"}
+                                                return {
+                                                    "status": "success",
+                                                    "data": gql_data,
+                                                    "endpoint": endpoint,
+                                                    "method": "GraphQL",
+                                                }
                                             else:
-                                                logger.info(f"GraphQL query to {endpoint} returned {gql_response.status}")
+                                                logger.info(
+                                                    f"GraphQL query to {endpoint} returned {gql_response.status}"
+                                                )
                                     else:
-                                        logger.info(f"Endpoint {endpoint} returned non-JSON response: {e}")
+                                        logger.info(
+                                            f"Endpoint {endpoint} returned non-JSON response: {e}"
+                                        )
                             elif response.status == 405:
                                 # Попробуем POST для endpoints, которые возвращают 405
-                                logger.info(f"Endpoint {endpoint} returned 405, trying POST")
-                                async with session.post(url, headers=headers, json={}) as post_response:
+                                logger.info(
+                                    f"Endpoint {endpoint} returned 405, trying POST"
+                                )
+                                async with session.post(
+                                    url, headers=headers, json={}
+                                ) as post_response:
                                     if post_response.status == 200:
                                         data = await post_response.json()
-                                        return {"status": "success", "data": data, "endpoint": endpoint, "method": "POST"}
+                                        return {
+                                            "status": "success",
+                                            "data": data,
+                                            "endpoint": endpoint,
+                                            "method": "POST",
+                                        }
                                     else:
-                                        logger.info(f"POST to {endpoint} returned {post_response.status}")
+                                        logger.info(
+                                            f"POST to {endpoint} returned {post_response.status}"
+                                        )
                             elif response.status != 404:
-                                logger.info(f"Endpoint {endpoint} returned {response.status}")
+                                logger.info(
+                                    f"Endpoint {endpoint} returned {response.status}"
+                                )
                     except Exception as e:
                         logger.info(f"Endpoint {endpoint} failed: {e}")
                         continue
 
-                return {"status": "error", "message": "Все endpoints для получения клиентов возвращают 404"}
+                return {
+                    "status": "error",
+                    "message": "Все endpoints для получения клиентов возвращают 404",
+                }
 
         except Exception as e:
             logger.error(f"Get clients error: {e}")
@@ -141,7 +175,7 @@ class RickAIDataManager:
         try:
             print(f"📊 Запрос данных виджета {widget_id}...")
             logger.info(f"Requesting data for widget {widget_id}")
-            
+
             if not self.auth_manager.session_cookie:
                 print("❌ Ошибка: Требуется аутентификация")
                 return {"status": "error", "message": "Требуется аутентификация"}
@@ -180,7 +214,7 @@ class RickAIDataManager:
         try:
             print(f"🔍 Поиск виджета по system_name: {system_name}")
             logger.info(f"Starting search for widget with system_name: {system_name}")
-            
+
             if not self.auth_manager.session_cookie:
                 print("❌ Ошибка: Требуется аутентификация")
                 return {"status": "error", "message": "Требуется аутентификация"}
@@ -190,38 +224,54 @@ class RickAIDataManager:
             logger.info("Fetching widget groups...")
             widget_groups_result = await self.get_widget_groups(company_alias, app_id)
             if widget_groups_result.get("status") != "success":
-                print(f"❌ Ошибка получения групп виджетов: {widget_groups_result.get('message')}")
+                print(
+                    f"❌ Ошибка получения групп виджетов: {widget_groups_result.get('message')}"
+                )
                 return widget_groups_result
 
             # Ищем виджет по system_name в группах
             widget_groups = widget_groups_result.get("data", [])
             print(f"🔎 Поиск в {len(widget_groups)} группах виджетов...")
             logger.info(f"Searching in {len(widget_groups)} widget groups")
-            
+
             for i, group in enumerate(widget_groups):
                 if isinstance(group, dict) and "widgets" in group:
                     widgets = group["widgets"]
-                    print(f"  📁 Группа {i+1}/{len(widget_groups)}: {len(widgets)} виджетов")
+                    print(
+                        f"  📁 Группа {i + 1}/{len(widget_groups)}: {len(widgets)} виджетов"
+                    )
                     for j, widget in enumerate(widgets):
-                        if isinstance(widget, dict) and widget.get("system_name") == system_name:
+                        if (
+                            isinstance(widget, dict)
+                            and widget.get("system_name") == system_name
+                        ):
                             print(f"✅ Найден виджет! ID: {widget.get('id')}")
-                            logger.info(f"Found widget with system_name {system_name}, ID: {widget.get('id')}")
-                            
+                            logger.info(
+                                f"Found widget with system_name {system_name}, ID: {widget.get('id')}"
+                            )
+
                             # Найден виджет, получаем его данные
                             widget_id = widget.get("id")
                             if widget_id:
                                 print(f"📊 Получение данных виджета {widget_id}...")
                                 logger.info(f"Fetching data for widget {widget_id}")
-                                widget_data_result = await self.get_widget_data(company_alias, app_id, str(widget_id))
+                                widget_data_result = await self.get_widget_data(
+                                    company_alias, app_id, str(widget_id)
+                                )
                                 print("✅ Данные виджета получены")
                                 return {
                                     "status": "success",
                                     "widget": widget,
-                                    "widget_data": widget_data_result.get("data") if widget_data_result.get("status") == "success" else None
+                                    "widget_data": widget_data_result.get("data")
+                                    if widget_data_result.get("status") == "success"
+                                    else None,
                                 }
 
             print(f"❌ Виджет с system_name '{system_name}' не найден")
-            return {"status": "error", "message": f"Виджет с system_name '{system_name}' не найден"}
+            return {
+                "status": "error",
+                "message": f"Виджет с system_name '{system_name}' не найден",
+            }
 
         except Exception as e:
             print(f"❌ Ошибка поиска: {e}")

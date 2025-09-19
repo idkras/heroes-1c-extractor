@@ -4,10 +4,6 @@ Test Rick AI Workflow
 """
 
 import pytest
-import asyncio
-from unittest.mock import Mock, patch, AsyncMock
-from datetime import datetime
-
 from heroes_platform.heroes_mcp.workflows.rick_ai.workflow import RickAIWorkflow
 
 
@@ -226,7 +222,6 @@ class TestRickAIWorkflow:
         score = workflow._calculate_quality_score(result)
         assert score == 100  # 7 stages * 10 + 3 bonuses * 20 = 130, capped at 100
 
-
     def test_generate_sourcemedium_analysis_table(self, workflow):
         """Test generation of sourceMedium analysis table with real askona data"""
         # Real data from askona Rick.ai widget (from askona-sourceMedium-research-loop-analysis.md)
@@ -297,35 +292,41 @@ class TestRickAIWorkflow:
             "event_param_rick_additional_campaign_data": "etext:;campaign_id:",
             "event_param_rick_ad_identifiers": "ad_id:;group_id:",
             "event_param_rick_campaign_attribution": "utm_source:;utm_medium:;utm_campaign:;utm_content:",
-            "event_param_rick_fb_client_id": ""
+            "event_param_rick_fb_client_id": "",
         }
-        
+
         # Generate table with real askona data
         table = workflow._generate_sourcemedium_analysis_table(askona_data)
-        
+
         # Verify table structure
-        assert "| sourceMedium raw groups | sourceMedium result | sourceMedium rule |" in table
-        assert "|-------------------------|-------------------|------------------|" in table
-        
+        assert (
+            "| sourceMedium raw groups | sourceMedium result | sourceMedium rule |"
+            in table
+        )
+        assert (
+            "|-------------------------|-------------------|------------------|"
+            in table
+        )
+
         # Verify all 71 fields are present
         for field in askona_data.keys():
             assert f"{field}: {askona_data[field]}" in table or f"{field}:" in table
-        
+
         # Verify sourceMedium result contains error
         assert "ошибка:" in table
-        
+
         # Verify sourceMedium rule
         assert "**Правило:" in table
-        
-        print("\n" + "="*80)
+
+        print("\n" + "=" * 80)
         print("REAL ASKONA SOURCEMEDIUM ANALYSIS TABLE:")
-        print("="*80)
+        print("=" * 80)
         print(table)
-        print("="*80)
-        
+        print("=" * 80)
+
         # Test with multiple error scenarios
         self._test_multiple_error_scenarios(workflow)
-    
+
     def _test_multiple_error_scenarios(self, workflow):
         """Test 20 different error scenarios with real data patterns"""
         error_scenarios = [
@@ -335,7 +336,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "previous_landing",
                 "source_medium": "yandex_sm / cpc",
-                "raw_source_medium": "yandex_sm / cpc"
+                "raw_source_medium": "yandex_sm / cpc",
             },
             # Scenario 2: gclid not applied
             {
@@ -343,7 +344,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "utm_priority",
                 "source_medium": "google / cpc",
-                "raw_source_medium": "google / cpc"
+                "raw_source_medium": "google / cpc",
             },
             # Scenario 3: previous_landing overriding Click ID
             {
@@ -351,7 +352,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "previous_landing",
                 "source_medium": "organic / organic",
-                "raw_source_medium": "organic / organic"
+                "raw_source_medium": "organic / organic",
             },
             # Scenario 4: source_medium != raw_source_medium
             {
@@ -359,7 +360,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "utm_priority",
                 "source_medium": "google / cpc",
-                "raw_source_medium": "yandex / cpc"
+                "raw_source_medium": "yandex / cpc",
             },
             # Scenario 5: pseudo-channel ad/referral
             {
@@ -367,7 +368,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "referrer_analysis",
                 "source_medium": "ad/referral",
-                "raw_source_medium": "ad/referral"
+                "raw_source_medium": "ad/referral",
             },
             # Scenario 6: pseudo-channel social/referral
             {
@@ -375,7 +376,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "social_analysis",
                 "source_medium": "social/referral",
-                "raw_source_medium": "social/referral"
+                "raw_source_medium": "social/referral",
             },
             # Scenario 7: payment gateway in source_medium
             {
@@ -383,7 +384,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "payment_analysis",
                 "source_medium": "stripe.com / referral",
-                "raw_source_medium": "stripe.com / referral"
+                "raw_source_medium": "stripe.com / referral",
             },
             # Scenario 8: CRM link in source_medium
             {
@@ -391,7 +392,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "crm_analysis",
                 "source_medium": "bitrix24 / referral",
-                "raw_source_medium": "bitrix24 / referral"
+                "raw_source_medium": "bitrix24 / referral",
             },
             # Scenario 9: yoomoney payment gateway
             {
@@ -399,7 +400,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "payment_analysis",
                 "source_medium": "yoomoney / referral",
-                "raw_source_medium": "yoomoney / referral"
+                "raw_source_medium": "yoomoney / referral",
             },
             # Scenario 10: amocrm in source_medium
             {
@@ -407,7 +408,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "crm_analysis",
                 "source_medium": "amocrm / referral",
-                "raw_source_medium": "amocrm / referral"
+                "raw_source_medium": "amocrm / referral",
             },
             # Scenario 11: tinkoff payment gateway
             {
@@ -415,7 +416,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "payment_analysis",
                 "source_medium": "tinkoff / referral",
-                "raw_source_medium": "tinkoff / referral"
+                "raw_source_medium": "tinkoff / referral",
             },
             # Scenario 12: recommend/referral pseudo-channel
             {
@@ -423,7 +424,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "recommendation_analysis",
                 "source_medium": "recommend/referral",
-                "raw_source_medium": "recommend/referral"
+                "raw_source_medium": "recommend/referral",
             },
             # Scenario 13: paypal payment gateway
             {
@@ -431,7 +432,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "payment_analysis",
                 "source_medium": "paypal.com / referral",
-                "raw_source_medium": "paypal.com / referral"
+                "raw_source_medium": "paypal.com / referral",
             },
             # Scenario 14: retailcrm in source_medium
             {
@@ -439,7 +440,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "crm_analysis",
                 "source_medium": "retailcrm / referral",
-                "raw_source_medium": "retailcrm / referral"
+                "raw_source_medium": "retailcrm / referral",
             },
             # Scenario 15: sberbank payment gateway
             {
@@ -447,7 +448,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "payment_analysis",
                 "source_medium": "sberbank / referral",
-                "raw_source_medium": "sberbank / referral"
+                "raw_source_medium": "sberbank / referral",
             },
             # Scenario 16: hubspot.com CRM
             {
@@ -455,7 +456,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "crm_analysis",
                 "source_medium": "hubspot.com / referral",
-                "raw_source_medium": "hubspot.com / referral"
+                "raw_source_medium": "hubspot.com / referral",
             },
             # Scenario 17: payu payment gateway
             {
@@ -463,7 +464,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "payment_analysis",
                 "source_medium": "payu / referral",
-                "raw_source_medium": "payu / referral"
+                "raw_source_medium": "payu / referral",
             },
             # Scenario 18: Multiple Click IDs conflict
             {
@@ -471,7 +472,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "click_id_priority",
                 "source_medium": "yandex / cpc",
-                "raw_source_medium": "google / cpc"
+                "raw_source_medium": "google / cpc",
             },
             # Scenario 19: UTM override Click ID
             {
@@ -479,7 +480,7 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "utm_priority",
                 "source_medium": "facebook / cpc",
-                "raw_source_medium": "yandex / cpc"
+                "raw_source_medium": "yandex / cpc",
             },
             # Scenario 20: Complex error combination
             {
@@ -487,14 +488,14 @@ class TestRickAIWorkflow:
                 "event_param_rick_ad_channel_identifiers": "gclid:;fbclid:;yclid:;ysclid:",
                 "applied_rules": "previous_landing",
                 "source_medium": "stripe.com / referral",
-                "raw_source_medium": "yandex / cpc"
-            }
+                "raw_source_medium": "yandex / cpc",
+            },
         ]
-        
-        print("\n" + "="*80)
+
+        print("\n" + "=" * 80)
         print("20 ERROR SCENARIOS ANALYSIS:")
-        print("="*80)
-        
+        print("=" * 80)
+
         for i, scenario in enumerate(error_scenarios, 1):
             # Create base data with scenario-specific values
             test_data = {
@@ -504,7 +505,9 @@ class TestRickAIWorkflow:
                 "event_param_rick_rid": "SyxThnYotY",
                 "channel_group": "yandex direct",
                 "source_medium": scenario.get("source_medium", "yandex_sm / cpc"),
-                "raw_source_medium": scenario.get("raw_source_medium", "yandex_sm / cpc"),
+                "raw_source_medium": scenario.get(
+                    "raw_source_medium", "yandex_sm / cpc"
+                ),
                 "applied_rules": scenario.get("applied_rules", "previous_landing"),
                 "click_id": "",
                 "event_param_source": "",
@@ -516,7 +519,10 @@ class TestRickAIWorkflow:
                 "event_param_last_social_network": "",
                 "event_param_last_social_network_profile": "",
                 "all_landing_page_path": "/matrasy/sleep-expert-master.htm",
-                "page_location": scenario.get("page_location", "https://www.askona.ru/matrasy/sleep-expert-master.htm"),
+                "page_location": scenario.get(
+                    "page_location",
+                    "https://www.askona.ru/matrasy/sleep-expert-master.htm",
+                ),
                 "event_param_page_referrer": "https://askona.ru/matrasy/sleep-expert-master.htm",
                 "event_param_rick_user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
                 "event_param_rick_url": "yclid:86520401018748927;ym_client_id:16748222471051939108;hostname:www.askona.ru;pagepath:/matrasy/sleep-expert-master.htm",
@@ -560,22 +566,27 @@ class TestRickAIWorkflow:
                 "event_param_ad_source": "",
                 "event_param_content": "",
                 "event_param_term": "",
-                "event_param_rick_ad_channel_identifiers": scenario.get("event_param_rick_ad_channel_identifiers", "gclid:;fbclid:;yclid:86520401018748927;ysclid:"),
+                "event_param_rick_ad_channel_identifiers": scenario.get(
+                    "event_param_rick_ad_channel_identifiers",
+                    "gclid:;fbclid:;yclid:86520401018748927;ysclid:",
+                ),
                 "event_param_rick_additional_campaign_data": "etext:;campaign_id:",
                 "event_param_rick_ad_identifiers": "ad_id:;group_id:",
                 "event_param_rick_campaign_attribution": "utm_source:;utm_medium:;utm_campaign:;utm_content:",
-                "event_param_rick_fb_client_id": ""
+                "event_param_rick_fb_client_id": "",
             }
-            
+
             # Generate analysis
             result = workflow._analyze_sourcemedium_errors(test_data)
-            
+
             print(f"\n--- SCENARIO {i} ---")
             print(f"Page Location: {scenario.get('page_location', 'N/A')}")
             print(f"Applied Rules: {scenario.get('applied_rules', 'N/A')}")
             print(f"Source Medium: {scenario.get('source_medium', 'N/A')}")
             print(f"Raw Source Medium: {scenario.get('raw_source_medium', 'N/A')}")
-            print(f"Rick Identifiers: {scenario.get('event_param_rick_ad_channel_identifiers', 'N/A')}")
+            print(
+                f"Rick Identifiers: {scenario.get('event_param_rick_ad_channel_identifiers', 'N/A')}"
+            )
             print(f"ERRORS FOUND: {result}")
             print("-" * 50)
 
@@ -583,126 +594,200 @@ class TestRickAIWorkflow:
         """Generate sourceMedium analysis table with all 71 fields and proper grouping"""
         # All 71 Rick.ai fields in correct order with proper grouping (from standard)
         all_fields = [
-            "day", "event_param_date_hour_minute",
-            "client_id", "event_param_rick_rid",
-            "channel_group", "source_medium", "raw_source_medium", "applied_rules",
+            "day",
+            "event_param_date_hour_minute",
+            "client_id",
+            "event_param_rick_rid",
+            "channel_group",
+            "source_medium",
+            "raw_source_medium",
+            "applied_rules",
             "click_id",
-            "event_param_source", "event_param_medium",
-            "event_param_last_search_engine", "event_param_last_search_engine_root", 
-            "event_param_last_adv_engine", "event_param_last_traffic_source", 
-            "event_param_last_social_network", "event_param_last_social_network_profile",
-            "device_category", "all_landing_page_path", "page_location", "event_param_page_referrer",
-            "event_param_rick_user_agent", "event_param_rick_url",
-            "campaign_id", "event_param_campaign", "custom_group_campaign_grouping", "campaign",
-            "ad_group_combined", "ad_group", "keyword", "ad_content", "ad_utm_source_medium",
-            "campaign_name", "campaign_status", "ad_utm_keyword", "ad_combined", "ad_group_name",
-            "ad_group_status", "ad_campaign_type", "ad_group_type", "ad_name", "ad_status",
-            "ad_placement_domain", "ad_placement_url", "ad_utm_campaign", "ad_subtype",
-            "ad_utm_content", "ad_title", "ad_text", "ad_url", "ad_thumbnail_url",
-            "ad_preview_url", "ad_source", "ga_data_import_id", "ad_group_id", "ad_type",
-            "ad_landing_page", "ad_id", "ad_erid",
-            "event_param_ad_source", "event_param_content", "event_param_term", 
-            "event_param_rick_ad_channel_identifiers", "event_param_rick_additional_campaign_data", 
-            "event_param_rick_ad_identifiers", "event_param_rick_campaign_attribution", 
-            "event_param_rick_fb_client_id"
+            "event_param_source",
+            "event_param_medium",
+            "event_param_last_search_engine",
+            "event_param_last_search_engine_root",
+            "event_param_last_adv_engine",
+            "event_param_last_traffic_source",
+            "event_param_last_social_network",
+            "event_param_last_social_network_profile",
+            "device_category",
+            "all_landing_page_path",
+            "page_location",
+            "event_param_page_referrer",
+            "event_param_rick_user_agent",
+            "event_param_rick_url",
+            "campaign_id",
+            "event_param_campaign",
+            "custom_group_campaign_grouping",
+            "campaign",
+            "ad_group_combined",
+            "ad_group",
+            "keyword",
+            "ad_content",
+            "ad_utm_source_medium",
+            "campaign_name",
+            "campaign_status",
+            "ad_utm_keyword",
+            "ad_combined",
+            "ad_group_name",
+            "ad_group_status",
+            "ad_campaign_type",
+            "ad_group_type",
+            "ad_name",
+            "ad_status",
+            "ad_placement_domain",
+            "ad_placement_url",
+            "ad_utm_campaign",
+            "ad_subtype",
+            "ad_utm_content",
+            "ad_title",
+            "ad_text",
+            "ad_url",
+            "ad_thumbnail_url",
+            "ad_preview_url",
+            "ad_source",
+            "ga_data_import_id",
+            "ad_group_id",
+            "ad_type",
+            "ad_landing_page",
+            "ad_id",
+            "ad_erid",
+            "event_param_ad_source",
+            "event_param_content",
+            "event_param_term",
+            "event_param_rick_ad_channel_identifiers",
+            "event_param_rick_additional_campaign_data",
+            "event_param_rick_ad_identifiers",
+            "event_param_rick_campaign_attribution",
+            "event_param_rick_fb_client_id",
         ]
-        
+
         # Grouping positions for soft line breaks (from standard)
         grouping_positions = {
             "click_id": True,  # After click_id
             "campaign": True,  # After campaign
-            "ad_erid": True    # After ad_erid
+            "ad_erid": True,  # After ad_erid
         }
-        
+
         # Build first column with proper grouping
         first_column = ""
         for i, field in enumerate(all_fields):
             value = data.get(field, "")
             # Escape '|' character in values for Markdown table
             if isinstance(value, str):
-                value = value.replace('|', '\\|')
-            
+                value = value.replace("|", "\\|")
+
             if value:
                 first_column += f"{field}: {value}<br/>"
             else:
                 first_column += f"{field}:<br/>"
-            
+
             # Add soft line break after specific fields
             if field in grouping_positions:
                 first_column += "<br/>"
-        
+
         # Remove last <br/>
         first_column = first_column.rstrip("<br/>")
-        
+
         # Advanced sourceMedium analysis logic
         sourcemedium_result = self._analyze_sourcemedium_errors(data)
-        
+
         # Generate sourceMedium rule based on detected issues
         sourcemedium_rule = self._generate_sourcemedium_rule(data)
-        
+
         # Build table
         table = f"""| sourceMedium raw groups | sourceMedium result | sourceMedium rule |
 |-------------------------|-------------------|------------------|
 | {first_column} | {sourcemedium_result} | {sourcemedium_rule} |"""
-        
+
         return table
-    
+
     def _analyze_sourcemedium_errors(self, data):
         """Analyze sourceMedium data for errors and inconsistencies"""
         errors = []
-        
+
         # Check Click ID priority issues
         page_location = data.get("page_location", "")
         rick_identifiers = data.get("event_param_rick_ad_channel_identifiers", "")
         applied_rules = data.get("applied_rules", "")
         source_medium = data.get("source_medium", "")
         raw_source_medium = data.get("raw_source_medium", "")
-        
+
         # Check for yclid in page_location but not applied
         if "yclid=" in page_location:
-            yclid_value = page_location.split("yclid=")[1].split("&")[0] if "yclid=" in page_location else ""
+            yclid_value = (
+                page_location.split("yclid=")[1].split("&")[0]
+                if "yclid=" in page_location
+                else ""
+            )
             if yclid_value and "yclid:" not in rick_identifiers:
-                errors.append(f"ошибка: в page_location найден yclid={yclid_value}, но не применен")
-        
+                errors.append(
+                    f"ошибка: в page_location найден yclid={yclid_value}, но не применен"
+                )
+
         # Check for gclid in page_location but not applied
         if "gclid=" in page_location:
-            gclid_value = page_location.split("gclid=")[1].split("&")[0] if "gclid=" in page_location else ""
+            gclid_value = (
+                page_location.split("gclid=")[1].split("&")[0]
+                if "gclid=" in page_location
+                else ""
+            )
             if gclid_value and "gclid:" not in rick_identifiers:
-                errors.append(f"ошибка: в page_location найден gclid={gclid_value}, но не применен")
-        
+                errors.append(
+                    f"ошибка: в page_location найден gclid={gclid_value}, но не применен"
+                )
+
         # Check previous_landing rule overriding Click ID
-        if "previous_landing" in applied_rules and ("yclid=" in page_location or "gclid=" in page_location):
-            errors.append("ошибка: Click ID найден, но previous_landing правило перезаписывает")
-        
+        if "previous_landing" in applied_rules and (
+            "yclid=" in page_location or "gclid=" in page_location
+        ):
+            errors.append(
+                "ошибка: Click ID найден, но previous_landing правило перезаписывает"
+            )
+
         # Check source_medium vs raw_source_medium inconsistency
         if source_medium and raw_source_medium and source_medium != raw_source_medium:
-            errors.append(f"ошибка: source_medium ({source_medium}) != raw_source_medium ({raw_source_medium})")
-        
+            errors.append(
+                f"ошибка: source_medium ({source_medium}) != raw_source_medium ({raw_source_medium})"
+            )
+
         # Check for pseudo-channels
         pseudo_channels = ["ad/referral", "social/referral", "recommend/referral"]
         if any(pseudo in source_medium for pseudo in pseudo_channels):
             errors.append(f"ошибка: найден псевдо-канал {source_medium}")
-        
+
         # Check for payment gateways in source_medium
-        payment_gateways = ["stripe.com", "paypal.com", "yoomoney", "tinkoff", "payu", "sberbank"]
+        payment_gateways = [
+            "stripe.com",
+            "paypal.com",
+            "yoomoney",
+            "tinkoff",
+            "payu",
+            "sberbank",
+        ]
         if any(gateway in source_medium.lower() for gateway in payment_gateways):
-            errors.append(f"ошибка: найден платежный шлюз в source_medium: {source_medium}")
-        
+            errors.append(
+                f"ошибка: найден платежный шлюз в source_medium: {source_medium}"
+            )
+
         # Check for CRM links in source_medium
         crm_links = ["bitrix24", "amocrm", "retailcrm", "hubspot.com"]
         if any(crm in source_medium.lower() for crm in crm_links):
-            errors.append(f"ошибка: найдена CRM-ссылка в source_medium: {source_medium}")
-        
+            errors.append(
+                f"ошибка: найдена CRM-ссылка в source_medium: {source_medium}"
+            )
+
         if errors:
             return "<br/>".join(errors)
         else:
             return "✔️"
-    
+
     def _generate_sourcemedium_rule(self, data):
         """Generate sourceMedium rule based on detected issues"""
         page_location = data.get("page_location", "")
         rick_identifiers = data.get("event_param_rick_ad_channel_identifiers", "")
-        
+
         # Determine which rule to show based on data
         if "yclid=" in page_location:
             return """**Правило: clickId: yclid**<br/>когда clientID равно "* любое не пустое" и<br/>event_param_rick_ad_channel_identifiers содержит yclid:<br/><br/>то<br/>channel = yandex direct<br/>sourceMedium = yandex / cpc || {параметр где определен sourceMedium}<br/>raw_source_medium = yandex / cpc || {параметр где определен sourceMedium}"""

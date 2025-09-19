@@ -1,16 +1,16 @@
 import logging
 import os
 import random
-from typing import Dict, Any, List, Optional, Type
-from pydantic import BaseModel, Field
-from github import Github
-from github.GithubException import GithubException
-from github.Auth import AppAuth
-import requests
-from sqlalchemy.orm import Session
-from langchain_core.tools import StructuredTool
+from typing import Any, Optional
 
+import requests
 from app.core.config_provider import config_provider
+from github import Github
+from github.Auth import AppAuth
+from github.GithubException import GithubException
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 
 class GitHubUpdateFileInput(BaseModel):
@@ -36,9 +36,9 @@ class GitHubUpdateFileTool:
     Useful for making changes to configuration files, code, documentation, or any other file in a repository.
     The tool will handle encoding the content and creating a commit on the specified branch.
     """
-    args_schema: Type[BaseModel] = GitHubUpdateFileInput
+    args_schema: type[BaseModel] = GitHubUpdateFileInput
 
-    gh_token_list: List[str] = []
+    gh_token_list: list[str] = []
 
     @classmethod
     def initialize_tokens(cls):
@@ -110,7 +110,7 @@ class GitHubUpdateFileTool:
         commit_message: str,
         author_name: Optional[str] = None,
         author_email: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Update a file in a GitHub repository branch.
 
@@ -201,7 +201,7 @@ class GitHubUpdateFileTool:
         commit_message: str,
         author_name: Optional[str] = None,
         author_email: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Async implementation of the tool."""
         return self._run(
             repo_name=repo_name,

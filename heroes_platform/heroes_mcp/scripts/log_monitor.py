@@ -61,7 +61,9 @@ class LogMonitor:
 
         return analysis
 
-    def analyze_log_entry(self, entry: dict[str, Any], analysis: dict[str, Any]) -> None:
+    def analyze_log_entry(
+        self, entry: dict[str, Any], analysis: dict[str, Any]
+    ) -> None:
         """Анализ отдельной записи лога"""
         level = entry.get("level", "INFO")
         message = entry.get("message", "")

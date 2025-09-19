@@ -1,15 +1,14 @@
 import asyncio
 import logging
-from typing import Any, Dict
-
-from langchain_core.tools import StructuredTool
-from neo4j import GraphDatabase
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
+from typing import Any
 
 from app.core.config_provider import config_provider
 from app.modules.code_provider.code_provider_service import CodeProviderService
 from app.modules.projects.projects_model import Project
+from langchain_core.tools import StructuredTool
+from neo4j import GraphDatabase
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +45,10 @@ class GetCodeFromNodeIdTool:
             auth=(neo4j_config["username"], neo4j_config["password"]),
         )
 
-    async def arun(self, project_id: str, node_id: str) -> Dict[str, Any]:
+    async def arun(self, project_id: str, node_id: str) -> dict[str, Any]:
         return await asyncio.to_thread(self.run, project_id, node_id)
 
-    def run(self, project_id: str, node_id: str) -> Dict[str, Any]:
+    def run(self, project_id: str, node_id: str) -> dict[str, Any]:
         """Synchronous version that handles the core logic"""
         try:
             node_data = self._get_node_data(project_id, node_id)
@@ -77,7 +76,7 @@ class GetCodeFromNodeIdTool:
             logger.error(f"Unexpected error in GetCodeFromNodeIdTool: {str(e)}")
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
-    def _get_node_data(self, project_id: str, node_id: str) -> Dict[str, Any]:
+    def _get_node_data(self, project_id: str, node_id: str) -> dict[str, Any]:
         query = """
         MATCH (n:NODE {node_id: $node_id, repoId: $project_id})
         RETURN n.file_path AS file_path, n.start_line AS start_line, n.end_line AS end_line, n.text as code, n.docstring as docstring
@@ -90,8 +89,8 @@ class GetCodeFromNodeIdTool:
         return self.sql_db.query(Project).filter(Project.id == project_id).first()
 
     def _process_result(
-        self, node_data: Dict[str, Any], project: Project, node_id: str
-    ) -> Dict[str, Any]:
+        self, node_data: dict[str, Any], project: Project, node_id: str
+    ) -> dict[str, Any]:
         file_path = node_data["file_path"]
         start_line = node_data["start_line"]
         end_line = node_data["end_line"]

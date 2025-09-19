@@ -22,7 +22,6 @@ MCP Workflow Protocol: mcp_heroesGPT_landing_analysis_v18_enhanced
 """
 
 import asyncio
-import json
 import logging
 import sys
 from datetime import datetime
@@ -186,12 +185,14 @@ class HeroesGPTMCPWorkflow:
     ) -> dict[str, Any]:
         """ATOMIC STEP: Execute STEP 0 with reflection checkpoint"""
         workflow_result["atomic_state"]["current_step"] = "step_0_standard_loading"
-        
+
         # Execute atomic STEP 0
         standard_result = await self._load_standard_first()
         workflow_result["standard_content"] = standard_result
 
-        logger.info("✅ ATOMIC STEP 0 COMPLETE: Standard loaded with reflection checkpoint")
+        logger.info(
+            "✅ ATOMIC STEP 0 COMPLETE: Standard loaded with reflection checkpoint"
+        )
         return workflow_result
 
     async def _load_standard_first(self) -> dict[str, Any]:
@@ -203,8 +204,14 @@ class HeroesGPTMCPWorkflow:
             "standard_content": "HeroesGPT Standard v1.8 loaded",
             "standard_version": "v1.8",
             "required_sections": ["preprocessing", "core_analysis", "output"],
-            "workflow_requirements": {"two_stage_logic": True, "reflections_required": True},
-            "compliance_checklist": {"mandatory_stages": {}, "reflection_checkpoints": {}},
+            "workflow_requirements": {
+                "two_stage_logic": True,
+                "reflections_required": True,
+            },
+            "compliance_checklist": {
+                "mandatory_stages": {},
+                "reflection_checkpoints": {},
+            },
             "completeness_validation": {"standard_ready": True},
         }
 
@@ -285,31 +292,31 @@ class HeroesGPTMCPWorkflow:
     # Placeholder methods for other stages - will be implemented
     async def _atomic_execute_stage_1_inventory(self, workflow_result):
         return workflow_result
-        
+
     async def _atomic_execute_stage_2_evaluation(self, workflow_result):
         return workflow_result
-        
+
     async def _atomic_execute_stage_3_deep_segment_research(self, workflow_result):
         return workflow_result
-        
+
     async def _atomic_execute_stage_4_activating_knowledge(self, workflow_result):
         return workflow_result
-        
+
     async def _atomic_execute_stage_5_unified_table(self, workflow_result):
         return workflow_result
-        
+
     async def _atomic_execute_stage_7_5_gap_coverage(self, workflow_result):
         return workflow_result
-        
+
     async def _atomic_execute_output_stage(self, workflow_result):
         return workflow_result
-        
+
     async def _atomic_finalize_workflow(self, workflow_result):
         return workflow_result
-        
+
     async def _atomic_rollback_workflow(self, workflow_result, error):
         return workflow_result
-        
+
     async def _error_recovery_workflow_state(self, workflow_result, exception):
         return {}
 
@@ -353,6 +360,7 @@ async def analyze_landing_mcp(input_data: dict[str, Any]) -> dict[str, Any]:
 
 def main():
     """Основная функция для тестирования"""
+
     async def test_workflow():
         test_request = {
             "url": "https://test.com",

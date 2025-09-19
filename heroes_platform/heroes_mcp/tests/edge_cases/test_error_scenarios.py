@@ -6,18 +6,17 @@ Edge Cases and Error Scenarios Tests for MCP Server
 """
 
 import asyncio
-import json
 import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
 
-from quality.test_mcp_commands_quality import MCPCommandQualityTester
 from cross_check.test_cursor_integration import CursorCrossChecker
+from quality.test_mcp_commands_quality import MCPCommandQualityTester
 
 
 class EdgeCaseTester:
@@ -28,7 +27,7 @@ class EdgeCaseTester:
         self.cross_checker = CursorCrossChecker()
         self.server_path = Path(__file__).parent.parent.parent / "src" / "mcp_server.py"
 
-    async def test_large_data_handling(self) -> Dict[str, Any]:
+    async def test_large_data_handling(self) -> dict[str, Any]:
         """Test handling of large data volumes"""
 
         # Test with large standard name
@@ -42,7 +41,7 @@ class EdgeCaseTester:
 
         return {"test": "large_data_handling", "passed": True, "result": result}
 
-    async def test_malformed_inputs(self) -> Dict[str, Any]:
+    async def test_malformed_inputs(self) -> dict[str, Any]:
         """Test handling of malformed inputs"""
 
         # Test with None values
@@ -68,10 +67,10 @@ class EdgeCaseTester:
 
         return {"test": "malformed_inputs", "passed": all_handled, "results": results}
 
-    async def test_concurrent_requests(self) -> Dict[str, Any]:
+    async def test_concurrent_requests(self) -> dict[str, Any]:
         """Test handling of concurrent requests"""
 
-        async def make_request(command_name: str, arguments: Dict) -> Dict:
+        async def make_request(command_name: str, arguments: dict) -> dict:
             return await self.cross_checker.test_command_in_cursor(
                 command_name, arguments
             )
@@ -102,7 +101,7 @@ class EdgeCaseTester:
             "results": results,
         }
 
-    async def test_server_stress(self) -> Dict[str, Any]:
+    async def test_server_stress(self) -> dict[str, Any]:
         """Test server under stress conditions"""
 
         start_time = time.time()
@@ -138,7 +137,7 @@ class EdgeCaseTester:
             "total_requests": len(requests),
         }
 
-    async def test_invalid_json_rpc(self) -> Dict[str, Any]:
+    async def test_invalid_json_rpc(self) -> dict[str, Any]:
         """Test handling of invalid JSON-RPC requests"""
 
         # Test with malformed JSON
@@ -168,7 +167,7 @@ class EdgeCaseTester:
         except Exception as e:
             return {"test": "invalid_json_rpc", "passed": False, "error": str(e)}
 
-    async def run_all_edge_case_tests(self) -> Dict[str, Any]:
+    async def run_all_edge_case_tests(self) -> dict[str, Any]:
         """Run all edge case tests"""
 
         print("🔍 Starting Edge Cases and Error Scenarios Tests...")
@@ -196,7 +195,7 @@ class EdgeCaseTester:
         total_tests = len(test_results)
         success_rate = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
 
-        print(f"📊 Edge Cases Test Results:")
+        print("📊 Edge Cases Test Results:")
         print(f"Passed: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
 
         for test_name, result in test_results.items():

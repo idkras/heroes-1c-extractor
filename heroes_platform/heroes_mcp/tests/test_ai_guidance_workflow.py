@@ -4,23 +4,22 @@
 TDD подход - RED Phase: Написание падающих тестов
 """
 
-import pytest
-import sys
 import os
-from datetime import datetime
+import sys
+
+import pytest
 
 # Добавляем путь к модулю
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "workflows"))
 
-import sys
 import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "workflows"))
 from ai_guidance_workflow import (
     AIGuidanceWorkflow,
     GuidanceRequest,
-    GuidanceResponse,
     GuidanceType,
 )
 

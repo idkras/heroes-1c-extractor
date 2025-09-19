@@ -13,33 +13,38 @@ TDD Documentation Standard v2.5 Compliance:
 - Testing Pyramid Compliance (unit, integration, e2e)
 """
 
+import json
+import logging
 import os
 import subprocess
-import logging
-from typing import Dict, Optional, Any
 from dataclasses import dataclass
 from pathlib import Path
-import json
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class CredentialConfig:
     """Configuration for credential source"""
+
     name: str
     source: str  # 'keychain', 'github_secrets', 'env', 'file'
     key: str
     fallback_sources: Optional[list[str]] = None
-    validation_rules: Optional[Dict[str, Any]] = None
+    validation_rules: Optional[dict[str, Any]] = None
+
 
 @dataclass
 class CredentialResult:
     """Result of credential retrieval"""
+
     success: bool
     value: Optional[str] = None
     source: Optional[str] = None
     error: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[dict[str, Any]] = None
+
 
 class CredentialsManager:
     """
@@ -50,8 +55,8 @@ class CredentialsManager:
     """
 
     def __init__(self) -> None:
-        self._cache: Dict[str, CredentialResult] = {}
-        self._configs: Dict[str, CredentialConfig] = {}
+        self._cache: dict[str, CredentialResult] = {}
+        self._configs: dict[str, CredentialConfig] = {}
         self._setup_default_configs()
 
     def _setup_default_configs(self) -> None:
@@ -63,246 +68,249 @@ class CredentialsManager:
                 source="keychain",
                 key="telegram_api_id",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "int", "min_length": 1}
+                validation_rules={"type": "int", "min_length": 1},
             ),
             "telegram_api_hash": CredentialConfig(
                 name="Telegram API Hash",
                 source="keychain",
                 key="telegram_api_hash",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 32}
+                validation_rules={"type": "str", "min_length": 32},
             ),
             "telegram_session": CredentialConfig(
                 name="Telegram Session String",
                 source="keychain",
                 key="telegram_session",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 10}
+                validation_rules={"type": "str", "min_length": 10},
             ),
-
             # OpenAI/GPT credentials
             "openai_api_key": CredentialConfig(
                 name="OpenAI API Key",
                 source="keychain",
                 key="openai_api_key",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20, "prefix": "sk-"}
+                validation_rules={"type": "str", "min_length": 20, "prefix": "sk-"},
             ),
-
             # GitHub credentials
             "github_token": CredentialConfig(
                 name="GitHub Token",
                 source="keychain",
                 key="github_token",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 40}
+                validation_rules={"type": "str", "min_length": 40},
             ),
-
             # Other API keys
             "linear_api_key": CredentialConfig(
                 name="Linear API Key",
                 source="keychain",
                 key="linear_mcp",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20, "prefix": "lin_api_"}
+                validation_rules={
+                    "type": "str",
+                    "min_length": 20,
+                    "prefix": "lin_api_",
+                },
             ),
             "figma_token": CredentialConfig(
                 name="Figma Personal Access Token",
                 source="keychain",
                 key="figma_token",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20, "prefix": "figd_"}
+                validation_rules={"type": "str", "min_length": 20, "prefix": "figd_"},
             ),
-
             # Rick.ai credentials
             "rick_session_cookie": CredentialConfig(
                 name="Rick.ai Session Cookie",
                 source="keychain",
                 key="rick_session_cookie",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 50}
+                validation_rules={"type": "str", "min_length": 50},
             ),
-
             # Ghost CMS credentials
             "ghost_admin_key_2025": CredentialConfig(
                 name="Ghost Admin Key 2025",
                 source="keychain",
                 key="GHOST_ADMIN_KEY_2025",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "ghost_content_key_2025": CredentialConfig(
                 name="Ghost Content Key 2025",
                 source="keychain",
                 key="GHOST_CONTENT_KEY_2025",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "ghost_admin_key_2022_ru": CredentialConfig(
                 name="Ghost Admin Key 2022 RU",
                 source="keychain",
                 key="GHOST_ADMIN_KEY_2022_RU",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "ghost_content_key_2022_ru": CredentialConfig(
                 name="Ghost Content Key 2022 RU",
                 source="keychain",
                 key="GHOST_CONTENT_KEY_2022_RU",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "ghost_url_2025": CredentialConfig(
                 name="Ghost URL 2025",
                 source="keychain",
                 key="GHOST_API_URL_2025",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 10}
+                validation_rules={"type": "str", "min_length": 10},
             ),
             "ghost_url_2022_ru": CredentialConfig(
                 name="Ghost URL 2022 RU",
                 source="keychain",
                 key="GHOST_API_URL_2022_RU",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 10}
+                validation_rules={"type": "str", "min_length": 10},
             ),
-
             # Yandex Direct OAuth 2.0 credentials
             "yandex_direct_access_token": CredentialConfig(
                 name="Yandex Direct Access Token",
                 source="keychain",
                 key="yandex_direct_access_token",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 50}
+                validation_rules={"type": "str", "min_length": 50},
             ),
             "yandex_direct_client_id": CredentialConfig(
                 name="Yandex Direct Client ID",
                 source="keychain",
                 key="yandex_direct_client_id",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "yandex_direct_client_secret": CredentialConfig(
                 name="Yandex Direct Client Secret",
                 source="keychain",
                 key="yandex_direct_client_secret",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "yandex_direct_refresh_token": CredentialConfig(
                 name="Yandex Direct Refresh Token",
                 source="keychain",
                 key="yandex_direct_refresh_token",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 50}
+                validation_rules={"type": "str", "min_length": 50},
             ),
-
             # Ghost CMS credentials
-
             # Google OAuth 2.0 credentials
             "google_oauth_client_id": CredentialConfig(
                 name="Google OAuth Client ID",
                 source="keychain",
                 key="google-bigquery",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 50, "pattern": r".*\.apps\.googleusercontent\.com$"}
+                validation_rules={
+                    "type": "str",
+                    "min_length": 50,
+                    "pattern": r".*\.apps\.googleusercontent\.com$",
+                },
             ),
             "google_oauth_client_secret": CredentialConfig(
                 name="Google OAuth Client Secret",
                 source="keychain",
                 key="google_oauth_client_secret",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "google_refresh_token": CredentialConfig(
                 name="Google Refresh Token",
                 source="keychain",
                 key="google_refresh_token",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 50}
+                validation_rules={"type": "str", "min_length": 50},
             ),
-
             # Google Service Account JSON
             "google_service_account_json": CredentialConfig(
                 name="Google Service Account JSON",
                 source="keychain",
                 key="google-service-account-json",
                 fallback_sources=["env", "file"],
-                validation_rules={"type": "json", "required_fields": ["type", "project_id", "private_key_id", "private_key", "client_email"]}
+                validation_rules={
+                    "type": "json",
+                    "required_fields": [
+                        "type",
+                        "project_id",
+                        "private_key_id",
+                        "private_key",
+                        "client_email",
+                    ],
+                },
             ),
-
             # N8N credentials
             "N8N_API_KEY": CredentialConfig(
                 name="N8N API Key",
                 source="keychain",
                 key="N8N_API_KEY",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "N8N_API_URL": CredentialConfig(
                 name="N8N API URL",
                 source="keychain",
                 key="N8N_API_URL",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 10}
+                validation_rules={"type": "str", "min_length": 10},
             ),
-
             # HH.ru credentials
             "hh_oauth_client_id": CredentialConfig(
                 name="HH.ru OAuth Client ID",
                 source="keychain",
                 key="hh_oauth_client_id",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "hh_oauth_client_secret": CredentialConfig(
                 name="HH.ru OAuth Client Secret",
                 source="keychain",
                 key="hh_oauth_client_secret",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
-
             # Playwright credentials
             "PLAYWRIGHT_BROWSER_TOKEN": CredentialConfig(
                 name="Playwright Browser Token",
                 source="keychain",
                 key="PLAYWRIGHT_BROWSER_TOKEN",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
-
             # Figma API credentials
             "figma_api_key": CredentialConfig(
                 name="Figma API Key",
                 source="keychain",
                 key="figma_api_key",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
-
             # BookStack API credentials
             "bookstack_token_id": CredentialConfig(
                 name="BookStack Token ID",
                 source="keychain",
                 key="bookstack_token_id",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "bookstack_token_secret": CredentialConfig(
                 name="BookStack Token Secret",
                 source="keychain",
                 key="bookstack_token_secret",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 20}
+                validation_rules={"type": "str", "min_length": 20},
             ),
             "bookstack_url": CredentialConfig(
                 name="BookStack URL",
                 source="keychain",
                 key="bookstack_url",
                 fallback_sources=["env", "github_secrets"],
-                validation_rules={"type": "str", "min_length": 10}
-            )
+                validation_rules={"type": "str", "min_length": 10},
+            ),
         }
 
     def get_credential(self, credential_name: str) -> CredentialResult:
@@ -319,8 +327,7 @@ class CredentialsManager:
         config = self._configs.get(credential_name)
         if not config:
             return CredentialResult(
-                success=False,
-                error=f"Unknown credential: {credential_name}"
+                success=False, error=f"Unknown credential: {credential_name}"
             )
 
         # Try primary source
@@ -338,8 +345,7 @@ class CredentialsManager:
 
         # All sources failed
         error_result = CredentialResult(
-            success=False,
-            error=f"Failed to get {credential_name} from all sources"
+            success=False, error=f"Failed to get {credential_name} from all sources"
         )
         self._cache[credential_name] = error_result
         return error_result
@@ -348,7 +354,9 @@ class CredentialsManager:
         """Clear credentials cache"""
         self._cache.clear()
 
-    def _get_from_source(self, config: CredentialConfig, source: str) -> CredentialResult:
+    def _get_from_source(
+        self, config: CredentialConfig, source: str
+    ) -> CredentialResult:
         """Get credential from specific source"""
         try:
             if source == "keychain":
@@ -361,13 +369,11 @@ class CredentialsManager:
                 return self._get_from_file(config)
             else:
                 return CredentialResult(
-                    success=False,
-                    error=f"Unknown source: {source}"
+                    success=False, error=f"Unknown source: {source}"
                 )
         except Exception as e:
             return CredentialResult(
-                success=False,
-                error=f"Error getting from {source}: {str(e)}"
+                success=False, error=f"Error getting from {source}: {str(e)}"
             )
 
     def _get_from_keychain(self, config: CredentialConfig) -> CredentialResult:
@@ -380,11 +386,7 @@ class CredentialsManager:
                 command = f'security find-generic-password -s "{config.key}" -a "ilyakrasinsky" -w'
 
             result = subprocess.run(
-                command,
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=True
+                command, shell=True, capture_output=True, text=True, check=True
             )
             value = result.stdout.strip()
 
@@ -393,12 +395,13 @@ class CredentialsManager:
                 try:
                     # Try to decode as hex first (for binary data like JSON)
                     import subprocess as sp
+
                     decode_result = sp.run(
                         f'echo "{value}" | xxd -r -p',
                         shell=True,
                         capture_output=True,
                         text=True,
-                        check=True
+                        check=True,
                     )
                     decoded_value = decode_result.stdout.strip()
 
@@ -418,17 +421,15 @@ class CredentialsManager:
                     success=True,
                     value=value,
                     source="keychain",
-                    metadata={"method": "mac_keychain"}
+                    metadata={"method": "mac_keychain"},
                 )
             else:
                 return CredentialResult(
-                    success=False,
-                    error="Invalid credential from keychain"
+                    success=False, error="Invalid credential from keychain"
                 )
         except subprocess.CalledProcessError:
             return CredentialResult(
-                success=False,
-                error="Credential not found in keychain"
+                success=False, error="Credential not found in keychain"
             )
 
     def _get_from_env(self, config: CredentialConfig) -> CredentialResult:
@@ -438,23 +439,19 @@ class CredentialsManager:
 
         if value and self._validate_credential(config, value):
             return CredentialResult(
-                success=True,
-                value=value,
-                source="env",
-                metadata={"env_key": env_key}
+                success=True, value=value, source="env", metadata={"env_key": env_key}
             )
         else:
             return CredentialResult(
                 success=False,
-                error=f"Environment variable {env_key} not found or invalid"
+                error=f"Environment variable {env_key} not found or invalid",
             )
 
     def _get_from_github_secrets(self, config: CredentialConfig) -> CredentialResult:
         """Get credential from GitHub Secrets (when running in GitHub Actions)"""
         if not os.getenv("GITHUB_ACTIONS"):
             return CredentialResult(
-                success=False,
-                error="Not running in GitHub Actions"
+                success=False, error="Not running in GitHub Actions"
             )
 
         env_key = config.key.upper()
@@ -465,12 +462,11 @@ class CredentialsManager:
                 success=True,
                 value=value,
                 source="github_secrets",
-                metadata={"github_secret": env_key}
+                metadata={"github_secret": env_key},
             )
         else:
             return CredentialResult(
-                success=False,
-                error=f"GitHub secret {env_key} not found or invalid"
+                success=False, error=f"GitHub secret {env_key} not found or invalid"
             )
 
     def _get_from_file(self, config: CredentialConfig) -> CredentialResult:
@@ -485,18 +481,14 @@ class CredentialsManager:
                         success=True,
                         value=value,
                         source="file",
-                        metadata={"file_path": str(file_path)}
+                        metadata={"file_path": str(file_path)},
                     )
             except Exception as e:
                 return CredentialResult(
-                    success=False,
-                    error=f"Error reading file: {str(e)}"
+                    success=False, error=f"Error reading file: {str(e)}"
                 )
 
-        return CredentialResult(
-            success=False,
-            error=f"File not found: {file_path}"
-        )
+        return CredentialResult(success=False, error=f"File not found: {file_path}")
 
     def _validate_credential(self, config: CredentialConfig, value: str) -> bool:
         """Validate credential according to rules"""
@@ -538,12 +530,15 @@ class CredentialsManager:
         # Pattern validation
         if "pattern" in rules:
             import re
+
             if not re.match(rules["pattern"], value):
                 return False
 
         return True
 
-    def store_credential(self, credential_name: str, value: str, source: str = "keychain") -> bool:
+    def store_credential(
+        self, credential_name: str, value: str, source: str = "keychain"
+    ) -> bool:
         """
         Store credential in specified source
 
@@ -612,14 +607,14 @@ class CredentialsManager:
             logger.error(f"❌ Failed to store in file: {e}")
             return False
 
-    def get_all_credentials(self) -> Dict[str, CredentialResult]:
+    def get_all_credentials(self) -> dict[str, CredentialResult]:
         """Get all configured credentials"""
         results = {}
         for credential_name in self._configs.keys():
             results[credential_name] = self.get_credential(credential_name)
         return results
 
-    def test_credentials(self) -> Dict[str, bool]:
+    def test_credentials(self) -> dict[str, bool]:
         """Test all credentials for validity"""
         results = {}
         for credential_name in self._configs.keys():
@@ -627,8 +622,10 @@ class CredentialsManager:
             results[credential_name] = result.success
         return results
 
+
 # Global instance
 credentials_manager = CredentialsManager()
+
 
 def get_credential(credential_name: str) -> Optional[str]:
     """
@@ -640,7 +637,10 @@ def get_credential(credential_name: str) -> Optional[str]:
     result = credentials_manager.get_credential(credential_name)
     return result.value if result.success else None
 
-def store_credential(credential_name: str, value: str, source: str = "keychain") -> bool:
+
+def store_credential(
+    credential_name: str, value: str, source: str = "keychain"
+) -> bool:
     """
     Convenience function to store credential
 
@@ -649,7 +649,8 @@ def store_credential(credential_name: str, value: str, source: str = "keychain")
     """
     return credentials_manager.store_credential(credential_name, value, source)
 
-def create_google_oauth_config() -> Optional[Dict[str, str]]:
+
+def create_google_oauth_config() -> Optional[dict[str, str]]:
     """
     Create Google OAuth 2.0 configuration from credentials
 
@@ -677,13 +678,14 @@ def create_google_oauth_config() -> Optional[Dict[str, str]]:
         "client_secret": client_secret,
         "refresh_token": refresh_token,
         "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth"
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
     }
 
     logger.info("✅ Google OAuth 2.0 configuration created")
     return config
 
-def get_google_credentials() -> Optional[Dict[str, str]]:
+
+def get_google_credentials() -> Optional[dict[str, str]]:
     """
     Get Google credentials (OAuth 2.0 or Service Account)
 
@@ -691,7 +693,9 @@ def get_google_credentials() -> Optional[Dict[str, str]]:
     в любом формате, чтобы обеспечить гибкость интеграции.
     """
     # Try Service Account JSON first (from Keychain)
-    service_account_result = credentials_manager.get_credential("google_service_account_json")
+    service_account_result = credentials_manager.get_credential(
+        "google_service_account_json"
+    )
     if service_account_result.success:
         try:
             if service_account_result.value is None:
@@ -710,10 +714,12 @@ def get_google_credentials() -> Optional[Dict[str, str]]:
         return oauth_config
 
     # Fallback to service account file
-    service_account_path = Path("heroes-platform/config/rick-google-service-account.json")
+    service_account_path = Path(
+        "heroes-platform/config/rick-google-service-account.json"
+    )
     if service_account_path.exists():
         try:
-            with open(service_account_path, 'r') as f:
+            with open(service_account_path) as f:
                 service_account_data = json.load(f)
                 logger.info("✅ Google Service Account loaded from file")
                 return service_account_data
@@ -723,6 +729,7 @@ def get_google_credentials() -> Optional[Dict[str, str]]:
     logger.error("❌ No Google credentials found")
     return None
 
+
 def get_google_service_account_private_key() -> Optional[str]:
     """
     Extract private_key from Google Service Account JSON in Keychain
@@ -730,7 +737,9 @@ def get_google_service_account_private_key() -> Optional[str]:
     JTBD: Как MCP команда, я хочу получать private_key из Service Account JSON,
     чтобы использовать его для аутентификации в Google API.
     """
-    service_account_result = credentials_manager.get_credential("google_service_account_json")
+    service_account_result = credentials_manager.get_credential(
+        "google_service_account_json"
+    )
     if not service_account_result.success:
         logger.error("❌ Google Service Account JSON not found in Keychain")
         return None
@@ -747,7 +756,9 @@ def get_google_service_account_private_key() -> Optional[str]:
             return None
 
         if "YOUR_PRIVATE_KEY_HERE" in private_key:
-            logger.error("❌ private_key contains placeholder - need real private_key from Google Cloud Console")
+            logger.error(
+                "❌ private_key contains placeholder - need real private_key from Google Cloud Console"
+            )
             return None
 
         logger.info("✅ Google Service Account private_key extracted from Keychain")
@@ -757,14 +768,17 @@ def get_google_service_account_private_key() -> Optional[str]:
         logger.error(f"❌ Error parsing Service Account JSON: {e}")
         return None
 
-def get_google_service_account_info() -> Optional[Dict[str, str]]:
+
+def get_google_service_account_info() -> Optional[dict[str, str]]:
     """
     Get Google Service Account info (without private_key) for debugging
 
     JTBD: Как отладчик, я хочу получать информацию о Service Account без private_key,
     чтобы проверить конфигурацию без раскрытия секретов.
     """
-    service_account_result = credentials_manager.get_credential("google_service_account_json")
+    service_account_result = credentials_manager.get_credential(
+        "google_service_account_json"
+    )
     if not service_account_result.success:
         logger.error("❌ Google Service Account JSON not found in Keychain")
         return None
@@ -784,9 +798,11 @@ def get_google_service_account_info() -> Optional[Dict[str, str]]:
             "client_id": service_account_data.get("client_id"),
             "auth_uri": service_account_data.get("auth_uri"),
             "token_uri": service_account_data.get("token_uri"),
-            "auth_provider_x509_cert_url": service_account_data.get("auth_provider_x509_cert_url"),
+            "auth_provider_x509_cert_url": service_account_data.get(
+                "auth_provider_x509_cert_url"
+            ),
             "client_x509_cert_url": service_account_data.get("client_x509_cert_url"),
-            "universe_domain": service_account_data.get("universe_domain")
+            "universe_domain": service_account_data.get("universe_domain"),
         }
 
         # Check if private_key is placeholder
@@ -803,7 +819,8 @@ def get_google_service_account_info() -> Optional[Dict[str, str]]:
         logger.error(f"❌ Error parsing Service Account JSON: {e}")
         return None
 
-def get_bookstack_config() -> Optional[Dict[str, str]]:
+
+def get_bookstack_config() -> Optional[dict[str, str]]:
     """
     Create BookStack API configuration from credentials
 
@@ -830,7 +847,7 @@ def get_bookstack_config() -> Optional[Dict[str, str]]:
         "token_id": token_id,
         "token_secret": token_secret,
         "url": url,
-        "api_url": f"{url}/api"
+        "api_url": f"{url}/api",
     }
 
     logger.info("✅ BookStack API configuration created")

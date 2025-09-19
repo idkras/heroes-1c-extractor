@@ -439,7 +439,9 @@ class TelegramWorkflow:
                 "activity_level": (
                     "high"
                     if total_messages > 50
-                    else "medium" if total_messages > 20 else "low"
+                    else "medium"
+                    if total_messages > 20
+                    else "low"
                 ),
             }
         except Exception as e:

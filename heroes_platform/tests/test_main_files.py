@@ -2,15 +2,16 @@
 Tests for main project files without coverage
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from pathlib import Path
+from unittest.mock import Mock, patch
+
+import pytest
 
 
 class TestMainFiles:
     """Test cases for main project files"""
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_fix_mcp_config_final_import(self, mock_open):
         """Test fix_mcp_config_final.py can be imported"""
         mock_file = Mock()
@@ -22,15 +23,15 @@ if __name__ == "__main__":
     main()
 """
         mock_open.return_value.__enter__.return_value = mock_file
-        
+
         # Simulate importing the file
-        with open("fix_mcp_config_final.py", "r") as f:
+        with open("fix_mcp_config_final.py") as f:
             content = f.read()
-        
+
         assert "def main()" in content
         assert "if __name__" in content
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_restore_telegram_mcp_config_import(self, mock_open):
         """Test restore_telegram_mcp_config.py can be imported"""
         mock_file = Mock()
@@ -42,15 +43,15 @@ if __name__ == "__main__":
     restore()
 """
         mock_open.return_value.__enter__.return_value = mock_file
-        
+
         # Simulate importing the file
-        with open("restore_telegram_mcp_config.py", "r") as f:
+        with open("restore_telegram_mcp_config.py") as f:
             content = f.read()
-        
+
         assert "def restore()" in content
         assert "if __name__" in content
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_run_tests_import(self, mock_open):
         """Test run_tests.py can be imported"""
         mock_file = Mock()
@@ -62,15 +63,15 @@ if __name__ == "__main__":
     run_tests()
 """
         mock_open.return_value.__enter__.return_value = mock_file
-        
+
         # Simulate importing the file
-        with open("run_tests.py", "r") as f:
+        with open("run_tests.py") as f:
             content = f.read()
-        
+
         assert "def run_tests()" in content
         assert "if __name__" in content
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_update_server_name_import(self, mock_open):
         """Test update_server_name.py can be imported"""
         mock_file = Mock()
@@ -82,11 +83,11 @@ if __name__ == "__main__":
     update()
 """
         mock_open.return_value.__enter__.return_value = mock_file
-        
+
         # Simulate importing the file
-        with open("update_server_name.py", "r") as f:
+        with open("update_server_name.py") as f:
             content = f.read()
-        
+
         assert "def update()" in content
         assert "if __name__" in content
 
@@ -94,11 +95,11 @@ if __name__ == "__main__":
         """Test that main files have reasonable sizes"""
         main_files = [
             "fix_mcp_config_final.py",
-            "restore_telegram_mcp_config.py", 
+            "restore_telegram_mcp_config.py",
             "run_tests.py",
-            "update_server_name.py"
+            "update_server_name.py",
         ]
-        
+
         for file_name in main_files:
             file_path = Path(file_name)
             if file_path.exists():
@@ -111,10 +112,10 @@ if __name__ == "__main__":
         main_files = [
             "fix_mcp_config_final.py",
             "restore_telegram_mcp_config.py",
-            "run_tests.py", 
-            "update_server_name.py"
+            "run_tests.py",
+            "update_server_name.py",
         ]
-        
+
         for file_name in main_files:
             file_path = Path(file_name)
             if file_path.exists():
@@ -127,14 +128,14 @@ if __name__ == "__main__":
             "fix_mcp_config_final.py",
             "restore_telegram_mcp_config.py",
             "run_tests.py",
-            "update_server_name.py"
+            "update_server_name.py",
         ]
-        
+
         for file_name in main_files:
             file_path = Path(file_name)
             if file_path.exists():
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, encoding="utf-8") as f:
                         content = f.read()
                     assert len(content) > 0, f"File {file_name} should have content"
                 except UnicodeDecodeError:
@@ -146,20 +147,21 @@ if __name__ == "__main__":
             "fix_mcp_config_final.py",
             "restore_telegram_mcp_config.py",
             "run_tests.py",
-            "update_server_name.py"
+            "update_server_name.py",
         ]
-        
+
         for file_name in main_files:
             file_path = Path(file_name)
             if file_path.exists():
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, encoding="utf-8") as f:
                         content = f.read()
-                    
+
                     # Basic syntax check - look for common Python patterns
-                    assert "def " in content or "class " in content or "import " in content, \
-                        f"File {file_name} should contain Python code"
-                        
+                    assert (
+                        "def " in content or "class " in content or "import " in content
+                    ), f"File {file_name} should contain Python code"
+
                 except Exception as e:
                     pytest.fail(f"File {file_name} should be readable: {e}")
 
@@ -169,23 +171,24 @@ if __name__ == "__main__":
             "fix_mcp_config_final.py",
             "restore_telegram_mcp_config.py",
             "run_tests.py",
-            "update_server_name.py"
+            "update_server_name.py",
         ]
-        
+
         for file_name in main_files:
             file_path = Path(file_name)
             if file_path.exists():
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     lines = f.readlines()
-                
+
                 # Check for basic structure
                 assert len(lines) > 0, f"File {file_name} should have content"
-                
+
                 # Check for common Python file patterns
                 has_import = any("import " in line for line in lines)
                 has_def = any("def " in line for line in lines)
                 has_main = any("if __name__" in line for line in lines)
-                
+
                 # At least one of these should be present
-                assert has_import or has_def or has_main, \
+                assert has_import or has_def or has_main, (
                     f"File {file_name} should contain Python code structure"
+                )

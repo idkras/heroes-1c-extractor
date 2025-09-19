@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Извлечение только бизнес-данных из 1С без технических полей
@@ -9,17 +8,18 @@ import json
 import os
 import sys
 from datetime import datetime
-from typing import Any, Dict, List, Set
+from typing import Any
 
 # Добавляем путь к onec_dtools
 sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "tools", "onec_dtools")
+    0,
+    os.path.join(os.path.dirname(__file__), "..", "tools", "onec_dtools"),
 )
 
 from onec_dtools.database_reader import DatabaseReader
 
 # Бизнес-поля для извлечения
-BUSINESS_FIELDS: Set[str] = {
+BUSINESS_FIELDS: set[str] = {
     "_NUMBER",  # номер документа
     "_DATE_TIME",  # дата и время
     "_FLD4239",  # сумма (финансовые данные)
@@ -33,7 +33,7 @@ BUSINESS_FIELDS: Set[str] = {
 }
 
 # Технические поля для исключения
-TECHNICAL_FIELDS: Set[str] = {
+TECHNICAL_FIELDS: set[str] = {
     "_FLD10651",
     "_FLD10654",
     "_FLD12950",
@@ -48,7 +48,7 @@ TECHNICAL_FIELDS: Set[str] = {
 }
 
 # Критические таблицы для извлечения
-CRITICAL_TABLES: List[str] = [
+CRITICAL_TABLES: list[str] = [
     "_DOCUMENTJOURNAL5354",  # 4,458,509 записей
     "_DOCUMENTJOURNAL5287",  # 2,798,531 записей
     "_DOCUMENTJOURNAL5321",  # 973,975 записей
@@ -57,7 +57,7 @@ CRITICAL_TABLES: List[str] = [
 ]
 
 # Справочники для извлечения
-REFERENCE_TABLES: List[str] = [
+REFERENCE_TABLES: list[str] = [
     "_REFERENCE10",  # Номенклатура
     "_REFERENCE10002",  # Склады
     "_REFERENCE10003",  # Подразделения
@@ -66,7 +66,7 @@ REFERENCE_TABLES: List[str] = [
 ]
 
 
-def filter_business_fields(record_dict: Dict[str, Any]) -> Dict[str, Any]:
+def filter_business_fields(record_dict: dict[str, Any]) -> dict[str, Any]:
     """Фильтрует только бизнес-поля из записи"""
     filtered = {}
 
@@ -84,9 +84,9 @@ def filter_business_fields(record_dict: Dict[str, Any]) -> Dict[str, Any]:
     return filtered
 
 
-def extract_blob_content(blob_obj: Any) -> Dict[str, Any]:
+def extract_blob_content(blob_obj: Any) -> dict[str, Any]:
     """Извлекает содержимое BLOB поля"""
-    blob_data: Dict[str, Any] = {
+    blob_data: dict[str, Any] = {
         "field_type": str(type(blob_obj)),
         "size": 0,
         "extraction_methods": [],
@@ -126,12 +126,12 @@ def extract_blob_content(blob_obj: Any) -> Dict[str, Any]:
                         blob_data["extraction_methods"].append("value_hex")
                         blob_data["size"] = len(blob_value)
     except Exception as e:
-        blob_data["error"] = f"Ошибка извлечения: {str(e)}"
+        blob_data["error"] = f"Ошибка извлечения: {e!s}"
 
     return blob_data
 
 
-def extract_critical_tables(db: DatabaseReader) -> Dict[str, List[Dict]]:
+def extract_critical_tables(db: DatabaseReader) -> dict[str, list[dict]]:
     """Извлекает критические таблицы"""
     results = {}
 
@@ -193,7 +193,7 @@ def extract_critical_tables(db: DatabaseReader) -> Dict[str, List[Dict]]:
 
                 # Создаем запись
                 record = {
-                    "id": f"{table_name}_{i+1}",
+                    "id": f"{table_name}_{i + 1}",
                     "table_name": table_name,
                     "row_index": i + 1,
                     "fields": business_fields,
@@ -201,7 +201,7 @@ def extract_critical_tables(db: DatabaseReader) -> Dict[str, List[Dict]]:
                     "extraction_stats": {
                         "total_blobs": len(blobs),
                         "successful": len(
-                            [b for b in blobs.values() if b.get("extraction_methods")]
+                            [b for b in blobs.values() if b.get("extraction_methods")],
                         ),
                         "failed": len([b for b in blobs.values() if b.get("error")]),
                     },
@@ -215,7 +215,7 @@ def extract_critical_tables(db: DatabaseReader) -> Dict[str, List[Dict]]:
                     print(f"      📊 Обработано {i:,} записей")
 
             except Exception as e:
-                print(f"      ⚠️ Ошибка в записи {i}: {str(e)}")
+                print(f"      ⚠️ Ошибка в записи {i}: {e!s}")
                 continue
 
         results[table_name] = table_records
@@ -224,7 +224,7 @@ def extract_critical_tables(db: DatabaseReader) -> Dict[str, List[Dict]]:
     return results
 
 
-def extract_reference_tables(db: DatabaseReader) -> Dict[str, List[Dict]]:
+def extract_reference_tables(db: DatabaseReader) -> dict[str, list[dict]]:
     """Извлекает справочники"""
     results = {}
 
@@ -271,7 +271,7 @@ def extract_reference_tables(db: DatabaseReader) -> Dict[str, List[Dict]]:
 
                 # Создаем запись справочника
                 record = {
-                    "id": f"{table_name}_{i+1}",
+                    "id": f"{table_name}_{i + 1}",
                     "table_name": table_name,
                     "row_index": i + 1,
                     "fields": business_fields,
@@ -286,7 +286,7 @@ def extract_reference_tables(db: DatabaseReader) -> Dict[str, List[Dict]]:
                     print(f"      📊 Обработано {i:,} записей")
 
             except Exception as e:
-                print(f"      ⚠️ Ошибка в записи {i}: {str(e)}")
+                print(f"      ⚠️ Ошибка в записи {i}: {e!s}")
                 continue
 
         results[table_name] = table_records
@@ -310,7 +310,7 @@ def main() -> None:
         print(f"📊 Найдено {len(db.tables)} таблиц")
 
         # Инициализируем результаты
-        all_results: Dict[str, Any] = {
+        all_results: dict[str, Any] = {
             "critical_tables": {},
             "reference_tables": {},
             "metadata": {
@@ -338,7 +338,7 @@ def main() -> None:
         total_records += sum(len(records) for records in reference_results.values())
 
         all_results["metadata"]["total_tables"] = len(critical_results) + len(
-            reference_results
+            reference_results,
         )
         all_results["metadata"]["total_records"] = total_records
 
@@ -352,7 +352,7 @@ def main() -> None:
 
         print(f"✅ Результаты сохранены в {json_file}")
         print(
-            f"📊 Извлечено {total_records:,} записей из {all_results['metadata']['total_tables']} таблиц"
+            f"📊 Извлечено {total_records:,} записей из {all_results['metadata']['total_tables']} таблиц",
         )
 
         # Выводим статистику
@@ -365,7 +365,7 @@ def main() -> None:
 
         print("\n✅ Извлечение бизнес-данных завершено!")
     except Exception as e:
-        print(f"❌ Ошибка: {str(e)}")
+        print(f"❌ Ошибка: {e!s}")
         import traceback
 
         traceback.print_exc()

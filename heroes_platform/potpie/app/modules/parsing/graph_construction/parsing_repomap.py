@@ -6,17 +6,16 @@ from collections import Counter, defaultdict, namedtuple
 from pathlib import Path
 
 import networkx as nx
+from app.core.database import get_db
+from app.modules.parsing.graph_construction.parsing_helper import (  # noqa: E402
+    ParseHelper,
+)
 from grep_ast import TreeContext, filename_to_lang
 from pygments.lexers import guess_lexer_for_filename
 from pygments.token import Token
 from pygments.util import ClassNotFound
 from tqdm import tqdm
 from tree_sitter_languages import get_language, get_parser
-
-from app.core.database import get_db
-from app.modules.parsing.graph_construction.parsing_helper import (  # noqa: E402
-    ParseHelper,
-)
 
 # tree_sitter is throwing a FutureWarning
 warnings.simplefilter("ignore", category=FutureWarning)

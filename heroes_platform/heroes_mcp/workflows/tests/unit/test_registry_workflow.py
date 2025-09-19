@@ -6,10 +6,11 @@ JTBD: Как тестировщик, я хочу проверить все ме�
 чтобы убедиться в корректности работы registry команд.
 """
 
-import pytest
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 # Add workflows directory to path
 sys.path.append(str(Path(__file__).parent.parent))

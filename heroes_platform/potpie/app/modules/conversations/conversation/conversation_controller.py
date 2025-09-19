@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, List
+from collections.abc import AsyncGenerator
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -69,7 +69,7 @@ class ConversationController:
 
     async def get_conversation_messages(
         self, conversation_id: str, start: int, limit: int
-    ) -> List[MessageResponse]:
+    ) -> list[MessageResponse]:
         try:
             return await self.service.get_conversation_messages(
                 conversation_id, start, limit, self.user_id
@@ -99,7 +99,7 @@ class ConversationController:
     async def regenerate_last_message(
         self,
         conversation_id: str,
-        node_ids: List[NodeContext] = [],
+        node_ids: list[NodeContext] = [],
         stream: bool = True,
     ) -> AsyncGenerator[ChatMessageResponse, None]:
         try:

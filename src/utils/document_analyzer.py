@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 DocumentAnalyzer - Единый интерфейс для анализа структуры документов
@@ -8,7 +7,7 @@ DocumentAnalyzer - Единый интерфейс для анализа стр�
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from onec_dtools.database_reader import DatabaseReader
 
@@ -22,10 +21,10 @@ class DocumentAnalysisResult:
 
     table_name: str
     record_count: int
-    fields: List[str]
-    blob_fields: List[str]
-    sample_data: Dict[str, Any] = field(default_factory=dict)
-    analysis_metadata: Optional[Dict[str, Any]] = None
+    fields: list[str]
+    blob_fields: list[str]
+    sample_data: dict[str, Any] = field(default_factory=dict)
+    analysis_metadata: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         """Инициализация после создания объекта"""
@@ -39,9 +38,9 @@ class TableAnalysisResult:
 
     table_name: str
     record_count: int
-    document_analysis: List[DocumentAnalysisResult]
-    keyword_search_results: List[KeywordSearchResult]
-    analysis_metadata: Optional[Dict[str, Any]] = None
+    document_analysis: list[DocumentAnalysisResult]
+    keyword_search_results: list[KeywordSearchResult]
+    analysis_metadata: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         """Инициализация после создания объекта"""
@@ -62,7 +61,10 @@ class DocumentAnalyzer:
         self.keyword_searcher = KeywordSearcher()
 
     def analyze_document_structure(
-        self, record_data: Dict[str, Any], table_name: str, record_index: int
+        self,
+        record_data: dict[str, Any],
+        table_name: str,
+        record_index: int,
     ) -> DocumentAnalysisResult:
         """
         JTBD:
@@ -80,15 +82,14 @@ class DocumentAnalyzer:
         # Анализируем поля
         fields = list(record_data.keys())
         blob_fields = []
-        sample_data: Dict[str, Any] = {}
+        sample_data: dict[str, Any] = {}
 
         for field_name, field_value in record_data.items():
             if self.blob_processor.is_blob_field(field_value):
                 blob_fields.append(field_name)
-            else:
-                # Сохраняем образцы обычных полей
-                if len(sample_data) < 5:  # Ограничиваем количество образцов
-                    sample_data[field_name] = field_value
+            # Сохраняем образцы обычных полей
+            elif len(sample_data) < 5:  # Ограничиваем количество образцов
+                sample_data[field_name] = field_value
 
         # Создаем результат анализа
         result = DocumentAnalysisResult(
@@ -112,7 +113,10 @@ class DocumentAnalyzer:
         return result
 
     def analyze_table_documents(
-        self, db: DatabaseReader, table_name: str, max_records: int = 5
+        self,
+        db: DatabaseReader,
+        table_name: str,
+        max_records: int = 5,
     ) -> TableAnalysisResult:
         """
         JTBD:
@@ -142,13 +146,15 @@ class DocumentAnalyzer:
 
                     # Анализируем структуру документа
                     doc_analysis = self.analyze_document_structure(
-                        record_data, table_name, i
+                        record_data,
+                        table_name,
+                        i,
                     )
                     document_analysis.append(doc_analysis)
 
                     # Ищем ключевые слова
                     quality_search = self.keyword_searcher.search_quality_keywords(
-                        record_data
+                        record_data,
                     )
                     if quality_search.found_keywords:
                         keyword_search_results.append(quality_search)
@@ -176,8 +182,10 @@ class DocumentAnalyzer:
         return result
 
     def analyze_document_tables(
-        self, db: DatabaseReader, max_tables: int = 20
-    ) -> List[TableAnalysisResult]:
+        self,
+        db: DatabaseReader,
+        max_tables: int = 20,
+    ) -> list[TableAnalysisResult]:
         """
         JTBD:
         Как система анализа таблиц документов, я хочу проанализировать все таблицы документов,
@@ -200,12 +208,14 @@ class DocumentAnalyzer:
 
         # Сортируем по размеру
         sorted_tables = sorted(
-            document_tables.items(), key=lambda x: x[1], reverse=True
+            document_tables.items(),
+            key=lambda x: x[1],
+            reverse=True,
         )
 
         results = []
         for i, (table_name, record_count) in enumerate(sorted_tables[:max_tables]):
-            print(f"\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
+            print(f"\n📋 {i + 1:2d}. {table_name} ({record_count:,} записей)")
 
             try:
                 table_analysis = self.analyze_table_documents(db, table_name)
@@ -214,7 +224,7 @@ class DocumentAnalyzer:
                 # Показываем результаты
                 if table_analysis.keyword_search_results:
                     print(
-                        f"    ✅ Найдено {len(table_analysis.keyword_search_results)} записей с ключевыми словами"
+                        f"    ✅ Найдено {len(table_analysis.keyword_search_results)} записей с ключевыми словами",
                     )
                 else:
                     print("    ⚠️ Ключевые слова не найдены")
@@ -226,8 +236,10 @@ class DocumentAnalyzer:
         return results
 
     def analyze_reference_tables(
-        self, db: DatabaseReader, max_tables: int = 10
-    ) -> List[TableAnalysisResult]:
+        self,
+        db: DatabaseReader,
+        max_tables: int = 10,
+    ) -> list[TableAnalysisResult]:
         """
         JTBD:
         Как система анализа справочников, я хочу проанализировать справочники,
@@ -250,16 +262,20 @@ class DocumentAnalyzer:
 
         # Сортируем по размеру
         sorted_tables = sorted(
-            reference_tables.items(), key=lambda x: x[1], reverse=True
+            reference_tables.items(),
+            key=lambda x: x[1],
+            reverse=True,
         )
 
         results = []
         for i, (table_name, record_count) in enumerate(sorted_tables[:max_tables]):
-            print(f"\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
+            print(f"\n📋 {i + 1:2d}. {table_name} ({record_count:,} записей)")
 
             try:
                 table_analysis = self.analyze_table_documents(
-                    db, table_name, max_records=3
+                    db,
+                    table_name,
+                    max_records=3,
                 )
                 results.append(table_analysis)
 
@@ -270,8 +286,9 @@ class DocumentAnalyzer:
         return results
 
     def analyze_accumulation_registers(
-        self, db: DatabaseReader
-    ) -> List[TableAnalysisResult]:
+        self,
+        db: DatabaseReader,
+    ) -> list[TableAnalysisResult]:
         """
         JTBD:
         Как система анализа регистров накопления, я хочу проанализировать регистры накопления,
@@ -293,16 +310,20 @@ class DocumentAnalyzer:
 
         # Сортируем по размеру
         sorted_tables = sorted(
-            accumulation_tables.items(), key=lambda x: x[1], reverse=True
+            accumulation_tables.items(),
+            key=lambda x: x[1],
+            reverse=True,
         )
 
         results = []
         for i, (table_name, record_count) in enumerate(sorted_tables):
-            print(f"\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
+            print(f"\n📋 {i + 1:2d}. {table_name} ({record_count:,} записей)")
 
             try:
                 table_analysis = self.analyze_table_documents(
-                    db, table_name, max_records=2
+                    db,
+                    table_name,
+                    max_records=2,
                 )
                 results.append(table_analysis)
 
@@ -313,8 +334,9 @@ class DocumentAnalyzer:
         return results
 
     def get_analysis_summary(
-        self, results: List[TableAnalysisResult]
-    ) -> Dict[str, Any]:
+        self,
+        results: list[TableAnalysisResult],
+    ) -> dict[str, Any]:
         """
         JTBD:
         Как система создания сводки, я хочу создать сводку результатов анализа,
@@ -356,7 +378,9 @@ document_analyzer = DocumentAnalyzer()
 
 
 def analyze_document_structure(
-    record_data: Dict[str, Any], table_name: str, record_index: int
+    record_data: dict[str, Any],
+    table_name: str,
+    record_index: int,
 ) -> DocumentAnalysisResult:
     """
     JTBD:
@@ -372,5 +396,7 @@ def analyze_document_structure(
         DocumentAnalysisResult: Результат анализа
     """
     return document_analyzer.analyze_document_structure(
-        record_data, table_name, record_index
+        record_data,
+        table_name,
+        record_index,
     )

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Скрипт для проверки результатов извлечения BLOB данных
@@ -11,7 +10,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Импорты для Parquet и DuckDB
 try:
@@ -22,7 +21,7 @@ try:
 except ImportError:
     PARQUET_DUCKDB_AVAILABLE = False
     print(
-        "⚠️ Parquet/DuckDB не установлены. Установите: pip install pandas pyarrow duckdb"
+        "⚠️ Parquet/DuckDB не установлены. Установите: pip install pandas pyarrow duckdb",
     )
 
 
@@ -94,7 +93,7 @@ class BlobResultsValidator:
             "еда",
         ]
 
-    def validate_parquet_data(self, parquet_path: str) -> Dict[str, Any]:
+    def validate_parquet_data(self, parquet_path: str) -> dict[str, Any]:
         """Проверка Parquet данных"""
         print(f"🔍 Проверка Parquet файла: {parquet_path}")
 
@@ -108,7 +107,7 @@ class BlobResultsValidator:
             # Читаем Parquet файл
             df = pd.read_parquet(parquet_path)
 
-            results: Dict[str, Any] = {
+            results: dict[str, Any] = {
                 "file_path": parquet_path,
                 "total_records": len(df),
                 "columns": list(df.columns),
@@ -122,7 +121,7 @@ class BlobResultsValidator:
 
             # Проверяем наличие данных о цветах
             if "has_flower_data" in df.columns:
-                flower_records = df[df["has_flower_data"] == True]
+                flower_records = df[df["has_flower_data"] is True]
                 results["flower_data_found"] = len(flower_records)
 
                 if len(flower_records) > 0:
@@ -138,7 +137,7 @@ class BlobResultsValidator:
 
             # Проверяем наличие данных о магазинах
             if "has_store_data" in df.columns:
-                store_records = df[df["has_store_data"] == True]
+                store_records = df[df["has_store_data"] is True]
                 results["store_data_found"] = len(store_records)
 
                 if len(store_records) > 0:
@@ -165,10 +164,10 @@ class BlobResultsValidator:
             print(f"🌸 Данных о цветах: {results['flower_data_found']}")
             print(f"🏪 Данных о магазинах: {results['store_data_found']}")
             print(
-                f"🔍 Ключевые слова цветов: {', '.join(results['flower_keywords_found'])}"
+                f"🔍 Ключевые слова цветов: {', '.join(results['flower_keywords_found'])}",
             )
             print(
-                f"🔍 Ключевые слова магазинов: {', '.join(results['store_keywords_found'])}"
+                f"🔍 Ключевые слова магазинов: {', '.join(results['store_keywords_found'])}",
             )
 
             return results
@@ -176,7 +175,7 @@ class BlobResultsValidator:
         except Exception as e:
             return {"error": f"Ошибка чтения Parquet файла: {e}"}
 
-    def validate_duckdb_data(self, duckdb_path: str) -> Dict[str, Any]:
+    def validate_duckdb_data(self, duckdb_path: str) -> dict[str, Any]:
         """Проверка DuckDB данных"""
         print(f"🔍 Проверка DuckDB файла: {duckdb_path}")
 
@@ -190,7 +189,7 @@ class BlobResultsValidator:
             # Подключаемся к DuckDB
             conn = duckdb.connect(duckdb_path)
 
-            results: Dict[str, Any] = {
+            results: dict[str, Any] = {
                 "file_path": duckdb_path,
                 "tables": [],
                 "sql_queries_work": False,
@@ -220,7 +219,7 @@ class BlobResultsValidator:
                 if "has_flower_data" in [
                     col[0]
                     for col in conn.execute(
-                        f"DESCRIBE {results['tables'][0]}"
+                        f"DESCRIBE {results['tables'][0]}",
                     ).fetchall()
                 ]:
                     flower_query = f"SELECT COUNT(*) FROM {results['tables'][0]} WHERE has_flower_data = true"
@@ -232,7 +231,7 @@ class BlobResultsValidator:
                 if "has_store_data" in [
                     col[0]
                     for col in conn.execute(
-                        f"DESCRIBE {results['tables'][0]}"
+                        f"DESCRIBE {results['tables'][0]}",
                     ).fetchall()
                 ]:
                     store_query = f"SELECT COUNT(*) FROM {results['tables'][0]} WHERE has_store_data = true"
@@ -257,12 +256,14 @@ class BlobResultsValidator:
             return {"error": f"Ошибка работы с DuckDB: {e}"}
 
     def validate_integration(
-        self, parquet_path: str, duckdb_path: str
-    ) -> Dict[str, Any]:
+        self,
+        parquet_path: str,
+        duckdb_path: str,
+    ) -> dict[str, Any]:
         """Проверка интеграции Parquet + DuckDB"""
         print("🔍 Проверка интеграции Parquet + DuckDB")
 
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "parquet_path": parquet_path,
             "duckdb_path": duckdb_path,
             "data_synchronized": False,
@@ -298,14 +299,14 @@ class BlobResultsValidator:
             results["flower_data_sync"] = True
         else:
             results["errors"].append(
-                f"Несинхронизированы данные о цветах: Parquet={parquet_flower_count}, DuckDB={duckdb_flower_count}"
+                f"Несинхронизированы данные о цветах: Parquet={parquet_flower_count}, DuckDB={duckdb_flower_count}",
             )
 
         if parquet_store_count == duckdb_store_count:
             results["store_data_sync"] = True
         else:
             results["errors"].append(
-                f"Несинхронизированы данные о магазинах: Parquet={parquet_store_count}, DuckDB={duckdb_store_count}"
+                f"Несинхронизированы данные о магазинах: Parquet={parquet_store_count}, DuckDB={duckdb_store_count}",
             )
 
         results["data_synchronized"] = (
@@ -321,7 +322,7 @@ class BlobResultsValidator:
 
         return results
 
-    def run_validation(self) -> Dict[str, Any]:
+    def run_validation(self) -> dict[str, Any]:
         """Запуск полной валидации"""
         print("🧪 ВАЛИДАЦИЯ РЕЗУЛЬТАТОВ ИЗВЛЕЧЕНИЯ BLOB ДАННЫХ")
         print("=" * 80)
@@ -338,7 +339,7 @@ class BlobResultsValidator:
         print(f"📁 Найдено Parquet файлов: {len(parquet_files)}")
         print(f"📁 Найдено DuckDB файлов: {len(duckdb_files)}")
 
-        validation_results: Dict[str, Any] = {
+        validation_results: dict[str, Any] = {
             "validation_date": datetime.now().isoformat(),
             "test_cases": {},
             "summary": {
@@ -352,9 +353,9 @@ class BlobResultsValidator:
         # Валидируем каждый файл
         for parquet_file in parquet_files:
             table_name = parquet_file.stem.replace("_blob_1000", "")
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print(f"📊 ВАЛИДАЦИЯ ТАБЛИЦЫ: {table_name}")
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
 
             # Валидируем Parquet
             parquet_results = self.validate_parquet_data(str(parquet_file))
@@ -370,11 +371,12 @@ class BlobResultsValidator:
 
                 # Валидируем интеграцию
                 integration_results = self.validate_integration(
-                    str(parquet_file), str(duckdb_file)
+                    str(parquet_file),
+                    str(duckdb_file),
                 )
 
             # Сохраняем результаты
-            table_results: Dict[str, Any] = {
+            table_results: dict[str, Any] = {
                 "table_name": table_name,
                 "parquet_results": parquet_results,
                 "duckdb_results": duckdb_results,
@@ -387,13 +389,14 @@ class BlobResultsValidator:
             validation_results["summary"]["total_files_validated"] += 1
 
             if "error" not in parquet_results and parquet_results.get(
-                "validation_passed", False
+                "validation_passed",
+                False,
             ):
                 validation_results["summary"]["validation_passed"] += 1
             else:
                 validation_results["summary"]["validation_failed"] += 1
                 validation_results["summary"]["total_errors"] += len(
-                    parquet_results.get("errors", [])
+                    parquet_results.get("errors", []),
                 )
 
         # Сохраняем отчет валидации
@@ -403,13 +406,13 @@ class BlobResultsValidator:
 
         print("\n📊 ИТОГОВАЯ СТАТИСТИКА ВАЛИДАЦИИ:")
         print(
-            f"📁 Файлов проверено: {validation_results['summary']['total_files_validated']}"
+            f"📁 Файлов проверено: {validation_results['summary']['total_files_validated']}",
         )
         print(
-            f"✅ Валидация прошла: {validation_results['summary']['validation_passed']}"
+            f"✅ Валидация прошла: {validation_results['summary']['validation_passed']}",
         )
         print(
-            f"❌ Валидация не прошла: {validation_results['summary']['validation_failed']}"
+            f"❌ Валидация не прошла: {validation_results['summary']['validation_failed']}",
         )
         print(f"🚨 Всего ошибок: {validation_results['summary']['total_errors']}")
         print(f"📄 Отчет сохранен: {report_path}")

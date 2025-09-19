@@ -2,9 +2,8 @@
 Tests for Heroes Platform modules
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 
 class TestHeroesPlatform:
@@ -39,14 +38,14 @@ class TestHeroesPlatform:
         assert workflows_dir.exists(), "workflows directory should exist"
         assert workflows_dir.is_dir(), "workflows should be a directory"
 
-    @patch('builtins.open', create=True)
+    @patch("builtins.open", create=True)
     def test_mcp_server_content(self, mock_open):
         """Test mcp_server.py content structure"""
         mock_file = Mock()
         mock_file.read.return_value = "from mcp.server import FastMCP"
         mock_open.return_value.__enter__.return_value = mock_file
-        
-        with open("heroes-platform/mcp_server/src/mcp_server.py", "r") as f:
+
+        with open("heroes-platform/mcp_server/src/mcp_server.py") as f:
             content = f.read()
         assert "mcp" in content
 
@@ -57,25 +56,20 @@ class TestHeroesPlatform:
         assert mcp_dir.is_dir(), "mcp_server should be a directory"
 
         # Check for important subdirectories
-        important_dirs = [
-            "src",
-            "config", 
-            "scripts",
-            "tests",
-            "workflows",
-            "docs"
-        ]
+        important_dirs = ["src", "config", "scripts", "tests", "workflows", "docs"]
 
         for dir_name in important_dirs:
             dir_path = mcp_dir / dir_name
-            assert dir_path.exists(), f"Important directory {dir_name} should exist in mcp_server"
+            assert dir_path.exists(), (
+                f"Important directory {dir_name} should exist in mcp_server"
+            )
             assert dir_path.is_dir(), f"{dir_name} should be a directory"
 
     def test_config_files_exist(self):
         """Test that config files exist"""
         config_files = [
             "heroes_mcp/config/production.env",
-            "heroes_mcp/config/README.md"
+            "heroes_mcp/config/README.md",
         ]
 
         for file_path in config_files:
@@ -84,9 +78,7 @@ class TestHeroesPlatform:
 
     def test_script_files_exist(self):
         """Test that script files exist"""
-        script_files = [
-            "heroes_mcp/scripts/update_dependencies_matrix.py"
-        ]
+        script_files = ["heroes_mcp/scripts/update_dependencies_matrix.py"]
 
         for file_path in script_files:
             path = Path(file_path)
@@ -94,10 +86,7 @@ class TestHeroesPlatform:
 
     def test_test_files_exist(self):
         """Test that test files exist"""
-        test_dirs = [
-            "heroes_mcp/tests/performance",
-            "heroes_mcp/tests/security"
-        ]
+        test_dirs = ["heroes_mcp/tests/performance", "heroes_mcp/tests/security"]
 
         for dir_path in test_dirs:
             path = Path(dir_path)
@@ -106,9 +95,7 @@ class TestHeroesPlatform:
 
     def test_workflow_files_exist(self):
         """Test that workflow files exist"""
-        workflow_files = [
-            "heroes_mcp/workflows/"
-        ]
+        workflow_files = ["heroes_mcp/workflows/"]
 
         for file_path in workflow_files:
             path = Path(file_path)
@@ -124,7 +111,7 @@ class TestHeroesPlatform:
         """Test that systemd files exist"""
         systemd_files = [
             "heroes_mcp/systemd/mcp-server.service",
-            "heroes_mcp/systemd/README.md"
+            "heroes_mcp/systemd/README.md",
         ]
 
         for file_path in systemd_files:
@@ -153,7 +140,7 @@ class TestHeroesPlatform:
         """Test that dependencies files exist"""
         deps_files = [
             "heroes_mcp/dependencies.json",
-            "heroes_mcp/src/dependencies.json"
+            "heroes_mcp/src/dependencies.json",
         ]
 
         for file_path in deps_files:

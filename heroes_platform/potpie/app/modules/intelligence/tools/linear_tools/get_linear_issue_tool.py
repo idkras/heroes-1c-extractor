@@ -1,13 +1,13 @@
-from typing import Dict, Any
 import asyncio
-from pydantic import BaseModel, Field
-from langchain_core.tools import StructuredTool
-from sqlalchemy.orm import Session
+from typing import Any
 
 from app.modules.intelligence.tools.linear_tools.linear_client import (
     get_linear_client_for_user,
 )
 from app.modules.key_management.secret_manager import SecretStorageHandler
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 
 class GetLinearIssueInput(BaseModel):
@@ -26,7 +26,7 @@ class GetLinearIssueTool:
         self.db = db
         self.user_id = user_id
 
-    async def arun(self, issue_id: str) -> Dict[str, Any]:
+    async def arun(self, issue_id: str) -> dict[str, Any]:
         """Async version that handles the core logic"""
         try:
             # Check if user has Linear API key configured
@@ -65,7 +65,7 @@ class GetLinearIssueTool:
         except Exception as e:
             return {"error": f"Error fetching Linear issue: {str(e)}"}
 
-    def run(self, issue_id: str) -> Dict[str, Any]:
+    def run(self, issue_id: str) -> dict[str, Any]:
         """Synchronous version that runs the async version"""
         return asyncio.run(self.arun(issue_id))
 

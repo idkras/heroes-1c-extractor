@@ -3,12 +3,12 @@ Integration tests for Visual Hierarchy Workflow with MCP Server
 Following TDD Documentation Standard - RED Phase
 """
 
-import pytest
 import json
-import asyncio
-from unittest.mock import Mock, patch
-import sys
 import os
+import sys
+from unittest.mock import patch
+
+import pytest
 
 # Add parent directory to path for imports
 sys.path.insert(

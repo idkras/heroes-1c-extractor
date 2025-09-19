@@ -1,0 +1,21 @@
+📊 РЕЗУЛЬТАТЫ ТЕСТИРОВАНИЯ
+...................................F.................................... [ 57%]
+.................................FFFFFFFF..FFFFFF.FF.s                   [100%]
+=================================== FAILURES ===================================
+___________ TestTC002FlowerExtraction.test_where_source_table_parts ____________
+tests/testcases/test_tc002_flower_extraction.py:160: in test_where_source_table_parts
+    self.assertGreaterEqual(
+E   AssertionError: 0 not greater than or equal to 3 : Найдено таблиц: 0, ожидалось ≥3
+_______________ TestDocumentSearch.test_search_by_document_type ________________
+tests/validation/test_document_search.py:27: in test_search_by_document_type
+    floristic_docs = conn.execute(
+E   duckdb.duckdb.BinderException: Binder Error: Referenced column "document_type" not found in FROM clause!
+E   Candidate bindings: "table_name", "id", "total_blobs", "row_index"
+E   
+E   LINE 4:             WHERE document_type = 'ФЛОРИСТИКА'
+E                             ^
+___________________ TestDocumentSearch.test_search_by_store ____________________
+tests/validation/test_document_search.py:55: in test_search_by_store
+    store_docs = conn.execute(
+E   duckdb.duckdb.BinderException: Binder Error: Referenced column "store_name" not found in FROM clause!
+E   Candidate bindings: "table_name", "row_index", "blob__FLD4229_methods", "blob__FLD4936_methods", "blob__FLD3982_methods"

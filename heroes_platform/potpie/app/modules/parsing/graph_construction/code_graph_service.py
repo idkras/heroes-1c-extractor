@@ -1,13 +1,12 @@
 import hashlib
 import logging
 import time
-from typing import Dict, Optional
-
-from neo4j import GraphDatabase
-from sqlalchemy.orm import Session
+from typing import Optional
 
 from app.modules.parsing.graph_construction.parsing_repomap import RepoMap
 from app.modules.search.search_service import SearchService
+from neo4j import GraphDatabase
+from sqlalchemy.orm import Session
 
 
 class CodeGraphService:
@@ -175,7 +174,7 @@ class CodeGraphService:
         search_service = SearchService(self.db)
         search_service.delete_project_index(project_id)
 
-    async def get_node_by_id(self, node_id: str, project_id: str) -> Optional[Dict]:
+    async def get_node_by_id(self, node_id: str, project_id: str) -> Optional[dict]:
         with self.driver.session() as session:
             result = session.run(
                 """
@@ -197,7 +196,7 @@ class CodeGraphService:
 class SimpleIO:
     def read_text(self, fname):
         try:
-            with open(fname, "r", encoding="utf-8") as f:
+            with open(fname, encoding="utf-8") as f:
                 return f.read()
         except UnicodeDecodeError:
             logging.warning(f"Could not read {fname} as UTF-8. Skipping this file.")

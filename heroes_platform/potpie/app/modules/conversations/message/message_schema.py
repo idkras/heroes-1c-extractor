@@ -1,10 +1,9 @@
 from datetime import datetime
-from typing import List, Optional
-
-from pydantic import BaseModel
+from typing import Optional
 
 from app.modules.conversations.message.message_model import MessageStatus, MessageType
 from app.modules.media.media_schema import AttachmentInfo
+from pydantic import BaseModel
 
 
 class NodeContext(BaseModel):
@@ -14,19 +13,19 @@ class NodeContext(BaseModel):
 
 class MessageRequest(BaseModel):
     content: str
-    node_ids: Optional[List[NodeContext]] = None
-    attachment_ids: Optional[List[str]] = None  # IDs of uploaded attachments
+    node_ids: Optional[list[NodeContext]] = None
+    attachment_ids: Optional[list[str]] = None  # IDs of uploaded attachments
 
 
 class DirectMessageRequest(BaseModel):
     content: str
-    node_ids: Optional[List[NodeContext]] = None
+    node_ids: Optional[list[NodeContext]] = None
     agent_id: str | None = None
-    attachment_ids: Optional[List[str]] = None  # IDs of uploaded attachments
+    attachment_ids: Optional[list[str]] = None  # IDs of uploaded attachments
 
 
 class RegenerateRequest(BaseModel):
-    node_ids: Optional[List[NodeContext]] = None
+    node_ids: Optional[list[NodeContext]] = None
 
 
 class MessageResponse(BaseModel):
@@ -38,9 +37,9 @@ class MessageResponse(BaseModel):
     reason: Optional[str] = None
     created_at: datetime
     status: MessageStatus
-    citations: Optional[List[str]] = None
+    citations: Optional[list[str]] = None
     has_attachments: bool = False
-    attachments: Optional[List[AttachmentInfo]] = None
+    attachments: Optional[list[AttachmentInfo]] = None
 
     class Config:
         from_attributes = True

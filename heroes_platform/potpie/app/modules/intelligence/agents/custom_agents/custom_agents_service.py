@@ -1,5 +1,6 @@
 import json
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from collections.abc import AsyncGenerator
+from typing import Any, Optional
 from uuid import uuid4
 
 from fastapi import HTTPException
@@ -10,17 +11,18 @@ from sqlalchemy.orm import Session
 from app.modules.intelligence.agents.chat_agent import ChatAgentResponse, ChatContext
 from app.modules.intelligence.agents.custom_agents.custom_agent_model import (
     CustomAgent as CustomAgentModel,
+)
+from app.modules.intelligence.agents.custom_agents.custom_agent_model import (
     CustomAgentShare as CustomAgentShareModel,
 )
 from app.modules.intelligence.agents.custom_agents.custom_agent_schema import (
     Agent,
     AgentCreate,
     AgentUpdate,
+    AgentVisibility,
     Task,
     TaskCreate,
-    AgentVisibility,
 )
-
 from app.modules.intelligence.agents.custom_agents.runtime_agent import (
     RuntimeCustomAgent,
 )
@@ -90,7 +92,6 @@ class CustomAgentService:
     ) -> CustomAgentShareModel:
         """Create a share for an agent with another user"""
         try:
-
             # Get the agent to log its current state
             agent = await self.get_agent_model(agent_id)
             if agent:
@@ -138,7 +139,6 @@ class CustomAgentService:
     async def revoke_share(self, agent_id: str, shared_with_user_id: str) -> bool:
         """Revoke access to an agent for a specific user"""
         try:
-
             # Get the agent to log its current state
             agent = await self.get_agent_model(agent_id)
             if agent:
@@ -191,7 +191,6 @@ class CustomAgentService:
     async def list_agent_shares(self, agent_id: str) -> list[str]:
         """List all emails this agent has been shared with"""
         try:
-
             # Get all user IDs this agent is shared with
             shares = (
                 self.db.query(CustomAgentShareModel)
@@ -222,7 +221,6 @@ class CustomAgentService:
     async def make_agent_private(self, agent_id: str, user_id: str) -> Optional[Agent]:
         """Make an agent private, removing all shares and changing visibility"""
         try:
-
             # Get the agent and verify ownership
             agent = await self._get_agent_by_id_and_user(agent_id, user_id)
             if not agent:
@@ -249,7 +247,7 @@ class CustomAgentService:
 
     async def list_agents(
         self, user_id: str, include_public: bool = False, include_shared: bool = True
-    ) -> List[Agent]:
+    ) -> list[Agent]:
         """List all agents accessible to the user"""
         try:
             query = self.db.query(CustomAgentModel)
@@ -280,7 +278,6 @@ class CustomAgentService:
             raise
 
     def _convert_to_agent_schema(self, custom_agent: CustomAgentModel) -> Agent:
-
         task_schemas = []
         for i, task in enumerate(custom_agent.tasks, start=1):
             expected_output = task.get("expected_output", {})
@@ -463,7 +460,7 @@ class CustomAgentService:
                 status_code=500, detail=f"Failed to update agent: {str(e)}"
             )
 
-    async def delete_agent(self, agent_id: str, user_id: str) -> Dict[str, Any]:
+    async def delete_agent(self, agent_id: str, user_id: str) -> dict[str, Any]:
         """Delete a custom agent"""
         try:
             agent = await self._get_agent_by_id_and_user(agent_id, user_id)
@@ -647,8 +644,8 @@ class CustomAgentService:
             raise HTTPException(status_code=500, detail=str(e))
 
     async def create_agent_plan(
-        self, user_id: str, prompt: str, tools: List[str]
-    ) -> Dict[str, Any]:
+        self, user_id: str, prompt: str, tools: list[str]
+    ) -> dict[str, Any]:
         """Create a plan for the agent using LLM"""
         template = self.CREATE_AGENT_FROM_PROMPT
 
@@ -659,7 +656,7 @@ class CustomAgentService:
         return response
 
     async def enhance_task_description(
-        self, user_id: str, description: str, goal: str, tools: List[str]
+        self, user_id: str, description: str, goal: str, tools: list[str]
     ) -> str:
         """Enhance a single task description using LLM"""
         template = self.TASK_ENHANCEMENT_PROMPT
@@ -753,11 +750,11 @@ class CustomAgentService:
 
     async def enhance_task_descriptions(
         self,
-        tasks: List[Dict[str, Any]],
+        tasks: list[dict[str, Any]],
         goal: str,
-        available_tools: List[str],
+        available_tools: list[str],
         user_id: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         enhanced_tasks = []
 
         for task in tasks:
@@ -776,7 +773,7 @@ class CustomAgentService:
 
         return enhanced_tasks
 
-    async def fetch_available_tools(self, user_id: str) -> List[str]:
+    async def fetch_available_tools(self, user_id: str) -> list[str]:
         """Fetches the list of available tool IDs."""
         try:
             tools = ToolService(self.db, user_id).list_tools()

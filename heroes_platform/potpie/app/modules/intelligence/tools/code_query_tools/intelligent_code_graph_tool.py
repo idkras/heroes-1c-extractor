@@ -1,10 +1,8 @@
-import logging
-from typing import Any, Dict, List, Optional, Set
-from pydantic import BaseModel, Field
 import asyncio
+import logging
 from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Optional
 
-from langchain_core.tools import StructuredTool
 from app.modules.intelligence.provider.provider_service import ProviderService
 from app.modules.intelligence.tools.code_query_tools.get_code_graph_from_node_id_tool import (
     GetCodeGraphFromNodeIdTool,
@@ -12,6 +10,8 @@ from app.modules.intelligence.tools.code_query_tools.get_code_graph_from_node_id
 from app.modules.intelligence.tools.kg_based_tools.get_code_from_node_id_tool import (
     GetCodeFromNodeIdTool,
 )
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 
@@ -40,7 +40,7 @@ class RelevantNode(BaseModel):
     end_line: Optional[int] = None
     relevance_score: float
     reason: str
-    children: List["RelevantNode"] = []
+    children: list["RelevantNode"] = []
 
 
 class IntelligentCodeGraphTool:
@@ -70,7 +70,7 @@ class IntelligentCodeGraphTool:
         self.user_id = user_id
         self.code_graph_tool = GetCodeGraphFromNodeIdTool(sql_db)
         self.code_from_node_tool = GetCodeFromNodeIdTool(sql_db, user_id)
-        self.visited_nodes: Set[str] = set()
+        self.visited_nodes: set[str] = set()
 
     def run(
         self,
@@ -79,7 +79,7 @@ class IntelligentCodeGraphTool:
         relevance_threshold: float = 0.6,
         max_depth: int = 5,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Synchronous version that runs the async implementation in an event loop"""
         try:
             loop = asyncio.get_running_loop()
@@ -104,7 +104,7 @@ class IntelligentCodeGraphTool:
         relevance_threshold: float = 0.6,
         max_depth: int = 5,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Async version of run"""
         if isinstance(project_id, dict):
             params = project_id
@@ -198,12 +198,12 @@ class IntelligentCodeGraphTool:
     async def _process_node_recursively_async(
         self,
         project_id: str,
-        node: Dict[str, Any],
+        node: dict[str, Any],
         node_code: str,
         relevance_threshold: float,
         current_depth: int,
         max_depth: int,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process nodes recursively with parallel evaluation"""
         node_id = node["id"]
         self.visited_nodes.add(node_id)
@@ -256,8 +256,8 @@ class IntelligentCodeGraphTool:
         return processed_node
 
     async def _evaluate_nodes_async(
-        self, children: List[Dict[str, Any]]
-    ) -> List[NodeRelevance]:
+        self, children: list[dict[str, Any]]
+    ) -> list[NodeRelevance]:
         """Evaluate nodes based on rule-based relevance criteria"""
         try:
             batch_size = 10
@@ -408,8 +408,8 @@ class IntelligentCodeGraphTool:
             ]
 
     def _create_relevant_node(
-        self, node: Dict[str, Any], relevance_score: float, reason: str
-    ) -> Dict[str, Any]:
+        self, node: dict[str, Any], relevance_score: float, reason: str
+    ) -> dict[str, Any]:
         """Create a node with relevance information"""
         relevant_node = {
             "id": node["id"],
@@ -426,7 +426,7 @@ class IntelligentCodeGraphTool:
 
         return relevant_node
 
-    def _count_nodes(self, node: Dict[str, Any]) -> int:
+    def _count_nodes(self, node: dict[str, Any]) -> int:
         """Count the number of nodes in the filtered graph"""
         count = 1  # Count this node
         for child in node.get("children", []):

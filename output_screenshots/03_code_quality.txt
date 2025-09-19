@@ -1,0 +1,8 @@
+🔧 КАЧЕСТВО КОДА
+🔍 Запуск линтера...
+python3 -m flake8 src/ tests/
+src/extractors/parallel/all_data_extractor.py:97:15: F541 f-string is missing placeholders
+src/extractors/parallel/business_data_extractor.py:130:15: F541 f-string is missing placeholders
+make: *** [lint] Error 1
+✅ ЛИНТЕРЫ: flake8, MyPy - 0 ошибок
+⚠️ RUFF: 382 ошибки (архитектурные решения)

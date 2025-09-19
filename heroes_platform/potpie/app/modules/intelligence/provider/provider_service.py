@@ -1,43 +1,44 @@
 import logging
 import os
-from enum import Enum
-from typing import List, Dict, Any, Union, AsyncGenerator, Optional
 import uuid
-from anthropic import AsyncAnthropic
-from crewai import LLM
-from pydantic import BaseModel
-from pydantic_ai.models import Model
-from litellm import litellm, AsyncOpenAI, acompletion
-import instructor
-import httpx
-from portkey_ai import createHeaders, PORTKEY_GATEWAY_URL
+from collections.abc import AsyncGenerator
+from enum import Enum
+from typing import Any, Optional, Union
 
+import httpx
+import instructor
+from anthropic import AsyncAnthropic
 from app.modules.key_management.secret_manager import SecretManager
 from app.modules.users.user_preferences_model import UserPreferences
 from app.modules.utils.posthog_helper import PostHogClient
+from crewai import LLM
+from litellm import AsyncOpenAI, acompletion, litellm
+from portkey_ai import PORTKEY_GATEWAY_URL, createHeaders
+from pydantic import BaseModel
+from pydantic_ai.models import Model
 
 logger = logging.getLogger(__name__)
 
-from .provider_schema import (
-    ProviderInfo,
-    GetProviderResponse,
-    AvailableModelsResponse,
-    AvailableModelOption,
-    SetProviderRequest,
-    ModelInfo,
-)
-from .llm_config import LLMProviderConfig, build_llm_provider_config
-
-from pydantic_ai.models.openai import OpenAIModel
-from pydantic_ai.models.anthropic import AnthropicModel
-from pydantic_ai.providers.openai import OpenAIProvider
-from pydantic_ai.providers.anthropic import AnthropicProvider
-import litellm
-
+import asyncio
 import random
 import time
-import asyncio
 from functools import wraps
+
+import litellm
+from pydantic_ai.models.anthropic import AnthropicModel
+from pydantic_ai.models.openai import OpenAIModel
+from pydantic_ai.providers.anthropic import AnthropicProvider
+from pydantic_ai.providers.openai import OpenAIProvider
+
+from .llm_config import LLMProviderConfig, build_llm_provider_config
+from .provider_schema import (
+    AvailableModelOption,
+    AvailableModelsResponse,
+    GetProviderResponse,
+    ModelInfo,
+    ProviderInfo,
+    SetProviderRequest,
+)
 
 litellm.num_retries = 5  # Number of retries for rate limited requests
 
@@ -226,7 +227,7 @@ def robust_llm_call(settings: Optional[RetrySettings] = None):
 
                     logging.warning(
                         f"{provider.capitalize()} API error: {str(e)}. "
-                        f"Retry {retries+1}/{settings.max_retries}, "
+                        f"Retry {retries + 1}/{settings.max_retries}, "
                         f"waiting {delay:.2f}s before next attempt..."
                     )
 
@@ -372,7 +373,7 @@ class ProviderService:
     def create(cls, db, user_id: str):
         return cls(db, user_id)
 
-    async def list_available_llms(self) -> List[ProviderInfo]:
+    async def list_available_llms(self) -> list[ProviderInfo]:
         # Get unique providers from available models
         providers = {
             model.provider: ProviderInfo(
@@ -453,7 +454,7 @@ class ProviderService:
                 return None
             raise e
 
-    def _build_llm_params(self, config: LLMProviderConfig) -> Dict[str, Any]:
+    def _build_llm_params(self, config: LLMProviderConfig) -> dict[str, Any]:
         """Build a dictionary of parameters for LLM initialization."""
         api_key = self._get_api_key(config.model.split("/")[0])
         return config.get_llm_params(api_key)
@@ -635,8 +636,8 @@ class ProviderService:
     @robust_llm_call()
     async def call_llm_multimodal(
         self,
-        messages: List[Dict[str, Any]],
-        images: Optional[Dict[str, Dict[str, Union[str, int]]]] = None,
+        messages: list[dict[str, Any]],
+        images: Optional[dict[str, dict[str, Union[str, int]]]] = None,
         stream: bool = False,
         config_type: str = "chat",
     ) -> Union[str, AsyncGenerator[str, None]]:
@@ -691,10 +692,10 @@ class ProviderService:
 
     def _format_multimodal_messages(
         self,
-        messages: List[Dict[str, Any]],
-        images: Dict[str, Dict[str, Union[str, int]]],
+        messages: list[dict[str, Any]],
+        images: dict[str, dict[str, Union[str, int]]],
         provider: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Format messages for provider-specific multimodal format"""
         if not images:
             return messages
@@ -718,10 +719,10 @@ class ProviderService:
 
     def _format_multimodal_message(
         self,
-        message: Dict[str, Any],
-        images: Dict[str, Dict[str, Union[str, int]]],
+        message: dict[str, Any],
+        images: dict[str, dict[str, Union[str, int]]],
         provider: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Format a single message for provider-specific multimodal format"""
         text_content = message.get("content", "")
 
@@ -739,8 +740,8 @@ class ProviderService:
             return self._format_openai_multimodal_message(text_content, images)
 
     def _format_openai_multimodal_message(
-        self, text: str, images: Dict[str, Dict[str, Union[str, int]]]
-    ) -> Dict[str, Any]:
+        self, text: str, images: dict[str, dict[str, Union[str, int]]]
+    ) -> dict[str, Any]:
         """Format message for OpenAI GPT-4V format"""
         content = [{"type": "text", "text": text}]
 
@@ -761,8 +762,8 @@ class ProviderService:
         return {"role": "user", "content": content}
 
     def _format_anthropic_multimodal_message(
-        self, text: str, images: Dict[str, Dict[str, Union[str, int]]]
-    ) -> Dict[str, Any]:
+        self, text: str, images: dict[str, dict[str, Union[str, int]]]
+    ) -> dict[str, Any]:
         """Format message for Anthropic Claude Vision format"""
         content = []
 
@@ -788,14 +789,14 @@ class ProviderService:
         return {"role": "user", "content": content}
 
     def _format_gemini_multimodal_message(
-        self, text: str, images: Dict[str, Dict[str, Union[str, int]]]
-    ) -> Dict[str, Any]:
+        self, text: str, images: dict[str, dict[str, Union[str, int]]]
+    ) -> dict[str, Any]:
         """Format message for Google Gemini Vision format (uses OpenAI-compatible format via OpenRouter)"""
         return self._format_openai_multimodal_message(text, images)
 
     def _validate_images_for_multimodal(
-        self, images: Dict[str, Dict[str, Union[str, int]]]
-    ) -> Dict[str, Dict[str, Union[str, int]]]:
+        self, images: dict[str, dict[str, Union[str, int]]]
+    ) -> dict[str, dict[str, Union[str, int]]]:
         """Validate images before sending to multimodal LLM to reduce hallucinations"""
         validated_images = {}
 

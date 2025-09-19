@@ -1,22 +1,28 @@
 import functools
 import re
-from typing import List, AsyncGenerator, Sequence
+from collections.abc import AsyncGenerator, Sequence
 
 import anyio
-
-from pydantic_ai.mcp import MCPServerStreamableHTTP
-
-from .tool_helpers import (
-    get_tool_call_info_content,
-    get_tool_response_message,
-    get_tool_result_info_content,
-    get_tool_run_message,
-)
 from app.modules.intelligence.provider.provider_service import (
     ProviderService,
 )
-from .crewai_agent import AgentConfig, TaskConfig
 from app.modules.utils.logger import setup_logger
+from langchain_core.tools import StructuredTool
+from pydantic_ai import Agent, Tool
+from pydantic_ai.exceptions import AgentRunError, ModelRetry, UserError
+from pydantic_ai.mcp import MCPServerStreamableHTTP
+from pydantic_ai.messages import (
+    FunctionToolCallEvent,
+    FunctionToolResultEvent,
+    ImageUrl,
+    ModelMessage,
+    ModelResponse,
+    PartDeltaEvent,
+    PartStartEvent,
+    TextPart,
+    TextPartDelta,
+    UserContent,
+)
 
 from ..chat_agent import (
     ChatAgent,
@@ -25,22 +31,13 @@ from ..chat_agent import (
     ToolCallEventType,
     ToolCallResponse,
 )
-
-from pydantic_ai import Agent, Tool
-from pydantic_ai.messages import (
-    FunctionToolCallEvent,
-    FunctionToolResultEvent,
-    PartStartEvent,
-    PartDeltaEvent,
-    TextPartDelta,
-    ModelResponse,
-    TextPart,
-    ImageUrl,
-    UserContent,
-    ModelMessage,
+from .crewai_agent import AgentConfig, TaskConfig
+from .tool_helpers import (
+    get_tool_call_info_content,
+    get_tool_response_message,
+    get_tool_result_info_content,
+    get_tool_run_message,
 )
-from pydantic_ai.exceptions import ModelRetry, AgentRunError, UserError
-from langchain_core.tools import StructuredTool
 
 logger = setup_logger(__name__)
 
@@ -62,8 +59,8 @@ class PydanticRagAgent(ChatAgent):
         self,
         llm_provider: ProviderService,
         config: AgentConfig,
-        tools: List[StructuredTool],
-        mcp_servers: List[dict] | None = None,
+        tools: list[StructuredTool],
+        mcp_servers: list[dict] | None = None,
     ):
         """Initialize the agent with configuration and tools"""
 
@@ -85,12 +82,13 @@ class PydanticRagAgent(ChatAgent):
         # Prepare multimodal instructions if images are present
         multimodal_instructions = self._prepare_multimodal_instructions(ctx)
         # Create MCP servers directly - continue even if some fail
-        mcp_toolsets: List[MCPServerStreamableHTTP] = []
+        mcp_toolsets: list[MCPServerStreamableHTTP] = []
         for mcp_server in self.mcp_servers:
             try:
                 # Add timeout and connection handling for MCP servers
                 mcp_server_instance = MCPServerStreamableHTTP(
-                    url=mcp_server["link"], timeout=10.0  # 10 second timeout
+                    url=mcp_server["link"],
+                    timeout=10.0,  # 10 second timeout
                 )
                 mcp_toolsets.append(mcp_server_instance)
                 logger.info(
@@ -126,7 +124,7 @@ class PydanticRagAgent(ChatAgent):
             {multimodal_instructions}
 
             CURRENT CONTEXT AND AGENT TASK OVERVIEW:
-            {self._create_task_description(task_config=config.tasks[0],ctx=ctx)}
+            {self._create_task_description(task_config=config.tasks[0], ctx=ctx)}
             """,
             result_type=str,
             output_retries=3,
@@ -261,7 +259,7 @@ class PydanticRagAgent(ChatAgent):
         self, ctx: ChatContext
     ) -> Sequence[UserContent]:
         """Create multimodal user content with images using PydanticAI's ImageUrl"""
-        content: List[UserContent] = [ctx.query]
+        content: list[UserContent] = [ctx.query]
 
         # Add current images to the content
         current_images = ctx.get_current_images_only()
@@ -394,13 +392,13 @@ class PydanticRagAgent(ChatAgent):
                     continue
 
         logger.info(
-            f"Final multimodal content has {len(content)} elements: 1 text + {len(content)-1} images"
+            f"Final multimodal content has {len(content)} elements: 1 text + {len(content) - 1} images"
         )
         return content
 
     async def _prepare_multimodal_message_history(
         self, ctx: ChatContext
-    ) -> List[ModelMessage]:
+    ) -> list[ModelMessage]:
         """Prepare message history with multimodal support"""
         history_messages = []
 

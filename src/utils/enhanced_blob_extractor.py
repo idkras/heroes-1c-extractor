@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Enhanced Blob Extractor
@@ -12,7 +11,7 @@ import json
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -21,16 +20,15 @@ logger = logging.getLogger(__name__)
 class BlobExtractionResult:
     """Результат извлечения BLOB данных"""
 
-    content: Optional[str] = None
-    extraction_methods: List[str] = field(default_factory=list)
+    content: str | None = None
+    extraction_methods: list[str] = field(default_factory=list)
     content_length: int = 0
     quality_score: float = 0.0
-    errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Инициализация после создания объекта"""
-        pass
 
 
 class EnhancedBlobExtractor:
@@ -49,7 +47,9 @@ class EnhancedBlobExtractor:
         ]
 
     def extract_blob_content(
-        self, blob_obj: Any, data_type: str = "general"
+        self,
+        blob_obj: Any,
+        data_type: str = "general",
     ) -> BlobExtractionResult:
         """
         Извлечение содержимого BLOB объекта (исправленный подход onec_dtools)
@@ -95,7 +95,7 @@ class EnhancedBlobExtractor:
                     break
 
             except Exception as e:
-                result.errors.append(f"{method}: {str(e)}")
+                result.errors.append(f"{method}: {e!s}")
 
         # Рассчитываем качество
         if result.content:
@@ -105,7 +105,9 @@ class EnhancedBlobExtractor:
         return result
 
     def _try_onec_dtools_method(
-        self, blob_obj: Any, result: BlobExtractionResult
+        self,
+        blob_obj: Any,
+        result: BlobExtractionResult,
     ) -> bool:
         """Правильный подход onec_dtools для извлечения BLOB данных"""
         try:
@@ -121,7 +123,7 @@ class EnhancedBlobExtractor:
                     result.metadata["blob_size"] = 0
                     result.metadata["method"] = "empty_blob"
                     return True
-                elif blob_size > 100 * 1024 * 1024:  # 100MB
+                if blob_size > 100 * 1024 * 1024:  # 100MB
                     result.errors.append(f"BLOB слишком большой: {blob_size} байт")
                     return False
                 result.metadata["blob_size"] = blob_size
@@ -130,7 +132,7 @@ class EnhancedBlobExtractor:
             try:
                 blob_value = blob_obj.value
             except Exception as e:
-                result.errors.append(f"Ошибка получения value: {str(e)}")
+                result.errors.append(f"Ошибка получения value: {e!s}")
                 return False
 
             # Добавляем диагностическую информацию
@@ -168,7 +170,7 @@ class EnhancedBlobExtractor:
                 result.metadata["method"] = "hex_dump"
                 return True
 
-            elif isinstance(blob_value, str):
+            if isinstance(blob_value, str):
                 # Для строковых данных
                 if blob_value and len(blob_value.strip()) > 0:
                     result.content = blob_value
@@ -186,7 +188,7 @@ class EnhancedBlobExtractor:
                     return True
 
         except Exception as e:
-            result.errors.append(f"onec_dtools method error: {str(e)}")
+            result.errors.append(f"onec_dtools method error: {e!s}")
 
         return False
 
@@ -202,7 +204,7 @@ class EnhancedBlobExtractor:
                     if blob_size == 0:
                         result.content = ""
                         return True
-                    elif blob_size > 100 * 1024 * 1024:  # 100MB
+                    if blob_size > 100 * 1024 * 1024:  # 100MB
                         result.errors.append(f"BLOB слишком большой: {blob_size} байт")
                         return False
 
@@ -226,7 +228,7 @@ class EnhancedBlobExtractor:
                     result.metadata["blob_size"] = len(blob_value)
                     return True
 
-                elif isinstance(blob_value, str):
+                if isinstance(blob_value, str):
                     # Для строковых данных
                     if blob_value and len(blob_value.strip()) > 0:
                         result.content = blob_value
@@ -244,7 +246,7 @@ class EnhancedBlobExtractor:
                         return True
 
         except Exception as e:
-            result.errors.append(f"value method error: {str(e)}")
+            result.errors.append(f"value method error: {e!s}")
         return False
 
     def _try_iterator_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
@@ -258,8 +260,7 @@ class EnhancedBlobExtractor:
                 if content_parts:
                     result.content = "\n".join(content_parts)
                     return True
-                else:
-                    result.errors.append("iterator method: empty iterator")
+                result.errors.append("iterator method: empty iterator")
             else:
                 # BLOB объекты не итерируемы, пропускаем
                 return False
@@ -267,7 +268,7 @@ class EnhancedBlobExtractor:
             # StopIteration - это нормальное завершение итератора, не ошибка
             return False
         except Exception as e:
-            result.errors.append(f"iterator method error: {str(e)}")
+            result.errors.append(f"iterator method error: {e!s}")
         return False
 
     def _try_bytes_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
@@ -279,7 +280,7 @@ class EnhancedBlobExtractor:
                     result.content = bytes_data.decode("utf-8", errors="ignore")
                     return True
         except Exception as e:
-            result.errors.append(f"bytes method error: {str(e)}")
+            result.errors.append(f"bytes method error: {e!s}")
         return False
 
     def _try_str_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
@@ -291,11 +292,13 @@ class EnhancedBlobExtractor:
                     result.content = content
                     return True
         except Exception as e:
-            result.errors.append(f"str method error: {str(e)}")
+            result.errors.append(f"str method error: {e!s}")
         return False
 
     def _try_direct_data_method(
-        self, blob_obj: Any, result: BlobExtractionResult
+        self,
+        blob_obj: Any,
+        result: BlobExtractionResult,
     ) -> bool:
         """Попытка извлечения через _data атрибут"""
         try:
@@ -303,7 +306,7 @@ class EnhancedBlobExtractor:
                 result.content = str(blob_obj._data)
                 return True
         except Exception as e:
-            result.errors.append(f"direct_data method error: {str(e)}")
+            result.errors.append(f"direct_data method error: {e!s}")
         return False
 
     def _try_hexdump_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
@@ -316,7 +319,7 @@ class EnhancedBlobExtractor:
                     result.content = hex_data
                     return True
         except Exception as e:
-            result.errors.append(f"hexdump method error: {str(e)}")
+            result.errors.append(f"hexdump method error: {e!s}")
         return False
 
     def _try_strings_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
@@ -333,11 +336,13 @@ class EnhancedBlobExtractor:
                         result.content = printable_chars
                         return True
         except Exception as e:
-            result.errors.append(f"strings method error: {str(e)}")
+            result.errors.append(f"strings method error: {e!s}")
         return False
 
     def _calculate_quality_score(
-        self, result: BlobExtractionResult, data_type: str
+        self,
+        result: BlobExtractionResult,
+        data_type: str,
     ) -> float:
         """Расчет оценки качества извлечения"""
         score = 0.0
@@ -433,11 +438,11 @@ class EnhancedBlobExtractor:
         # Text
         return "text"
 
-    def extract_flower_data(self, blob_obj: Any) -> Dict[str, Any]:
+    def extract_flower_data(self, blob_obj: Any) -> dict[str, Any]:
         """Извлечение данных о цветах"""
         result = self.extract_blob_content(blob_obj, "flower")
 
-        flower_info: Dict[str, List[Union[str, int, float]]] = {
+        flower_info: dict[str, list[str | int | float]] = {
             "found_flowers": [],
             "flower_colors": [],
             "quantities": [],
@@ -487,17 +492,18 @@ class EnhancedBlobExtractor:
 
             # Поиск цен
             price_matches = re.findall(
-                r"(\d+(?:\.\d+)?)\s*рубл", result.content.lower()
+                r"(\d+(?:\.\d+)?)\s*рубл",
+                result.content.lower(),
             )
             flower_info["prices"] = [float(p) for p in price_matches]
 
         return {"extraction_result": result, "flower_info": flower_info}
 
-    def extract_temporal_data(self, blob_obj: Any) -> Dict[str, Any]:
+    def extract_temporal_data(self, blob_obj: Any) -> dict[str, Any]:
         """Извлечение временных данных"""
         result = self.extract_blob_content(blob_obj, "temporal")
 
-        temporal_info: Dict[str, List[str]] = {"dates": [], "times": [], "events": []}
+        temporal_info: dict[str, list[str]] = {"dates": [], "times": [], "events": []}
 
         if result.content:
             # Поиск дат
@@ -526,11 +532,11 @@ class EnhancedBlobExtractor:
 
         return {"extraction_result": result, "temporal_info": temporal_info}
 
-    def extract_financial_data(self, blob_obj: Any) -> Dict[str, Any]:
+    def extract_financial_data(self, blob_obj: Any) -> dict[str, Any]:
         """Извлечение финансовых данных"""
         result = self.extract_blob_content(blob_obj, "financial")
 
-        financial_info: Dict[str, List[Union[float, str]]] = {
+        financial_info: dict[str, list[float | str]] = {
             "amounts": [],
             "currencies": [],
             "taxes": [],
@@ -577,7 +583,7 @@ def enhanced_safe_get_blob_content(blob_obj: Any) -> BlobExtractionResult:
     return extractor.extract_blob_content(blob_obj)
 
 
-def extract_flower_data(blob_obj: Any) -> Dict[str, Any]:
+def extract_flower_data(blob_obj: Any) -> dict[str, Any]:
     """
     Извлечение данных о цветах
 
@@ -591,7 +597,7 @@ def extract_flower_data(blob_obj: Any) -> Dict[str, Any]:
     return extractor.extract_flower_data(blob_obj)
 
 
-def extract_temporal_data(blob_obj: Any) -> Dict[str, Any]:
+def extract_temporal_data(blob_obj: Any) -> dict[str, Any]:
     """
     Извлечение временных данных
 
@@ -605,7 +611,7 @@ def extract_temporal_data(blob_obj: Any) -> Dict[str, Any]:
     return extractor.extract_temporal_data(blob_obj)
 
 
-def extract_financial_data(blob_obj: Any) -> Dict[str, Any]:
+def extract_financial_data(blob_obj: Any) -> dict[str, Any]:
     """
     Извлечение финансовых данных
 

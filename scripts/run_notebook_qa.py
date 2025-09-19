@@ -49,7 +49,7 @@ def run_notebook_qa_tests(test_type: str = "all", verbose: bool = True) -> bool:
 
     # Запуск тестов
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, check=False, capture_output=True, text=True)
 
         print("\n📋 РЕЗУЛЬТАТЫ ТЕСТОВ:")
         print("-" * 30)
@@ -62,9 +62,8 @@ def run_notebook_qa_tests(test_type: str = "all", verbose: bool = True) -> bool:
         if result.returncode == 0:
             print("\n✅ ВСЕ ТЕСТЫ ПРОЙДЕНЫ!")
             return True
-        else:
-            print("\n❌ НЕКОТОРЫЕ ТЕСТЫ НЕ ПРОЙДЕНЫ!")
-            return False
+        print("\n❌ НЕКОТОРЫЕ ТЕСТЫ НЕ ПРОЙДЕНЫ!")
+        return False
 
     except Exception as e:
         print(f"❌ Ошибка при запуске тестов: {e}")
@@ -141,7 +140,7 @@ def run_notebook_execution_test() -> bool:
                 sample = df.head(5)
                 for idx, row in sample.iterrows():
                     print(
-                        f'    {idx}: {row["table_name"]} - {row.get("field__NUMBER", "N/A")}'
+                        f"    {idx}: {row['table_name']} - {row.get('field__NUMBER', 'N/A')}",
                     )
         else:
             print(f"❌ Файл не найден: {DOCUMENTS_PARQUET}")
@@ -158,7 +157,7 @@ def run_notebook_execution_test() -> bool:
                 print("\n  Данные о цветах:")
                 for idx, row in df.iterrows():
                     print(
-                        f'    {row["document_id"]}: {row["flower_type"]} - {row["store"]} - {row["amount"]} руб.'
+                        f"    {row['document_id']}: {row['flower_type']} - {row['store']} - {row['amount']} руб.",
                     )
         else:
             print(f"❌ Файл не найден: {TEST_FLOWERS_PARQUET}")
@@ -177,7 +176,7 @@ def run_notebook_execution_test() -> bool:
                 tables = conn.execute("SHOW TABLES").fetchall()
                 for (table_name,) in tables:
                     result = conn.execute(
-                        f"SELECT COUNT(*) FROM {table_name}"
+                        f"SELECT COUNT(*) FROM {table_name}",
                     ).fetchone()
                     count = result[0] if result else 0
                     print(f"  Таблица {table_name}: {count:,} записей")
@@ -205,10 +204,14 @@ def main() -> None:
         help="Тип тестов для запуска",
     )
     parser.add_argument(
-        "--check-data", action="store_true", help="Проверить файлы данных"
+        "--check-data",
+        action="store_true",
+        help="Проверить файлы данных",
     )
     parser.add_argument(
-        "--test-execution", action="store_true", help="Тестировать выполнение notebook"
+        "--test-execution",
+        action="store_true",
+        help="Тестировать выполнение notebook",
     )
     parser.add_argument("--verbose", action="store_true", help="Подробный вывод")
 

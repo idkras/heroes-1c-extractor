@@ -8,7 +8,8 @@ PDF Generators Collection
 # Новый рефакторенный генератор (без WeasyPrint зависимостей)
 try:
     from .pdf_generator_refactored import convert_md_to_pdf_refactored
-    __all__ = ['convert_md_to_pdf_refactored']
+
+    __all__ = ["convert_md_to_pdf_refactored"]
 except ImportError:
     __all__ = []
 

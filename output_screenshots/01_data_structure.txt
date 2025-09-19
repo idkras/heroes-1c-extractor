@@ -1,0 +1,22 @@
+📊 СТРУКТУРА РЕЗУЛЬТАТОВ ИЗВЛЕЧЕНИЯ ДАННЫХ
+📁 Найдено файлов:       76
+total 2430640
+-rw-r--r--  1 ilyakrasinsky  staff    64M Sep 19 00:23 adaptive_extraction_results.json
+-rw-r--r--  1 ilyakrasinsky  staff   1.4M Sep 19 01:40 all_available_data.json
+-rw-r--r--  1 ilyakrasinsky  staff    50M Sep 18 23:50 all_available_data.xml
+-rw-r--r--  1 ilyakrasinsky  staff   626B Sep  3 15:39 all_document_types_analysis.json
+-rw-r--r--  1 ilyakrasinsky  staff   6.4K Sep 18 22:47 all_documents.json
+-rw-r--r--  1 ilyakrasinsky  staff   5.1K Sep 18 22:47 all_documents.xml
+-rw-r--r--  1 ilyakrasinsky  staff   1.2K Sep 18 22:47 all_journals.json
+-rw-r--r--  1 ilyakrasinsky  staff   1.0K Sep 18 22:47 all_journals.xml
+-rw-r--r--  1 ilyakrasinsky  staff   2.4K Sep  3 15:54 all_missing_documents_search.json
+-rw-r--r--  1 ilyakrasinsky  staff   1.5K Sep 18 22:47 all_references.json
+-rw-r--r--  1 ilyakrasinsky  staff   1.2K Sep 18 22:47 all_references.xml
+-rw-r--r--  1 ilyakrasinsky  staff   1.1K Sep 18 22:47 all_registers.json
+-rw-r--r--  1 ilyakrasinsky  staff   930B Sep 18 22:47 all_registers.xml
+-rw-r--r--  1 ilyakrasinsky  staff   156K Aug  7 19:45 all_tables_analysis.json
+-rw-r--r--  1 ilyakrasinsky  staff   1.8K Sep 18 23:02 alternative_extraction_summary.json
+-rw-r--r--  1 ilyakrasinsky  staff    15K Sep 19 00:33 bandit-report.json
+-rw-r--r--  1 ilyakrasinsky  staff   5.3K Sep 18 22:54 blob_analysis_complete.json
+-rw-r--r--  1 ilyakrasinsky  staff   7.4K Sep 19 00:53 blob_extraction_test_20250919_005323.json
+-rw-r--r--  1 ilyakrasinsky  staff   3.3K Sep 18 22:55 bouquet_types_analysis.json

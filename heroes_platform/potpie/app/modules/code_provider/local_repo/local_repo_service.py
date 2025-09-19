@@ -3,14 +3,13 @@ import logging
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional, Union
-import pathspec
+from typing import Any, Optional, Union
 
 import git
+import pathspec
+from app.modules.projects.projects_service import ProjectService
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
-from app.modules.projects.projects_service import ProjectService
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +59,7 @@ class LocalRepoService:
             else:
                 repo.git.checkout(branch_name)
             file_full_path = os.path.join(repo_path, file_path)
-            with open(file_full_path, "r", encoding="utf-8") as file:
+            with open(file_full_path, encoding="utf-8") as file:
                 lines = file.readlines()
                 if (start_line == end_line == 0) or (start_line == end_line == None):
                     return "".join(lines)
@@ -127,7 +126,7 @@ class LocalRepoService:
             return None
 
         try:
-            with open(gitignore_path, "r", encoding="utf-8") as f:
+            with open(gitignore_path, encoding="utf-8") as f:
                 gitignore_content = f.read()
 
             # Create a PathSpec object from the .gitignore content
@@ -145,7 +144,7 @@ class LocalRepoService:
         current_depth: int = 0,
         base_path: Optional[str] = None,
         gitignore_spec: Optional[pathspec.PathSpec] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         exclude_extensions = [
             "png",
             "jpg",
@@ -265,7 +264,7 @@ class LocalRepoService:
         return structure
 
     def _format_tree_structure(
-        self, structure: Dict[str, Any], root_path: str = ""
+        self, structure: dict[str, Any], root_path: str = ""
     ) -> str:
         """
         Creates a clear hierarchical structure using simple nested dictionaries.
@@ -276,7 +275,7 @@ class LocalRepoService:
             root_path: Optional root path string (unused but kept for signature compatibility)
         """
 
-        def _format_node(node: Dict[str, Any], depth: int = 0) -> List[str]:
+        def _format_node(node: dict[str, Any], depth: int = 0) -> list[str]:
             output = []
 
             indent = "  " * depth
@@ -292,7 +291,7 @@ class LocalRepoService:
 
         return "\n".join(_format_node(structure))
 
-    def get_local_repo_diff(self, repo_path: str, branch_name: str) -> Dict[str, str]:
+    def get_local_repo_diff(self, repo_path: str, branch_name: str) -> dict[str, str]:
         try:
             repo = self.get_repo(repo_path)
             repo.git.checkout(branch_name)
@@ -314,7 +313,7 @@ class LocalRepoService:
                 status_code=500, detail=f"Error computing diff for local repo: {str(e)}"
             )
 
-    def _parse_diff(self, diff: str) -> Dict[str, str]:
+    def _parse_diff(self, diff: str) -> dict[str, str]:
         """
         Parses the git diff output and returns a dictionary of file patches.
         """
@@ -337,7 +336,7 @@ class LocalRepoService:
 
         return patches_dict
 
-    def _get_contents(self, path: str) -> Union[List[dict], dict]:
+    def _get_contents(self, path: str) -> Union[list[dict], dict]:
         """
         If the path is a directory, it returns a list of dictionaries,
         each representing a file or subdirectory. If the path is a file, its content is read and returned.
@@ -393,7 +392,7 @@ class LocalRepoService:
             return contents
 
         elif os.path.isfile(abs_path):
-            with open(abs_path, "r", encoding="utf-8") as file:
+            with open(abs_path, encoding="utf-8") as file:
                 file_content = file.read()
             return {
                 "path": abs_path,

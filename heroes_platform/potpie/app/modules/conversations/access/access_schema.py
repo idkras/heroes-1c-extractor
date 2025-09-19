@@ -1,13 +1,12 @@
-from typing import List, Optional
-
-from pydantic import BaseModel, EmailStr
+from typing import Optional
 
 from app.modules.conversations.conversation.conversation_model import Visibility
+from pydantic import BaseModel, EmailStr
 
 
 class ShareChatRequest(BaseModel):
     conversation_id: str
-    recipientEmails: Optional[List[EmailStr]] = None
+    recipientEmails: Optional[list[EmailStr]] = None
     visibility: Visibility
 
 
@@ -21,4 +20,4 @@ class SharedChatResponse(BaseModel):
 
 
 class RemoveAccessRequest(BaseModel):
-    emails: List[EmailStr]
+    emails: list[EmailStr]

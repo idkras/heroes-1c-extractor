@@ -1,7 +1,6 @@
+from app.core.base_model import Base
 from sqlalchemy import Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
-
-from app.core.base_model import Base
 
 
 class SearchIndex(Base):

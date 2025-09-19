@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Literal, List
+from typing import Literal, Optional
 
 from pydantic import BaseModel, field_validator
 
@@ -120,7 +120,7 @@ class IntegrationKey(BaseModel):
 
 
 class CreateIntegrationKeyRequest(BaseModel):
-    integration_keys: List[IntegrationKey]
+    integration_keys: list[IntegrationKey]
 
     @field_validator("integration_keys")
     @classmethod

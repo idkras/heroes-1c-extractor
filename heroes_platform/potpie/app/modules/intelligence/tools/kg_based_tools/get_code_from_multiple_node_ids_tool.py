@@ -1,22 +1,21 @@
 import asyncio
 import logging
-from typing import Any, Dict, List
-
-from langchain_core.tools import StructuredTool
-from neo4j import GraphDatabase
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
+from typing import Any
 
 from app.core.config_provider import config_provider
 from app.modules.code_provider.code_provider_service import CodeProviderService
 from app.modules.projects.projects_model import Project
+from langchain_core.tools import StructuredTool
+from neo4j import GraphDatabase
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
 
 class GetCodeFromMultipleNodeIdsInput(BaseModel):
     project_id: str = Field(description="The repository ID, this is a UUID")
-    node_ids: List[str] = Field(description="List of node IDs, this is a UUID")
+    node_ids: list[str] = Field(description="List of node IDs, this is a UUID")
 
 
 class GetCodeFromMultipleNodeIdsTool:
@@ -49,15 +48,15 @@ class GetCodeFromMultipleNodeIdsTool:
             auth=(neo4j_config["username"], neo4j_config["password"]),
         )
 
-    async def arun(self, project_id: str, node_ids: List[str]) -> Dict[str, Any]:
+    async def arun(self, project_id: str, node_ids: list[str]) -> dict[str, Any]:
         return await asyncio.to_thread(self.run, project_id, node_ids)
 
-    def run(self, project_id: str, node_ids: List[str]) -> Dict[str, Any]:
+    def run(self, project_id: str, node_ids: list[str]) -> dict[str, Any]:
         return asyncio.run(self.run_multiple(project_id, node_ids))
 
     async def run_multiple(
-        self, project_id: str, node_ids: List[str]
-    ) -> Dict[str, Any]:
+        self, project_id: str, node_ids: list[str]
+    ) -> dict[str, Any]:
         try:
             project = self._get_project(project_id)
             if not project:
@@ -87,7 +86,7 @@ class GetCodeFromMultipleNodeIdsTool:
 
     async def _retrieve_node_data(
         self, project_id: str, node_id: str, project: Project
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         node_data = self._get_node_data(project_id, node_id)
         if node_data:
             return self._process_result(node_data, project, node_id)
@@ -96,7 +95,7 @@ class GetCodeFromMultipleNodeIdsTool:
                 "error": f"Node with ID '{node_id}' not found in repo '{project_id}'"
             }
 
-    def _get_node_data(self, project_id: str, node_id: str) -> Dict[str, Any]:
+    def _get_node_data(self, project_id: str, node_id: str) -> dict[str, Any]:
         query = """
         MATCH (n:NODE {node_id: $node_id, repoId: $project_id})
         RETURN n.file_path AS file_path, n.start_line AS start_line, n.end_line AS end_line, n.text as code, n.docstring as docstring
@@ -109,8 +108,8 @@ class GetCodeFromMultipleNodeIdsTool:
         return self.sql_db.query(Project).filter(Project.id == project_id).first()
 
     def _process_result(
-        self, node_data: Dict[str, Any], project: Project, node_id: str
-    ) -> Dict[str, Any]:
+        self, node_data: dict[str, Any], project: Project, node_id: str
+    ) -> dict[str, Any]:
         file_path = node_data["file_path"]
         start_line = node_data["start_line"]
         end_line = node_data["end_line"]

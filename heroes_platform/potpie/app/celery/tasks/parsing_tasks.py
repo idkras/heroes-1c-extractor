@@ -1,13 +1,12 @@
 import asyncio
 import logging
-from typing import Any, Dict
-
-from celery import Task
+from typing import Any
 
 from app.celery.celery_app import celery_app
 from app.core.database import SessionLocal
 from app.modules.parsing.graph_construction.parsing_schema import ParsingRequest
 from app.modules.parsing.graph_construction.parsing_service import ParsingService
+from celery import Task
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,7 @@ class BaseTask(Task):
 )
 def process_parsing(
     self,
-    repo_details: Dict[str, Any],
+    repo_details: dict[str, Any],
     user_id: str,
     user_email: str,
     project_id: str,

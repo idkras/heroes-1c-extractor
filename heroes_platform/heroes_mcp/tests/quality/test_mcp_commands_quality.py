@@ -5,12 +5,10 @@ Quality Tests for MCP Commands
 Качественная проверка MCP команд согласно From-The-End стандарту.
 """
 
-import json
+import asyncio
 import logging
 import time
-import asyncio
-from typing import Dict, Any, List
-from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +21,8 @@ class MCPCommandQualityTester:
         self.cross_check_results = {}
 
     async def test_command_quality(
-        self, command_name: str, arguments: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_name: str, arguments: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         JTBD: Как тестировщик качества, я хочу проверить качество output MCP команды,
         чтобы убедиться что пользователь получает полезный результат.
@@ -60,7 +58,7 @@ class MCPCommandQualityTester:
             "passed": quality_score >= 0.85,
         }
 
-    async def call_mcp_tool(self, command_name: str, arguments: Dict[str, Any]) -> Any:
+    async def call_mcp_tool(self, command_name: str, arguments: dict[str, Any]) -> Any:
         """Call MCP tool and return result"""
         # This would be implemented to actually call the MCP tool
         # For now, return a mock result for testing

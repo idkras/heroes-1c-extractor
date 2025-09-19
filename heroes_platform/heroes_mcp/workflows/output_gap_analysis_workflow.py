@@ -261,7 +261,9 @@ class OutputGapAnalysisWorkflow:
         try:
             # Используем новый формат именования
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            screenshot_path = f"output_screenshot/{timestamp}_gap_analysis_success_screenshot.png"
+            screenshot_path = (
+                f"output_screenshot/{timestamp}_gap_analysis_success_screenshot.png"
+            )
 
             return {
                 "success": True,

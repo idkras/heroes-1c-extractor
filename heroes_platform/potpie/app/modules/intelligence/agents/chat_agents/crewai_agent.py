@@ -1,13 +1,15 @@
 import json
-from typing import Any, List, AsyncGenerator, Optional
+from collections.abc import AsyncGenerator
+from typing import Any, Optional
 
 from app.modules.intelligence.provider.provider_service import (
-    ProviderService,
     AgentProvider,
+    ProviderService,
 )
+from app.modules.utils.logger import setup_logger
 from crewai import Agent, Crew, Process, Task
 from pydantic import BaseModel, Field
-from app.modules.utils.logger import setup_logger
+
 from ..chat_agent import ChatAgent, ChatAgentResponse, ChatContext
 
 logger = setup_logger(__name__)
@@ -27,7 +29,7 @@ class AgentConfig(BaseModel):
     role: str
     goal: str
     backstory: str
-    tasks: List[TaskConfig]
+    tasks: list[TaskConfig]
     max_iter: int = 15
 
 
@@ -36,7 +38,7 @@ class CrewAIResponse(BaseModel):
         ...,
         description="Full response to the query",
     )
-    citations: List[str] = Field(
+    citations: list[str] = Field(
         ...,
         description="List of file names extracted from context and referenced in the response",
     )
@@ -47,7 +49,7 @@ class CrewAIAgent(ChatAgent):
         self,
         llm_provider: ProviderService,
         config: AgentConfig,
-        tools: List[Any],
+        tools: list[Any],
     ):
         """Initialize the agent with configuration and tools"""
 
@@ -68,7 +70,7 @@ class CrewAIAgent(ChatAgent):
             max_iter=config.max_iter,
         )
 
-    def _create_tools_description(self, tools: List[Any]):
+    def _create_tools_description(self, tools: list[Any]):
         tools_desc = "Available Tools:\n"
         for tool in tools:
             tools_desc += f"{tool.name}: {tool.description}\n"
@@ -161,7 +163,7 @@ class CrewAIAgent(ChatAgent):
                     task_config.context = tasks[-1]
                 task = await self._create_task(task_config, ctx)
                 tasks.append(task)
-                logger.info(f"Created task {i+1}/{len(self.tasks)}")
+                logger.info(f"Created task {i + 1}/{len(self.tasks)}")
 
             # Create single crew with all tasks
             crew = Crew(

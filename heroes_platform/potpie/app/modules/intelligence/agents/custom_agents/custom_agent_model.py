@@ -1,7 +1,8 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Column, DateTime, ForeignKeyConstraint, String, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
-from typing import List, TYPE_CHECKING
 
 from app.core.base_model import Base
 
@@ -38,7 +39,7 @@ class CustomAgent(Base):
     )
 
     @property
-    def shared_with_users(self) -> List["User"]:
+    def shared_with_users(self) -> list["User"]:
         return [share.shared_with_user for share in self.shares]
 
 

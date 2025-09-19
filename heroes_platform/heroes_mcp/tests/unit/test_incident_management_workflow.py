@@ -8,27 +8,26 @@ JTBD: Как разработчик, я хочу протестировать in
 Основан на TDD Documentation Standard.
 """
 
-import pytest
-import asyncio
-from unittest.mock import patch, MagicMock
-from pathlib import Path
+import os
 
 # Добавляем путь к workflows в sys.path
 import sys
-import os
+from unittest.mock import patch
+
+import pytest
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "workflows"))
 
-import sys
 import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "workflows"))
 from incident_management_workflow import (
-    IncidentManagementWorkflow,
-    IncidentInput,
-    RSAInput,
     GapReportInput,
+    IncidentInput,
+    IncidentManagementWorkflow,
     LogAnalysisInput,
+    RSAInput,
 )
 
 
@@ -205,7 +204,6 @@ class TestIncidentManagementWorkflow:
             patch("pathlib.Path.exists", return_value=True),
             patch("pathlib.Path.read_text", return_value=mock_content),
         ):
-
             # Act
             result = await self.workflow.analyze_execution_logs(input_data)
 
@@ -239,7 +237,6 @@ class TestIncidentManagementWorkflow:
             patch("pathlib.Path.exists", return_value=True),
             patch("pathlib.Path.read_text", return_value=mock_content),
         ):
-
             # Act
             result = await self.workflow.analyze_execution_logs(input_data)
 
@@ -259,7 +256,6 @@ class TestIncidentManagementWorkflow:
         )
 
         with patch("pathlib.Path.exists", return_value=False):
-
             # Act
             result = await self.workflow.analyze_execution_logs(input_data)
 
@@ -274,7 +270,9 @@ class TestIncidentManagementWorkflow:
         """GIVEN invalid log analysis data WHEN analyze_execution_logs THEN return failure result"""
         # Arrange
         input_data = LogAnalysisInput(
-            log_file_path="", time_range="", command_chain=""  # Invalid: empty
+            log_file_path="",
+            time_range="",
+            command_chain="",  # Invalid: empty
         )
 
         # Act
@@ -373,7 +371,8 @@ class TestIncidentManagementWorkflowValidation:
         """GIVEN invalid gap report input WHEN validate THEN return False"""
         # Arrange
         input_data = GapReportInput(
-            expected_output="", actual_output="Actual content"  # Invalid: empty
+            expected_output="",
+            actual_output="Actual content",  # Invalid: empty
         )
 
         # Act

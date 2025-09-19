@@ -1,0 +1,16 @@
+# Ruff configuration for heroes-1c-extractor
+# Игнорируем архитектурные решения с импортами onec_dtools
+
+line-length = 88
+target-version = "py311"
+
+[lint]
+select = ["E", "W", "F", "I", "N", "UP", "YTT", "ANN", "S", "BLE", "FBT", "A", "COM", "C4", "DTZ", "T10", "EM", "EXE", "FA", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SLOT", "SIM", "TID", "TCH", "INT", "ARG", "PTH", "TD", "FIX", "ERA", "PD", "PGH", "PL", "TRY", "FLY", "NPY", "AIR", "PERF", "FURB", "LOG", "RUF"]
+ignore = [
+]
+
+[lint.per-file-ignores]
+# Игнорируем E402 для файлов с патчами onec_dtools
+"src/extractors/*.py" = ["E402"]
+"src/utils/*.py" = ["E402"]
+"tests/unit/test_document_analyzer.py" = ["E402"]

@@ -69,14 +69,18 @@ class RegistryWorkflow:
     def output_validate(self, jtbd: str, artifact: str) -> str:
         """Чеклист для проверки артефакта - использует AiGuidensWorkflow"""
         self._validate_required_inputs(jtbd=jtbd, artifact=artifact)
-        
+
         # Импортируем и используем AiGuidensWorkflow
         try:
-            from heroes_platform.heroes_mcp.src.ai_guidance_workflow import AIGuidanceWorkflow, GuidanceRequest, GuidanceType
-            
+            from heroes_platform.heroes_mcp.src.ai_guidance_workflow import (
+                AIGuidanceWorkflow,
+                GuidanceRequest,
+                GuidanceType,
+            )
+
             # Создаем экземпляр AiGuidensWorkflow
             ai_guidance = AIGuidanceWorkflow()
-            
+
             # Создаем запрос для проверки релизов
             request = GuidanceRequest(
                 guidance_type=GuidanceType.REGISTRY_OUTPUT_VALIDATE,
@@ -99,24 +103,24 @@ class RegistryWorkflow:
                 url=None,
                 expected_features=None,
                 test_cases=None,
-                take_screenshot=None
+                take_screenshot=None,
             )
-            
+
             # Выполняем проверку через AiGuidensWorkflow
             result = ai_guidance.execute_guidance(request)
-            
+
             if result.success:
                 return result.result
             else:
                 logger.error(f"AiGuidensWorkflow error: {result.error}")
                 # Fallback к старому методу
                 return self._fallback_output_validate(jtbd, artifact)
-                
+
         except Exception as e:
             logger.error(f"Error using AiGuidensWorkflow: {e}")
             # Fallback к старому методу
             return self._fallback_output_validate(jtbd, artifact)
-    
+
     def _fallback_output_validate(self, jtbd: str, artifact: str) -> str:
         """Fallback метод для проверки артефакта (старая реализация)"""
 

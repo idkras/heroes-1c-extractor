@@ -1,11 +1,12 @@
 import logging
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Optional
 
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from uuid6 import uuid7
 
+from app.modules.conversations.message.message_schema import MessageResponse
 from app.modules.intelligence.prompts.prompt_model import (
     AgentPromptMapping,
     Prompt,
@@ -14,15 +15,13 @@ from app.modules.intelligence.prompts.prompt_model import (
 from app.modules.intelligence.prompts.prompt_schema import (
     AgentPromptMappingCreate,
     AgentPromptMappingResponse,
+    EnhancedPromptResponse,
     PromptCreate,
     PromptListResponse,
     PromptResponse,
     PromptType,
     PromptUpdate,
 )
-
-from app.modules.conversations.message.message_schema import MessageResponse
-from app.modules.intelligence.prompts.prompt_schema import EnhancedPromptResponse
 from app.modules.intelligence.provider.provider_service import ProviderService
 
 logger = logging.getLogger(__name__)
@@ -324,8 +323,8 @@ class PromptService:
             raise PromptServiceError("Failed to create or update system prompt") from e
 
     async def get_prompts_by_agent_id_and_types(
-        self, agent_id: str, prompt_types: List[PromptType]
-    ) -> List[PromptResponse]:
+        self, agent_id: str, prompt_types: list[PromptType]
+    ) -> list[PromptResponse]:
         try:
             prompts = (
                 self.db.query(Prompt)
@@ -346,12 +345,11 @@ class PromptService:
     async def enhance_prompt(
         self,
         prompt: str,
-        last_messages: List[MessageResponse],
+        last_messages: list[MessageResponse],
         user: dict,
         agent_ids=None,
         available_agents=None,
     ) -> str:
-
         if agent_ids and available_agents:
             inputs = {
                 "query": prompt,

@@ -1,14 +1,13 @@
-from datetime import datetime, timedelta
 import os
+from datetime import datetime, timedelta
+
 import httpx
-
-from fastapi import logger, HTTPException
-from sqlalchemy import func
-from sqlalchemy.exc import SQLAlchemyError
-
 from app.core.database import SessionLocal
 from app.modules.conversations.conversation.conversation_model import Conversation
 from app.modules.conversations.message.message_model import Message, MessageType
+from fastapi import HTTPException, logger
+from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class UsageService:

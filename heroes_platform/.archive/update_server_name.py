@@ -39,7 +39,7 @@ def update_server_name():
             return False
 
         # Сохраняем обновленную конфигурацию
-        with open(cursor_config_path, 'w') as f:
+        with open(cursor_config_path, "w") as f:
             json.dump(config, f, indent=2)
 
         print("✅ MCP server name updated successfully")
@@ -48,6 +48,7 @@ def update_server_name():
     except Exception as e:
         print(f"❌ Error updating server name: {e}")
         return False
+
 
 def main():
     print("🔄 Updating MCP Server Name...")
@@ -58,9 +59,12 @@ def main():
     if success:
         print("\n🎉 Server name updated!")
         print("Now the server is called 'heroes-mcp' instead of 'telegram-mcp'")
-        print("This better reflects that it's a comprehensive MCP server with multiple tools")
+        print(
+            "This better reflects that it's a comprehensive MCP server with multiple tools"
+        )
     else:
         print("\n❌ Failed to update server name")
+
 
 if __name__ == "__main__":
     main()

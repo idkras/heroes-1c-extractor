@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator
 from enum import Enum
-from typing import Any, AsyncGenerator, Dict, List, Optional, Union
+from typing import Any, Optional, Union
+
 from pydantic import BaseModel, Field
 
 
@@ -23,7 +25,7 @@ class ToolCallResponse(BaseModel):
         ...,
         description="Response from the tool",
     )
-    tool_call_details: Dict[str, Any] = Field(
+    tool_call_details: dict[str, Any] = Field(
         ...,
         description="Details of the tool call",
     )
@@ -34,8 +36,8 @@ class ChatAgentResponse(BaseModel):
         ...,
         description="Full response to the query",
     )
-    tool_calls: List[ToolCallResponse] = Field([], description="List of tool calls")
-    citations: List[str] = Field(
+    tool_calls: list[ToolCallResponse] = Field([], description="List of tool calls")
+    citations: list[str] = Field(
         ...,
         description="List of file names extracted from context and referenced in the response",
     )
@@ -45,22 +47,22 @@ class ChatContext(BaseModel):
     project_id: str
     project_name: str
     curr_agent_id: str
-    history: List[str]
-    node_ids: Optional[List[str]] = None
+    history: list[str]
+    node_ids: Optional[list[str]] = None
     additional_context: str = ""
     query: str
     # Multimodal support - images attached to the current message
-    image_attachments: Optional[Dict[str, Dict[str, Union[str, int]]]] = (
+    image_attachments: Optional[dict[str, dict[str, Union[str, int]]]] = (
         None  # attachment_id -> {base64, mime_type, file_size, etc}
     )
     # Context images from recent conversation history
-    context_images: Optional[Dict[str, Dict[str, Union[str, int]]]] = None
+    context_images: Optional[dict[str, dict[str, Union[str, int]]]] = None
 
     def has_images(self) -> bool:
         """Check if this context contains any images"""
         return bool(self.image_attachments) or bool(self.context_images)
 
-    def get_all_images(self) -> Dict[str, Dict[str, Union[str, int]]]:
+    def get_all_images(self) -> dict[str, dict[str, Union[str, int]]]:
         """Get all images (current message + context) combined with metadata"""
         all_images = {}
         if self.image_attachments:
@@ -77,11 +79,11 @@ class ChatContext(BaseModel):
                 all_images[img_id] = img_data_with_context
         return all_images
 
-    def get_current_images_only(self) -> Dict[str, Dict[str, Union[str, int]]]:
+    def get_current_images_only(self) -> dict[str, dict[str, Union[str, int]]]:
         """Get only current message images without historical context"""
         return self.image_attachments if self.image_attachments else {}
 
-    def get_context_images_only(self) -> Dict[str, Dict[str, Union[str, int]]]:
+    def get_context_images_only(self) -> dict[str, dict[str, Union[str, int]]]:
         """Get only historical context images"""
         return self.context_images if self.context_images else {}
 

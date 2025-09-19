@@ -2,30 +2,31 @@ import asyncio
 import logging
 import os
 from asyncio import create_task
-from typing import Any, Dict
-
-from dotenv import load_dotenv
-from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
-from uuid6 import uuid7
+from typing import Any
 
 from app.celery.tasks.parsing_tasks import process_parsing
 from app.core.config_provider import config_provider
 from app.modules.code_provider.code_provider_service import CodeProviderService
+from app.modules.conversations.conversation.conversation_model import (
+    Conversation,
+    Visibility,
+)
 from app.modules.parsing.graph_construction.parsing_helper import ParseHelper
 from app.modules.parsing.graph_construction.parsing_schema import ParsingRequest
 from app.modules.parsing.graph_construction.parsing_service import ParsingService
 from app.modules.parsing.graph_construction.parsing_validator import (
     validate_parsing_input,
 )
+from app.modules.projects.projects_model import Project
 from app.modules.projects.projects_schema import ProjectStatusEnum
 from app.modules.projects.projects_service import ProjectService
 from app.modules.utils.email_helper import EmailHelper
 from app.modules.utils.posthog_helper import PostHogClient
-from app.modules.conversations.conversation.conversation_model import Conversation
-from app.modules.conversations.conversation.conversation_model import Visibility
-from app.modules.projects.projects_model import Project
+from dotenv import load_dotenv
+from fastapi import HTTPException
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from uuid6 import uuid7
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class ParsingController:
     @staticmethod
     @validate_parsing_input
     async def parse_directory(
-        repo_details: ParsingRequest, db: AsyncSession, user: Dict[str, Any]
+        repo_details: ParsingRequest, db: AsyncSession, user: dict[str, Any]
     ):
         if "email" not in user:
             user_email = None
@@ -260,7 +261,7 @@ class ParsingController:
 
     @staticmethod
     async def fetch_parsing_status(
-        project_id: str, db: AsyncSession, user: Dict[str, Any]
+        project_id: str, db: AsyncSession, user: dict[str, Any]
     ):
         try:
             project_query = (

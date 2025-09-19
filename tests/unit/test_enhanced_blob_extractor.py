@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Unit тесты для Enhanced Blob Extractor
@@ -192,7 +191,8 @@ class TestEnhancedBlobExtractor(unittest.TestCase):
         score = self.extractor._calculate_quality_score(result, "temporal")
 
         self.assertGreaterEqual(
-            score, 0.5
+            score,
+            0.5,
         )  # Должен быть высокий счет для временных данных
 
     def test_calculate_quality_score_financial_data(self) -> None:

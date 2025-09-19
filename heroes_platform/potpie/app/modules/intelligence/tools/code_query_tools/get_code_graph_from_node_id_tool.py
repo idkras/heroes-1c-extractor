@@ -1,13 +1,12 @@
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional
-
-from langchain_core.tools import StructuredTool
-from neo4j import GraphDatabase
-from sqlalchemy.orm import Session
+from typing import Any, Optional
 
 from app.core.config_provider import config_provider
 from app.modules.projects.projects_model import Project
+from langchain_core.tools import StructuredTool
+from neo4j import GraphDatabase
+from sqlalchemy.orm import Session
 
 
 class GetCodeGraphFromNodeIdTool:
@@ -51,10 +50,10 @@ class GetCodeGraphFromNodeIdTool:
             auth=(neo4j_config["username"], neo4j_config["password"]),
         )
 
-    async def arun(self, project_id: str, node_id: str) -> Dict[str, Any]:
+    async def arun(self, project_id: str, node_id: str) -> dict[str, Any]:
         return await asyncio.to_thread(self.run, project_id, node_id)
 
-    def run(self, project_id: str, node_id: str) -> Dict[str, Any]:
+    def run(self, project_id: str, node_id: str) -> dict[str, Any]:
         """
         Run the tool to retrieve the code graph.
 
@@ -89,7 +88,7 @@ class GetCodeGraphFromNodeIdTool:
 
     def _get_graph_data(
         self, project_id: str, node_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[dict[str, Any]]:
         """Retrieve graph data from Neo4j."""
         query = """
         MATCH (start:NODE {node_id: $node_id, repoId: $project_id})
@@ -127,8 +126,8 @@ class GetCodeGraphFromNodeIdTool:
             return self._build_tree(nodes, node_id)
 
     def _build_tree(
-        self, nodes: List[Dict[str, Any]], root_id: str
-    ) -> Optional[Dict[str, Any]]:
+        self, nodes: list[dict[str, Any]], root_id: str
+    ) -> Optional[dict[str, Any]]:
         """Build a tree structure from the graph data."""
         node_map = {node["id"]: node for node in nodes}
         root = node_map.get(root_id)
@@ -137,7 +136,7 @@ class GetCodeGraphFromNodeIdTool:
 
         visited = set()
 
-        def build_node_tree(current_node: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        def build_node_tree(current_node: dict[str, Any]) -> Optional[dict[str, Any]]:
             if current_node["id"] in visited:
                 return None
             visited.add(current_node["id"])
@@ -159,11 +158,11 @@ class GetCodeGraphFromNodeIdTool:
         return build_node_tree(root)
 
     def _process_graph_data(
-        self, graph_data: Dict[str, Any], project: Project
-    ) -> Dict[str, Any]:
+        self, graph_data: dict[str, Any], project: Project
+    ) -> dict[str, Any]:
         """Process the graph data and prepare the final output."""
 
-        def process_node(node: Dict[str, Any]) -> Dict[str, Any]:
+        def process_node(node: dict[str, Any]) -> dict[str, Any]:
             processed_node = {
                 "id": node["id"],
                 "name": node["name"],

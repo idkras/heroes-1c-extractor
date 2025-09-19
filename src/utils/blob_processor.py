@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 BlobProcessor - Единый интерфейс для обработки BLOB данных
@@ -8,19 +7,19 @@ BlobProcessor - Единый интерфейс для обработки BLOB �
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
 class BlobExtractionResult:
     """Результат извлечения BLOB данных"""
 
-    content: Optional[str] = None
-    extraction_methods: Optional[List[str]] = None
+    content: str | None = None
+    extraction_methods: list[str] | None = None
     content_length: int = 0
     quality_score: float = 0.0
-    errors: Optional[List[str]] = None
-    metadata: Optional[Dict[str, Any]] = None
+    errors: list[str] | None = None
+    metadata: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         """Инициализация после создания объекта"""
@@ -44,7 +43,9 @@ class BlobProcessor:
         self.methods = ["value", "iterator", "bytes", "str", "direct_data"]
 
     def extract_blob_content(
-        self, blob_obj: Any, data_type: str = "general"
+        self,
+        blob_obj: Any,
+        data_type: str = "general",
     ) -> BlobExtractionResult:
         """
         JTBD:
@@ -84,7 +85,7 @@ class BlobProcessor:
 
             except Exception as e:
                 if result.errors is not None:
-                    result.errors.append(f"{method}: {str(e)}")
+                    result.errors.append(f"{method}: {e!s}")
 
         # Рассчитываем качество
         if result.content:
@@ -109,7 +110,7 @@ class BlobProcessor:
         except Exception as e:
             if result.errors is None:
                 result.errors = []
-            result.errors.append(f"value method error: {str(e)}")
+            result.errors.append(f"value method error: {e!s}")
         return False
 
     def _try_iterator_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
@@ -127,7 +128,7 @@ class BlobProcessor:
             pass
         except Exception as e:
             if result.errors is not None:
-                result.errors.append(f"iterator method error: {str(e)}")
+                result.errors.append(f"iterator method error: {e!s}")
         return False
 
     def _try_bytes_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
@@ -140,7 +141,7 @@ class BlobProcessor:
                     return True
         except Exception as e:
             if result.errors is not None:
-                result.errors.append(f"bytes method error: {str(e)}")
+                result.errors.append(f"bytes method error: {e!s}")
         return False
 
     def _try_str_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
@@ -157,11 +158,13 @@ class BlobProcessor:
                     return True
         except Exception as e:
             if result.errors is not None:
-                result.errors.append(f"str method error: {str(e)}")
+                result.errors.append(f"str method error: {e!s}")
         return False
 
     def _try_direct_data_method(
-        self, blob_obj: Any, result: BlobExtractionResult
+        self,
+        blob_obj: Any,
+        result: BlobExtractionResult,
     ) -> bool:
         """Попытка извлечения через _data атрибут"""
         try:
@@ -172,11 +175,13 @@ class BlobProcessor:
                     return True
         except Exception as e:
             if result.errors is not None:
-                result.errors.append(f"direct_data method error: {str(e)}")
+                result.errors.append(f"direct_data method error: {e!s}")
         return False
 
     def _calculate_quality_score(
-        self, result: BlobExtractionResult, data_type: str
+        self,
+        result: BlobExtractionResult,
+        data_type: str,
     ) -> float:
         """Расчет оценки качества извлечения"""
         score = 0.0
@@ -256,7 +261,7 @@ class BlobProcessor:
         """
         return str(field_value).startswith("<onec_dtools.database_reader.Blob")
 
-    def safe_get_blob_content(self, value: Any) -> Optional[str]:
+    def safe_get_blob_content(self, value: Any) -> str | None:
         """
         JTBD:
         Как система безопасного извлечения, я хочу извлечь содержимое BLOB поля без ошибок,
@@ -276,7 +281,7 @@ class BlobProcessor:
 blob_processor = BlobProcessor()
 
 
-def safe_get_blob_content(value: Any) -> Optional[str]:
+def safe_get_blob_content(value: Any) -> str | None:
     """
     JTBD:
     Как система обратной совместимости, я хочу предоставить старый интерфейс для извлечения BLOB данных,

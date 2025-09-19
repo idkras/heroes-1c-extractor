@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 KeywordSearcher - Единый интерфейс для поиска ключевых слов
@@ -8,7 +7,7 @@ KeywordSearcher - Единый интерфейс для поиска ключе
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from src.utils.blob_processor import BlobProcessor
 
@@ -17,9 +16,9 @@ from src.utils.blob_processor import BlobProcessor
 class KeywordSearchResult:
     """Результат поиска ключевых слов"""
 
-    found_keywords: Optional[List[str]] = None
-    matches: Optional[List[Dict[str, Any]]] = None
-    search_metadata: Optional[Dict[str, Any]] = None
+    found_keywords: list[str] | None = None
+    matches: list[dict[str, Any]] | None = None
+    search_metadata: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         """Инициализация после создания объекта"""
@@ -116,7 +115,9 @@ class KeywordSearcher:
         }
 
     def search_keywords_in_record(
-        self, record_data: Dict[str, Any], keywords: List[str]
+        self,
+        record_data: dict[str, Any],
+        keywords: list[str],
     ) -> KeywordSearchResult:
         """
         JTBD:
@@ -138,13 +139,15 @@ class KeywordSearcher:
         }
 
         found_keywords = set()
-        matches: List[Dict[str, Any]] = []
+        matches: list[dict[str, Any]] = []
 
         for field_name, field_value in record_data.items():
             # Поиск в BLOB полях
             if self.blob_processor.is_blob_field(field_value):
                 blob_result = self._search_in_blob_field(
-                    field_name, field_value, keywords
+                    field_name,
+                    field_value,
+                    keywords,
                 )
                 if blob_result.found_keywords:
                     found_keywords.update(blob_result.found_keywords)
@@ -154,7 +157,9 @@ class KeywordSearcher:
             # Поиск в обычных полях
             else:
                 field_result = self._search_in_regular_field(
-                    field_name, field_value, keywords
+                    field_name,
+                    field_value,
+                    keywords,
                 )
                 if field_result.found_keywords:
                     found_keywords.update(field_result.found_keywords)
@@ -169,7 +174,10 @@ class KeywordSearcher:
         return result
 
     def _search_in_blob_field(
-        self, field_name: str, field_value: Any, keywords: List[str]
+        self,
+        field_name: str,
+        field_value: Any,
+        keywords: list[str],
     ) -> KeywordSearchResult:
         """Поиск ключевых слов в BLOB поле"""
         result = KeywordSearchResult()
@@ -192,7 +200,7 @@ class KeywordSearcher:
                                 "keyword": keyword,
                                 "content_sample": blob_content[:200],
                                 "field_type": "blob",
-                            }
+                            },
                         )
 
             result.found_keywords = list(found_keywords)
@@ -204,7 +212,10 @@ class KeywordSearcher:
         return result
 
     def _search_in_regular_field(
-        self, field_name: str, field_value: Any, keywords: List[str]
+        self,
+        field_name: str,
+        field_value: Any,
+        keywords: list[str],
     ) -> KeywordSearchResult:
         """Поиск ключевых слов в обычном поле"""
         result = KeywordSearchResult()
@@ -223,7 +234,7 @@ class KeywordSearcher:
                                 "keyword": keyword,
                                 "content_sample": str(field_value),
                                 "field_type": "regular",
-                            }
+                            },
                         )
 
             result.found_keywords = list(found_keywords)
@@ -235,7 +246,8 @@ class KeywordSearcher:
         return result
 
     def search_quality_keywords(
-        self, record_data: Dict[str, Any]
+        self,
+        record_data: dict[str, Any],
     ) -> KeywordSearchResult:
         """
         JTBD:
@@ -251,7 +263,8 @@ class KeywordSearcher:
         return self.search_keywords_in_record(record_data, self.quality_keywords)
 
     def search_document_type_keywords(
-        self, record_data: Dict[str, Any]
+        self,
+        record_data: dict[str, Any],
     ) -> KeywordSearchResult:
         """
         JTBD:
@@ -270,7 +283,7 @@ class KeywordSearcher:
 
         return self.search_keywords_in_record(record_data, all_keywords)
 
-    def search_jtbd_keywords(self, record_data: Dict[str, Any]) -> KeywordSearchResult:
+    def search_jtbd_keywords(self, record_data: dict[str, Any]) -> KeywordSearchResult:
         """
         JTBD:
         Как система поиска JTBD данных, я хочу найти ключевые слова для JTBD сценариев,
@@ -289,7 +302,9 @@ class KeywordSearcher:
         return self.search_keywords_in_record(record_data, all_keywords)
 
     def search_custom_keywords(
-        self, record_data: Dict[str, Any], custom_keywords: List[str]
+        self,
+        record_data: dict[str, Any],
+        custom_keywords: list[str],
     ) -> KeywordSearchResult:
         """
         JTBD:
@@ -305,7 +320,7 @@ class KeywordSearcher:
         """
         return self.search_keywords_in_record(record_data, custom_keywords)
 
-    def get_keyword_categories(self) -> Dict[str, List[str]]:
+    def get_keyword_categories(self) -> dict[str, list[str]]:
         """
         JTBD:
         Как система категоризации, я хочу предоставить доступ к категориям ключевых слов,
@@ -326,7 +341,8 @@ keyword_searcher = KeywordSearcher()
 
 
 def search_keywords_in_record(
-    record_data: Dict[str, Any], keywords: List[str]
+    record_data: dict[str, Any],
+    keywords: list[str],
 ) -> KeywordSearchResult:
     """
     JTBD:

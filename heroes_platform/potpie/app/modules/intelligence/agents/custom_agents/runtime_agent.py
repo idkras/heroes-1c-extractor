@@ -1,13 +1,17 @@
+from collections.abc import AsyncGenerator
+from typing import Any, Union
+
 from pydantic import BaseModel
+
 from app.modules.intelligence.agents.chat_agents.pydantic_agent import PydanticRagAgent
 from app.modules.intelligence.provider.provider_service import (
     ProviderService,
 )
 from app.modules.intelligence.tools.tool_service import ToolService
-from ..chat_agents.crewai_agent import AgentConfig, CrewAIAgent, TaskConfig
-from ..chat_agent import ChatAgent, ChatAgentResponse, ChatContext
 from app.modules.utils.logger import setup_logger
-from typing import Any, AsyncGenerator, Dict, List, Union
+
+from ..chat_agent import ChatAgent, ChatAgentResponse, ChatContext
+from ..chat_agents.crewai_agent import AgentConfig, CrewAIAgent, TaskConfig
 
 logger = setup_logger(__name__)
 
@@ -15,10 +19,10 @@ logger = setup_logger(__name__)
 class CustomTaskConfig(BaseModel):
     """Model for task configuration from agent_config.json"""
 
-    tools: List[str]
+    tools: list[str]
     description: str
-    expected_output: Union[Dict[str, Any], str]
-    mcp_servers: List[Dict[str, Any]] = []
+    expected_output: Union[dict[str, Any], str]
+    mcp_servers: list[dict[str, Any]] = []
 
 
 class CustomAgentConfig(BaseModel):
@@ -29,7 +33,7 @@ class CustomAgentConfig(BaseModel):
     goal: str
     backstory: str
     system_prompt: str
-    tasks: List[CustomTaskConfig]
+    tasks: list[CustomTaskConfig]
     project_id: str = ""
 
 
@@ -38,7 +42,7 @@ class RuntimeCustomAgent(ChatAgent):
         self,
         llm_provider: ProviderService,
         tools_provider: ToolService,
-        agent_config: Dict[str, Any],
+        agent_config: dict[str, Any],
     ):
         self.llm_provider = llm_provider
         self.tools_provider = tools_provider

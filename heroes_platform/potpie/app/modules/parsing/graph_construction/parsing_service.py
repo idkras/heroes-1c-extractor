@@ -5,12 +5,6 @@ import traceback
 from asyncio import create_task
 from contextlib import contextmanager
 
-from blar_graph.db_managers import Neo4jManager
-from blar_graph.graph_construction.core.graph_builder import GraphConstructor
-from fastapi import HTTPException
-from git import Repo
-from sqlalchemy.orm import Session
-
 from app.core.config_provider import config_provider
 from app.modules.code_provider.code_provider_service import CodeProviderService
 from app.modules.parsing.graph_construction.code_graph_service import CodeGraphService
@@ -26,6 +20,11 @@ from app.modules.search.search_service import SearchService
 from app.modules.utils.email_helper import EmailHelper
 from app.modules.utils.parse_webhook_helper import ParseWebhookHelper
 from app.modules.utils.posthog_helper import PostHogClient
+from blar_graph.db_managers import Neo4jManager
+from blar_graph.graph_construction.core.graph_builder import GraphConstructor
+from fastapi import HTTPException
+from git import Repo
+from sqlalchemy.orm import Session
 
 from .parsing_schema import ParsingRequest
 

@@ -1,17 +1,15 @@
 import asyncio
-from typing import List
-
-from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, Field
 
 from app.core.config_provider import ConfigProvider
 from app.core.database import get_db
 from app.modules.parsing.graph_construction.code_graph_service import CodeGraphService
 from app.modules.projects.projects_service import ProjectService
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
 
 
 class GetNodesFromTagsInput(BaseModel):
-    tags: List[str] = Field(description="A list of tags to filter the nodes by")
+    tags: list[str] = Field(description="A list of tags to filter the nodes by")
     project_id: str = Field(
         description="The project id metadata for the project being evaluated"
     )
@@ -46,10 +44,10 @@ class GetNodesFromTags:
         self.sql_db = sql_db
         self.user_id = user_id
 
-    async def arun(self, tags: List[str], project_id: str) -> str:
+    async def arun(self, tags: list[str], project_id: str) -> str:
         return await asyncio.to_thread(self.run, tags, project_id)
 
-    def run(self, tags: List[str], project_id: str) -> str:
+    def run(self, tags: list[str], project_id: str) -> str:
         """
         Get nodes from the knowledge graph based on the provided tags.
         Inputs for the fetch_nodes method:

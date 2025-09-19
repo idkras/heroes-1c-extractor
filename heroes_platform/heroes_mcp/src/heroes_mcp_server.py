@@ -10,25 +10,30 @@ MCP сервер для работы со стандартами и инстру
 import json
 import logging
 import sys
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
-
 # Импорт модуля мониторинга n8n workflow
 try:
     from .n8n_workflow_monitoring import workflow_monitor
+
     n8n_monitoring_loaded = True
     print("SUCCESS: N8N workflow monitoring module loaded", file=sys.stderr)
 except ImportError:
     try:
         from n8n_workflow_monitoring import workflow_monitor  # type: ignore
+
         n8n_monitoring_loaded = True
-        print("SUCCESS: N8N workflow monitoring module loaded (fallback)", file=sys.stderr)
+        print(
+            "SUCCESS: N8N workflow monitoring module loaded (fallback)", file=sys.stderr
+        )
     except ImportError as e:
         n8n_monitoring_loaded = False
-        print(f"WARNING: N8N workflow monitoring module not loaded: {e}", file=sys.stderr)
+        print(
+            f"WARNING: N8N workflow monitoring module not loaded: {e}", file=sys.stderr
+        )
+
 
 # ПРОВЕРКА АРГУМЕНТОВ КОМАНДНОЙ СТРОКИ ПЕРЕД ИНИЦИАЛИЗАЦИЕЙ
 def check_command_line_args():
@@ -381,20 +386,24 @@ ghost_workflow = GhostIntegration() if ghost_loaded else None
 # Initialize workflow instances
 workflows_loaded = False
 
-from heroes_platform.heroes_mcp.workflows.standards_management import StandardsManagementWorkflow
-from heroes_platform.heroes_mcp.workflows.registry_workflow import RegistryWorkflow
-from heroes_platform.heroes_mcp.workflows.rick_ai.rickai_workflow import RickAIWorkflow
-from heroes_platform.heroes_mcp.workflows.output_gap_analysis_workflow import GapAnalysisInput, OutputGapAnalysisWorkflow
-from heroes_platform.heroes_mcp.workflows.validate_actual_output_workflow import ValidateActualOutputWorkflow
+from heroes_platform.heroes_mcp.workflows.ai_guidance_workflow import AIGuidanceWorkflow
 
 # Workflow instances will be initialized after imports
-
 # Import CocoIndex commands separately
 # CocoIndex functions are referenced but not directly called
-    # Keeping import for potential fut
-
-from heroes_platform.heroes_mcp.workflows.cocoindex_workflow import cocoindex_analyze_duplicates, cocoindex_functionality_map, cocoindex_search, cocoindex_validate_creation
-from heroes_platform.heroes_mcp.workflows.ai_guidance_workflow import AIGuidanceWorkflow
+# Keeping import for potential fut
+from heroes_platform.heroes_mcp.workflows.output_gap_analysis_workflow import (
+    GapAnalysisInput,
+    OutputGapAnalysisWorkflow,
+)
+from heroes_platform.heroes_mcp.workflows.registry_workflow import RegistryWorkflow
+from heroes_platform.heroes_mcp.workflows.rick_ai.rickai_workflow import RickAIWorkflow
+from heroes_platform.heroes_mcp.workflows.standards_management import (
+    StandardsManagementWorkflow,
+)
+from heroes_platform.heroes_mcp.workflows.validate_actual_output_workflow import (
+    ValidateActualOutputWorkflow,
+)
 from heroes_platform.heroes_mcp.workflows.validation_workflow import ValidationWorkflow
 
 # Initialize workflow instances
@@ -440,7 +449,6 @@ def _store_credential_internal(
 
 def _test_credentials_internal() -> dict[str, bool]:
     """Internal function to test all configured credentials"""
-    from heroes_platform.shared.credentials_manager import credentials_manager
 
     return credentials_manager.test_credentials()
 
@@ -640,7 +648,9 @@ async def heroes_gpt_workflow(
         pass
 
     # Execute HeroesGPT workflow
-    from heroes_platform.heroes_mcp.workflows.heroes_gpt_workflow import HeroesGPTWorkflow
+    from heroes_platform.heroes_mcp.workflows.heroes_gpt_workflow import (
+        HeroesGPTWorkflow,
+    )
 
     orchestrator = HeroesGPTWorkflow()
     report = await orchestrator.run_full_analysis(landing_url=url)
@@ -698,7 +708,7 @@ async def heroes_gpt_workflow(
                 "passed": reflection.passed,
             }
             for reflection in report.reflections
-            ],
+        ],
     }
 
     return json.dumps(result, ensure_ascii=False, indent=2)
@@ -874,12 +884,12 @@ async def validate_actual_outcome(
         if not artifact_path and url:
             artifact_path = url
             # Определяем тип по содержимому url
-            if url.startswith(('http://', 'https://')):
+            if url.startswith(("http://", "https://")):
                 artifact_type = "url"
             else:
                 # Это файл, определяем тип по расширению
                 artifact_type = "auto"
-        
+
         if not artifact_path:
             return json.dumps(
                 {
@@ -888,27 +898,30 @@ async def validate_actual_outcome(
                 },
                 ensure_ascii=False,
             )
-        
+
         # Use validate_actual_output_workflow
         if validate_actual_output_workflow:
-            from heroes_platform.heroes_mcp.workflows.validate_actual_output.workflow import ValidateOutputInput
+            from heroes_platform.heroes_mcp.workflows.validate_actual_output.workflow import (
+                ValidateOutputInput,
+            )
+
             input_data = ValidateOutputInput(
                 url=url,
                 artifact_path=artifact_path,
                 artifact_type=artifact_type,
                 expected_features=expected_features,
                 test_cases=test_cases,
-                take_screenshot=take_screenshot
+                take_screenshot=take_screenshot,
             )
             result = await validate_actual_output_workflow.execute(input_data)
             # Convert result to dict if it's a ValidateOutputResult object
-            if hasattr(result, 'to_dict'):
+            if hasattr(result, "to_dict"):
                 result_dict = result.to_dict()
-            elif hasattr(result, '__dict__'):
+            elif hasattr(result, "__dict__"):
                 result_dict = result.__dict__
             else:
                 result_dict = result
-            
+
             return json.dumps(result_dict, ensure_ascii=False, indent=2)
         else:
             return json.dumps(
@@ -921,7 +934,10 @@ async def validate_actual_outcome(
     except Exception as e:
         logger.error(f"Error in validate_actual_outcome: {e}")
         return json.dumps(
-            {"error": f"Error validating actual outcome: {str(e)}", "artifact_path": artifact_path or url},
+            {
+                "error": f"Error validating actual outcome: {str(e)}",
+                "artifact_path": artifact_path or url,
+            },
             ensure_ascii=False,
         )
 
@@ -1321,7 +1337,8 @@ async def rick_ai_find_widget_by_system_name(
     except Exception as e:
         logger.error(f"Error in rick_ai_find_widget_by_system_name: {e}")
         return json.dumps(
-            {"error": f"Error finding widget by system name: {str(e)}"}, ensure_ascii=False
+            {"error": f"Error finding widget by system name: {str(e)}"},
+            ensure_ascii=False,
         )
 
 
@@ -1352,11 +1369,11 @@ async def rick_ai_analyze_source_medium_enhanced(
         print("📖 Чтение Rick.ai Methodology Standard...")
         logger.info("Reading Rick.ai Methodology Standard...")
         standard_path = "[standards .md]/3. rick.ai standards/rick.ai methodology standard 9 september 2025 1400 cet by ai assistant.md"
-        
+
         # Reflection checkpoint: Standard read
         print("SUCCESS: Rick.ai Methodology Standard прочитан успешно")
         logger.info("SUCCESS: Rick.ai Methodology Standard read successfully")
-        
+
         # STEP 2: Get widget data
         print(f"📊 Получение данных виджета {company_alias}/{app_id}/{widget_id}...")
         logger.info(f"Getting widget data for {company_alias}/{app_id}/{widget_id}...")
@@ -1368,27 +1385,27 @@ async def rick_ai_analyze_source_medium_enhanced(
                 "widget_id": widget_id,
             }
         )
-        
+
         # Reflection checkpoint: Widget data retrieved
         print("SUCCESS: Данные виджета получены успешно")
         logger.info("✅ Widget data retrieved successfully")
-        
+
         # STEP 3: Analyze all rows with enhanced logic and progress indication
         print("🔍 Анализ всех строк с Rick.ai error detection...")
         logger.info("Analyzing all rows with Rick.ai error detection...")
         result = await rick_ai_workflow.execute(
             {
-                "command": "analyze_source_medium_enhanced", 
+                "command": "analyze_source_medium_enhanced",
                 "widget_data": json.dumps(widget_data_result),
                 "standard_compliance": True,
-                "show_progress": True  # Включаем прогресс-индикацию
+                "show_progress": True,  # Включаем прогресс-индикацию
             }
         )
-        
+
         # Reflection checkpoint: Analysis completed
         print("✅ Анализ sourceMedium завершен с Rick.ai error detection")
         logger.info("✅ Source medium analysis completed with Rick.ai error detection")
-        
+
         return json.dumps(result, ensure_ascii=False)
 
     except Exception as e:
@@ -1437,7 +1454,10 @@ async def rick_ai_analyze_grouping_data(widget_data: str, widget_groups: str) ->
 
 @mcp.tool()
 async def rick_ai_research_loop(
-    company_alias: str, app_id: str, widget_id: str, checklist_type: str = "source_medium"
+    company_alias: str,
+    app_id: str,
+    widget_id: str,
+    checklist_type: str = "source_medium",
 ) -> str:
     """
     JTBD: Когда мне нужно провести исследовательский цикл по чеклисту,
@@ -2114,7 +2134,6 @@ async def update_mkdoc(project_path: str, clean: bool = True) -> str:
         )
 
 
-
 @mcp.tool()
 async def yandex_direct_get_banners_stat(
     date_from: str, date_to: str, campaign_ids: str = ""
@@ -2229,7 +2248,7 @@ async def n8n_workflow_health_check(workflow_id: str = "") -> str:
     try:
         workflow_id_param = workflow_id if workflow_id else None
         health_data = await workflow_monitor.get_workflow_health(workflow_id_param)  # type: ignore
-        
+
         return json.dumps(
             {
                 "status": "success",
@@ -2282,8 +2301,10 @@ async def n8n_workflow_analyze(workflow_id: str, analysis_type: str = "full") ->
         )
 
     try:
-        analysis_data = await workflow_monitor.analyze_workflow(workflow_id, analysis_type)
-        
+        analysis_data = await workflow_monitor.analyze_workflow(
+            workflow_id, analysis_type
+        )
+
         return json.dumps(
             {
                 "status": "success",
@@ -2313,7 +2334,9 @@ async def n8n_workflow_analyze(workflow_id: str, analysis_type: str = "full") ->
 
 
 @mcp.tool()
-async def n8n_workflow_validate(workflow_id: str, validation_rules: str = "standard") -> str:
+async def n8n_workflow_validate(
+    workflow_id: str, validation_rules: str = "standard"
+) -> str:
     """
     JTBD: Как tech lead, я хочу валидировать n8n workflow по стандартам,
     чтобы обеспечить соответствие лучшим практикам и стандартам качества.
@@ -2339,27 +2362,18 @@ async def n8n_workflow_validate(workflow_id: str, validation_rules: str = "stand
     try:
         # Выполняем анализ для валидации
         analysis_data = await workflow_monitor.analyze_workflow(workflow_id, "full")
-        
+
         # Валидация по стандартам
         validation_results: dict[str, Any] = {
             "workflow_id": workflow_id,
             "validation_rules": validation_rules,
             "timestamp": datetime.now().isoformat(),
-            "structure_validation": {
-                "passed": True,
-                "issues": []
-            },
-            "security_validation": {
-                "passed": True,
-                "issues": []
-            },
-            "performance_validation": {
-                "passed": True,
-                "issues": []
-            },
-            "overall_status": "passed"
+            "structure_validation": {"passed": True, "issues": []},
+            "security_validation": {"passed": True, "issues": []},
+            "performance_validation": {"passed": True, "issues": []},
+            "overall_status": "passed",
         }
-        
+
         # Проверка структуры
         structure = analysis_data.get("structure_analysis", {})
         if structure.get("complexity_score", 0) > 100:
@@ -2367,14 +2381,14 @@ async def n8n_workflow_validate(workflow_id: str, validation_rules: str = "stand
             if isinstance(issues, list):
                 issues.append("High complexity score")
             validation_results["structure_validation"]["passed"] = False
-        
+
         triggers = structure.get("triggers", [])
         if isinstance(triggers, list) and len(triggers) > 5:
             issues = validation_results["structure_validation"]["issues"]
             if isinstance(issues, list):
                 issues.append("Too many triggers")
             validation_results["structure_validation"]["passed"] = False
-        
+
         # Проверка безопасности
         security = analysis_data.get("security_analysis", {})
         if security.get("secrets_found"):
@@ -2382,7 +2396,7 @@ async def n8n_workflow_validate(workflow_id: str, validation_rules: str = "stand
             if isinstance(issues, list):
                 issues.append("Secrets found in parameters")
             validation_results["security_validation"]["passed"] = False
-        
+
         # Проверка производительности
         performance = analysis_data.get("performance_analysis", {})
         if performance.get("error_rate", 0) > 10:
@@ -2390,13 +2404,15 @@ async def n8n_workflow_validate(workflow_id: str, validation_rules: str = "stand
             if isinstance(issues, list):
                 issues.append("High error rate")
             validation_results["performance_validation"]["passed"] = False
-        
+
         # Общий статус
-        if (not validation_results["structure_validation"]["passed"] or
-            not validation_results["security_validation"]["passed"] or
-            not validation_results["performance_validation"]["passed"]):
+        if (
+            not validation_results["structure_validation"]["passed"]
+            or not validation_results["security_validation"]["passed"]
+            or not validation_results["performance_validation"]["passed"]
+        ):
             validation_results["overall_status"] = "failed"
-        
+
         return json.dumps(
             {
                 "status": "success",
@@ -2438,9 +2454,11 @@ def main():
 
     # Логируем доступные инструменты
     base_tools = "server_info, standards_workflow, workflow_integration, registry_compliance_check, heroes_gpt_workflow, ai_guidance_checklist, common_mistakes_prevention, quality_validation, approach_recommendation, validate_actual_outcome, ghost_publish_analysis, ghost_publish_document, ghost_integration, registry_output_validate, registry_docs_audit, registry_gap_report, registry_release_block, read_cleanshot, analyze_visual_hierarchy, make_mkdoc, update_mkdoc, execute_output_gap_workflow, yandex_direct_get_data, yandex_direct_get_campaigns, yandex_direct_get_banners_stat"
-    
+
     if n8n_monitoring_loaded:
-        n8n_tools = ", n8n_workflow_health_check, n8n_workflow_analyze, n8n_workflow_validate"
+        n8n_tools = (
+            ", n8n_workflow_health_check, n8n_workflow_analyze, n8n_workflow_validate"
+        )
         base_tools += n8n_tools
 
     if cocoindex_loaded:

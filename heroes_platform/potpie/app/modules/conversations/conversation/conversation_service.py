@@ -1,8 +1,10 @@
 import asyncio
 import json
 import logging
+from collections.abc import AsyncGenerator
 from datetime import datetime, timezone
-from typing import AsyncGenerator, List, Optional, Dict, Union
+from typing import Optional, Union
+
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -25,29 +27,29 @@ from app.modules.conversations.message.message_model import (
     MessageStatus,
     MessageType,
 )
-from app.modules.intelligence.agents.custom_agents.custom_agent_model import CustomAgent
 from app.modules.conversations.message.message_schema import (
     MessageRequest,
     MessageResponse,
     NodeContext,
 )
+from app.modules.intelligence.agents.agents_service import AgentsService
+from app.modules.intelligence.agents.chat_agent import ChatContext
+from app.modules.intelligence.agents.chat_agents.adaptive_agent import (
+    PromptService,
+)
+from app.modules.intelligence.agents.custom_agents.custom_agent_model import CustomAgent
 from app.modules.intelligence.agents.custom_agents.custom_agents_service import (
     CustomAgentService,
 )
-from app.modules.intelligence.agents.agents_service import AgentsService
-from app.modules.intelligence.agents.chat_agent import ChatContext
 from app.modules.intelligence.memory.chat_history_service import ChatHistoryService
 from app.modules.intelligence.provider.provider_service import (
     ProviderService,
 )
+from app.modules.intelligence.tools.tool_service import ToolService
+from app.modules.media.media_service import MediaService
 from app.modules.projects.projects_service import ProjectService
 from app.modules.users.user_service import UserService
 from app.modules.utils.posthog_helper import PostHogClient
-from app.modules.intelligence.agents.chat_agents.adaptive_agent import (
-    PromptService,
-)
-from app.modules.intelligence.tools.tool_service import ToolService
-from app.modules.media.media_service import MediaService
 
 logger = logging.getLogger(__name__)
 
@@ -380,7 +382,7 @@ class ConversationService:
 
         if result:
             conversation, human_message_count = result
-            setattr(conversation, "human_message_count", human_message_count)
+            conversation.human_message_count = human_message_count
             return conversation
         return None
 
@@ -390,10 +392,10 @@ class ConversationService:
         agent_type = conversation.agent_ids[0]
 
         prompt = (
-            "Given an agent type '{agent_type}' and an initial message '{message}', "
+            f"Given an agent type '{agent_type}' and an initial message '{message_content}', "
             "generate a concise and relevant title for a conversation. "
             "The title should be no longer than 50 characters. Only return title string, do not wrap in quotes."
-        ).format(agent_type=agent_type, message=message_content)
+        )
 
         messages = [
             {
@@ -420,7 +422,7 @@ class ConversationService:
         self,
         conversation_id: str,
         user_id: str,
-        node_ids: List[NodeContext] = [],
+        node_ids: list[NodeContext] = [],
         stream: bool = True,
     ) -> AsyncGenerator[ChatMessageResponse, None]:
         try:
@@ -556,8 +558,8 @@ class ConversationService:
 
         # Extract the 'message' and 'citations'
         message: str = data.get("message", "")
-        citations: List[str] = data.get("citations", [])
-        tool_calls: List[dict] = data.get("tool_calls", [])
+        citations: list[str] = data.get("citations", [])
+        tool_calls: list[dict] = data.get("tool_calls", [])
 
         return ChatMessageResponse(
             message=message, citations=citations, tool_calls=tool_calls
@@ -568,8 +570,8 @@ class ConversationService:
         query: str,
         conversation_id: str,
         user_id: str,
-        node_ids: List[NodeContext],
-        attachment_ids: Optional[List[str]] = None,
+        node_ids: list[NodeContext],
+        attachment_ids: Optional[list[str]] = None,
     ) -> AsyncGenerator[ChatMessageResponse, None]:
         conversation = (
             self.sql_db.query(Conversation).filter_by(id=conversation_id).first()
@@ -631,7 +633,6 @@ class ConversationService:
                 )
 
             if type == "CUSTOM_AGENT":
-
                 res = (
                     await self.agent_service.custom_agent_service.execute_agent_runtime(
                         user_id,
@@ -711,8 +712,8 @@ class ConversationService:
             ) from e
 
     async def _prepare_attachments_as_images(
-        self, attachment_ids: List[str]
-    ) -> Optional[Dict[str, Dict[str, Union[str, int]]]]:
+        self, attachment_ids: list[str]
+    ) -> Optional[dict[str, dict[str, Union[str, int]]]]:
         """Convert attachment IDs directly to base64 images for multimodal processing"""
         try:
             if not attachment_ids:
@@ -763,7 +764,7 @@ class ConversationService:
 
     async def _prepare_current_message_images(
         self, conversation_id: str
-    ) -> Optional[Dict[str, Dict[str, Union[str, int]]]]:
+    ) -> Optional[dict[str, dict[str, Union[str, int]]]]:
         """Get images from the most recent human message in the conversation"""
         try:
             # Get the most recent human message with attachments
@@ -794,7 +795,7 @@ class ConversationService:
 
     async def _prepare_conversation_context_images(
         self, conversation_id: str, limit: int = 3
-    ) -> Optional[Dict[str, Dict[str, Union[str, int]]]]:
+    ) -> Optional[dict[str, dict[str, Union[str, int]]]]:
         """Get recent images from conversation history for additional context"""
         try:
             # Get recent images from conversation (excluding the most recent message to avoid duplicates)
@@ -941,7 +942,7 @@ class ConversationService:
 
     async def get_conversation_messages(
         self, conversation_id: str, start: int, limit: int, user_id: str
-    ) -> List[MessageResponse]:
+    ) -> list[MessageResponse]:
         try:
             access_level = await self.check_conversation_access(
                 conversation_id, self.user_email

@@ -1,8 +1,17 @@
 import enum
 
-from sqlalchemy import TIMESTAMP, CheckConstraint, Column
+from sqlalchemy import (
+    TIMESTAMP,
+    CheckConstraint,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy import Enum as SQLAEnum
-from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import relationship
 
 from app.core.base_model import Base

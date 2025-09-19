@@ -9,13 +9,12 @@ AI QA PRE-CHECK:
 ❌ Запрещено: Предполагать структуру данных без анализа
 """
 
-import pytest
 import json
-import asyncio
-from unittest.mock import Mock, patch, AsyncMock
-import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+import sys
+from unittest.mock import Mock, patch
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 from workflows.cleanshot_workflow import CleanShotWorkflow
 
 
@@ -121,14 +120,14 @@ class TestCleanShotIntegration:
         чтобы обеспечить совместимость с MCP сервером.
         """
         # Assert - проверяем что workflow соответствует MCP протоколу
-        assert hasattr(
-            self.workflow, "read_cleanshot"
-        ), "Workflow must have read_cleanshot method"
+        assert hasattr(self.workflow, "read_cleanshot"), (
+            "Workflow must have read_cleanshot method"
+        )
 
         # Проверяем сигнатуру метода
         import inspect
 
-        method = getattr(self.workflow, "read_cleanshot")
+        method = self.workflow.read_cleanshot
         sig = inspect.signature(method)
 
         # Должен принимать url: str и возвращать str
@@ -155,16 +154,16 @@ class TestCleanShotIntegration:
                 line_count = len(source_lines)
 
                 # Проверяем что каждый метод ≤25 строк
-                assert (
-                    line_count <= 25
-                ), f"Method {name} has {line_count} lines, should be ≤25"
+                assert line_count <= 25, (
+                    f"Method {name} has {line_count} lines, should be ≤25"
+                )
 
                 # Проверяем наличие JTBD документации
                 docstring = method.__doc__
                 assert docstring is not None, f"Method {name} must have docstring"
-                assert (
-                    "JTBD" in docstring
-                ), f"Method {name} must have JTBD documentation"
+                assert "JTBD" in docstring, (
+                    f"Method {name} must have JTBD documentation"
+                )
 
     def test_cleanshot_workflow_single_responsibility(self):
         """
@@ -173,9 +172,9 @@ class TestCleanShotIntegration:
         """
         # Assert - проверяем что workflow имеет только одну ответственность
         # CleanShot workflow должен только читать изображения из CleanShot
-        assert hasattr(
-            self.workflow, "read_cleanshot"
-        ), "Workflow should have read_cleanshot method"
+        assert hasattr(self.workflow, "read_cleanshot"), (
+            "Workflow should have read_cleanshot method"
+        )
 
         # Не должно быть других публичных методов, не связанных с CleanShot
         import inspect
@@ -184,12 +183,12 @@ class TestCleanShotIntegration:
         public_methods = [name for name, _ in methods if not name.startswith("_")]
 
         # Должен быть только один публичный метод
-        assert (
-            len(public_methods) == 1
-        ), f"Workflow should have only 1 public method, got {public_methods}"
-        assert (
-            public_methods[0] == "read_cleanshot"
-        ), f"Public method should be 'read_cleanshot', got {public_methods[0]}"
+        assert len(public_methods) == 1, (
+            f"Workflow should have only 1 public method, got {public_methods}"
+        )
+        assert public_methods[0] == "read_cleanshot", (
+            f"Public method should be 'read_cleanshot', got {public_methods[0]}"
+        )
 
     def test_cleanshot_workflow_output_validation(self):
         """
@@ -237,21 +236,21 @@ class TestCleanShotIntegration:
             assert field in parsed_result, f"Missing required field: {field}"
 
         # Проверяем качество данных
-        assert isinstance(
-            parsed_result["jtbd_scenario"], dict
-        ), "jtbd_scenario should be dict"
-        assert isinstance(
-            parsed_result["test_cases"], dict
-        ), "test_cases should be dict"
-        assert isinstance(
-            parsed_result["defect_checklist"], dict
-        ), "defect_checklist should be dict"
-        assert isinstance(
-            parsed_result["quality_criteria"], dict
-        ), "quality_criteria should be dict"
-        assert isinstance(
-            parsed_result["ai_qa_tasks"], list
-        ), "ai_qa_tasks should be list"
+        assert isinstance(parsed_result["jtbd_scenario"], dict), (
+            "jtbd_scenario should be dict"
+        )
+        assert isinstance(parsed_result["test_cases"], dict), (
+            "test_cases should be dict"
+        )
+        assert isinstance(parsed_result["defect_checklist"], dict), (
+            "defect_checklist should be dict"
+        )
+        assert isinstance(parsed_result["quality_criteria"], dict), (
+            "quality_criteria should be dict"
+        )
+        assert isinstance(parsed_result["ai_qa_tasks"], list), (
+            "ai_qa_tasks should be list"
+        )
 
         # Проверяем что ai_qa_tasks содержит задачи
         assert len(parsed_result["ai_qa_tasks"]) > 0, "ai_qa_tasks should not be empty"

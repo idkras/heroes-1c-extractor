@@ -8,19 +8,20 @@ JTBD: Как тестировщик, я хочу проверить все ас�
 Согласно TDD Documentation Standard.
 """
 
-import pytest
 import json
-import tempfile
 import os
-from pathlib import Path
-from unittest.mock import Mock, patch, mock_open
 
 # Import the workflow to test
 import sys
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+
+import pytest
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "workflows"))
-import sys
 import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "workflows"))
 from cross_check_workflow import CrossCheckWorkflow

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Unit тесты для BaseExtractor
@@ -9,7 +8,7 @@ Unit тесты для BaseExtractor
 import os
 import sys
 import unittest
-from typing import Any, Dict
+from typing import Any
 from unittest.mock import MagicMock, mock_open, patch
 
 # Добавляем путь к src
@@ -26,7 +25,7 @@ class TestBaseExtractor(unittest.TestCase):
 
         # Создаем конкретную реализацию BaseExtractor для тестов
         class TestExtractor(BaseExtractor):
-            def extract(self) -> Dict[str, Any]:
+            def extract(self) -> dict[str, Any]:
                 return {"test": "data"}
 
         self.extractor: TestExtractor = TestExtractor()
@@ -207,7 +206,7 @@ class TestBaseExtractor(unittest.TestCase):
 
         # Создаем конкретную реализацию BaseExtractor
         class TestExtractor(BaseExtractor):
-            def extract(self) -> Dict[str, Any]:
+            def extract(self) -> dict[str, Any]:
                 return {"test": "data"}
 
         extractor = TestExtractor()
@@ -225,7 +224,7 @@ class TestBaseExtractor(unittest.TestCase):
         """Тест запуска extractor с ошибкой открытия БД"""
 
         class TestExtractor(BaseExtractor):
-            def extract(self) -> Dict[str, Any]:
+            def extract(self) -> dict[str, Any]:
                 return {"test": "data"}
 
         extractor = TestExtractor()

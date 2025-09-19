@@ -1,11 +1,5 @@
 import asyncio
 import logging
-from typing import Dict, List
-
-from fastapi import HTTPException
-from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, Field
-from tree_sitter_languages import get_parser
 
 from app.core.database import get_db
 from app.modules.code_provider.code_provider_service import CodeProviderService
@@ -18,6 +12,10 @@ from app.modules.parsing.graph_construction.parsing_repomap import RepoMap
 from app.modules.parsing.knowledge_graph.inference_service import InferenceService
 from app.modules.projects.projects_service import ProjectService
 from app.modules.search.search_service import SearchService
+from fastapi import HTTPException
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
+from tree_sitter_languages import get_parser
 
 
 class ChangeDetectionInput(BaseModel):
@@ -29,14 +27,14 @@ class ChangeDetectionInput(BaseModel):
 class ChangeDetail(BaseModel):
     updated_code: str = Field(..., description="The updated code for the node")
     entrypoint_code: str = Field(..., description="The code for the entry point")
-    citations: List[str] = Field(
+    citations: list[str] = Field(
         ..., description="List of file names referenced in the response"
     )
 
 
 class ChangeDetectionResponse(BaseModel):
-    patches: Dict[str, str] = Field(..., description="Dictionary of file patches")
-    changes: List[ChangeDetail] = Field(
+    patches: dict[str, str] = Field(..., description="Dictionary of file patches")
+    changes: list[ChangeDetail] = Field(
         ..., description="List of changes with updated and entry point code"
     )
 
@@ -145,9 +143,9 @@ class ChangeDetectionTool:
         CALL {{
             WITH start
             MATCH (neighbor:Function {{project_id: $project_id}})-[:CALLS*]->(start)
-            RETURN neighbor{', neighbor.body AS body' if with_bodies else ''}
+            RETURN neighbor{", neighbor.body AS body" if with_bodies else ""}
         }}
-        RETURN start, collect({{neighbor: neighbor{', body: neighbor.body' if with_bodies else ''}}}) AS neighbors
+        RETURN start, collect({{neighbor: neighbor{", body: neighbor.body" if with_bodies else ""}}}) AS neighbors
         """
         endpoint_id = node_id
         result = tx.run(query, endpoint_id, project_id)

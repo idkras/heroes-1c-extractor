@@ -471,16 +471,21 @@ class MarkdownMkDocWorkflow:
                     # Вызываем validate_actual_outcome MCP команду
                     try:
                         # Импорт MCP команды через workflow
-                        from heroes_platform.heroes_mcp.workflows.validate_actual_output_workflow import ValidateActualOutputWorkflow
+                        from heroes_platform.heroes_mcp.workflows.validate_actual_output_workflow import (
+                            ValidateActualOutputWorkflow,
+                        )
+
                         validate_workflow = ValidateActualOutputWorkflow()
 
-                        validation_result = await validate_workflow.execute({
-                            "artifact_path": "http://127.0.0.1:8000/",
-                            "artifact_type": "url",
-                            "expected_features": "documentation, navigation, search",
-                            "test_cases": "visual quality, functionality, responsiveness",
-                            "take_screenshot": True,
-                        })
+                        validation_result = await validate_workflow.execute(
+                            {
+                                "artifact_path": "http://127.0.0.1:8000/",
+                                "artifact_type": "url",
+                                "expected_features": "documentation, navigation, search",
+                                "test_cases": "visual quality, functionality, responsiveness",
+                                "take_screenshot": True,
+                            }
+                        )
 
                         # Останавливаем сервер
                         server_process.terminate()

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
 from sqlalchemy.orm import Session
@@ -7,17 +7,15 @@ from app.core.database import get_db
 from app.modules.auth.auth_service import AuthService
 from app.modules.media.media_controller import MediaController
 from app.modules.media.media_schema import (
-    AttachmentUploadResponse,
     AttachmentAccessResponse,
     AttachmentInfo,
+    AttachmentUploadResponse,
 )
-
 
 router = APIRouter()
 
 
 class MediaAPI:
-
     @staticmethod
     @router.post("/media/upload", response_model=AttachmentUploadResponse)
     async def upload_image(
@@ -146,7 +144,7 @@ class MediaAPI:
 
     @staticmethod
     @router.get(
-        "/messages/{message_id}/attachments", response_model=List[AttachmentInfo]
+        "/messages/{message_id}/attachments", response_model=list[AttachmentInfo]
     )
     async def get_message_attachments(
         message_id: str,

@@ -3,9 +3,10 @@ Linear Python SDK - A simple interface for the Linear GraphQL API.
 """
 
 import json
-import requests
-from typing import Dict, Any, Optional
 import os
+from typing import Any, Optional
+
+import requests
 from sqlalchemy.orm import Session
 
 
@@ -28,8 +29,8 @@ class LinearClient:
         }
 
     def execute_query(
-        self, query: str, variables: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, query: str, variables: Optional[dict[str, Any]] = None
+    ) -> dict[str, Any]:
         """
         Execute a GraphQL query against the Linear API.
 
@@ -61,7 +62,7 @@ class LinearClient:
 
         return result["data"]
 
-    def get_issue(self, issue_id: str) -> Dict[str, Any]:
+    def get_issue(self, issue_id: str) -> dict[str, Any]:
         """
         Fetch an issue by its ID.
 
@@ -101,7 +102,7 @@ class LinearClient:
         result = self.execute_query(query, variables)
         return result["issue"]
 
-    def update_issue(self, issue_id: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_issue(self, issue_id: str, input_data: dict[str, Any]) -> dict[str, Any]:
         """
         Update an issue.
 
@@ -140,7 +141,7 @@ class LinearClient:
         result = self.execute_query(mutation, variables)
         return result["issueUpdate"]
 
-    def comment_create(self, issue_id: str, body: str) -> Dict[str, Any]:
+    def comment_create(self, issue_id: str, body: str) -> dict[str, Any]:
         """
         Add a comment to an issue.
 

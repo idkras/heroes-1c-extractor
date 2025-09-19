@@ -1,7 +1,7 @@
 # Makefile для проекта 1C-extractor
 # Автоматизация тестирования и CI/CD
 
-.PHONY: help install test test-notebook test-qa test-all clean lint format
+.PHONY: help install test test-notebook test-qa test-all clean lint format fix-linter auto-fix
 
 # Переменные
 PYTHON := python3
@@ -67,14 +67,22 @@ test-execution: ## Тестировать выполнение notebook
 # Линтинг
 lint: ## Запустить линтер
 	@echo "🔍 Запуск линтера..."
-	flake8 notebooks/ tests/notebook/ scripts/
-	pylint notebooks/ tests/notebook/ scripts/
+	python3 -m flake8 src/ tests/
+	python3 -m mypy src/ tests/
 
 # Форматирование
 format: ## Форматировать код
 	@echo "✨ Форматирование кода..."
-	black notebooks/ tests/notebook/ scripts/
-	isort notebooks/ tests/notebook/ scripts/
+	python3 -m black src/ tests/
+	python3 -m isort src/ tests/
+
+fix-linter: ## Исправить ошибки линтера автоматически
+	@echo "🔧 Автоматическое исправление ошибок линтера..."
+	@source .venv/bin/activate && python scripts/fix_linter_errors.py
+	@echo "✅ Ошибки линтера исправлены"
+
+auto-fix: fix-linter format ## Полное автоисправление (линтер + форматирование)
+	@echo "🚀 Полное автоисправление завершено"
 
 # Очистка
 clean: ## Очистить временные файлы

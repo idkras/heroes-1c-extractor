@@ -9,13 +9,11 @@ AI QA PRE-CHECK:
 ❌ Запрещено: Предполагать структуру данных без анализа
 """
 
-import pytest
 import json
-import tempfile
 import os
-from unittest.mock import Mock, patch, AsyncMock
 import sys
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 sys.path.append(str(Path(__file__).parent.parent.parent / "workflows"))
 from cleanshot_workflow import CleanShotWorkflow
@@ -135,9 +133,9 @@ class TestCleanShotWorkflow:
             if not name.startswith("_"):  # Публичные методы
                 source_lines = inspect.getsourcelines(method)[0]
                 line_count = len(source_lines)
-                assert (
-                    line_count <= 25
-                ), f"Method {name} has {line_count} lines, should be ≤25"
+                assert line_count <= 25, (
+                    f"Method {name} has {line_count} lines, should be ≤25"
+                )
 
     def test_read_cleanshot_workflow_size_limit(self):
         """
@@ -147,11 +145,11 @@ class TestCleanShotWorkflow:
         # Assert - проверяем что workflow файл ≤325 строк (300 + 8% допуск)
         workflow_file = "workflows/cleanshot_workflow.py"
         if os.path.exists(workflow_file):
-            with open(workflow_file, "r") as f:
+            with open(workflow_file) as f:
                 line_count = len(f.readlines())
-                assert (
-                    line_count <= 325
-                ), f"Workflow file has {line_count} lines, should be ≤325 (300 + 8%)"
+                assert line_count <= 325, (
+                    f"Workflow file has {line_count} lines, should be ≤325 (300 + 8%)"
+                )
 
     def test_read_cleanshot_workflow_mcp_commands_limit(self):
         """
@@ -160,9 +158,9 @@ class TestCleanShotWorkflow:
         """
         # Assert - проверяем что только 1 MCP команда на workflow
         # Это будет проверено в integration тестах
-        assert hasattr(
-            self.workflow, "read_cleanshot"
-        ), "Workflow should have read_cleanshot method"
+        assert hasattr(self.workflow, "read_cleanshot"), (
+            "Workflow should have read_cleanshot method"
+        )
 
     def test_read_cleanshot_jtbd_documentation(self):
         """
@@ -170,7 +168,7 @@ class TestCleanShotWorkflow:
         чтобы обеспечить понимание назначения кода.
         """
         # Assert - проверяем наличие JTBD документации
-        method = getattr(self.workflow, "read_cleanshot")
+        method = self.workflow.read_cleanshot
         docstring = method.__doc__
         assert docstring is not None, "Method should have docstring"
         assert "JTBD" in docstring, "Docstring should contain JTBD"
@@ -265,6 +263,6 @@ class TestCleanShotWorkflow:
                     result = self.workflow.read_cleanshot(test_url)
 
         execution_time = time.time() - start_time
-        assert (
-            execution_time < 2.0
-        ), f"Execution took {execution_time:.2f}s, should be <2.0s"
+        assert execution_time < 2.0, (
+            f"Execution took {execution_time:.2f}s, should be <2.0s"
+        )

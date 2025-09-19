@@ -10,16 +10,15 @@ Created: 21 August 2025, 17:45 CET by AI Assistant
 Based on: TDD Documentation Standard v2.7
 """
 
-import pytest
-import os
 import asyncio
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, Any
-from unittest.mock import Mock, patch
+import os
 
 # Добавляем src в sys.path для импорта модулей
 import sys
+from datetime import datetime
+from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
@@ -65,12 +64,12 @@ class TestHeroesGPTWorkflowFileOutput:
         result = asyncio.run(execute_heroes_gpt_workflow(self.test_url, "full", "{}"))
 
         # Assert - Файл должен быть создан
-        expected_file_pattern = f"*heroes_gpt_analysis*.md"
+        expected_file_pattern = "*heroes_gpt_analysis*.md"
         client_files = list(self.expected_client_dir.glob(expected_file_pattern))
 
-        assert (
-            len(client_files) > 0
-        ), f"No analysis file found in {self.expected_client_dir}"
+        assert len(client_files) > 0, (
+            f"No analysis file found in {self.expected_client_dir}"
+        )
 
         # Assert - Возвращенный результат должен содержать путь к файлу
         assert "output_file_path" in result, "Result should contain output_file_path"
@@ -83,9 +82,9 @@ class TestHeroesGPTWorkflowFileOutput:
         # Assert - Файл должен содержать анализ
         content = output_file.read_text(encoding="utf-8")
         assert len(content) > 100, "Analysis file should contain substantial content"
-        assert (
-            "heroes_gpt_analysis" in content.lower()
-        ), "File should contain HeroesGPT analysis"
+        assert "heroes_gpt_analysis" in content.lower(), (
+            "File should contain HeroesGPT analysis"
+        )
 
     def test_heroes_workflow_should_return_relative_path_link(self):
         """
@@ -108,13 +107,13 @@ class TestHeroesGPTWorkflowFileOutput:
         assert "output_file_path" in result
         file_path = result["output_file_path"]
 
-        assert file_path.startswith(
-            "[heroes-gpt-bot]/clients/"
-        ), f"File path should start with '[heroes-gpt-bot]/clients/', got: {file_path}"
+        assert file_path.startswith("[heroes-gpt-bot]/clients/"), (
+            f"File path should start with '[heroes-gpt-bot]/clients/', got: {file_path}"
+        )
 
-        assert file_path.endswith(
-            ".md"
-        ), f"File path should end with '.md', got: {file_path}"
+        assert file_path.endswith(".md"), (
+            f"File path should end with '.md', got: {file_path}"
+        )
 
     def test_heroes_workflow_should_create_client_folder_if_not_exists(self):
         """
@@ -139,16 +138,16 @@ class TestHeroesGPTWorkflowFileOutput:
         )
 
         # Assert - Папка клиента должна быть создана
-        assert (
-            new_client_dir.exists()
-        ), f"Client directory {new_client_dir} should be created"
+        assert new_client_dir.exists(), (
+            f"Client directory {new_client_dir} should be created"
+        )
 
         # Assert - Файл должен быть в новой папке
         assert "output_file_path" in result
         output_file = Path(result["output_file_path"])
-        assert (
-            output_file.parent == new_client_dir
-        ), f"Output file should be in client directory {new_client_dir}"
+        assert output_file.parent == new_client_dir, (
+            f"Output file should be in client directory {new_client_dir}"
+        )
 
     def test_heroes_workflow_should_include_timestamp_in_filename(self):
         """
@@ -172,9 +171,9 @@ class TestHeroesGPTWorkflowFileOutput:
 
         timestamp_pattern = r"\d{2}\s+\w{3}\s+\d{4}\s+\d{4}\s+CET"
 
-        assert re.search(
-            timestamp_pattern, filename
-        ), f"Filename should contain timestamp pattern, got: {filename}"
+        assert re.search(timestamp_pattern, filename), (
+            f"Filename should contain timestamp pattern, got: {filename}"
+        )
 
     def test_heroes_workflow_should_validate_file_content_structure(self):
         """
@@ -216,8 +215,9 @@ class TestHeroesGPTWorkflowFileOutput:
         real_url = "zipsale.co.uk"
 
         # Act - вызываем через MCP интерфейс
-        from heroes_mcp.src.heroes_mcp_server import heroes_gpt_workflow
         import json
+
+        from heroes_mcp.src.heroes_mcp_server import heroes_gpt_workflow
 
         mcp_result = heroes_gpt_workflow(real_url, "quick", "{}")
 
@@ -225,9 +225,9 @@ class TestHeroesGPTWorkflowFileOutput:
         mcp_data = json.loads(mcp_result)
 
         # Assert - MCP команда должна вернуть информацию о файле
-        assert (
-            "output_file_path" in mcp_data or "file_created" in mcp_data
-        ), "MCP result should contain file information"
+        assert "output_file_path" in mcp_data or "file_created" in mcp_data, (
+            "MCP result should contain file information"
+        )
 
         # Assert - Файл должен быть доступен через файловую систему
         if "output_file_path" in mcp_data:
@@ -272,7 +272,8 @@ class TestHeroesGPTWorkflowProperties:
         JTBD: Как property test, я хочу проверить что любой валидный URL создает файл,
         чтобы убедиться в robustness системы.
         """
-        from hypothesis import given, strategies as st
+        from hypothesis import given
+        from hypothesis import strategies as st
 
         # Property: любой валидный URL должен создавать файл
         @given(

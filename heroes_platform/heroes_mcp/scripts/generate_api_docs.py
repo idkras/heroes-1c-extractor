@@ -6,7 +6,6 @@
     python scripts/generate_api_docs.py
 """
 
-
 # Import API documentation generator
 from heroes_mcp.scripts.api_documentation_generator import main
 

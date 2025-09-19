@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 Базовый класс для всех extractors
@@ -12,7 +11,7 @@ import os
 import sys
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +33,8 @@ class BaseExtractor(ABC):
         self.blob_processor = BlobProcessor()
         self.keyword_searcher = KeywordSearcher()
         self.document_analyzer = DocumentAnalyzer()
-        self.db: Optional[DatabaseReader] = None
-        self.results: Dict[str, Any] = {}
+        self.db: DatabaseReader | None = None
+        self.results: dict[str, Any] = {}
 
     def open_database(self, db_path: str = "data/raw/1Cv8.1CD") -> bool:
         """
@@ -68,7 +67,11 @@ class BaseExtractor(ABC):
         """
         try:
             patch_path = os.path.join(
-                os.path.dirname(__file__), "..", "..", "patches", "onec_dtools"
+                os.path.dirname(__file__),
+                "..",
+                "..",
+                "patches",
+                "onec_dtools",
             )
             sys.path.insert(0, patch_path)
             from patches.onec_dtools.onec_dtools_patch import apply_patch
@@ -78,7 +81,7 @@ class BaseExtractor(ABC):
             # Если патч не найден, продолжаем без него
             logger.debug(f"Патч не найден: {e}")
 
-    def get_document_tables(self, max_tables: int = 50) -> List[tuple]:
+    def get_document_tables(self, max_tables: int = 50) -> list[tuple]:
         """
         JTBD:
         Как система поиска таблиц документов, я хочу найти все таблицы документов,
@@ -104,7 +107,7 @@ class BaseExtractor(ABC):
         document_tables.sort(key=lambda x: x[1], reverse=True)
         return document_tables[:max_tables]
 
-    def get_reference_tables(self, max_tables: int = 30) -> List[tuple]:
+    def get_reference_tables(self, max_tables: int = 30) -> list[tuple]:
         """
         JTBD:
         Как система поиска справочников, я хочу найти все справочники,
@@ -131,8 +134,10 @@ class BaseExtractor(ABC):
         return reference_tables[:max_tables]
 
     def analyze_table_records(
-        self, table_name: str, max_records: int = 10
-    ) -> List[Dict[str, Any]]:
+        self,
+        table_name: str,
+        max_records: int = 10,
+    ) -> list[dict[str, Any]]:
         """
         JTBD:
         Как система анализа записей таблицы, я хочу безопасно прочитать записи из таблицы,
@@ -168,7 +173,7 @@ class BaseExtractor(ABC):
             print(f"    ⚠️ Ошибка анализа таблицы {table_name}: {e}")
             return []
 
-    def save_results(self, filename: str, results: Dict[str, Any]) -> bool:
+    def save_results(self, filename: str, results: dict[str, Any]) -> bool:
         """
         JTBD:
         Как система сохранения результатов, я хочу безопасно сохранить результаты анализа,
@@ -190,7 +195,7 @@ class BaseExtractor(ABC):
             print(f"❌ Ошибка сохранения результатов: {e}")
             return False
 
-    def create_metadata(self, source_file: str = "data/raw/1Cv8.1CD") -> Dict[str, Any]:
+    def create_metadata(self, source_file: str = "data/raw/1Cv8.1CD") -> dict[str, Any]:
         """
         JTBD:
         Как система создания метаданных, я хочу создать стандартные метаданные,
@@ -211,7 +216,7 @@ class BaseExtractor(ABC):
         }
 
     @abstractmethod
-    def extract(self) -> Optional[Dict[str, Any]]:
+    def extract(self) -> dict[str, Any] | None:
         """
         JTBD:
         Как система извлечения данных, я хочу определить интерфейс для извлечения данных,
@@ -220,9 +225,8 @@ class BaseExtractor(ABC):
         Returns:
             Optional[Dict[str, Any]]: Результаты извлечения или None при ошибке
         """
-        pass
 
-    def run(self, db_path: str = "data/raw/1Cv8.1CD") -> Optional[Dict[str, Any]]:
+    def run(self, db_path: str = "data/raw/1Cv8.1CD") -> dict[str, Any] | None:
         """
         JTBD:
         Как система запуска extractor, я хочу запустить полный цикл извлечения данных,
@@ -247,9 +251,8 @@ class BaseExtractor(ABC):
             if results:
                 print(f"✅ {self.__class__.__name__} завершен успешно")
                 return results
-            else:
-                print(f"❌ {self.__class__.__name__} завершен с ошибками")
-                return None
+            print(f"❌ {self.__class__.__name__} завершен с ошибками")
+            return None
         except Exception as e:
             print(f"❌ Ошибка в {self.__class__.__name__}: {e}")
             return None

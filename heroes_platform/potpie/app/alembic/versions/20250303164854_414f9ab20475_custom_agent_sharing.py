@@ -6,10 +6,11 @@ Create Date: 2025-03-03 16:48:54.711260
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
+from typing import Union
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
@@ -55,7 +56,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-
     op.drop_constraint("fk_custom_agents_user_id", "custom_agents", type_="foreignkey")
     op.create_index(
         "ix_custom_agents_user_id", "custom_agents", ["user_id"], unique=False

@@ -1,13 +1,11 @@
-from typing import List
-
 from sqlalchemy.orm import Session
 
+from app.modules.intelligence.agents.custom_agents.custom_agent_model import CustomAgent
 from app.modules.users.user_schema import (
     UserConversationListResponse,
     UserProfileResponse,
 )
 from app.modules.users.user_service import UserService
-from app.modules.intelligence.agents.custom_agents.custom_agent_model import CustomAgent
 
 
 class UserController:
@@ -25,7 +23,7 @@ class UserController:
         limit: int,
         sort: str = "updated_at",
         order: str = "desc",
-    ) -> List[UserConversationListResponse]:
+    ) -> list[UserConversationListResponse]:
         conversations = self.service.get_conversations_with_projects_for_user(
             user_id, start, limit, sort, order
         )

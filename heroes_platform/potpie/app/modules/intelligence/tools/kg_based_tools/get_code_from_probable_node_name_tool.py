@@ -1,24 +1,23 @@
 import asyncio
 import logging
-from typing import Any, Dict, List
-
-from langchain_core.tools import StructuredTool
-from neo4j import GraphDatabase
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
+from typing import Any
 
 from app.core.config_provider import config_provider
 from app.modules.code_provider.code_provider_service import CodeProviderService
 from app.modules.projects.projects_model import Project
 from app.modules.projects.projects_service import ProjectService
 from app.modules.search.search_service import SearchService
+from langchain_core.tools import StructuredTool
+from neo4j import GraphDatabase
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
 
 class GetCodeFromProbableNodeNameInput(BaseModel):
     project_id: str = Field(description="The project ID, this is a UUID")
-    probable_node_names: List[str] = Field(
+    probable_node_names: list[str] = Field(
         description="List of probable node names in the format of 'file_path:function_name' or 'file_path:class_name' or 'file_path'"
     )
 
@@ -81,8 +80,8 @@ class GetCodeFromProbableNodeNameTool:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
     async def find_node_from_probable_name(
-        self, project_id: str, probable_node_names: List[str]
-    ) -> List[Dict[str, Any]]:
+        self, project_id: str, probable_node_names: list[str]
+    ) -> list[dict[str, Any]]:
         tasks = [
             self.process_probable_node_name(project_id, name)
             for name in probable_node_names
@@ -90,13 +89,13 @@ class GetCodeFromProbableNodeNameTool:
         return await asyncio.gather(*tasks)
 
     async def arun(
-        self, project_id: str, probable_node_names: List[str]
-    ) -> List[Dict[str, Any]]:
+        self, project_id: str, probable_node_names: list[str]
+    ) -> list[dict[str, Any]]:
         return await asyncio.to_thread(self.run, project_id, probable_node_names)
 
     def run(
-        self, project_id: str, probable_node_names: List[str]
-    ) -> List[Dict[str, Any]]:
+        self, project_id: str, probable_node_names: list[str]
+    ) -> list[dict[str, Any]]:
         return asyncio.run(
             asyncio.to_thread(
                 self.get_code_from_probable_node_name, project_id, probable_node_names
@@ -104,8 +103,8 @@ class GetCodeFromProbableNodeNameTool:
         )
 
     def get_code_from_probable_node_name(
-        self, project_id: str, probable_node_names: List[str]
-    ) -> List[Dict[str, Any]]:
+        self, project_id: str, probable_node_names: list[str]
+    ) -> list[dict[str, Any]]:
         project = asyncio.run(
             ProjectService(self.sql_db).get_project_repo_details_from_db(
                 project_id, self.user_id
@@ -119,10 +118,10 @@ class GetCodeFromProbableNodeNameTool:
             self.find_node_from_probable_name(project_id, probable_node_names)
         )
 
-    async def execute(self, project_id: str, node_id: str) -> Dict[str, Any]:
+    async def execute(self, project_id: str, node_id: str) -> dict[str, Any]:
         return self.internal_run(project_id, node_id)
 
-    def internal_run(self, project_id: str, node_id: str) -> Dict[str, Any]:
+    def internal_run(self, project_id: str, node_id: str) -> dict[str, Any]:
         try:
             node_data = self._get_node_data(project_id, node_id)
             if not node_data:
@@ -147,7 +146,7 @@ class GetCodeFromProbableNodeNameTool:
             )
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
-    def _get_node_data(self, project_id: str, node_id: str) -> Dict[str, Any]:
+    def _get_node_data(self, project_id: str, node_id: str) -> dict[str, Any]:
         query = """
         MATCH (n:NODE {node_id: $node_id, repoId: $project_id})
         RETURN n.file_path AS file_path, n.start_line AS start_line, n.end_line AS end_line, n.text as code, n.docstring as docstring
@@ -160,8 +159,8 @@ class GetCodeFromProbableNodeNameTool:
         return self.sql_db.query(Project).filter(Project.id == project_id).first()
 
     def _process_result(
-        self, node_data: Dict[str, Any], project: Project, node_id: str
-    ) -> Dict[str, Any]:
+        self, node_data: dict[str, Any], project: Project, node_id: str
+    ) -> dict[str, Any]:
         file_path = node_data["file_path"]
         start_line = node_data["start_line"]
         end_line = node_data["end_line"]

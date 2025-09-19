@@ -1,16 +1,16 @@
 import logging
 import os
 import random
-from typing import Dict, Any, List, Optional, Type
-from pydantic import BaseModel, Field
-from github import Github
-from github.GithubException import GithubException
-from github.Auth import AppAuth
-import requests
-from sqlalchemy.orm import Session
-from langchain_core.tools import StructuredTool
+from typing import Any, Optional
 
+import requests
 from app.core.config_provider import config_provider
+from github import Github
+from github.Auth import AppAuth
+from github.GithubException import GithubException
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 
 class GitHubCreateBranchInput(BaseModel):
@@ -36,8 +36,8 @@ class GitHubCreateBranchTool:
     Useful for starting a new feature, bugfix, or any work that requires a separate branch.
     The tool will create the branch from the specified base branch.
     """
-    args_schema: Type[BaseModel] = GitHubCreateBranchInput
-    gh_token_list: List[str] = []
+    args_schema: type[BaseModel] = GitHubCreateBranchInput
+    gh_token_list: list[str] = []
 
     def __init__(self, sql_db: Session, user_id: str):
         self.sql_db = sql_db
@@ -103,7 +103,7 @@ class GitHubCreateBranchTool:
         repo_name: str,
         base_branch: str,
         new_branch_name: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create a new branch in a GitHub repository.
 
@@ -176,7 +176,7 @@ class GitHubCreateBranchTool:
         repo_name: str,
         base_branch: str,
         new_branch_name: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Async implementation of the tool."""
         return self._run(
             repo_name=repo_name,
@@ -188,7 +188,6 @@ class GitHubCreateBranchTool:
 def github_create_branch_tool(
     sql_db: Session, user_id: str
 ) -> Optional[StructuredTool]:
-
     tool_instance = GitHubCreateBranchTool(sql_db, user_id)
     return StructuredTool.from_function(
         coroutine=tool_instance._arun,

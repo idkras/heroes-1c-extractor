@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
@@ -7,14 +5,14 @@ from app.core.database import get_db
 from app.modules.auth.auth_service import AuthService
 from app.modules.intelligence.agents.agents_controller import AgentsController
 from app.modules.intelligence.agents.agents_service import AgentInfo
-from app.modules.intelligence.provider.provider_service import ProviderService
 from app.modules.intelligence.agents.chat_agents.adaptive_agent import (
     PromptService,
 )
-from app.modules.intelligence.tools.tool_service import ToolService
 from app.modules.intelligence.agents.custom_agents.custom_agent_router import (
     router as custom_agent_router,
 )
+from app.modules.intelligence.provider.provider_service import ProviderService
+from app.modules.intelligence.tools.tool_service import ToolService
 
 router = APIRouter()
 
@@ -31,7 +29,7 @@ class AgentsAPI:
         pass
 
     @staticmethod
-    @router.get("/list-available-agents/", response_model=List[AgentInfo])
+    @router.get("/list-available-agents/", response_model=list[AgentInfo])
     async def list_available_agents(
         db: Session = Depends(get_db),
         user=Depends(AuthService.check_auth),

@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import json
 import logging
-from datetime import datetime
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -13,26 +11,26 @@ from onec_dtools.database_reader import DatabaseReader
 from src.utils.blob_utils import is_blob_field, safe_get_blob_content
 
 
-def search_documents_by_criteria() -> Optional[Dict[str, Any]]:
+def search_documents_by_criteria() -> dict[str, Any] | None:
     """
     Поиск документов по критериям из [todo · incidents]/todo.md
     Особое внимание на документы "корректировка качества товара"
     """
-    print("🔍 Поиск документов по критериям из [todo · incidents]/todo.md")
-    print("🎯 ЦЕЛЬ: Найти документы 'корректировка качества товара'")
-    print("=" * 60)
+    logger.info("🔍 Поиск документов по критериям из [todo · incidents]/todo.md")
+    logger.info("🎯 ЦЕЛЬ: Найти документы 'корректировка качества товара'")
+    logger.info("=" * 60)
 
     try:
-        with open("raw/1Cv8.1CD", "rb") as f:
+        with Path("raw/1Cv8.1CD").open("rb") as f:
             db = DatabaseReader(f)
 
-            print("✅ База данных открыта успешно!")
+            logger.info("✅ База данных открыта успешно!")
 
-            results: Dict[str, Any] = {
+            results: dict[str, Any] = {
                 "quality_documents": [],
                 "found_keywords": [],
                 "metadata": {
-                    "extraction_date": datetime.now().isoformat(),
+                    "extraction_date": datetime.now(UTC).isoformat(),
                     "total_quality_documents": 0,
                     "source_file": "raw/1Cv8.1CD",
                 },
@@ -56,26 +54,33 @@ def search_documents_by_criteria() -> Optional[Dict[str, Any]]:
                 "рай",
             ]
 
-            print("\n🔍 Этап 1: Поиск в таблицах документов")
-            print("-" * 60)
+            logger.info("\n🔍 Этап 1: Поиск в таблицах документов")
+            logger.info("-" * 60)
 
             # Ищем таблицы документов
             document_tables = {}
-            for table_name in db.tables.keys():
+            for table_name in db.tables:
                 if table_name.startswith("_DOCUMENT"):
                     table = db.tables[table_name]
                     if len(table) > 0:
                         document_tables[table_name] = len(table)
 
-            print("📊 Найдено таблиц документов: {len(document_tables)}")
+            logger.info("📊 Найдено таблиц документов: %s", len(document_tables))
 
             # Анализируем топ-20 таблиц документов
             sorted_documents = sorted(
-                document_tables.items(), key=lambda x: x[1], reverse=True
+                document_tables.items(),
+                key=lambda x: x[1],
+                reverse=True,
             )
 
             for i, (table_name, record_count) in enumerate(sorted_documents[:20]):
-                print("\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
+                logger.info(
+                    "\n📋 %2d. %s (%s записей)",
+                    i + 1,
+                    table_name,
+                    f"{record_count:,}",
+                )
 
                 try:
                     table = db.tables[table_name]
@@ -112,7 +117,7 @@ def search_documents_by_criteria() -> Optional[Dict[str, Any]]:
                                                                 "content_sample": content[
                                                                     :200
                                                                 ],
-                                                            }
+                                                            },
                                                         )
 
                                     # Ищем в обычных полях
@@ -129,9 +134,9 @@ def search_documents_by_criteria() -> Optional[Dict[str, Any]]:
                                                             "field_name": field_name,
                                                             "keyword": keyword,
                                                             "content_sample": str(
-                                                                field_value
+                                                                field_value,
                                                             ),
-                                                        }
+                                                        },
                                                     )
 
                             except Exception as e:
@@ -140,33 +145,38 @@ def search_documents_by_criteria() -> Optional[Dict[str, Any]]:
 
                         # Показываем найденные ключевые слова
                         if found_keywords:
-                            print(
-                                "    🎯 Найдено ключевых слов: {', '.join(found_keywords)}"
+                            logger.info(
+                                "    🎯 Найдено ключевых слов: %s",
+                                ", ".join(found_keywords),
                             )
                             results["found_keywords"].extend(list(found_keywords))
 
-                except Exception:
-                    print("    ⚠️ Ошибка анализа таблицы: {e}")
+                except Exception as e:
+                    logger.warning("    ⚠️ Ошибка анализа таблицы: %s", e)
                     continue
 
             # Обновляем метаданные
             results["metadata"]["total_quality_documents"] = len(
-                results["quality_documents"]
+                results["quality_documents"],
             )
 
             # Сохраняем результаты
-            with open("quality_documents_search.json", "w", encoding="utf-8") as file:
+            with Path("quality_documents_search.json").open(
+                "w",
+                encoding="utf-8",
+            ) as file:
                 json.dump(results, file, ensure_ascii=False, indent=2, default=str)
 
-            print("\n✅ Результаты сохранены в quality_documents_search.json")
-            print(
-                f"📊 Найдено документов с качеством: {results['metadata']['total_quality_documents']}"
+            logger.info("\n✅ Результаты сохранены в quality_documents_search.json")
+            logger.info(
+                "📊 Найдено документов с качеством: %s",
+                results["metadata"]["total_quality_documents"],
             )
 
             return results
 
-    except Exception:
-        print("❌ Ошибка: {e}")
+    except Exception as e:
+        logger.exception("❌ Ошибка: %s", e)
         return None
 
 

@@ -70,7 +70,9 @@ class ValidateActualOutputWorkflow:
         self.screenshot_manager = ScreenshotManager()
         self.quality_validator = QualityValidator()
 
-    async def execute(self, input_data: dict | ValidateOutputInput) -> ValidateOutputResult:
+    async def execute(
+        self, input_data: dict | ValidateOutputInput
+    ) -> ValidateOutputResult:
         """
         JTBD: Как workflow executor, я хочу выполнить полную валидацию actual output,
         чтобы получить комплексную оценку качества и выявить проблемы.
@@ -88,7 +90,7 @@ class ValidateActualOutputWorkflow:
                 artifact_type=input_data.get("artifact_type", ""),
                 expected_features=input_data.get("expected_features", ""),
                 test_cases=input_data.get("test_cases", ""),
-                take_screenshot=input_data.get("take_screenshot", True)
+                take_screenshot=input_data.get("take_screenshot", True),
             )
 
         # [reflection] Input validation
@@ -131,14 +133,24 @@ class ValidateActualOutputWorkflow:
                 output_type = "validation"
                 outcome = "success" if score_result.get("score", 0) >= 80 else "failed"
                 # Для файлов создаем placeholder, для URL - реальный скриншот
-                if input_data.artifact_path and not input_data.artifact_path.startswith(('http://', 'https://')):
+                if input_data.artifact_path and not input_data.artifact_path.startswith(
+                    ("http://", "https://")
+                ):
                     # Это файл - создаем placeholder
                     screenshot_url = f"file://{input_data.artifact_path}"
                     description = "file_artifact"
                 else:
                     # Это URL
-                    screenshot_url = input_data.artifact_path if input_data.artifact_path else input_data.url
-                    description = "doc_todo" if "doc.todo.md" in str(screenshot_url) else "artifact"
+                    screenshot_url = (
+                        input_data.artifact_path
+                        if input_data.artifact_path
+                        else input_data.url
+                    )
+                    description = (
+                        "doc_todo"
+                        if "doc.todo.md" in str(screenshot_url)
+                        else "artifact"
+                    )
                 screenshot_info = await self.screenshot_manager.create_screenshot(
                     screenshot_url, output_type, outcome, description
                 )
@@ -307,7 +319,7 @@ class ValidateActualOutputWorkflow:
                 url=url,
                 expected_features=expected_features,
                 test_cases=test_cases,
-                take_screenshot=take_screenshot
+                take_screenshot=take_screenshot,
             )
             result = await self.execute(input_data)
 

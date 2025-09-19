@@ -11,9 +11,10 @@ JTBD: Когда нужно проверить работу команды из�
 import asyncio
 import json
 import sys
-import pytest
 from datetime import datetime
 from pathlib import Path
+
+import pytest
 
 # Добавляем путь к src для импорта
 sys.path.append("src")
@@ -46,29 +47,29 @@ class TestZipsaleIntegration:
         result = await extractor.extract_offers_from_url("https://zipsale.co.uk")
 
         # STEP 2: Проверка успешности
-        assert (
-            result["status"] == "success"
-        ), f"Ошибка извлечения: {result.get('error', 'Unknown error')}"
+        assert result["status"] == "success", (
+            f"Ошибка извлечения: {result.get('error', 'Unknown error')}"
+        )
 
         # STEP 3: Проверка соответствия стандарту v1.8
         validation = result["validation"]
 
-        print(f"📊 Результаты анализа zipsale.co.uk:")
+        print("📊 Результаты анализа zipsale.co.uk:")
         print(f"   - Всего оферов: {result['offers_count']}")
         print(f"   - Минимум 60+: {validation['meets_minimum']}")
         print(f"   - Compliance score: {validation['compliance_score']:.2%}")
         print(f"   - Типы оферов: {list(validation['offer_types'].keys())}")
 
         # Проверяем требования стандарта
-        assert (
-            result["offers_count"] >= 60
-        ), f"Недостаточно оферов: {result['offers_count']} < 60"
-        assert (
-            validation["meets_minimum"] == True
-        ), "Не соответствует требованию минимум 60+ оферов"
-        assert (
-            validation["compliance_score"] >= 0.8
-        ), f"Низкий compliance score: {validation['compliance_score']}"
+        assert result["offers_count"] >= 60, (
+            f"Недостаточно оферов: {result['offers_count']} < 60"
+        )
+        assert validation["meets_minimum"] == True, (
+            "Не соответствует требованию минимум 60+ оферов"
+        )
+        assert validation["compliance_score"] >= 0.8, (
+            f"Низкий compliance score: {validation['compliance_score']}"
+        )
 
         # STEP 4: Анализ типов оферов
         offer_types = validation["offer_types"]
@@ -83,19 +84,19 @@ class TestZipsaleIntegration:
         print(f"   - Сигналы авторитета: {offer_types.get('authority_signals', 0)}")
 
         # Проверяем разнообразие типов оферов
-        assert (
-            len(offer_types) >= 5
-        ), f"Недостаточно типов оферов: {len(offer_types)} < 5"
+        assert len(offer_types) >= 5, (
+            f"Недостаточно типов оферов: {len(offer_types)} < 5"
+        )
 
         # STEP 5: Проверка количественных данных
-        assert (
-            validation["quantitative_data_present"] == True
-        ), "Отсутствуют количественные данные"
+        assert validation["quantitative_data_present"] == True, (
+            "Отсутствуют количественные данные"
+        )
 
         # STEP 6: Проверка эмоциональных триггеров
-        assert (
-            validation["emotional_triggers_present"] == True
-        ), "Отсутствуют эмоциональные триггеры"
+        assert validation["emotional_triggers_present"] == True, (
+            "Отсутствуют эмоциональные триггеры"
+        )
 
         # STEP 7: Сохранение результатов для сравнения с эталоном
         test_results = {
@@ -112,7 +113,7 @@ class TestZipsaleIntegration:
         with open(results_file, "w", encoding="utf-8") as f:
             json.dump(test_results, f, indent=2, ensure_ascii=False)
 
-        print(f"✅ Тест zipsale.co.uk пройден успешно!")
+        print("✅ Тест zipsale.co.uk пройден успешно!")
         print(f"📁 Результаты сохранены в: {results_file}")
 
         return result
@@ -165,7 +166,7 @@ class TestZipsaleIntegration:
             ):
                 professional_offers.append(offer)
 
-        print(f"📊 Анализ тематики оферов:")
+        print("📊 Анализ тематики оферов:")
         print(f"   - Crosslisting оферы: {len(crosslisting_offers)}")
         print(f"   - Multi-platform оферы: {len(multi_platform_offers)}")
         print(f"   - Professional оферы: {len(professional_offers)}")
@@ -182,12 +183,12 @@ class TestZipsaleIntegration:
         # Показываем примеры количественных данных
         for i, offer in enumerate(quantitative_offers[:5]):
             print(
-                f"     {i+1}. {offer['text'][:100]}... - {offer['quantitative_data']}"
+                f"     {i + 1}. {offer['text'][:100]}... - {offer['quantitative_data']}"
             )
 
-        assert (
-            len(quantitative_offers) > 0
-        ), "Не найдены оферы с количественными данными"
+        assert len(quantitative_offers) > 0, (
+            "Не найдены оферы с количественными данными"
+        )
 
         print("✅ Детальный анализ качества пройден успешно!")
 
@@ -252,7 +253,7 @@ class TestZipsaleIntegration:
 
         execution_time = end_time - start_time
 
-        print(f"📊 Результаты производительности:")
+        print("📊 Результаты производительности:")
         print(f"   - Время выполнения: {execution_time:.2f} секунд")
         print(f"   - Оферов в секунду: {result['offers_count'] / execution_time:.1f}")
         print(f"   - Статус: {result['status']}")
