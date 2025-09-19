@@ -1,311 +1,399 @@
 #!/usr/bin/env python3
 
 """
-BlobProcessor - Единый интерфейс для обработки BLOB данных
-Устраняет дублирование кода между extractors
+BlobProcessor - централизованная обработка BLOB полей в 1С
+Использует onec_dtools для правильного извлечения BLOB данных
 """
 
-from dataclasses import dataclass
+import logging
+from typing import Any, Dict, List, Optional, Union
 from datetime import datetime
-from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
-@dataclass
 class BlobExtractionResult:
-    """Результат извлечения BLOB данных"""
+    """
+    Результат извлечения BLOB данных
+    """
 
-    content: str | None = None
-    extraction_methods: list[str] | None = None
-    content_length: int = 0
-    quality_score: float = 0.0
-    errors: list[str] | None = None
-    metadata: dict[str, Any] | None = None
+    def __init__(self, data: Dict[str, Any]):
+        self.field_name = data.get("field_name", "")
+        self.context = data.get("context", "")
+        self.content = data.get("content", None)
+        self.content_type = data.get("content_type", "unknown")
+        self.content_length = data.get("content_length", 0)
+        self.quality_score = data.get("quality_score", 0.0)
+        self.errors = data.get("errors", [])
+        self.metadata = data.get("metadata", {})
+        self.extraction_methods = data.get("extraction_methods", [])
 
-    def __post_init__(self) -> None:
-        """Инициализация после создания объекта"""
-        if self.extraction_methods is None:
-            self.extraction_methods = []
-        if self.errors is None:
-            self.errors = []
-        if self.metadata is None:
-            self.metadata = {}
+    def to_dict(self) -> Dict[str, Any]:
+        """Преобразование в словарь"""
+        return {
+            "field_name": self.field_name,
+            "context": self.context,
+            "content": self.content,
+            "content_type": self.content_type,
+            "content_length": self.content_length,
+            "quality_score": self.quality_score,
+            "errors": self.errors,
+            "metadata": self.metadata,
+            "extraction_methods": self.extraction_methods,
+        }
 
 
 class BlobProcessor:
     """
+    Централизованный процессор BLOB данных для 1С
+
     JTBD:
-    Как система обработки BLOB данных, я хочу предоставить единый интерфейс для извлечения содержимого,
-    чтобы устранить дублирование кода и обеспечить консистентность обработки.
+    Как система обработки BLOB данных, я хочу централизовать извлечение
+    всех BLOB полей с использованием onec_dtools, чтобы устранить дублирование
+    и обеспечить единую архитектуру обработки.
     """
 
     def __init__(self) -> None:
-        """Инициализация процессора BLOB данных"""
-        self.methods = ["value", "iterator", "bytes", "str", "direct_data"]
+        """
+        Инициализация BlobProcessor
+        """
+        self.extraction_methods = [
+            "onec_dtools_utf16",
+            "onec_dtools_utf8",
+            "onec_dtools_cp1251",
+            "fallback_hex",
+        ]
+
+        self.stats: Dict[str, Any] = {
+            "total_processed": 0,
+            "successful_extractions": 0,
+            "failed_extractions": 0,
+            "method_usage": {},
+            "encoding_stats": {},
+        }
 
     def extract_blob_content(
-        self,
-        blob_obj: Any,
-        data_type: str = "general",
+        self, blob_obj: Any, context: str = "", field_name: str = ""
     ) -> BlobExtractionResult:
         """
-        JTBD:
-        Как система извлечения BLOB данных, я хочу извлечь содержимое BLOB объекта,
-        чтобы получить читаемые данные для анализа.
+        Извлечение BLOB содержимого с множественными методами
 
         Args:
-            blob_obj: BLOB объект для извлечения
-            data_type: Тип данных ('flower', 'temporal', 'financial', 'general')
+            blob_obj: BLOB объект из onec_dtools
+            context: Контекст извлечения (например, "document", "reference")
+            field_name: Имя поля для диагностики
 
         Returns:
-            BlobExtractionResult: Результат извлечения
+            Словарь с результатами извлечения
         """
-        result = BlobExtractionResult()
-        if result.metadata is not None:
-            result.metadata["data_type"] = data_type
-            result.metadata["extraction_timestamp"] = datetime.now().isoformat()
+        self.stats["total_processed"] += 1
 
-        # Пробуем все методы извлечения
-        for method in self.methods:
-            try:
-                if method == "value":
-                    success = self._try_value_method(blob_obj, result)
-                elif method == "iterator":
-                    success = self._try_iterator_method(blob_obj, result)
-                elif method == "bytes":
-                    success = self._try_bytes_method(blob_obj, result)
-                elif method == "str":
-                    success = self._try_str_method(blob_obj, result)
-                elif method == "direct_data":
-                    success = self._try_direct_data_method(blob_obj, result)
+        result: Dict[str, Any] = {
+            "field_name": field_name,
+            "context": context,
+            "extraction_methods": [],
+            "content": None,
+            "content_type": "unknown",
+            "content_length": 0,
+            "quality_score": 0.0,
+            "errors": [],
+            "metadata": {
+                "extraction_time": datetime.now().isoformat(),
+                "blob_type": type(blob_obj).__name__,
+                "blob_size": 0,
+            },
+        }
 
-                if success and result.content:
-                    if result.extraction_methods is not None:
-                        result.extraction_methods.append(method)
-                    break
-
-            except Exception as e:
-                if result.errors is not None:
-                    result.errors.append(f"{method}: {e!s}")
-
-        # Рассчитываем качество
-        if result.content:
-            result.content_length = len(result.content)
-            result.quality_score = self._calculate_quality_score(result, data_type)
-
-        return result
-
-    def _try_value_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
-        """Попытка извлечения через value атрибут"""
         try:
+            # Проверяем размер BLOB
+            if hasattr(blob_obj, "__len__"):
+                blob_size = len(blob_obj)
+                result["metadata"]["blob_size"] = blob_size
+
+                if blob_size == 0:
+                    result["content"] = ""
+                    result["content_type"] = "empty"
+                    result["quality_score"] = 0.0
+                    result["extraction_methods"].append("empty_blob")
+                    return BlobExtractionResult(result)
+                elif blob_size > 100 * 1024 * 1024:  # 100MB
+                    result["errors"].append(f"BLOB слишком большой: {blob_size} байт")
+                    result["content"] = f"BLOB слишком большой: {blob_size} байт"
+                    result["content_type"] = "oversized"
+                    return BlobExtractionResult(result)
+
+            # Получаем значение BLOB
             if hasattr(blob_obj, "value"):
-                value = blob_obj.value
-                # Проверяем что value не является Mock объектом
-                if (
-                    value is not None
-                    and not str(value).startswith("<Mock")
-                    and str(value).strip()
-                ):
-                    result.content = str(value)
-                    return True
+                blob_value = blob_obj.value
+
+                # Обрабатываем в зависимости от типа данных
+                if isinstance(blob_value, bytes):
+                    # Для бинарных данных пробуем UTF-16 (стандарт для NT полей)
+                    try:
+                        content = blob_value.decode("utf-16")
+                        if content and len(content.strip()) > 0:
+                            result["content"] = content
+                            result["content_type"] = "text_utf16"
+                            result["content_length"] = len(content)
+                            result["quality_score"] = 0.9
+                            result["extraction_methods"].append("onec_dtools_utf16")
+                            self.stats["successful_extractions"] += 1
+                            self.stats["method_usage"]["onec_dtools_utf16"] = (
+                                self.stats["method_usage"].get("onec_dtools_utf16", 0)
+                                + 1
+                            )
+                            self.stats["encoding_stats"]["utf16"] = (
+                                self.stats["encoding_stats"].get("utf16", 0) + 1
+                            )
+                            return BlobExtractionResult(result)
+                    except UnicodeDecodeError:
+                        pass
+
+                    # Если UTF-16 не сработал, пробуем другие кодировки
+                    for encoding in ["utf-8", "cp1251", "latin1"]:
+                        try:
+                            content = blob_value.decode(encoding)
+                            if content and len(content.strip()) > 0:
+                                result["content"] = content
+                                result["content_type"] = f"text_{encoding}"
+                                result["content_length"] = len(content)
+                                result["quality_score"] = 0.8
+                                result["extraction_methods"].append(
+                                    f"onec_dtools_{encoding}"
+                                )
+                                self.stats["successful_extractions"] += 1
+                                self.stats["method_usage"][
+                                    f"onec_dtools_{encoding}"
+                                ] = (
+                                    self.stats["method_usage"].get(
+                                        f"onec_dtools_{encoding}", 0
+                                    )
+                                    + 1
+                                )
+                                self.stats["encoding_stats"][encoding] = (
+                                    self.stats["encoding_stats"].get(encoding, 0) + 1
+                                )
+                                return BlobExtractionResult(result)
+                        except UnicodeDecodeError:
+                            continue
+
+                    # Если все кодировки не сработали, используем hex
+                    result["content"] = blob_value.hex()
+                    result["content_type"] = "binary_hex"
+                    result["content_length"] = len(blob_value)
+                    result["quality_score"] = 0.3
+                    result["extraction_methods"].append("fallback_hex")
+                    self.stats["successful_extractions"] += 1
+                    self.stats["method_usage"]["fallback_hex"] = (
+                        self.stats["method_usage"].get("fallback_hex", 0) + 1
+                    )
+                    return BlobExtractionResult(result)
+
+                elif isinstance(blob_value, str):
+                    # Для строковых данных
+                    if blob_value and len(blob_value.strip()) > 0:
+                        result["content"] = blob_value
+                        result["content_type"] = "text_string"
+                        result["content_length"] = len(blob_value)
+                        result["quality_score"] = 0.95
+                        result["extraction_methods"].append("string_direct")
+                        self.stats["successful_extractions"] += 1
+                        self.stats["method_usage"]["string_direct"] = (
+                            self.stats["method_usage"].get("string_direct", 0) + 1
+                        )
+                        return BlobExtractionResult(result)
+
+                else:
+                    # Для других типов конвертируем в строку
+                    content = str(blob_value)
+                    if content and len(content.strip()) > 0:
+                        result["content"] = content
+                        result["content_type"] = "text_converted"
+                        result["content_length"] = len(content)
+                        result["quality_score"] = 0.6
+                        result["extraction_methods"].append("str_conversion")
+                        self.stats["successful_extractions"] += 1
+                        self.stats["method_usage"]["str_conversion"] = (
+                            self.stats["method_usage"].get("str_conversion", 0) + 1
+                        )
+                        return BlobExtractionResult(result)
+
+            # Если ни один метод не сработал
+            result["errors"].append("No extraction method worked")
+            result["content"] = "Не удалось извлечь содержимое"
+            result["content_type"] = "failed"
+            result["quality_score"] = 0.0
+            self.stats["failed_extractions"] += 1
+
         except Exception as e:
-            if result.errors is None:
-                result.errors = []
-            result.errors.append(f"value method error: {e!s}")
-        return False
+            error_msg = f"Ошибка чтения BLOB: {e}"
+            result["errors"].append(error_msg)
+            result["content"] = error_msg
+            result["content_type"] = "error"
+            result["quality_score"] = 0.0
+            self.stats["failed_extractions"] += 1
+            logger.error(f"BlobProcessor error for {field_name}: {e}")
 
-    def _try_iterator_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
-        """Попытка извлечения через итератор"""
-        try:
-            if hasattr(blob_obj, "__iter__") and not hasattr(blob_obj, "value"):
-                content_parts = []
-                for item in blob_obj:
-                    content_parts.append(str(item))
-                if content_parts:
-                    result.content = "\n".join(content_parts)
-                    return True
-        except StopIteration:
-            # StopIteration - это нормальное завершение итератора, не ошибка
-            pass
-        except Exception as e:
-            if result.errors is not None:
-                result.errors.append(f"iterator method error: {e!s}")
-        return False
-
-    def _try_bytes_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
-        """Попытка извлечения через bytes"""
-        try:
-            if hasattr(blob_obj, "__bytes__") and not hasattr(blob_obj, "value"):
-                bytes_data = blob_obj.__bytes__()
-                if bytes_data:
-                    result.content = bytes_data.decode("utf-8", errors="ignore")
-                    return True
-        except Exception as e:
-            if result.errors is not None:
-                result.errors.append(f"bytes method error: {e!s}")
-        return False
-
-    def _try_str_method(self, blob_obj: Any, result: BlobExtractionResult) -> bool:
-        """Попытка извлечения через str"""
-        try:
-            if hasattr(blob_obj, "__str__") and not hasattr(blob_obj, "value"):
-                content = str(blob_obj)
-                if (
-                    content
-                    and content != str(type(blob_obj))
-                    and not content.startswith("<Mock")
-                ):
-                    result.content = content
-                    return True
-        except Exception as e:
-            if result.errors is not None:
-                result.errors.append(f"str method error: {e!s}")
-        return False
-
-    def _try_direct_data_method(
-        self,
-        blob_obj: Any,
-        result: BlobExtractionResult,
-    ) -> bool:
-        """Попытка извлечения через _data атрибут"""
-        try:
-            if hasattr(blob_obj, "_data") and not hasattr(blob_obj, "value"):
-                data = blob_obj._data
-                if data is not None and str(data).strip():
-                    result.content = str(data)
-                    return True
-        except Exception as e:
-            if result.errors is not None:
-                result.errors.append(f"direct_data method error: {e!s}")
-        return False
-
-    def _calculate_quality_score(
-        self,
-        result: BlobExtractionResult,
-        data_type: str,
-    ) -> float:
-        """Расчет оценки качества извлечения"""
-        score = 0.0
-
-        # Базовый счет за длину контента
-        if result.content_length > 0:
-            score += min(result.content_length / 100.0, 0.3)
-
-        # Бонус за количество методов
-        if result.extraction_methods is not None and len(result.extraction_methods) > 1:
-            score += 0.2
-
-        # Штраф за ошибки
-        if result.errors:
-            score -= min(len(result.errors) * 0.1, 0.3)
-
-        # Специализированные бонусы
-        if data_type == "flower" and result.content:
-            score += self._calculate_flower_quality_bonus(result.content)
-        elif data_type == "temporal" and result.content:
-            score += self._calculate_temporal_quality_bonus(result.content)
-        elif data_type == "financial" and result.content:
-            score += self._calculate_financial_quality_bonus(result.content)
-
-        return max(0.0, min(1.0, score))
-
-    def _calculate_flower_quality_bonus(self, content: str) -> float:
-        """Бонус качества для данных о цветах"""
-        if not content:
-            return 0.0
-
-        bonus = 0.0
-        flower_keywords = ["роз", "тюльпан", "гвоздик", "цвет", "букет"]
-        for keyword in flower_keywords:
-            if keyword in content.lower():
-                bonus += 0.1
-
-        return min(bonus, 0.3)
-
-    def _calculate_temporal_quality_bonus(self, content: str) -> float:
-        """Бонус качества для временных данных"""
-        if not content:
-            return 0.0
-
-        bonus = 0.0
-        temporal_keywords = ["дата", "время", "период", "год", "месяц", "день"]
-        for keyword in temporal_keywords:
-            if keyword in content.lower():
-                bonus += 0.1
-
-        return min(bonus, 0.3)
-
-    def _calculate_financial_quality_bonus(self, content: str) -> float:
-        """Бонус качества для финансовых данных"""
-        if not content:
-            return 0.0
-
-        bonus = 0.0
-        financial_keywords = ["сумма", "рубл", "доллар", "евро", "цена", "стоимость"]
-        for keyword in financial_keywords:
-            if keyword in content.lower():
-                bonus += 0.1
-
-        return min(bonus, 0.3)
+        return BlobExtractionResult(result)
 
     def is_blob_field(self, field_value: Any) -> bool:
         """
-        JTBD:
-        Как система определения типов полей, я хочу проверить является ли поле BLOB полем,
-        чтобы правильно обработать его содержимое.
+        Проверяет, является ли поле BLOB полем
 
         Args:
-            field_value: Значение поля
+            field_value: Значение поля для проверки
 
         Returns:
-            bool: True если поле является BLOB полем
+            True если поле является BLOB полем
         """
-        return str(field_value).startswith("<onec_dtools.database_reader.Blob")
+        try:
+            # Проверяем типы, которые могут быть BLOB
+            if isinstance(field_value, bytes):
+                return True
+            elif hasattr(field_value, "value") and isinstance(field_value.value, bytes):
+                return True
+            elif hasattr(field_value, "__iter__") and not isinstance(
+                field_value, (str, int, float, bool)
+            ):
+                return True
+            else:
+                return False
+        except Exception:
+            return False
 
-    def safe_get_blob_content(self, value: Any) -> str | None:
+    def safe_get_blob_content(
+        self, blob_obj: Any, context: str = "", field_name: str = ""
+    ) -> BlobExtractionResult:
         """
-        JTBD:
-        Как система безопасного извлечения, я хочу извлечь содержимое BLOB поля без ошибок,
-        чтобы получить данные для анализа.
+        Безопасное извлечение BLOB содержимого с обработкой ошибок
 
         Args:
-            value: BLOB объект из onec_dtools
+            blob_obj: BLOB объект
+            context: Контекст извлечения
+            field_name: Имя поля
 
         Returns:
-            str: Содержимое BLOB поля или None если не удалось извлечь
+            Результат извлечения BLOB
         """
-        result = self.extract_blob_content(value)
-        return result.content if result.content else None
+        try:
+            return self.extract_blob_content(blob_obj, context, field_name)
+        except Exception as e:
+            logger.error(f"Ошибка извлечения BLOB {field_name}: {e}")
+            error_data = {
+                "field_name": field_name,
+                "context": context,
+                "content": None,
+                "content_type": "error",
+                "quality_score": 0.0,
+                "errors": [str(e)],
+                "metadata": {
+                    "extraction_time": datetime.now().isoformat(),
+                    "blob_type": type(blob_obj).__name__,
+                    "blob_size": 0,
+                },
+            }
+            return BlobExtractionResult(error_data)
+
+    def get_stats(self) -> Dict[str, Any]:
+        """
+        Получение статистики обработки
+
+        Returns:
+            Словарь со статистикой
+        """
+        if self.stats["total_processed"] > 0:
+            success_rate = (
+                self.stats["successful_extractions"] / self.stats["total_processed"]
+            ) * 100
+        else:
+            success_rate = 0.0
+
+        return {
+            **self.stats,
+            "success_rate": success_rate,
+            "timestamp": datetime.now().isoformat(),
+        }
+
+    def reset_stats(self) -> None:
+        """
+        Сброс статистики
+        """
+        self.stats = {
+            "total_processed": 0,
+            "successful_extractions": 0,
+            "failed_extractions": 0,
+            "method_usage": {},
+            "encoding_stats": {},
+        }
+
+    def process_multiple_blobs(
+        self, blob_objects: List[Any], context: str = ""
+    ) -> List[Dict[str, Any]]:
+        """
+        Обработка множественных BLOB объектов
+
+        Args:
+            blob_objects: Список BLOB объектов
+            context: Контекст обработки
+
+        Returns:
+            Список результатов обработки
+        """
+        results = []
+
+        for i, blob_obj in enumerate(blob_objects):
+            field_name = f"blob_{i}"
+            result = self.extract_blob_content(blob_obj, context, field_name)
+            results.append(result)
+
+        return results
+
+    def analyze_blob_quality(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Анализ качества извлечения BLOB данных
+
+        Args:
+            results: Список результатов обработки
+
+        Returns:
+            Анализ качества
+        """
+        total_results = len(results)
+        successful_results = sum(1 for r in results if r["quality_score"] > 0)
+
+        quality_analysis: Dict[str, Any] = {
+            "total_blobs": total_results,
+            "successful_blobs": successful_results,
+            "success_rate": (
+                (successful_results / total_results * 100) if total_results > 0 else 0
+            ),
+            "average_quality_score": (
+                sum(r["quality_score"] for r in results) / total_results
+                if total_results > 0
+                else 0
+            ),
+            "content_types": {},
+            "extraction_methods": {},
+            "errors": [],
+        }
+
+        # Анализ типов содержимого
+        for result in results:
+            content_type = result["content_type"]
+            quality_analysis["content_types"][content_type] = (
+                quality_analysis["content_types"].get(content_type, 0) + 1
+            )
+
+            for method in result["extraction_methods"]:
+                quality_analysis["extraction_methods"][method] = (
+                    quality_analysis["extraction_methods"].get(method, 0) + 1
+                )
+
+            if result["errors"]:
+                quality_analysis["errors"].extend(result["errors"])
+
+        return quality_analysis
 
 
-# Глобальный экземпляр для обратной совместимости
+# Глобальный экземпляр для использования в других модулях
 blob_processor = BlobProcessor()
-
-
-def safe_get_blob_content(value: Any) -> str | None:
-    """
-    JTBD:
-    Как система обратной совместимости, я хочу предоставить старый интерфейс для извлечения BLOB данных,
-    чтобы не сломать существующий код.
-
-    Args:
-        value: BLOB объект для извлечения
-
-    Returns:
-        str: Содержимое BLOB поля или None
-    """
-    return blob_processor.safe_get_blob_content(value)
-
-
-def is_blob_field(field_value: Any) -> bool:
-    """
-    JTBD:
-    Как система обратной совместимости, я хочу предоставить старый интерфейс для проверки BLOB полей,
-    чтобы не сломать существующий код.
-
-    Args:
-        field_value: Значение поля
-
-    Returns:
-        bool: True если поле является BLOB полем
-    """
-    return blob_processor.is_blob_field(field_value)
