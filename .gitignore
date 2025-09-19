@@ -58,7 +58,7 @@ dck1c/dist/*.zip
 
 # Большие TSV/CSV файлы с данными
 *.tsv
-advising_platform/*/results/*.tsv 
+advising_platform/*/results/*.tsv
 
 # Logs
 logs/
@@ -115,7 +115,7 @@ heroes_platform/
 tools_ui_1c/
 tools/onec_dtools/
 tools/temp-tool1cd/
-tools/v8unpack/ 
+tools/v8unpack/
 data/results/checkpoint__DOCUMENTJOURNAL5354_*.json
 temp/large_files/
 

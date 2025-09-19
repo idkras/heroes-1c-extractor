@@ -285,7 +285,7 @@ class TestDocumentSearch:
 
         # Проверяем, что все документы соответствуют фильтру
         for doc in filtered_docs:
-            doc_type = doc[2] if doc[2] else ""
+            # doc_type = doc[2] if doc[2] else ""  # Пока не используется
             amount = doc[3] if doc[3] else 0
 
             # Проверяем, что документ имеет реальную сумму и магазин

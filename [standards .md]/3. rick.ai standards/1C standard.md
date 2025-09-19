@@ -349,11 +349,11 @@ class BlobProcessor:
     def __init__(self):
         self.extraction_methods = [
             "onec_dtools_utf16",
-            "onec_dtools_utf8", 
+            "onec_dtools_utf8",
             "onec_dtools_cp1251",
             "fallback_hex"
         ]
-    
+
     def extract_blob_content(self, blob_obj, context="", field_name=""):
         """
         Извлечение BLOB с множественными методами
@@ -369,7 +369,7 @@ from src.utils.blob_processor import BlobProcessor
 class BaseExtractor:
     def __init__(self):
         self.blob_processor = BlobProcessor()
-    
+
     def process_blob_field(self, blob_obj, field_name):
         return self.blob_processor.extract_blob_content(blob_obj, field_name)
 ```

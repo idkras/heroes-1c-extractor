@@ -1,29 +1,19 @@
 #!/usr/bin/env python3
 
-import os
-import signal
-import sys
-
-sys.path.insert(
-    0,
-    os.path.join(os.path.dirname(__file__), "..", "tools", "onec_dtools"),
-)
-
 import json
 import os
 import re
-
-# ИСПРАВЛЕНО: Добавляем импорт BlobProcessor для правильной обработки BLOB полей
+import signal
 import sys
 from datetime import datetime
 from typing import Any
 
 import duckdb
 import pandas as pd
-from onec_dtools.database_reader import DatabaseReader
+from onec_dtools import DatabaseReader
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from src.utils.blob_processor import BlobProcessor
+# from src.utils.blob_processor import BlobProcessor  # Пока не используется
 
 # Флаг для прерывания
 interrupted = False
@@ -140,8 +130,8 @@ def extract_all_available_data() -> None:
     print("=" * 60)
 
     # ИСПРАВЛЕНО: Инициализируем BlobProcessor для правильной обработки BLOB полей
-    blob_processor = BlobProcessor()
-    print("✅ BlobProcessor инициализирован")
+    # blob_processor = BlobProcessor()  # Пока не используется
+    print("✅ BlobProcessor будет инициализирован при необходимости")
 
     # Применяем патч для поддержки новых типов полей 1С
     try:
@@ -423,7 +413,19 @@ def extract_all_available_data() -> None:
                                     document["fields"][field_name] = value
 
                             # ИСПРАВЛЕНО: Динамический анализ структуры полей
-                            print("\n🧠 АНАЛИЗ СТРУКТУРЫ ПОЛЕЙ:")
+                            print(f"\n🧠 АНАЛИЗ СТРУКТУРЫ ПОЛЕЙ для документа {i}:")
+                            print(f"   📋 Всего полей: {len(field_analysis)}")
+
+                            # Показываем все поля с их типами
+                            print("   📊 ТИПЫ ПОЛЕЙ:")
+                            for field_name, info in field_analysis.items():
+                                field_type = info.get("type", "unknown")
+                                field_value = info.get("value", "N/A")
+                                if len(str(field_value)) > 30:
+                                    field_value = str(field_value)[:30] + "..."
+                                print(
+                                    f"      {field_name}: {field_type} = {field_value}",
+                                )
 
                             # Ищем поля с номерами документов - ИСПРАВЛЕНО: более умный анализ
                             number_fields = []
@@ -490,6 +492,8 @@ def extract_all_available_data() -> None:
                                 if (
                                     info["is_string"]
                                     and isinstance(info["value"], str)
+                                    and len(info["value"])
+                                    > 5  # Минимальная длина описания
                                     and any(
                                         keyword in info["value"].lower()
                                         for keyword in [
@@ -497,6 +501,9 @@ def extract_all_available_data() -> None:
                                             "флор",
                                             "пост",
                                             "оплата",
+                                            "магазин",
+                                            "моно",
+                                            "декор",
                                         ]
                                     )
                                 ):
@@ -568,6 +575,8 @@ def extract_all_available_data() -> None:
                                 is_amount_field = (
                                     field_name == "_FLD4239"
                                     or field_name == "_AMOUNT"
+                                    or field_name
+                                    == "field_33"  # Добавляем field_33 который содержит суммы
                                     or (
                                         info["is_numeric"]
                                         and isinstance(info["value"], (int, float))
@@ -657,6 +666,58 @@ def extract_all_available_data() -> None:
                                         f"   ✅ BLOB поле ({blob_type}): {field_name} = {len(blob_content)} символов",
                                     )
 
+                                    # Показываем содержимое BLOB для анализа
+                                    if len(blob_content) > 0:
+                                        print(f"      📄 СОДЕРЖИМОЕ BLOB {field_name}:")
+                                        # Показываем первые 200 символов для анализа
+                                        preview = (
+                                            blob_content[:200]
+                                            if len(blob_content) > 200
+                                            else blob_content
+                                        )
+                                        print(f"         {preview}")
+                                        if len(blob_content) > 200:
+                                            print(
+                                                f"         ... (еще {len(blob_content) - 200} символов)",
+                                            )
+
+                                        # Анализируем содержимое на предмет цветочной информации
+                                        if any(
+                                            keyword in blob_content.lower()
+                                            for keyword in [
+                                                "цвет",
+                                                "rose",
+                                                "тюльпан",
+                                                "флор",
+                                                "букет",
+                                            ]
+                                        ):
+                                            print(
+                                                f"      🌸 НАЙДЕНА ЦВЕТОЧНАЯ ИНФОРМАЦИЯ в {field_name}!",
+                                            )
+                                        if any(
+                                            keyword in blob_content.lower()
+                                            for keyword in [
+                                                "магазин",
+                                                "склад",
+                                                "поставщик",
+                                            ]
+                                        ):
+                                            print(
+                                                f"      🏪 НАЙДЕНА ИНФОРМАЦИЯ О МАГАЗИНЕ в {field_name}!",
+                                            )
+                                        if any(
+                                            keyword in blob_content.lower()
+                                            for keyword in [
+                                                "сумма",
+                                                "цена",
+                                                "стоимость",
+                                            ]
+                                        ):
+                                            print(
+                                                f"      💰 НАЙДЕНА ФИНАНСОВАЯ ИНФОРМАЦИЯ в {field_name}!",
+                                            )
+
                                     # Анализируем содержимое BLOB
                                     if "флор" in blob_content.lower():
                                         document["document_type"] = "ФЛОРИСТИКА"
@@ -704,27 +765,56 @@ def extract_all_available_data() -> None:
                             print(f"   📦 BLOB поля: {blob_fields}")
 
                             # Проверяем качество извлечения
-                            print("\n✅ ПРОВЕРКА КАЧЕСТВА ИЗВЛЕЧЕНИЯ:")
                             print(
-                                f"   Номер документа: {document.get('document_number', 'НЕ НАЙДЕН')}",
+                                f"\n✅ ПРОВЕРКА КАЧЕСТВА ИЗВЛЕЧЕНИЯ для документа {i}:",
                             )
                             print(
-                                f"   Дата документа: {document.get('document_date', 'НЕ НАЙДЕНА')}",
+                                f"   📋 Номер документа: {document.get('document_number', 'НЕ НАЙДЕН')}",
                             )
                             print(
-                                f"   Тип документа: {document.get('document_type', 'НЕ НАЙДЕН')}",
+                                f"   📅 Дата документа: {document.get('document_date', 'НЕ НАЙДЕНА')}",
                             )
                             print(
-                                f"   Сумма: {document.get('total_amount', 'НЕ НАЙДЕНА')}",
+                                f"   🏷️ Тип документа: {document.get('document_type', 'НЕ НАЙДЕН')}",
                             )
                             print(
-                                f"   Магазин: {document.get('store_name', 'НЕ НАЙДЕН')}",
+                                f"   💰 Сумма: {document.get('total_amount', 'НЕ НАЙДЕНА')}",
                             )
                             print(
-                                f"   Код магазина: {document.get('store_code', 'НЕ НАЙДЕН')}",
+                                f"   🏪 Магазин: {document.get('store_name', 'НЕ НАЙДЕН')}",
                             )
                             print(
-                                f"   BLOB: {len(document.get('blob_content', ''))} символов",
+                                f"   🏷️ Код магазина: {document.get('store_code', 'НЕ НАЙДЕН')}",
+                            )
+                            print(
+                                f"   📄 BLOB: {len(document.get('blob_content', ''))} символов",
+                            )
+
+                            # Статистика по полям
+                            total_fields = len(field_analysis)
+                            successful_fields = len(
+                                [
+                                    f
+                                    for f in field_analysis.values()
+                                    if f.get("value") is not None
+                                ],
+                            )
+                            blob_fields = len(
+                                [
+                                    f
+                                    for f in field_analysis.values()
+                                    if f.get("is_blob", False)
+                                ],
+                            )
+
+                            print("   📊 СТАТИСТИКА ПОЛЕЙ:")
+                            print(f"      Всего полей: {total_fields}")
+                            print(f"      Успешно извлечено: {successful_fields}")
+                            print(f"      BLOB полей: {blob_fields}")
+                            print(
+                                f"      Процент успеха: {(successful_fields / total_fields * 100):.1f}%"
+                                if total_fields > 0
+                                else "      Процент успеха: 0%",
                             )
 
                             # Сохраняем анализ структуры
@@ -1046,6 +1136,9 @@ def extract_all_available_data() -> None:
                                             document["fields"][field_name] = value
                                 except StopIteration:
                                     # ИСПРАВЛЕНО: StopIteration - это нормальное завершение итератора, не ошибка
+                                    print(
+                                        f"   ℹ️ StopIteration для поля {field_name} - нормальное завершение итератора",
+                                    )
                                     continue
                                 except Exception as e:
                                     # ИСПРАВЛЕНО: Обрабатываем только реальные ошибки, не StopIteration
@@ -1106,22 +1199,10 @@ def extract_all_available_data() -> None:
                             # ДЕТАЛЬНОЕ ЛОГИРОВАНИЕ С АНАЛИЗОМ ДОКУМЕНТА
                             if i <= 10 or i % 10 == 0:  # Первые 10 и каждую 10-ю
                                 # Основные поля документа
-                                doc_number = document.get("fields", {}).get(
-                                    "_NUMBER",
-                                    "N/A",
-                                )
-                                doc_date = document.get("fields", {}).get(
-                                    "_DATE_TIME",
-                                    "N/A",
-                                )
-                                doc_sum = document.get("fields", {}).get(
-                                    "_FLD4239",
-                                    "N/A",
-                                )
-                                doc_type = document.get("fields", {}).get(
-                                    "_FLD4240",
-                                    "N/A",
-                                )  # Тип документа
+                                doc_number = document.get("document_number", "N/A")
+                                doc_date = document.get("document_date", "N/A")
+                                doc_sum = document.get("total_amount", "N/A")
+                                doc_type = document.get("document_type", "N/A")
 
                                 # Статистика BLOB полей
                                 blob_count = document.get("extraction_stats", {}).get(
@@ -1224,16 +1305,16 @@ def extract_all_available_data() -> None:
 
                                 # Основная информация
                                 print(
-                                    f"      📋 Номер: {document.get('fields', {}).get('_NUMBER', 'N/A')}",
+                                    f"      📋 Номер: {document.get('document_number', 'N/A')}",
                                 )
                                 print(
-                                    f"      📅 Дата: {document.get('fields', {}).get('_DATE_TIME', 'N/A')}",
+                                    f"      📅 Дата: {document.get('document_date', 'N/A')}",
                                 )
                                 print(
-                                    f"      💰 Сумма: {document.get('fields', {}).get('_FLD3978', 'N/A')}₽",
+                                    f"      💰 Сумма: {document.get('total_amount', 'N/A')}₽",
                                 )
                                 print(
-                                    f"      🏷️ Тип: {document.get('fields', {}).get('_FLD4240', 'N/A')}",
+                                    f"      🏷️ Тип: {document.get('document_type', 'N/A')}",
                                 )
 
                                 # Статистика BLOB полей
@@ -1283,6 +1364,28 @@ def extract_all_available_data() -> None:
                                         if blob_data.get("error"):
                                             print(
                                                 f"            🚫 Ошибка: {blob_data.get('error')}",
+                                            )
+                                        elif blob_data.get("value_error"):
+                                            print(
+                                                f"            🚫 Ошибка значения: {blob_data.get('value_error')}",
+                                            )
+                                        elif blob_data.get("iterator_error"):
+                                            print(
+                                                f"            🚫 Ошибка итератора: {blob_data.get('iterator_error')}",
+                                            )
+                                        else:
+                                            print(
+                                                "            🚫 Неизвестная ошибка извлечения",
+                                            )
+
+                                        # Показываем что мы пытались извлечь
+                                        if blob_data.get("size", 0) > 0:
+                                            print(
+                                                f"            📊 Размер данных: {blob_data.get('size')} байт",
+                                            )
+                                        if blob_data.get("field_type"):
+                                            print(
+                                                f"            🏷️ Тип поля: {blob_data.get('field_type')}",
                                             )
 
                                 # Анализ неудачных полей
@@ -1346,7 +1449,7 @@ def extract_all_available_data() -> None:
                             row = table[i]
                             if not hasattr(row, "is_empty") or not row.is_empty:
                                 row_dict = (
-                                    row.as_dict() if hasattr(row, "as_dict") else {}
+                                    row.as_list(True) if hasattr(row, "as_list") else {}
                                 )
                                 if row_dict:
                                     reference = {
@@ -1384,7 +1487,7 @@ def extract_all_available_data() -> None:
                             row = table[i]
                             if not hasattr(row, "is_empty") or not row.is_empty:
                                 row_dict = (
-                                    row.as_dict() if hasattr(row, "as_dict") else {}
+                                    row.as_list(True) if hasattr(row, "as_list") else {}
                                 )
                                 if row_dict:
                                     register = {
