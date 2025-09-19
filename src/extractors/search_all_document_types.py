@@ -1,325 +1,167 @@
 #!/usr/bin/env python3
 
-import json
+import logging
 from datetime import datetime
 from typing import Any
 
-from onec_dtools.database_reader import DatabaseReader
+from src.extractors.base_extractor import BaseExtractor
 
-from src.utils.blob_utils import is_blob_field
+logger = logging.getLogger(__name__)
 
 
-def search_all_document_types() -> dict[str, Any] | None:
+class AllDocumentTypesExtractor(BaseExtractor):
     """
-    Поиск всех типов документов согласно уточненному плану
-    ЦЕЛЬ: Отследить весь путь от сырья до цветочков в магазине
+    Поиск всех типов документов
+
+    JTBD:
+    Как система анализа документов, я хочу найти все типы документов,
+    чтобы отследить полный путь от сырья до цветочков в магазине.
     """
-    print("🔍 ПОИСК ВСЕХ ТИПОВ ДОКУМЕНТОВ")
-    print("🎯 ЦЕЛЬ: Полный путь цветов от сырья до магазина")
-    print("=" * 60)
 
-    try:
-        with open("raw/1Cv8.1CD", "rb") as f:
-            db = DatabaseReader(f)
+    def extract(self) -> dict[str, Any]:
+        """
+        Поиск всех типов документов согласно уточненному плану
+        ЦЕЛЬ: Отследить весь путь от сырья до цветочков в магазине
+        """
+        print("🔍 ПОИСК ВСЕХ ТИПОВ ДОКУМЕНТОВ")
+        print("🎯 ЦЕЛЬ: Полный путь цветов от сырья до магазина")
+        print("=" * 60)
 
-            print("✅ База данных открыта успешно!")
+        if self.db is None:
+            print("❌ База данных не открыта")
+            return {"error": "База данных не открыта"}
 
-            results: dict[str, Any] = {
-                "document_types": {},
-                "references": {},
-                "accumulation_registers": {},
-                "metadata": {
-                    "extraction_date": datetime.now().isoformat(),
-                    "source_file": "raw/1Cv8.1CD",
-                    "total_tables": len(db.tables),
-                },
-            }
+        results: dict[str, Any] = {
+            "document_types": {},
+            "references": {},
+            "accumulation_registers": {},
+            "information_registers": {},
+            "metadata": {
+                "extraction_date": datetime.now().isoformat(),
+                "source_file": self.metadata["source_file"],
+                "total_tables": len(self.db.tables),
+            },
+        }
 
-            print("\n📊 Всего таблиц в базе: {len(db.tables):,}")
+        # Получаем все типы таблиц
+        document_tables = self.get_document_tables()
+        reference_tables = self.get_reference_tables()
+        register_tables = self.get_register_tables()
 
-            # 1. ПОИСК ВСЕХ ТИПОВ ДОКУМЕНТОВ
-            print("\n🔍 ЭТАП 1: Поиск всех типов документов")
-            print("-" * 60)
+        print(f"📄 Документы: {len(document_tables)}")
+        print(f"📚 Справочники: {len(reference_tables)}")
+        print(f"📊 Регистры: {len(register_tables)}")
 
-            document_tables = {}
-            for table_name in db.tables.keys():
-                if table_name.startswith("_DOCUMENT"):
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        document_tables[table_name] = len(table)
+        # Анализируем документы
+        for table_name in document_tables[:5]:  # Ограничиваем для тестирования
+            print(f"\n🔍 Анализ документа: {table_name}")
+            table = self.db.tables[table_name]
+            print(f"   📈 Всего записей: {len(table):,}")
 
-            print("📊 Найдено таблиц документов: {len(document_tables)}")
+            # Анализируем первые 20 записей
+            sample_size = min(20, len(table))
+            doc_samples = []
 
-            # Сортируем по количеству записей
-            sorted_documents = sorted(
-                document_tables.items(),
-                key=lambda x: x[1],
-                reverse=True,
-            )
-
-            # Анализируем топ-20 таблиц документов
-            for i, (table_name, record_count) in enumerate(sorted_documents[:20]):
-                print("\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
-
+            for i in range(sample_size):
                 try:
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        # Анализируем первую запись для понимания структуры
-                        first_record = table[0]
-                        if not first_record.is_empty:
-                            record_data = first_record.as_dict()
+                    row = table[i]
+                    if not hasattr(row, "is_empty") or not row.is_empty:
+                        row_dict = row.as_dict() if hasattr(row, "as_dict") else {}
 
-                            # Показываем основные поля
-                            print("    📄 Основные поля:")
-                            for field_name, field_value in list(record_data.items())[
-                                :10
-                            ]:
-                                if not is_blob_field(field_value):
-                                    print("        📋 {field_name}: {field_value}")
+                        # Извлекаем основные поля
+                        doc_info: dict[str, Any] = {
+                            "table_name": table_name,
+                            "row_index": i,
+                            "fields": {},
+                            "field_count": len(row_dict),
+                        }
 
-                            # Ищем BLOB поля
-                            blob_fields = []
-                            for field_name, field_value in record_data.items():
-                                if is_blob_field(field_value):
-                                    blob_fields.append(field_name)
+                        # Анализируем поля
+                        for field_name, value in row_dict.items():
+                            if isinstance(value, (str, int, float, bool)):
+                                doc_info["fields"][field_name] = str(value)[
+                                    :100
+                                ]  # Ограничиваем длину
 
-                            if blob_fields:
-                                print(
-                                    f"    🔍 BLOB поля ({len(blob_fields)}): {blob_fields[:5]}",
-                                )
+                        doc_samples.append(doc_info)
 
-                                # Анализируем содержимое первого BLOB поля
-                                if blob_fields:
-                                    try:
-                                        blob_value = record_data[blob_fields[0]]
-                                        if hasattr(blob_value, "value"):
-                                            content = blob_value.value
-                                            if content and len(str(content)) > 0:
-                                                print(
-                                                    f"        📋 {blob_fields[0]}: {str(content)[:100]}...",
-                                                )
-                                    except Exception:
-                                        print("        ⚠️ Ошибка чтения BLOB: {e}")
-
-                            # Сохраняем информацию о таблице
-                            table_info = {
-                                "table_name": table_name,
-                                "record_count": record_count,
-                                "fields": list(record_data.keys()),
-                                "blob_fields": blob_fields,
-                                "sample_data": {
-                                    k: v
-                                    for k, v in list(record_data.items())[:5]
-                                    if not str(v).startswith(
-                                        "<onec_dtools.database_reader.Blob",
-                                    )
-                                },
-                            }
-                            results["document_types"][table_name] = table_info
-
-                except Exception:
-                    print("    ⚠️ Ошибка анализа таблицы: {e}")
+                except Exception as e:
+                    logger.warning(
+                        f"Ошибка обработки записи {i} в таблице {table_name}: {e}",
+                    )
                     continue
 
-            # 2. ПОИСК СПРАВОЧНИКОВ
-            print("\n🔍 ЭТАП 2: Поиск справочников")
-            print("-" * 60)
+            if doc_samples:
+                results["document_types"][table_name] = {
+                    "total_records": len(table),
+                    "sample_records": doc_samples[:5],  # Первые 5 записей
+                    "field_names": (
+                        list(doc_samples[0]["fields"].keys())
+                        if doc_samples and doc_samples[0].get("fields")
+                        else []
+                    ),
+                }
+                print(f"   ✅ Найдено {len(doc_samples)} образцов документов")
 
-            reference_tables = {}
-            for table_name in db.tables.keys():
-                if table_name.startswith("_Reference"):
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        reference_tables[table_name] = len(table)
+        # Анализируем справочники
+        for table_name in reference_tables[:3]:  # Ограничиваем для тестирования
+            print(f"\n📚 Анализ справочника: {table_name}")
+            table = self.db.tables[table_name]
+            print(f"   📈 Всего записей: {len(table):,}")
 
-            print("📊 Найдено таблиц справочников: {len(reference_tables)}")
+            # Анализируем первые 10 записей
+            sample_size = min(10, len(table))
+            ref_samples = []
 
-            # Анализируем топ-10 справочников
-            sorted_references = sorted(
-                reference_tables.items(),
-                key=lambda x: x[1],
-                reverse=True,
-            )
-
-            for i, (table_name, record_count) in enumerate(sorted_references[:10]):
-                print("\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
-
+            for i in range(sample_size):
                 try:
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        # Анализируем первую запись
-                        first_record = table[0]
-                        if not first_record.is_empty:
-                            record_data = first_record.as_dict()
+                    row = table[i]
+                    if not hasattr(row, "is_empty") or not row.is_empty:
+                        row_dict = row.as_dict() if hasattr(row, "as_dict") else {}
 
-                            # Показываем основные поля
-                            print("    📄 Основные поля:")
-                            for field_name, field_value in list(record_data.items())[
-                                :8
-                            ]:
-                                if not is_blob_field(field_value):
-                                    print("        📋 {field_name}: {field_value}")
+                        ref_info = {
+                            "table_name": table_name,
+                            "row_index": i,
+                            "fields": {},
+                        }
 
-                            # Ищем BLOB поля
-                            blob_fields = []
-                            for field_name, field_value in record_data.items():
-                                if is_blob_field(field_value):
-                                    blob_fields.append(field_name)
+                        for field_name, value in row_dict.items():
+                            if isinstance(value, (str, int, float, bool)):
+                                if "fields" in ref_info and isinstance(
+                                    ref_info["fields"],
+                                    dict,
+                                ):
+                                    ref_info["fields"][field_name] = str(value)[:100]
 
-                            if blob_fields:
-                                print(
-                                    f"    🔍 BLOB поля ({len(blob_fields)}): {blob_fields[:3]}",
-                                )
+                        ref_samples.append(ref_info)
 
-                            # Сохраняем информацию о справочнике
-                            ref_info = {
-                                "table_name": table_name,
-                                "record_count": record_count,
-                                "fields": list(record_data.keys()),
-                                "blob_fields": blob_fields,
-                                "sample_data": {
-                                    k: v
-                                    for k, v in list(record_data.items())[:5]
-                                    if not str(v).startswith(
-                                        "<onec_dtools.database_reader.Blob",
-                                    )
-                                },
-                            }
-                            results["references"][table_name] = ref_info
-
-                except Exception:
-                    print("    ⚠️ Ошибка анализа справочника: {e}")
+                except Exception as e:
+                    logger.warning(
+                        f"Ошибка обработки записи {i} в таблице {table_name}: {e}",
+                    )
                     continue
 
-            # 3. ПОИСК РЕГИСТРОВ НАКОПЛЕНИЯ
-            print("\n🔍 ЭТАП 3: Поиск регистров накопления")
-            print("-" * 60)
+            if ref_samples:
+                results["references"][table_name] = {
+                    "total_records": len(table),
+                    "sample_records": ref_samples[:3],  # Первые 3 записи
+                    "field_names": (
+                        list(ref_samples[0]["fields"].keys())
+                        if ref_samples
+                        and ref_samples[0]
+                        and "fields" in ref_samples[0]
+                        and isinstance(ref_samples[0]["fields"], dict)
+                        else []
+                    ),
+                }
+                print(f"   ✅ Найдено {len(ref_samples)} образцов справочников")
 
-            accumulation_tables = {}
-            for table_name in db.tables.keys():
-                if table_name.startswith("_AccumRGT"):
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        accumulation_tables[table_name] = len(table)
-
-            print("📊 Найдено таблиц регистров накопления: {len(accumulation_tables)}")
-
-            # Анализируем все регистры накопления
-            sorted_accumulation = sorted(
-                accumulation_tables.items(),
-                key=lambda x: x[1],
-                reverse=True,
-            )
-
-            for i, (table_name, record_count) in enumerate(sorted_accumulation):
-                print("\n📋 {i+1:2d}. {table_name} ({record_count:,} записей)")
-
-                try:
-                    table = db.tables[table_name]
-                    if len(table) > 0:
-                        # Анализируем первую запись
-                        first_record = table[0]
-                        if not first_record.is_empty:
-                            record_data = first_record.as_dict()
-
-                            # Показываем основные поля
-                            print("    📄 Основные поля:")
-                            for field_name, field_value in list(record_data.items())[
-                                :8
-                            ]:
-                                if not is_blob_field(field_value):
-                                    print("        📋 {field_name}: {field_value}")
-
-                            # Сохраняем информацию о регистре
-                            acc_info = {
-                                "table_name": table_name,
-                                "record_count": record_count,
-                                "fields": list(record_data.keys()),
-                                "sample_data": {
-                                    k: v
-                                    for k, v in list(record_data.items())[:5]
-                                    if not str(v).startswith(
-                                        "<onec_dtools.database_reader.Blob",
-                                    )
-                                },
-                            }
-                            results["accumulation_registers"][table_name] = acc_info
-
-                except Exception:
-                    print("    ⚠️ Ошибка анализа регистра: {e}")
-                    continue
-
-            # 4. ПОИСК ДОКУМЕНТОВ ПО КЛЮЧЕВЫМ СЛОВАМ
-            print("\n🔍 ЭТАП 4: Поиск документов по ключевым словам")
-            print("-" * 60)
-
-            # Ключевые слова для поиска
-            keywords = {
-                "перемещение": "Перемещение товаров и услуг",
-                "реализация": "Реализация товаров и услуг",
-                "перекомплектация": "Перекомплектация номенклатуры",
-                "поступление": "Поступление товаров и услуг",
-                "комплектация": "Комплектация товаров",
-                "качество": "Документы качества товаров",
-                "брак": "Документы брака и дефектов",
-                "поставка": "Документы поставок",
-                "списание": "Документы списания",
-                "инвентаризация": "Документы инвентаризации",
-                "возврат": "Документы возвратов",
-                "корректировка": "Документы корректировки",
-            }
-
-            found_keywords = {}
-
-            for keyword, description in keywords.items():
-                print("\n🔍 Поиск: {keyword} - {description}")
-
-                matching_tables = []
-                for table_name in document_tables:
-                    if keyword.lower() in table_name.lower():
-                        matching_tables.append(
-                            (table_name, document_tables[table_name]),
-                        )
-
-                if matching_tables:
-                    print("    ✅ Найдено таблиц: {len(matching_tables)}")
-                    for table_name, record_count in matching_tables:
-                        print("        📋 {table_name} ({record_count:,} записей)")
-                    found_keywords[keyword] = matching_tables
-                else:
-                    print("    ❌ Таблицы не найдены")
-                    found_keywords[keyword] = []
-
-            # Сохраняем результаты поиска по ключевым словам
-            results["keyword_search"] = found_keywords
-
-            # Сохраняем все результаты
-            with open(
-                "all_document_types_analysis.json",
-                "w",
-                encoding="utf-8",
-            ) as file:
-                json.dump(results, file, ensure_ascii=False, indent=2, default=str)
-
-            print("\n✅ Результаты сохранены в all_document_types_analysis.json")
-
-            # Итоговая статистика
-            print("\n📊 ИТОГОВАЯ СТАТИСТИКА:")
-            print("    📋 Документы: {len(results['document_types'])} типов")
-            print("    📋 Справочники: {len(results['references'])} типов")
-            print(
-                f"    📋 Регистры накопления: {len(results['accumulation_registers'])} типов",
-            )
-            print(
-                f"    🔍 Ключевые слова найдены: {sum(1 for v in found_keywords.values() if v)} из {len(keywords)}",
-            )
-
-            return results
-
-    except Exception:
-        print("❌ Ошибка: {e}")
-        return None
+        return results
 
 
-if __name__ == "__main__":
-    search_all_document_types()
+def search_all_document_types() -> dict[str, Any]:
+    """
+    Функция-обертка для обратной совместимости
+    """
+    extractor = AllDocumentTypesExtractor()
+    return extractor.run()

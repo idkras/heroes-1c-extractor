@@ -15,8 +15,8 @@ class TestDocumentStructure:
 
     def setup_method(self):
         """Настройка тестов"""
-        self.duckdb_path = Path("data/results/duckdb/analysis.duckdb")
-        self.parquet_path = Path("data/results/parquet/documents.parquet")
+        self.duckdb_path = Path("data/results/heroes_1c_data.duckdb")
+        self.parquet_path = Path("data/results/heroes_1c_data.parquet")
 
     def test_duckdb_exists(self):
         """Проверяем, что DuckDB файл существует"""
@@ -73,9 +73,8 @@ class TestDocumentStructure:
         # Проверяем количество записей
         result = conn.execute("SELECT COUNT(*) FROM documents").fetchone()
         assert result is not None, "Не удалось получить result"
-        result = result[0]
-        assert result is not None, "Не удалось получить количество записей"
         count = result[0]
+        assert count is not None, "Не удалось получить количество записей"
         assert count > 0, "В таблице documents нет записей"
 
         # Проверяем, что есть документы разных типов

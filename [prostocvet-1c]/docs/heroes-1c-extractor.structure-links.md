@@ -37,7 +37,7 @@
 1. **Использовать BlobProcessor:**
    ```python
    from src.utils.blob_processor import BlobProcessor
-   
+
    blob_processor = BlobProcessor()
    if blob_processor.is_blob_field(value):
        content = blob_processor.safe_get_blob_content(value)

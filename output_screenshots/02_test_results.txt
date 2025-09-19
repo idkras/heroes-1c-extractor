@@ -11,7 +11,7 @@ tests/validation/test_document_search.py:27: in test_search_by_document_type
     floristic_docs = conn.execute(
 E   duckdb.duckdb.BinderException: Binder Error: Referenced column "document_type" not found in FROM clause!
 E   Candidate bindings: "table_name", "id", "total_blobs", "row_index"
-E   
+E
 E   LINE 4:             WHERE document_type = 'ФЛОРИСТИКА'
 E                             ^
 ___________________ TestDocumentSearch.test_search_by_store ____________________

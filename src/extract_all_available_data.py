@@ -10,6 +10,11 @@ sys.path.insert(
 )
 
 import json
+import os
+import re
+
+# ИСПРАВЛЕНО: Добавляем импорт BlobProcessor для правильной обработки BLOB полей
+import sys
 from datetime import datetime
 from typing import Any
 
@@ -17,8 +22,8 @@ import duckdb
 import pandas as pd
 from onec_dtools.database_reader import DatabaseReader
 
-# ИСПРАВЛЕНО: Добавляем импорт BlobProcessor для правильной обработки BLOB полей
-# from utils.blob_processor import BlobProcessor  # Пока не используется
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from src.utils.blob_processor import BlobProcessor
 
 # Флаг для прерывания
 interrupted = False
@@ -63,28 +68,60 @@ def extract_table_parts(db, table_name: str, row_index: int) -> dict:
                                 else:
                                     row_data[f"field_{j}"] = value
 
-                            records.append(
-                                {
-                                    "row_index": i,
-                                    "nomenclature": row_data.get(
-                                        "field_0",
-                                        "",
-                                    ),  # Первое поле - номенклатура
-                                    "quantity": row_data.get(
-                                        "field_1",
-                                        0,
-                                    ),  # Второе поле - количество
-                                    "price": row_data.get(
-                                        "field_2",
-                                        0,
-                                    ),  # Третье поле - цена
-                                    "amount": row_data.get(
-                                        "field_3",
-                                        0,
-                                    ),  # Четвертое поле - сумма
-                                    "fields": row_data,
-                                },
-                            )
+                            # ИСПРАВЛЕНО: Анализируем структуру табличной части
+                            table_part_record = {
+                                "row_index": i,
+                                "fields": row_data,
+                            }
+
+                            # ИСПРАВЛЕНО: Динамический анализ полей табличной части
+                            for field_name, value in row_data.items():
+                                # Анализируем по имени поля и содержимому
+                                field_lower = field_name.lower()
+                                if (
+                                    "номенклатура" in field_lower
+                                    or "nomenclature" in field_lower
+                                ):
+                                    table_part_record["nomenclature"] = value
+                                elif (
+                                    "количество" in field_lower
+                                    or "quantity" in field_lower
+                                    or "qty" in field_lower
+                                ):
+                                    table_part_record["quantity"] = value
+                                elif "цена" in field_lower or "price" in field_lower:
+                                    table_part_record["price"] = value
+                                elif (
+                                    "сумма" in field_lower
+                                    or "amount" in field_lower
+                                    or "sum" in field_lower
+                                ):
+                                    table_part_record["amount"] = value
+                                elif field_name.startswith("field_"):
+                                    # Fallback для полей без понятных имен
+                                    field_parts = field_name.split("_")
+                                    field_index = (
+                                        int(field_parts[1])
+                                        if len(field_parts) > 1
+                                        and field_parts[1].isdigit()
+                                        else 0
+                                    )
+                                    if field_index == 0:
+                                        table_part_record["nomenclature"] = value
+                                    elif field_index == 1:
+                                        table_part_record["quantity"] = value
+                                    elif field_index == 2:
+                                        table_part_record["price"] = value
+                                    elif field_index == 3:
+                                        table_part_record["amount"] = value
+
+                            # Устанавливаем значения по умолчанию если не найдены
+                            table_part_record.setdefault("nomenclature", "")
+                            table_part_record.setdefault("quantity", 0)
+                            table_part_record.setdefault("price", 0)
+                            table_part_record.setdefault("amount", 0)
+
+                            records.append(table_part_record)
 
                 if records:
                     table_parts[table_part_name] = records
@@ -103,8 +140,8 @@ def extract_all_available_data() -> None:
     print("=" * 60)
 
     # ИСПРАВЛЕНО: Инициализируем BlobProcessor для правильной обработки BLOB полей
-    # blob_processor = BlobProcessor()  # Пока не используется
-    print("✅ BlobProcessor будет инициализирован при необходимости")
+    blob_processor = BlobProcessor()
+    print("✅ BlobProcessor инициализирован")
 
     # Применяем патч для поддержки новых типов полей 1С
     try:
@@ -219,7 +256,9 @@ def extract_all_available_data() -> None:
             ]
 
             # Лимит записей для критических таблиц
-            MAX_RECORDS_CRITICAL = 100  # Только 100 документов для тестирования
+            MAX_RECORDS_CRITICAL = (
+                10  # Только 10 документов для тестирования (ИСПРАВЛЕНО)
+            )
 
             # Проверяем какие критические таблицы доступны
             available_critical = [t for t in critical_tables if t in db.tables]
@@ -251,13 +290,11 @@ def extract_all_available_data() -> None:
                     table = db.tables[table_name]
                     print(f"   📈 Всего записей: {len(table):,}")
 
-                    # Определяем лимит записей - ВСЕ ДОКУМЕНТЫ
-                    max_records = (
-                        len(table)
-                        if MAX_RECORDS_CRITICAL is None
-                        else min(MAX_RECORDS_CRITICAL, len(table))
+                    # ИСПРАВЛЕНО: Определяем лимит записей - ТОЛЬКО ДЛЯ ТЕСТИРОВАНИЯ
+                    max_records = min(MAX_RECORDS_CRITICAL, len(table))
+                    print(
+                        f"   🎯 Лимит извлечения: {max_records:,} записей (ИСПРАВЛЕНО)",
                     )
-                    print(f"   🎯 Лимит извлечения: {max_records:,} записей")
 
                     # Находим непустые записи - с лимитом для критических таблиц
                     non_empty_rows = []
@@ -265,6 +302,11 @@ def extract_all_available_data() -> None:
                     for i in range(
                         min(max_records, len(table)),
                     ):  # Анализируем с лимитом
+                        # ИСПРАВЛЕНО: Проверяем флаг прерывания
+                        if interrupted:
+                            print(f"   🛑 ПРЕРЫВАНИЕ: Остановка анализа на записи {i}")
+                            break
+
                         try:
                             row = table[i]
                             if not hasattr(row, "is_empty") or not row.is_empty:
@@ -350,30 +392,27 @@ def extract_all_available_data() -> None:
                                 },
                             }
 
-                            # ПОЛНЫЙ АНАЛИЗ СТРУКТУРЫ ДОКУМЕНТА
-                            print(
-                                f"\n🔍 ПОЛНЫЙ АНАЛИЗ ДОКУМЕНТА {table_name}, строка {i}:",
-                            )
-                            print(f"   📋 Доступные поля: {list(row_dict.keys())}")
-                            print(f"   📊 Всего полей: {len(row_dict)}")
+                            # ИСПРАВЛЕНО: УПРОЩЕННЫЙ АНАЛИЗ СТРУКТУРЫ ДОКУМЕНТА
+                            if i <= 3:  # Только для первых 3 записей
+                                print(
+                                    f"\n🔍 АНАЛИЗ ДОКУМЕНТА {table_name}, строка {i}:",
+                                )
+                                print(
+                                    f"   📋 Поля: {list(row_dict.keys())[:10]}...",
+                                )  # Только первые 10 полей
+                                print(f"   📊 Всего полей: {len(row_dict)}")
 
-                            # Анализируем каждое поле детально
+                            # Упрощенный анализ полей
                             field_analysis = {}
                             for field_name, value in row_dict.items():
                                 if value is not None:
                                     field_info = {
                                         "type": type(value).__name__,
                                         "value": (
-                                            str(value)[:200] + "..."
-                                            if len(str(value)) > 200
+                                            str(value)[:50] + "..."
+                                            if len(str(value)) > 50
                                             else str(value)
                                         ),
-                                        "length": (
-                                            len(str(value))
-                                            if hasattr(value, "__len__")
-                                            else 0
-                                        ),
-                                        "is_empty": not bool(value),
                                         "is_numeric": isinstance(value, (int, float)),
                                         "is_date": isinstance(value, datetime),
                                         "is_string": isinstance(value, str),
@@ -381,42 +420,55 @@ def extract_all_available_data() -> None:
                                         and value.value is not None,
                                     }
                                     field_analysis[field_name] = field_info
-
-                                    print(f"   📝 {field_name}:")
-                                    print(f"      Тип: {field_info['type']}")
-                                    print(f"      Значение: {field_info['value']}")
-                                    print(f"      Длина: {field_info['length']}")
-                                    print(f"      Пустое: {field_info['is_empty']}")
-                                    print(f"      Числовое: {field_info['is_numeric']}")
-                                    print(f"      Дата: {field_info['is_date']}")
-                                    print(f"      Строка: {field_info['is_string']}")
-                                    print(f"      BLOB: {field_info['is_blob']}")
-
-                                    # Сохраняем все поля для дальнейшего анализа
                                     document["fields"][field_name] = value
 
-                            # Анализируем структуру полей для понимания их назначения
+                            # ИСПРАВЛЕНО: Динамический анализ структуры полей
                             print("\n🧠 АНАЛИЗ СТРУКТУРЫ ПОЛЕЙ:")
 
-                            # Ищем поля с номерами документов
+                            # Ищем поля с номерами документов - ИСПРАВЛЕНО: более умный анализ
                             number_fields = []
                             for field_name, info in field_analysis.items():
-                                if (
+                                # ИСПРАВЛЕНО: Анализируем по имени поля и содержимому
+                                is_number_field = field_name == "_NUMBER" or (
                                     info["is_string"]
                                     and isinstance(info["value"], str)
-                                    and info["value"].isdigit()
-                                    and len(info["value"]) > 5
-                                ):
+                                    and (
+                                        info["value"].isdigit()
+                                        or "№" in info["value"]
+                                        or "N" in field_name
+                                    )
+                                )
+                                if is_number_field:
                                     number_fields.append(field_name)
                                     document["document_number"] = info["value"]
                                     print(
                                         f"   ✅ Номер документа: {field_name} = {info['value']}",
                                     )
 
-                            # Ищем поля с датами
+                            # ИСПРАВЛЕНО: Ищем поля с датами - более умный анализ
                             date_fields = []
                             for field_name, info in field_analysis.items():
-                                if info["is_date"]:
+                                # ИСПРАВЛЕНО: Анализируем по имени поля и типу
+                                is_date_field = (
+                                    field_name == "_DATE_TIME"
+                                    or field_name == "_DATE"
+                                    or info["is_date"]
+                                    or (
+                                        info["is_string"]
+                                        and isinstance(info["value"], str)
+                                        and any(
+                                            date_indicator in info["value"]
+                                            for date_indicator in [
+                                                "2024",
+                                                "2023",
+                                                "2025",
+                                                "-",
+                                                "/",
+                                            ]
+                                        )
+                                    )
+                                )
+                                if is_date_field:
                                     date_fields.append(field_name)
                                     # Проверяем что это действительно datetime объект
                                     if hasattr(info["value"], "isoformat"):
@@ -466,8 +518,6 @@ def extract_all_available_data() -> None:
 
                                     # Извлекаем название магазина
                                     if "магазин" in info["value"].lower():
-                                        import re
-
                                         store_match = re.search(
                                             r"Магазин\s+([^)]+)",
                                             info["value"],
@@ -486,13 +536,13 @@ def extract_all_available_data() -> None:
                                             r"ПЦ(\d+)",
                                             info["value"],
                                         )
-                                    if store_code_match:
-                                        document["store_code"] = (
-                                            f"ПЦ{store_code_match.group(1)}"
-                                        )
-                                        print(
-                                            f"   ✅ Код магазина: {document['store_code']}",
-                                        )
+                                        if store_code_match:
+                                            document["store_code"] = (
+                                                f"ПЦ{store_code_match.group(1)}"
+                                            )
+                                            print(
+                                                f"   ✅ Код магазина: {document['store_code']}",
+                                            )
 
                             # Ищем поля с типом продажи
                             sale_type_fields = []
@@ -511,83 +561,138 @@ def extract_all_available_data() -> None:
                                         f"   ✅ Тип продажи: {field_name} = {info['value']}",
                                     )
 
-                            # Ищем поля с суммами
+                            # ИСПРАВЛЕНО: Ищем поля с суммами - более умный анализ
                             amount_fields = []
                             for field_name, info in field_analysis.items():
-                                # ИСПРАВЛЕНО: Безопасное сравнение числовых значений
-                                if (
-                                    info["is_numeric"]
-                                    and isinstance(info["value"], (int, float))
-                                    and info["value"] > 0
-                                ):
+                                # ИСПРАВЛЕНО: Анализируем по имени поля и значению
+                                is_amount_field = (
+                                    field_name == "_FLD4239"
+                                    or field_name == "_AMOUNT"
+                                    or (
+                                        info["is_numeric"]
+                                        and isinstance(info["value"], (int, float))
+                                        and info["value"] > 0
+                                    )
+                                    or (
+                                        info["is_string"]
+                                        and isinstance(info["value"], str)
+                                        and any(
+                                            amount_indicator in field_name.lower()
+                                            for amount_indicator in [
+                                                "sum",
+                                                "amount",
+                                                "total",
+                                            ]
+                                        )
+                                    )
+                                )
+                                if is_amount_field:
                                     amount_fields.append(field_name)
-                                    document["total_amount"] = float(info["value"])
+                                    document["total_amount"] = (
+                                        float(info["value"])
+                                        if info["is_numeric"]
+                                        and isinstance(info["value"], (int, float))
+                                        else 0.0
+                                    )
                                     print(
                                         f"   ✅ Сумма: {field_name} = {info['value']}",
                                     )
 
-                            # Ищем BLOB поля с использованием BlobProcessor
+                            # ИСПРАВЛЕНО: Ищем BLOB поля с анализом типа
                             blob_fields = []
                             for field_name, info in field_analysis.items():
-                                # ИСПРАВЛЕНО: Простая проверка BLOB полей (пока без BlobProcessor)
+                                # ИСПРАВЛЕНО: Анализируем тип BLOB поля перед обработкой
                                 if (
                                     isinstance(info["value"], bytes)
                                     and len(info["value"]) > 100
                                 ):
                                     blob_fields.append(field_name)
-                                    # ИСПРАВЛЕНО: Простое извлечение BLOB содержимого
-                                    blob_content = info["value"].decode(
-                                        "utf-8",
-                                        errors="ignore",
-                                    )
-                                    if blob_content:
-                                        document["blob_content"] = blob_content
-                                        print(
-                                            f"   ✅ BLOB поле: {field_name} = {len(blob_content)} символов",
-                                        )
-                                    else:
-                                        print(
-                                            f"   ⚠️ BLOB поле: {field_name} - содержимое не извлечено",
-                                        )
 
-                                        # Анализируем содержимое BLOB
-                                        if "флор" in blob_content.lower():
-                                            document["document_type"] = "ФЛОРИСТИКА"
-                                        elif "декор" in blob_content.lower():
-                                            document["document_type"] = "ДЕКОР"
-                                        elif "моно" in blob_content.lower():
-                                            document["document_type"] = "МОНО БУКЕТ"
-                                        elif "интернет" in blob_content.lower():
-                                            document["document_type"] = "ИНТЕРНЕТ-ЗАКАЗ"
+                                    # ИСПРАВЛЕНО: Анализируем заголовки для определения типа BLOB
+                                    blob_bytes = info["value"]
+                                    blob_type = "unknown"
 
-                                        # Извлекаем название магазина из BLOB
-                                        if "магазин" in blob_content.lower():
-                                            import re
+                                    # Проверяем заголовки файлов
+                                    if blob_bytes.startswith(b"\xff\xd8\xff"):
+                                        blob_type = "JPEG"
+                                    elif blob_bytes.startswith(b"\x89PNG"):
+                                        blob_type = "PNG"
+                                    elif blob_bytes.startswith(b"GIF"):
+                                        blob_type = "GIF"
+                                    elif blob_bytes.startswith(b"\x00\x00\x01\x00"):
+                                        blob_type = "ICO"
+                                    elif blob_bytes.startswith(b"%PDF"):
+                                        blob_type = "PDF"
+                                    elif blob_bytes.startswith(b"PK"):
+                                        blob_type = "ZIP/Office"
 
-                                            store_match = re.search(
-                                                r"Магазин\s+([^)]+)",
-                                                blob_content,
+                                    # ИСПРАВЛЕНО: Правильное декодирование в зависимости от типа
+                                    if blob_type == "unknown":
+                                        # Пробуем декодировать как текст
+                                        try:
+                                            blob_content = blob_bytes.decode(
+                                                "utf-8",
+                                                errors="ignore",
                                             )
-                                            if store_match:
-                                                document["store_name"] = (
-                                                    store_match.group(1)
+                                            if len(blob_content.strip()) > 10:
+                                                blob_type = "TEXT_UTF8"
+                                        except:
+                                            try:
+                                                blob_content = blob_bytes.decode(
+                                                    "utf-16",
+                                                    errors="ignore",
                                                 )
-                                            print(
-                                                f"   ✅ Название магазина из BLOB: {document['store_name']}",
-                                            )
+                                                if len(blob_content.strip()) > 10:
+                                                    blob_type = "TEXT_UTF16"
+                                            except:
+                                                blob_content = (
+                                                    blob_bytes.hex()[:100] + "..."
+                                                )
+                                                blob_type = "BINARY"
+                                    else:
+                                        blob_content = f"[{blob_type} файл, {len(blob_bytes)} байт]"
 
-                                        # Извлекаем коды магазинов из BLOB
-                                        store_code_match = re.search(
-                                            r"ПЦ(\d+)",
+                                    document["blob_content"] = blob_content
+                                    print(
+                                        f"   ✅ BLOB поле ({blob_type}): {field_name} = {len(blob_content)} символов",
+                                    )
+
+                                    # Анализируем содержимое BLOB
+                                    if "флор" in blob_content.lower():
+                                        document["document_type"] = "ФЛОРИСТИКА"
+                                    elif "декор" in blob_content.lower():
+                                        document["document_type"] = "ДЕКОР"
+                                    elif "моно" in blob_content.lower():
+                                        document["document_type"] = "МОНО БУКЕТ"
+                                    elif "интернет" in blob_content.lower():
+                                        document["document_type"] = "ИНТЕРНЕТ-ЗАКАЗ"
+
+                                    # Извлекаем название магазина из BLOB
+                                    if "магазин" in blob_content.lower():
+                                        store_match = re.search(
+                                            r"Магазин\s+([^)]+)",
                                             blob_content,
                                         )
-                                        if store_code_match:
-                                            document["store_code"] = (
-                                                f"ПЦ{store_code_match.group(1)}"
+                                        if store_match:
+                                            document["store_name"] = store_match.group(
+                                                1,
                                             )
                                         print(
-                                            f"   ✅ Код магазина из BLOB: {document['store_code']}",
+                                            f"   ✅ Название магазина из BLOB: {document['store_name']}",
                                         )
+
+                                    # Извлекаем коды магазинов из BLOB
+                                    store_code_match = re.search(
+                                        r"ПЦ(\d+)",
+                                        blob_content,
+                                    )
+                                    if store_code_match:
+                                        document["store_code"] = (
+                                            f"ПЦ{store_code_match.group(1)}"
+                                        )
+                                    print(
+                                        f"   ✅ Код магазина из BLOB: {document['store_code']}",
+                                    )
 
                             # Итоговый анализ структуры
                             print("\n📊 ИТОГОВАЯ СТРУКТУРА ДОКУМЕНТА:")
@@ -1341,6 +1446,16 @@ def convert_to_parquet_duckdb(all_results: dict) -> None:
                 "id": doc.get("id", ""),
                 "table_name": doc.get("table_name", ""),
                 "row_index": doc.get("row_index", 0),
+                "document_type": doc.get("document_type", "Неизвестно"),
+                "document_number": doc.get("document_number", "N/A"),
+                "document_date": doc.get("document_date", "N/A"),
+                "store_name": doc.get("store_name", "N/A"),
+                "store_code": doc.get("store_code", "N/A"),
+                "total_amount": doc.get("total_amount", 0.0),
+                "currency": doc.get("currency", "RUB"),
+                "supplier_name": doc.get("supplier_name", "N/A"),
+                "buyer_name": doc.get("buyer_name", "N/A"),
+                "blob_content": doc.get("blob_content", ""),
                 "total_blobs": doc.get("extraction_stats", {}).get("total_blobs", 0),
                 "successful_blobs": doc.get("extraction_stats", {}).get(
                     "successful",
