@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-# ИСПРАВЛЕНО: Принудительная очистка буфера для реального времени
-import functools
 import json
 import os
 import re
 import signal
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
+
+# ИСПРАВЛЕНО: Принудительная очистка буфера для реального времени
+import functools
 
 print = functools.partial(print, flush=True)
 from typing import Any
@@ -17,6 +18,7 @@ import pandas as pd
 from onec_dtools import DatabaseReader
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+# from src.utils.blob_processor import BlobProcessor  # Пока не используется
 
 # Флаг для прерывания
 interrupted = False
@@ -208,7 +210,7 @@ def extract_all_available_data() -> None:
                 "references": [],
                 "registers": [],
                 "metadata": {
-                    "extraction_date": datetime.now(timezone.utc).isoformat(),
+                    "extraction_date": datetime.now().isoformat(),
                     "total_documents": 0,
                     "total_references": 0,
                     "total_registers": 0,
@@ -288,462 +290,6 @@ def extract_all_available_data() -> None:
                     print(
                         f"   🎯 Лимит извлечения: {max_records:,} записей (ИСПРАВЛЕНО)",
                     )
-
-                    # ДЕТАЛЬНЫЙ АНАЛИЗ СТРУКТУРЫ ДАННЫХ (Research Data Standard)
-                    print("   🔍 Детальный анализ структуры данных...")
-
-                    # Анализ полей и типов данных
-                    field_analysis = {}
-                    sample_data = []
-
-                    # Анализируем первые 5 записей для понимания структуры
-                    for i in range(min(5, len(table))):
-                        try:
-                            row = table[i]
-                            if not hasattr(row, "is_empty") or not row.is_empty:
-                                # ИСПРАВЛЕНО: Обработка StopIteration в onec_dtools
-                                try:
-                                    row_list = (
-                                        row.as_list(True)
-                                        if hasattr(row, "as_list")
-                                        else []
-                                    )
-                                except RuntimeError as e:
-                                    if "generator raised StopIteration" in str(e):
-                                        print(
-                                            f"   ℹ️ StopIteration в onec_dtools для записи {i} - нормальное завершение",
-                                        )
-                                        continue
-                                    raise e
-                                if row_list:
-                                    sample_data.append(row_list)
-
-                                    # Анализируем поля
-                                    for j, value in enumerate(row_list):
-                                        field_name = f"field_{j}"
-                                        if hasattr(value, "name") and value.name:
-                                            field_name = value.name
-
-                                        if field_name not in field_analysis:
-                                            field_analysis[field_name] = {
-                                                "type": type(value).__name__,
-                                                "values": [],
-                                                "is_blob": isinstance(value, bytes),
-                                                "is_numeric": isinstance(
-                                                    value,
-                                                    (int, float),
-                                                ),
-                                                "is_date": hasattr(value, "isoformat"),
-                                                "sample_values": [],
-                                            }
-
-                                        field_analysis[field_name]["values"].append(
-                                            value,
-                                        )
-                                        if (
-                                            len(
-                                                field_analysis[field_name][
-                                                    "sample_values"
-                                                ],
-                                            )
-                                            < 3
-                                        ):
-                                            field_analysis[field_name][
-                                                "sample_values"
-                                            ].append(str(value)[:100])
-                        except Exception as e:
-                            print(f"   ⚠️ Ошибка при анализе записи {i}: {e!s}")
-                            continue
-
-                    # Выводим схему данных
-                    print(f"   📋 Схема данных ({len(field_analysis)} полей):")
-                    for field_name, info in field_analysis.items():
-                        blob_marker = " (BLOB)" if info["is_blob"] else ""
-                        numeric_marker = " (NUMERIC)" if info["is_numeric"] else ""
-                        date_marker = " (DATE)" if info["is_date"] else ""
-                        print(
-                            f"      {field_name}: {info['type']}{blob_marker}{numeric_marker}{date_marker}",
-                        )
-                        if info["sample_values"]:
-                            print(f"         Примеры: {info['sample_values']}")
-
-                    # АНАЛИЗ УНИКАЛЬНЫХ ЗНАЧЕНИЙ (Research Data Standard)
-                    print("   🔍 Анализ уникальных значений:")
-                    for field_name, info in field_analysis.items():
-                        unique_count = len(set(str(v) for v in info["values"]))
-                        print(f"      {field_name}: {unique_count} уникальных значений")
-
-                    # АНАЛИЗ ПУСТЫХ ЗНАЧЕНИЙ (Research Data Standard)
-                    print("   📊 Анализ пустых значений:")
-                    for field_name, info in field_analysis.items():
-                        empty_count = sum(
-                            1
-                            for v in info["values"]
-                            if v is None or str(v).strip() == ""
-                        )
-                        total_count = len(info["values"])
-                        empty_percent = (
-                            (empty_count / total_count * 100) if total_count > 0 else 0
-                        )
-                        print(
-                            f"      {field_name}: {empty_count}/{total_count} пустых ({empty_percent:.1f}%)",
-                        )
-
-                    # ПОИСК IDRRef ПОЛЕЙ (Research Data Standard)
-                    idrref_fields = [
-                        name
-                        for name in field_analysis
-                        if "IDRRef" in name or "idrref" in name.lower()
-                    ]
-                    if idrref_fields:
-                        print(f"   🔗 Поля со ссылками (IDRRef): {idrref_fields}")
-                        for idrref_field in idrref_fields:
-                            print(
-                                f"      {idrref_field}: {len(field_analysis[idrref_field]['values'])} записей",
-                            )
-                    else:
-                        print("   🔗 Поля со ссылками (IDRRef): не найдены")
-
-                    # АНАЛИЗ СВЯЗЕЙ МЕЖДУ ТАБЛИЦАМИ (Research Data Standard)
-                    print("   🔗 Анализ связей между таблицами:")
-                    # Ищем поля, которые могут быть ключами для связей
-                    potential_keys = []
-                    for field_name, info in field_analysis.items():
-                        if info["is_blob"] and len(info["values"]) > 0:
-                            # Анализируем содержимое BLOB полей на предмет ссылок
-                            for value in info["values"][:3]:
-                                if isinstance(value, bytes) and len(value) > 0:
-                                    try:
-                                        decoded = value.decode(
-                                            "utf-16",
-                                            errors="ignore",
-                                        )
-                                        if any(
-                                            keyword in decoded.lower()
-                                            for keyword in [
-                                                "reference",
-                                                "справочник",
-                                                "документ",
-                                            ]
-                                        ):
-                                            potential_keys.append(field_name)
-                                            break
-                                    except:
-                                        pass
-
-                    if potential_keys:
-                        print(f"      Потенциальные ключевые поля: {potential_keys}")
-                    else:
-                        print("      Потенциальные ключевые поля: не найдены")
-
-                    # Анализ BLOB полей
-                    blob_fields = [
-                        name for name, info in field_analysis.items() if info["is_blob"]
-                    ]
-                    if blob_fields:
-                        print(f"   📦 BLOB поля найдены: {blob_fields}")
-                        for blob_field in blob_fields:
-                            blob_info = field_analysis[blob_field]
-                            print(
-                                f"      {blob_field}: {len(blob_info['values'])} записей",
-                            )
-                            # Анализ содержимого BLOB
-                            for value in blob_info["values"][:3]:  # Первые 3 значения
-                                if isinstance(value, bytes) and len(value) > 0:
-                                    # Пробуем разные кодировки для декодирования BLOB
-                                    decoded_content = None
-                                    encoding_used = None
-
-                                    for encoding in [
-                                        "utf-8",
-                                        "cp1251",
-                                        "latin-1",
-                                        "utf-16",
-                                        "ascii",
-                                    ]:
-                                        try:
-                                            decoded = value.decode(
-                                                encoding,
-                                                errors="ignore",
-                                            )
-                                            if len(decoded.strip()) > 0 and any(
-                                                c.isprintable() for c in decoded[:50]
-                                            ):
-                                                decoded_content = decoded
-                                                encoding_used = encoding
-                                                break
-                                        except:
-                                            continue
-
-                                    if decoded_content:
-                                        print(
-                                            f"         Содержимое ({encoding_used}): {decoded_content[:100]}...",
-                                        )
-
-                                        # Поиск цветов в BLOB (ПРИОРИТЕТ 3 - расширенный поиск)
-                                        colors = [
-                                            "розов",
-                                            "красн",
-                                            "бел",
-                                            "голуб",
-                                            "зелен",
-                                            "желт",
-                                            "фиолет",
-                                            "оранж",
-                                            "синий",
-                                            "черн",
-                                            # Дополнительные цвета для расширенного поиска
-                                            "розовый",
-                                            "красный",
-                                            "белый",
-                                            "голубой",
-                                            "зеленый",
-                                            "желтый",
-                                            "фиолетовый",
-                                            "оранжевый",
-                                            "синий",
-                                            "черный",
-                                            "pink",
-                                            "red",
-                                            "white",
-                                            "blue",
-                                            "green",
-                                            "yellow",
-                                            "purple",
-                                            "orange",
-                                            # Оттенки цветов
-                                            "светло",
-                                            "темно",
-                                            "ярко",
-                                            "бледно",
-                                            "насыщенн",
-                                            "пастель",
-                                            "неон",
-                                            "металлик",
-                                            "перламутр",
-                                        ]
-                                        found_colors = [
-                                            color
-                                            for color in colors
-                                            if color in decoded_content.lower()
-                                        ]
-                                        if found_colors:
-                                            print(
-                                                f"         🌸 Найдены цвета: {found_colors}",
-                                            )
-
-                                        # Поиск типов букетов (ПРИОРИТЕТ 5 - бизнес-анализ)
-                                        bouquet_types = [
-                                            "моно",
-                                            "букет",
-                                            "композиция",
-                                            "корзина",
-                                            "венок",
-                                            "гирлянда",
-                                            "бутоньерка",
-                                            # Дополнительные типы букетов для бизнес-анализа
-                                            "моно-букет",
-                                            "свадебный букет",
-                                            "праздничный букет",
-                                            "траурный букет",
-                                            "детский букет",
-                                            "мужской букет",
-                                            "женский букет",
-                                            "универсальный букет",
-                                            "сезонный букет",
-                                            "тематический букет",
-                                            "подарочный букет",
-                                            "декоративный букет",
-                                            # Специализированные композиции
-                                            "флористическая композиция",
-                                            "цветочная композиция",
-                                            "декоративная композиция",
-                                            "праздничная композиция",
-                                            "свадебная композиция",
-                                            "корпоративная композиция",
-                                            # Размеры и стили
-                                            "маленький",
-                                            "средний",
-                                            "большой",
-                                            "огромный",
-                                            "мини",
-                                            "макси",
-                                            "классический",
-                                            "современный",
-                                            "романтический",
-                                            "элегантный",
-                                            "стильный",
-                                        ]
-                                        found_bouquets = [
-                                            bouquet
-                                            for bouquet in bouquet_types
-                                            if bouquet in decoded_content.lower()
-                                        ]
-                                        if found_bouquets:
-                                            print(
-                                                f"         🌹 Найдены типы букетов: {found_bouquets}",
-                                            )
-
-                                        # Поиск магазинов (ПРИОРИТЕТ 4 - анализ нулевого оборота)
-                                        stores = [
-                                            "магазин",
-                                            "пц",
-                                            "южный",
-                                            "чеховский",
-                                            "братиславский",
-                                            "склад",
-                                            # Дополнительные магазины для анализа
-                                            "пц036",
-                                            "пц022",
-                                            "пц001",
-                                            "пц002",
-                                            "пц003",
-                                            "южный магазин",
-                                            "чеховский магазин",
-                                            "братиславский магазин",
-                                            "центральный склад",
-                                            "основной склад",
-                                            "резервный склад",
-                                            # Анализ нулевого оборота
-                                            "нулевой",
-                                            "пустой",
-                                            "отсутствует",
-                                            "не заполнен",
-                                            "без оборота",
-                                            "нулевой оборот",
-                                            "пустой оборот",
-                                        ]
-                                        found_stores = [
-                                            store
-                                            for store in stores
-                                            if store in decoded_content.lower()
-                                        ]
-                                        if found_stores:
-                                            print(
-                                                f"         🏪 Найдены магазины: {found_stores}",
-                                            )
-                                    else:
-                                        print(
-                                            f"         Бинарные данные: {len(value)} байт",
-                                        )
-                    else:
-                        print(f"   📦 BLOB поля: {blob_fields}")
-
-                    # АНАЛИЗ ПАТТЕРНОВ В ДАННЫХ (Research Data Standard)
-                    print("   🔍 Паттерны в данных:")
-                    for field_name, info in field_analysis.items():
-                        if info["sample_values"]:
-                            print(f"      {field_name}: {info['sample_values']}")
-
-                    # СОЗДАНИЕ ПАСПОРТА ДОКУМЕНТА (Research Data Standard)
-                    print("   📄 Паспорт документа:")
-                    print(f"      Назначение: {table_name}")
-                    print(f"      Поля: {len(field_analysis)}")
-                    print(f"      BLOB поля: {len(blob_fields)}")
-                    print(
-                        f"      Числовые поля: {len([name for name, info in field_analysis.items() if info['is_numeric']])}",
-                    )
-                    print(
-                        f"      Поля дат: {len([name for name, info in field_analysis.items() if info['is_date']])}",
-                    )
-
-                    # АНАЛИЗ НАЗНАЧЕНИЯ ПОЛЕЙ
-                    print("   🎯 Анализ назначения полей:")
-                    for field_name, info in field_analysis.items():
-                        if info["is_blob"]:
-                            print(
-                                f"      {field_name}: BLOB поле (возможно, содержит описания или ссылки)",
-                            )
-                        elif info["is_numeric"]:
-                            print(
-                                f"      {field_name}: Числовое поле (возможно, суммы или количества)",
-                            )
-                        elif info["is_date"]:
-                            print(
-                                f"      {field_name}: Поле даты (возможно, дата документа или операции)",
-                            )
-                        else:
-                            print(
-                                f"      {field_name}: Текстовое поле (возможно, номера или описания)",
-                            )
-
-                    # АНАЛИЗ ДУБЛИРОВАНИЯ (ПРИОРИТЕТ 2)
-                    print("   🔍 Анализ дублирования:")
-                    duplicate_analysis = {}
-                    for field_name, info in field_analysis.items():
-                        if info["values"]:
-                            # Анализируем дублирование значений
-                            value_counts = {}
-                            for value in info["values"]:
-                                value_str = str(value)
-                                value_counts[value_str] = (
-                                    value_counts.get(value_str, 0) + 1
-                                )
-
-                            # Находим дублированные значения
-                            duplicates = {
-                                k: v for k, v in value_counts.items() if v > 1
-                            }
-                            if duplicates:
-                                duplicate_analysis[field_name] = duplicates
-                                print(
-                                    f"      {field_name}: {len(duplicates)} дублированных значений",
-                                )
-                                for dup_value, count in list(duplicates.items())[
-                                    :3
-                                ]:  # Показываем первые 3
-                                    print(
-                                        f"         '{dup_value[:50]}...' - {count} раз",
-                                    )
-                            else:
-                                print(f"      {field_name}: дублирования не найдены")
-
-                    if duplicate_analysis:
-                        print(
-                            f"   ⚠️ Найдено дублирование в {len(duplicate_analysis)} полях",
-                        )
-                    else:
-                        print("   ✅ Дублирования не найдены")
-
-                    # Анализ числовых полей
-                    numeric_fields = [
-                        name
-                        for name, info in field_analysis.items()
-                        if info["is_numeric"]
-                    ]
-                    if numeric_fields:
-                        print(f"   🔢 Числовые поля: {numeric_fields}")
-                        for num_field in numeric_fields:
-                            values = field_analysis[num_field]["values"]
-                            if values:
-                                print(
-                                    f"      {num_field}: {min(values)} - {max(values)}",
-                                )
-
-                    # Анализ дат
-                    date_fields = [
-                        name for name, info in field_analysis.items() if info["is_date"]
-                    ]
-                    if date_fields:
-                        print(f"   📅 Поля дат: {date_fields}")
-                        for date_field in date_fields:
-                            values = field_analysis[date_field]["values"]
-                            if values:
-                                print(
-                                    f"      {date_field}: {min(values)} - {max(values)}",
-                                )
-
-                    print(f"   📄 Примеры данных ({len(sample_data)} записей):")
-                    for i, sample in enumerate(
-                        sample_data[:3],
-                    ):  # Показываем первые 3 записи
-                        print(f"      Запись {i+1}: {len(sample)} полей")
-                        for j, value in enumerate(
-                            sample[:5],
-                        ):  # Показываем первые 5 полей
-                            print(
-                                f"         Поле {j}: {type(value).__name__} = {str(value)[:50]}...",
-                            )
 
                     # Находим непустые записи - с лимитом для критических таблиц
                     non_empty_rows = []
@@ -871,7 +417,7 @@ def extract_all_available_data() -> None:
                                         "is_numeric": isinstance(value, (int, float)),
                                         # ИСПРАВЛЕНО: Добавляем оригинальные bytes если есть
                                         "original_bytes": original_bytes.get(
-                                            field_name,
+                                            field_name
                                         ),
                                         "is_date": isinstance(value, datetime),
                                         "is_string": isinstance(value, str),
@@ -881,33 +427,20 @@ def extract_all_available_data() -> None:
                                     field_analysis[field_name] = field_info
                                     document["fields"][field_name] = value
 
-                            # УПРОЩЕННЫЙ АНАЛИЗ СТРУКТУРЫ ПОЛЕЙ
-                            if i <= 3:  # Только для первых 3 документов
-                                print(f"\n🧠 АНАЛИЗ СТРУКТУРЫ ПОЛЕЙ для документа {i}:")
-                                print(f"   📋 Всего полей: {len(field_analysis)}")
+                            # ИСПРАВЛЕНО: Динамический анализ структуры полей
+                            print(f"\n🧠 АНАЛИЗ СТРУКТУРЫ ПОЛЕЙ для документа {i}:")
+                            print(f"   📋 Всего полей: {len(field_analysis)}")
 
-                                # Показываем только ключевые поля
-                                key_fields = [
-                                    "_NUMBER",
-                                    "_DATE_TIME",
-                                    "_DATE",
-                                    "_FLD4239",
-                                    "_FLD4229",
-                                    "_FLD4243",
-                                    "_FLD4254",
-                                    "_FLD3108",
-                                ]
-                                print("   📊 КЛЮЧЕВЫЕ ПОЛЯ:")
-                                for field_name in key_fields:
-                                    if field_name in field_analysis:
-                                        info = field_analysis[field_name]
-                                        field_type = info.get("type", "unknown")
-                                        field_value = info.get("value", "N/A")
-                                        if len(str(field_value)) > 30:
-                                            field_value = str(field_value)[:30] + "..."
-                                        print(
-                                            f"      {field_name}: {field_type} = {field_value}"
-                                        )
+                            # Показываем все поля с их типами
+                            print("   📊 ТИПЫ ПОЛЕЙ:")
+                            for field_name, info in field_analysis.items():
+                                field_type = info.get("type", "unknown")
+                                field_value = info.get("value", "N/A")
+                                if len(str(field_value)) > 30:
+                                    field_value = str(field_value)[:30] + "..."
+                                print(
+                                    f"      {field_name}: {field_type} = {field_value}",
+                                )
 
                             # Ищем поля с номерами документов - ИСПРАВЛЕНО: более умный анализ
                             number_fields = []
@@ -971,20 +504,21 @@ def extract_all_available_data() -> None:
                                             print(
                                                 f"   ✅ Дата документа (строка): {field_name} = {info['value']}",
                                             )
-                                    elif (
-                                        field_name == "field_3"
-                                        or document.get("document_date") == "N/A"
-                                    ):
-                                        document["document_date"] = str(
-                                            info["value"],
-                                        )
-                                        print(
-                                            f"   ✅ Дата документа: {field_name} = {info['value']}",
-                                        )
                                     else:
-                                        print(
-                                            f"   ✅ Дата документа (строка): {field_name} = {info['value']}",
-                                        )
+                                        if (
+                                            field_name == "field_3"
+                                            or document.get("document_date") == "N/A"
+                                        ):
+                                            document["document_date"] = str(
+                                                info["value"]
+                                            )
+                                            print(
+                                                f"   ✅ Дата документа: {field_name} = {info['value']}",
+                                            )
+                                        else:
+                                            print(
+                                                f"   ✅ Дата документа (строка): {field_name} = {info['value']}",
+                                            )
 
                             # Ищем поля с описанием
                             description_fields = []
@@ -1109,7 +643,7 @@ def extract_all_available_data() -> None:
                                 ):
                                     is_amount_field = True
                                     print(
-                                        f"      🔍 НАЙДЕНО ПОТЕНЦИАЛЬНОЕ ПОЛЕ С СУММОЙ: {field_name} = {info['value']}",
+                                        f"      🔍 НАЙДЕНО ПОТЕНЦИАЛЬНОЕ ПОЛЕ С СУММОЙ: {field_name} = {info['value']}"
                                     )
 
                                 # ИСПРАВЛЕНО: Поиск сумм в BLOB данных
@@ -1121,21 +655,19 @@ def extract_all_available_data() -> None:
                                     try:
                                         # Пытаемся декодировать BLOB как текст и найти числа
                                         blob_text = info["value"].decode(
-                                            "utf-8",
-                                            errors="ignore",
+                                            "utf-8", errors="ignore"
                                         )
                                         if any(char.isdigit() for char in blob_text):
                                             # Проверяем есть ли числа в BLOB
                                             numbers = re.findall(
-                                                r"\d+\.?\d*",
-                                                blob_text,
+                                                r"\d+\.?\d*", blob_text
                                             )
                                             if numbers:
                                                 potential_sum = float(numbers[0])
                                                 if potential_sum > 0:
                                                     is_amount_field = True
                                                     print(
-                                                        f"      🔍 НАЙДЕНО ПОТЕНЦИАЛЬНОЕ ПОЛЕ С СУММОЙ В BLOB: {field_name} = {potential_sum}",
+                                                        f"      🔍 НАЙДЕНО ПОТЕНЦИАЛЬНОЕ ПОЛЕ С СУММОЙ В BLOB: {field_name} = {potential_sum}"
                                                     )
                                     except:
                                         pass
@@ -1157,7 +689,9 @@ def extract_all_available_data() -> None:
                                 # ИСПРАВЛЕНО: Анализируем тип BLOB поля перед обработкой
                                 # Проверяем только оригинальные bytes
                                 blob_value = info.get("original_bytes")
-                                # ИСПРАВЛЕНО: Убираем отладочную информацию для ускорения
+                                # ОТЛАДКА: Проверяем что у нас есть
+                                if field_name in ["field_0", "field_8", "field_11"]:  # Известные bytes поля
+                                    print(f"      🔍 ОТЛАДКА BLOB {field_name}: original_bytes={blob_value is not None}, type={type(blob_value)}")
                                 if (
                                     isinstance(blob_value, bytes)
                                     and len(blob_value)
@@ -1165,24 +699,65 @@ def extract_all_available_data() -> None:
                                 ):
                                     blob_fields.append(field_name)
                                     print(
-                                        f"      📦 НАЙДЕНО BLOB ПОЛЕ: {field_name} = {len(blob_value)} байт",
+                                        f"      📦 НАЙДЕНО BLOB ПОЛЕ: {field_name} = {len(blob_value)} байт"
                                     )
 
-                                    # УПРОЩЕННЫЙ АНАЛИЗ BLOB ПОЛЕЙ
-                                    if i <= 3:  # Только для первых 3 документов
-                                        try:
-                                            blob_text = blob_value.decode(
-                                                "utf-8",
-                                                errors="ignore",
-                                            )
-                                            if len(blob_text) > 0:
-                                                print(
-                                                    f"         📄 BLOB {field_name}: {blob_text[:50]}...",
-                                                )
-                                        except Exception as e:
+                                    # ИСПРАВЛЕНО: Пытаемся декодировать BLOB для анализа
+                                    try:
+                                        blob_text = blob_value.decode(
+                                            "utf-8", errors="ignore"
+                                        )
+                                        if len(blob_text) > 0:
                                             print(
-                                                f"         ⚠️ Ошибка декодирования BLOB {field_name}: {e}",
+                                                f"         📄 СОДЕРЖИМОЕ BLOB {field_name}: {blob_text[:100]}..."
                                             )
+
+                                            # Поиск цветочной информации
+                                            if any(
+                                                color in blob_text.lower()
+                                                for color in [
+                                                    "розов",
+                                                    "красн",
+                                                    "бел",
+                                                    "голуб",
+                                                    "зелен",
+                                                ]
+                                            ):
+                                                print(
+                                                    f"         🌸 НАЙДЕНА ЦВЕТОЧНАЯ ИНФОРМАЦИЯ в {field_name}!"
+                                                )
+
+                                            # Поиск информации о магазине
+                                            if any(
+                                                store in blob_text.lower()
+                                                for store in [
+                                                    "магазин",
+                                                    "пц",
+                                                    "южный",
+                                                    "чеховский",
+                                                ]
+                                            ):
+                                                print(
+                                                    f"         🏪 НАЙДЕНА ИНФОРМАЦИЯ О МАГАЗИНЕ в {field_name}!"
+                                                )
+
+                                            # Поиск финансовой информации
+                                            if any(
+                                                finance in blob_text.lower()
+                                                for finance in [
+                                                    "руб",
+                                                    "сумма",
+                                                    "цена",
+                                                    "стоимость",
+                                                ]
+                                            ):
+                                                print(
+                                                    f"         💰 НАЙДЕНА ФИНАНСОВАЯ ИНФОРМАЦИЯ в {field_name}!"
+                                                )
+                                    except Exception as e:
+                                        print(
+                                            f"         ⚠️ Ошибка декодирования BLOB {field_name}: {e}"
+                                        )
 
                                     # ИСПРАВЛЕНО: Анализируем заголовки для определения типа BLOB
                                     blob_bytes = (
@@ -1192,37 +767,31 @@ def extract_all_available_data() -> None:
 
                                     # Проверяем заголовки файлов
                                     if isinstance(
-                                        blob_bytes,
-                                        bytes,
+                                        blob_bytes, bytes
                                     ) and blob_bytes.startswith(b"\xff\xd8\xff"):
                                         blob_type = "JPEG"
                                     elif isinstance(
-                                        blob_bytes,
-                                        bytes,
+                                        blob_bytes, bytes
                                     ) and blob_bytes.startswith(b"\x89PNG"):
                                         blob_type = "PNG"
                                     elif isinstance(
-                                        blob_bytes,
-                                        bytes,
+                                        blob_bytes, bytes
                                     ) and blob_bytes.startswith(b"GIF"):
                                         blob_type = "GIF"
                                     elif isinstance(
-                                        blob_bytes,
-                                        bytes,
+                                        blob_bytes, bytes
                                     ) and blob_bytes.startswith(b"\x00\x00\x01\x00"):
                                         blob_type = "ICO"
                                     elif isinstance(
-                                        blob_bytes,
-                                        bytes,
+                                        blob_bytes, bytes
                                     ) and blob_bytes.startswith(b"%PDF"):
                                         blob_type = "PDF"
                                     elif isinstance(
-                                        blob_bytes,
-                                        bytes,
+                                        blob_bytes, bytes
                                     ) and blob_bytes.startswith(b"PK"):
                                         blob_type = "ZIP/Office"
 
-                                    # Правильное декодирование в зависимости от типа
+                                    # ИСПРАВЛЕНО: Правильное декодирование в зависимости от типа
                                     if blob_type == "unknown":
                                         # Пробуем декодировать как текст
                                         try:
@@ -1729,7 +1298,10 @@ def extract_all_available_data() -> None:
                                         ):
                                             document["fields"][field_name] = value
                                 except StopIteration:
-                                    # StopIteration - это нормальное завершение итератора, не ошибка
+                                    # ИСПРАВЛЕНО: StopIteration - это нормальное завершение итератора, не ошибка
+                                    print(
+                                        f"   ℹ️ StopIteration для поля {field_name} - нормальное завершение итератора",
+                                    )
                                     continue
                                 except Exception as e:
                                     # ИСПРАВЛЕНО: Обрабатываем только реальные ошибки, не StopIteration
@@ -1744,30 +1316,29 @@ def extract_all_available_data() -> None:
                                                 f"   ⚠️ Ошибка при обработке поля {field_name}: {error_msg}",
                                             )
                                     else:
-                                        # StopIteration - это нормальное завершение
-                                        # итератора, не ошибка
+                                        # StopIteration - это нормальное завершение итератора, не ошибка
+                                        print(
+                                            f"   ℹ️ Нормальное завершение итератора для поля {field_name}"
+                                        )
                                         continue
 
-                                    # Логируем ошибку в файл (только для первых 10 ошибок)
-                                    if error_counter[error_msg] <= 10:
-                                        with open(
-                                            "logs/extraction_errors.log",
-                                            "a",
-                                            encoding="utf-8",
-                                        ) as log_file:
-                                            log_file.write(
-                                                f"{datetime.now().isoformat()} - {table_name} - {field_name}: {error_msg}\n",
-                                            )
+                                    # Логируем ошибку в файл
+                                    with open(
+                                        "logs/extraction_errors.log",
+                                        "a",
+                                        encoding="utf-8",
+                                    ) as log_file:
+                                        log_file.write(
+                                            f"{datetime.now().isoformat()} - {table_name} - {field_name}: {error_msg}\n",
+                                        )
 
                                     # Проверяем, не слишком ли много повторяющихся ошибок
                                     if error_counter[error_msg] > max_repeated_errors:
                                         print(
-                                            f"   🛑 СЛИШКОМ МНОГО ПОВТОРЯЮЩИХСЯ ОШИБОК: "
-                                            f"{error_msg} ({error_counter[error_msg]} раз)",
+                                            f"   🛑 СЛИШКОМ МНОГО ПОВТОРЯЮЩИХСЯ ОШИБОК: {error_msg} ({error_counter[error_msg]} раз)",
                                         )
                                         print(
-                                            f"   🛑 ОСТАНАВЛИВАЕМ ИЗВЛЕЧЕНИЕ ИЗ "
-                                            f"ТАБЛИЦЫ {table_name}",
+                                            f"   🛑 ОСТАНАВЛИВАЕМ ИЗВЛЕЧЕНИЕ ИЗ ТАБЛИЦЫ {table_name}",
                                         )
                                         break
 
@@ -1775,8 +1346,7 @@ def extract_all_available_data() -> None:
                                         error_counter[error_msg] <= 5
                                     ):  # Показываем только первые 5 ошибок каждого типа
                                         print(
-                                            f"   ⚠️ Ошибка при обработке поля "
-                                            f"{field_name}: {error_msg}",
+                                            f"   ⚠️ Ошибка при обработке поля {field_name}: {error_msg}",
                                         )
                                     continue
 
@@ -1792,8 +1362,8 @@ def extract_all_available_data() -> None:
                                 all_results["metadata"]["total_documents"] += 1
                             successful_docs += 1
 
-                            # УПРОЩЕННОЕ ЛОГИРОВАНИЕ
-                            if i <= 3 or i % 100 == 0:  # Первые 3 и каждую 100-ю
+                            # ДЕТАЛЬНОЕ ЛОГИРОВАНИЕ С АНАЛИЗОМ ДОКУМЕНТА
+                            if i <= 10 or i % 10 == 0:  # Первые 10 и каждую 10-ю
                                 # Основные поля документа
                                 doc_number = document.get("document_number", "N/A")
                                 doc_date = document.get("document_date", "N/A")
@@ -2002,18 +1572,11 @@ def extract_all_available_data() -> None:
                         except Exception as e:
                             # ИСПРАВЛЕНО: Обрабатываем только реальные ошибки, не StopIteration
                             error_msg = str(e)
-                            if (
-                                "StopIteration" not in error_msg
-                                and "generator raised StopIteration" not in error_msg
-                            ):
-                                # Игнорируем BrokenPipeError при использовании head
-                                if "BrokenPipeError" not in error_msg:
-                                    print(
-                                        f"   ⚠️ Ошибка при обработке записи {i}: {e!s}",
-                                    )
+                            if "StopIteration" not in error_msg and "generator raised StopIteration" not in error_msg:
+                                print(f"   ⚠️ Ошибка при обработке записи {i}: {e!s}")
                             else:
                                 print(
-                                    f"   ℹ️ BrokenPipeError - проблема с выводом для записи {i}",
+                                    f"   ℹ️ Нормальное завершение итератора для записи {i}"
                                 )
                             continue
 
@@ -2070,9 +1633,7 @@ def extract_all_available_data() -> None:
                                         "table_name": table_name,
                                         "fields": row_dict,
                                         "extraction_stats": {
-                                            "extraction_time": datetime.now(
-                                                timezone.utc
-                                            ).isoformat(),
+                                            "extraction_time": datetime.now().isoformat(),
                                             "success": True,
                                         },
                                     }
@@ -2110,15 +1671,13 @@ def extract_all_available_data() -> None:
                                         "table_name": table_name,
                                         "fields": row_dict,
                                         "extraction_stats": {
-                                            "extraction_time": datetime.now(
-                                                timezone.utc
-                                            ).isoformat(),
+                                            "extraction_time": datetime.now().isoformat(),
                                             "success": True,
                                         },
                                     }
                                     all_results["registers"].append(register)
                                     successful_regs += 1
-                        except (ValueError, TypeError, AttributeError) as e:
+                        except Exception as e:
                             print(f"   ⚠️ Ошибка при извлечении регистра {i}: {e!s}")
                             continue
 
@@ -2140,7 +1699,7 @@ def extract_all_available_data() -> None:
 
             print("\n✅ Извлечение всех доступных данных завершено")
 
-    except (ValueError, TypeError, AttributeError, FileNotFoundError) as e:
+    except Exception as e:
         print(f"❌ Ошибка: {e!s}")
         import traceback
 
@@ -2217,10 +1776,9 @@ def convert_to_parquet_duckdb(all_results: dict) -> None:
             duckdb_file = "data/results/duckdb/analysis.duckdb"
             con = duckdb.connect(duckdb_file)
 
-            # Загружаем данные в DuckDB (ИСПРАВЛЕНО: убираем SQL инъекцию)
+            # Загружаем данные в DuckDB
             con.execute(
-                "CREATE OR REPLACE TABLE documents AS SELECT * FROM ?",
-                [parquet_file],
+                f"CREATE OR REPLACE TABLE documents AS SELECT * FROM '{parquet_file}'",
             )
 
             # Создаем индексы для быстрого поиска
@@ -2286,7 +1844,7 @@ def convert_to_parquet_duckdb(all_results: dict) -> None:
         else:
             print("⚠️ Нет данных для конвертации")
 
-    except (ValueError, TypeError, AttributeError, FileNotFoundError) as e:
+    except Exception as e:
         print(f"❌ Ошибка конвертации в Parquet/DuckDB: {e}")
         import traceback
 
@@ -2310,7 +1868,7 @@ def extract_data_detailed_method() -> None:
 
         all_data = {
             "extraction_method": "detailed_analysis",
-            "extraction_date": datetime.now(timezone.utc).isoformat(),
+            "extraction_date": datetime.now().isoformat(),
             "source_files": [],
             "exported_tables": [],
             "analysis_results": {},
@@ -2350,7 +1908,7 @@ def extract_data_detailed_method() -> None:
         print("💾 Детальный анализ сохранен в: detailed_extraction_analysis.json")
         print("✅ Детальное извлечение завершено успешно")
 
-    except (ValueError, TypeError, AttributeError, FileNotFoundError):
+    except Exception:
         print("❌ Ошибка в детальном методе: ")
         return
 
@@ -2381,7 +1939,7 @@ def extract_data_alternative_method() -> None:
                 "extraction_method": "alternative_from_existing_files",
                 "total_files": len(json_files),
                 "files": json_files,
-                "extraction_date": datetime.now(timezone.utc).isoformat(),
+                "extraction_date": datetime.now().isoformat(),
                 "status": "completed_using_existing_data",
             }
 
@@ -2398,7 +1956,7 @@ def extract_data_alternative_method() -> None:
         else:
             print("❌ Директория с результатами не найдена: {results_dir}")
 
-    except (ValueError, TypeError, AttributeError, FileNotFoundError):
+    except Exception:
         print("❌ Ошибка в альтернативном методе: ")
 
 
@@ -2496,10 +2054,7 @@ if __name__ == "__main__":
         extract_all_available_data()
         print("✅ Извлечение и валидация завершены успешно")
         sys.exit(0)
-    except BrokenPipeError:
-        # ИСПРАВЛЕНО: Игнорируем BrokenPipeError при использовании head
-        pass
-    except (ValueError, TypeError, AttributeError, FileNotFoundError):
+    except Exception:
         print("❌ Ошибка: ")
         import traceback
 

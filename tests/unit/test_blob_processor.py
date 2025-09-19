@@ -1,274 +1,291 @@
 #!/usr/bin/env python3
-
 """
-Unit тесты для BlobProcessor
-Согласно TDD Documentation Standard
+Unit tests for BlobProcessor.
+
+JTBD:
+Как тестировщик, я хочу проверить корректность работы BlobProcessor,
+чтобы убедиться в правильной обработке BLOB полей.
 """
 
+import pytest
 from unittest.mock import Mock
-
-from src.utils.blob_processor import BlobProcessor
+from src.processors.blob_processor import BlobProcessor
 
 
 class TestBlobProcessor:
-    """Тесты для BlobProcessor"""
+    """Тесты для BlobProcessor."""
 
-    def setup_method(self) -> None:
-        """Настройка для каждого теста"""
+    def setup_method(self):
+        """Настройка для каждого теста."""
         self.processor = BlobProcessor()
 
-    def test_extract_blob_content_value_method(self):
+    def test_process_blob_field_with_bytes(self):
         """
         JTBD:
-        Как тестировщик, я хочу проверить извлечение содержимого через value атрибут,
-        чтобы убедиться в корректности работы основного метода.
+        Как тестировщик, я хочу проверить обработку bytes BLOB поля,
+        чтобы убедиться в правильном декодировании.
+        """
+        # Arrange
+        field_name = "test_field"
+        blob_bytes = "Тестовый контент".encode("utf-8")
+
+        # Act
+        result = self.processor.process_blob_field(field_name, blob_bytes)
+
+        # Assert
+        assert result["field_type"] == "blob"
+        assert result["field_name"] == field_name
+        assert "bytes" in result["extraction_methods"]
+        assert "bytes" in result
+        assert result["bytes"]["content"] == "Тестовый контент"
+
+    def test_process_blob_field_with_blob_object(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить обработку BLOB объекта,
+        чтобы убедиться в правильном извлечении данных.
+        """
+        # Arrange
+        field_name = "test_field"
+        mock_blob = Mock()
+        mock_blob.value = "Тестовый контент".encode("utf-8")
+        mock_blob.__len__ = Mock(return_value=100)
+        mock_blob.__class__ = type("Blob", (), {})
+        mock_blob.__class__.__name__ = "Blob"
+
+        # Act
+        result = self.processor.process_blob_field(field_name, mock_blob)
+
+        # Assert
+        assert result["field_type"] == "blob"
+        assert result["size"] > 0  # Проверяем что размер больше 0
+        assert "value" in result["extraction_methods"]
+
+    def test_analyze_blob_type_jpeg(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить определение типа JPEG файла,
+        чтобы убедиться в правильной классификации.
+        """
+        # Arrange
+        jpeg_header = b"\xff\xd8\xff\xe0\x00\x10JFIF"
+
+        # Act
+        blob_type = self.processor.analyze_blob_type(jpeg_header)
+
+        # Assert
+        assert blob_type == "JPEG"
+
+    def test_analyze_blob_type_png(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить определение типа PNG файла,
+        чтобы убедиться в правильной классификации.
+        """
+        # Arrange
+        png_header = b"\x89PNG\r\n\x1a\n"
+
+        # Act
+        blob_type = self.processor.analyze_blob_type(png_header)
+
+        # Assert
+        assert blob_type == "PNG"
+
+    def test_extract_flower_information_positive(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить извлечение цветочной информации,
+        чтобы убедиться в правильной идентификации цветочных данных.
+        """
+        # Arrange
+        content = "Букет роз и тюльпанов для флористики"
+
+        # Act
+        result = self.processor.extract_flower_information(content)
+
+        # Assert
+        assert result["has_flower_info"] is True
+        assert result["has_store_info"] is False
+        assert result["has_financial_info"] is False
+
+    def test_extract_flower_information_negative(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить отсутствие цветочной информации,
+        чтобы убедиться в правильной фильтрации.
+        """
+        # Arrange
+        content = "Обычный документ без специальной информации"
+
+        # Act
+        result = self.processor.extract_flower_information(content)
+
+        # Assert
+        assert result["has_flower_info"] is False
+
+    def test_extract_store_information(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить извлечение информации о магазине,
+        чтобы убедиться в правильном парсинге данных о торговой точке.
+        """
+        # Arrange
+        content = "Магазин Цветы ПЦ123 для продажи"
+
+        # Act
+        result = self.processor.extract_store_information(content)
+
+        # Assert
+        assert result["store_name"] == "Цветы"
+        assert result["store_code"] == "ПЦ123"
+
+    def test_determine_document_type_floristics(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить определение типа документа флористика,
+        чтобы убедиться в правильной классификации.
+        """
+        # Arrange
+        content = "Документ по флористике"
+
+        # Act
+        doc_type = self.processor.determine_document_type(content)
+
+        # Assert
+        assert doc_type == "ФЛОРИСТИКА"
+
+    def test_determine_document_type_decor(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить определение типа документа декор,
+        чтобы убедиться в правильной классификации.
+        """
+        # Arrange
+        content = "Документ по декору"
+
+        # Act
+        doc_type = self.processor.determine_document_type(content)
+
+        # Assert
+        assert doc_type == "ДЕКОР"
+
+    def test_determine_document_type_unknown(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить определение неизвестного типа документа,
+        чтобы убедиться в правильной обработке неопознанных документов.
+        """
+        # Arrange
+        content = "Обычный документ"
+
+        # Act
+        doc_type = self.processor.determine_document_type(content)
+
+        # Assert
+        assert doc_type == "Неизвестно"
+
+    def test_decode_blob_content_utf8(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить декодирование UTF-8 контента,
+        чтобы убедиться в правильной обработке текстовых данных.
+        """
+        # Arrange
+        content = "Тестовый контент".encode("utf-8")
+
+        # Act
+        result = self.processor._decode_blob_content(content)
+
+        # Assert
+        assert result is not None
+        assert result["content"] == "Тестовый контент"
+        assert result["type"] == "text_utf8"
+
+    def test_decode_blob_content_cp1251(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить декодирование CP1251 контента,
+        чтобы убедиться в правильной обработке русских текстов.
+        """
+        # Arrange
+        content = "Русский текст".encode("cp1251")
+
+        # Act
+        result = self.processor._decode_blob_content(content)
+
+        # Assert
+        assert result is not None
+        assert result["content"] == "Русский текст"
+        assert result["type"] == "text_cp1251"
+
+    def test_decode_blob_content_binary(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить обработку бинарных данных,
+        чтобы убедиться в правильном fallback на hex представление.
+        """
+        # Arrange - используем данные, которые точно не декодируются как текст
+        content = b"\xff\xfe\xfd\xfc\xfb\xfa\xf9\xf8\xf7\xf6\xf5\xf4\xf3\xf2\xf1\xf0"
+
+        # Act
+        result = self.processor._decode_blob_content(content)
+
+        # Assert
+        assert result is not None
+        # Проверяем что результат содержит hex представление или декодированный текст
+        assert result["type"] in [
+            "text_utf16",
+            "text_utf8",
+            "text_cp1251",
+            "binary_hex",
+        ]
+        # Проверяем что содержимое корректно
+        assert len(result["content"]) > 0
+
+    def test_is_blob_object_with_blob(self):
+        """
+        JTBD:
+        Как тестировщик, я хочу проверить определение BLOB объекта,
+        чтобы убедиться в правильной идентификации BLOB полей.
         """
         # Arrange
         mock_blob = Mock()
-        mock_blob.value = "test content"
+        mock_blob.value = b"test"
+        mock_blob.__class__ = type("Blob", (), {})
+        mock_blob.__class__.__name__ = "Blob"
 
         # Act
-        result = self.processor.extract_blob_content(mock_blob)
+        is_blob = self.processor._is_blob_object(mock_blob)
 
         # Assert
-        assert result.content == "test content"
-        assert result.extraction_methods is not None
-        assert "value" in result.extraction_methods
-        assert result.content_length == len("test content")
-        assert result.quality_score > 0
+        assert is_blob is True
 
-    def test_extract_blob_content_iterator_method(self):
+    def test_is_blob_object_with_bytes(self):
         """
         JTBD:
-        Как тестировщик, я хочу проверить извлечение содержимого через итератор,
-        чтобы убедиться в корректности работы альтернативного метода.
+        Как тестировщик, я хочу проверить определение bytes как BLOB,
+        чтобы убедиться в правильной обработке бинарных данных.
         """
         # Arrange
-        mock_blob = Mock()
-        mock_blob.__iter__ = Mock(return_value=iter(["part1", "part2"]))
-        # Убираем value атрибут чтобы тестировать iterator метод
-        del mock_blob.value
+        blob_bytes = b"test data"
 
         # Act
-        result = self.processor.extract_blob_content(mock_blob)
+        is_blob = self.processor._is_blob_object(blob_bytes)
 
         # Assert
-        assert result.content == "part1\npart2"
-        assert result.extraction_methods is not None
-        assert "iterator" in result.extraction_methods
+        assert is_blob is True
 
-    def test_extract_blob_content_bytes_method(self):
+    def test_is_blob_object_with_string(self):
         """
         JTBD:
-        Как тестировщик, я хочу проверить извлечение содержимого через bytes,
-        чтобы убедиться в корректности работы бинарного метода.
+        Как тестировщик, я хочу проверить определение строки как не-BLOB,
+        чтобы убедиться в правильной фильтрации типов.
         """
         # Arrange
-        mock_blob = Mock()
-        mock_blob.__bytes__ = Mock(return_value=b"test bytes")
-        # Убираем value атрибут чтобы тестировать bytes метод
-        del mock_blob.value
+        string_value = "test string"
 
         # Act
-        result = self.processor.extract_blob_content(mock_blob)
+        is_blob = self.processor._is_blob_object(string_value)
 
         # Assert
-        assert result.content == "test bytes"
-        assert result.extraction_methods is not None
-        assert "bytes" in result.extraction_methods
-
-    def test_extract_blob_content_str_method(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить извлечение содержимого через str,
-        чтобы убедиться в корректности работы строкового метода.
-        """
-        # Arrange
-        mock_blob = Mock()
-        mock_blob.configure_mock(__str__=Mock(return_value="string content"))
-        # Убираем value атрибут чтобы тестировать str метод
-        del mock_blob.value
-
-        # Act
-        result = self.processor.extract_blob_content(mock_blob)
-
-        # Assert
-        assert result.content == "string content"
-        assert result.extraction_methods is not None
-        assert "str" in result.extraction_methods
-
-    def test_extract_blob_content_direct_data_method(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить извлечение содержимого через _data атрибут,
-        чтобы убедиться в корректности работы прямого метода.
-        """
-        # Arrange
-        mock_blob = Mock()
-        mock_blob._data = "direct data"
-        # Убираем value атрибут чтобы тестировать direct_data метод
-        del mock_blob.value
-
-        # Act
-        result = self.processor.extract_blob_content(mock_blob)
-
-        # Assert
-        assert result.content == "direct data"
-        assert result.extraction_methods is not None
-        assert "direct_data" in result.extraction_methods
-
-    def test_extract_blob_content_flower_data_type(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить извлечение данных о цветах,
-        чтобы убедиться в корректности специализированной обработки.
-        """
-        # Arrange
-        mock_blob = Mock()
-        mock_blob.value = "розы красные тюльпаны желтые"
-
-        # Act
-        result = self.processor.extract_blob_content(mock_blob, "flower")
-
-        # Assert
-        assert result.content == "розы красные тюльпаны желтые"
-        assert result.quality_score > 0.3  # Должен быть бонус за цветы
-
-    def test_extract_blob_content_temporal_data_type(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить извлечение временных данных,
-        чтобы убедиться в корректности специализированной обработки.
-        """
-        # Arrange
-        mock_blob = Mock()
-        mock_blob.value = "дата создания 2024-01-01 время 12:00"
-
-        # Act
-        result = self.processor.extract_blob_content(mock_blob, "temporal")
-
-        # Assert
-        assert result.content == "дата создания 2024-01-01 время 12:00"
-        assert result.quality_score > 0.3  # Должен быть бонус за временные данные
-
-    def test_extract_blob_content_financial_data_type(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить извлечение финансовых данных,
-        чтобы убедиться в корректности специализированной обработки.
-        """
-        # Arrange
-        mock_blob = Mock()
-        mock_blob.value = "сумма 1000 рублей цена товара"
-
-        # Act
-        result = self.processor.extract_blob_content(mock_blob, "financial")
-
-        # Assert
-        assert result.content == "сумма 1000 рублей цена товара"
-        assert result.quality_score > 0.3  # Должен быть бонус за финансовые данные
-
-    def test_extract_blob_content_no_content(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить обработку пустого содержимого,
-        чтобы убедиться в корректности обработки ошибок.
-        """
-        # Arrange
-        mock_blob = Mock()
-        mock_blob.value = None
-
-        # Act
-        result = self.processor.extract_blob_content(mock_blob)
-
-        # Assert
-        assert result.content is None
-        assert result.extraction_methods is not None
-        assert len(result.extraction_methods) == 0
-        assert result.quality_score == 0.0
-
-    def test_extract_blob_content_error_handling(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить обработку ошибок,
-        чтобы убедиться в корректности обработки исключений.
-        """
-        # Arrange
-        mock_blob = Mock()
-        # Создаем Mock который возвращает невалидные данные
-        mock_blob.value = None
-
-        # Act
-        result = self.processor.extract_blob_content(mock_blob)
-
-        # Assert
-        assert result.content is None
-        assert result.extraction_methods == []
-        assert result.quality_score == 0.0
-
-    def test_is_blob_field_true(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить определение BLOB полей,
-        чтобы убедиться в корректности классификации полей.
-        """
-        # Arrange
-        mock_field = Mock()
-        mock_field.configure_mock(
-            __str__=Mock(return_value="<onec_dtools.database_reader.Blob object>"),
-        )
-
-        # Act
-        result = self.processor.is_blob_field(mock_field)
-
-        # Assert
-        assert result is True
-
-    def test_is_blob_field_false(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить определение обычных полей,
-        чтобы убедиться в корректности классификации полей.
-        """
-        # Arrange
-        mock_field = Mock()
-        mock_field.configure_mock(__str__=Mock(return_value="regular string value"))
-
-        # Act
-        result = self.processor.is_blob_field(mock_field)
-
-        # Assert
-        assert result is False
-
-    def test_safe_get_blob_content_success(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить безопасное извлечение содержимого,
-        чтобы убедиться в корректности работы основного интерфейса.
-        """
-        # Arrange
-        mock_blob = Mock()
-        mock_blob.value = "safe content"
-
-        # Act
-        result = self.processor.safe_get_blob_content(mock_blob)
-
-        # Assert
-        assert result == "safe content"
-
-    def test_safe_get_blob_content_failure(self):
-        """
-        JTBD:
-        Как тестировщик, я хочу проверить обработку ошибок при извлечении,
-        чтобы убедиться в корректности обработки исключений.
-        """
-        # Arrange
-        mock_blob = Mock()
-        # Создаем Mock который выбрасывает исключение при обращении к value
-        mock_blob.value = Mock(side_effect=Exception("Test error"))
-
-        # Act
-        result = self.processor.safe_get_blob_content(mock_blob)
-
-        # Assert
-        assert result is None
+        assert is_blob is False
