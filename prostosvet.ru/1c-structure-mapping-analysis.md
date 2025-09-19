@@ -316,7 +316,7 @@ def validate_blob_extraction():
     total_blobs = count_total_blobs()
     extracted_blobs = count_extracted_blobs()
     success_rate = extracted_blobs / total_blobs * 100
-    
+
     if success_rate < 50:
         print(f"⚠️ Низкое качество BLOB извлечения: {success_rate:.1f}%")
         return False
@@ -329,8 +329,8 @@ def validate_blob_extraction():
 ```sql
 -- Поиск цветов во всех BLOB полях
 SELECT COUNT(*) as count
-FROM documents 
-WHERE blob__FLD4229 LIKE '%розов%' 
+FROM documents
+WHERE blob__FLD4229 LIKE '%розов%'
    OR blob__FLD4936 LIKE '%розов%'
    OR blob__FLD3772 LIKE '%розов%'
    OR blob__FLD3015 LIKE '%розов%'
@@ -343,7 +343,7 @@ WHERE blob__FLD4229 LIKE '%розов%'
 def analyze_blob_content():
     blob_fields = ['FLD4229', 'FLD4936', 'FLD3772', 'FLD3015', 'FLD5363']
     colors = ['розов', 'голуб', 'красн', 'бел', 'желт']
-    
+
     for field in blob_fields:
         for color in colors:
             count = search_in_blob_field(field, color)
@@ -357,7 +357,7 @@ def analyze_blob_content():
 ```python
 # Оптимизация сжатия Parquet
 df.to_parquet(
-    output_file, 
+    output_file,
     compression='zstd',  # Лучшее сжатие
     index=False,
     engine='pyarrow'

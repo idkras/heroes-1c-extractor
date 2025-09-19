@@ -4,10 +4,10 @@ alwaysApply: false
 1.
 прочитай @tdd-doc стандарт.
 Пиши для каждого действия свою увереность.
-наведи порядок за собой, проверь корень и другие файлы, они точно на своем месте? протокол челендж, где бардак? 
+наведи порядок за собой, проверь корень и другие файлы, они точно на своем месте? протокол челендж, где бардак?
 
 2. изучи и прочитай получившийся код, нужно ли тебе применить
-/Users/ilyakrasinsky/workspace/vscode.projects/heroes-1c-extractor/.cursor/rules/cto-lead.mdc или 
+/Users/ilyakrasinsky/workspace/vscode.projects/heroes-1c-extractor/.cursor/rules/cto-lead.mdc или
 /Users/ilyakrasinsky/workspace/vscode.projects/heroes-1c-extractor/.cursor/rules/refactoring.mdc
 
 
@@ -22,7 +22,7 @@ alwaysApply: false
 - Выведи все найденные ошибки в чат с evidence
 - Предложи решения для каждой ошибки
 
-Если увереность по исправлению ошибки в Problems <0.9 то изучи весь код в файле. Если <0.8 прочитай стандарт 1.6 root cause analysis  и сделай RCA анализ. 
+Если увереность по исправлению ошибки в Problems <0.9 то изучи весь код в файле. Если <0.8 прочитай стандарт 1.6 root cause analysis  и сделай RCA анализ.
 
 3.прочитай что получилось, выпиши все, что не учел, что нужно дописать? что будет не понятно менеджеру или разработчику или команде? протокол челендж.
 

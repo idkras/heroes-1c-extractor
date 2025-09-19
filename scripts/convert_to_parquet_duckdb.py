@@ -185,7 +185,7 @@ def create_duckdb_database(parquet_file: str, db_file: str) -> None:
         # Создаем таблицу из Parquet файла
         conn.execute(
             f"""
-            CREATE TABLE documents AS 
+            CREATE TABLE documents AS
             SELECT * FROM read_parquet('{parquet_file}')
         """,
         )
@@ -233,12 +233,12 @@ def create_analysis_queries(db_file: str) -> None:
         print("\n📋 Анализ по таблицам:")
         result = conn.execute(
             """
-            SELECT 
+            SELECT
                 table_name,
                 COUNT(*) as total_records,
                 COUNT(DISTINCT id) as unique_documents
-            FROM documents 
-            GROUP BY table_name 
+            FROM documents
+            GROUP BY table_name
             ORDER BY total_records DESC
             LIMIT 10
         """,
@@ -257,11 +257,11 @@ def create_analysis_queries(db_file: str) -> None:
         for col_name, _, _, _, _, _ in blob_columns:
             result = conn.execute(
                 f"""
-                SELECT 
+                SELECT
                     COUNT(*) as total_records,
                     COUNT({col_name}) as non_null_records,
                     AVG(LENGTH({col_name})) as avg_length
-                FROM documents 
+                FROM documents
                 WHERE {col_name} IS NOT NULL
             """,
             ).fetchone()
@@ -278,7 +278,7 @@ def create_analysis_queries(db_file: str) -> None:
             result = conn.execute(
                 f"""
                 SELECT COUNT(*) as count
-                FROM documents 
+                FROM documents
                 WHERE blob_content LIKE '%{color}%'
             """,
             ).fetchone()
@@ -293,7 +293,7 @@ def create_analysis_queries(db_file: str) -> None:
             result = conn.execute(
                 f"""
                 SELECT COUNT(*) as count
-                FROM documents 
+                FROM documents
                 WHERE blob_content LIKE '%{bouquet_type}%'
             """,
             ).fetchone()
@@ -308,7 +308,7 @@ def create_analysis_queries(db_file: str) -> None:
             result = conn.execute(
                 f"""
                 SELECT COUNT(*) as count
-                FROM documents 
+                FROM documents
                 WHERE blob_content LIKE '%{store}%'
             """,
             ).fetchone()
