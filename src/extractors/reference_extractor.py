@@ -8,12 +8,12 @@ ReferenceExtractor - извлекатель справочников из 1C б�
 4. Сохранять результаты в структурированном виде
 """
 
-import sys
-import os
 import json
 import logging
+import os
+import sys
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 # Добавляем путь к src для импорта
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -48,7 +48,7 @@ class ReferenceExtractor(BaseExtractor):
         if not self.logger.handlers:
             handler = logging.StreamHandler()
             formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             )
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
@@ -62,7 +62,7 @@ class ReferenceExtractor(BaseExtractor):
             "extraction_errors": [],
         }
 
-    def extract(self, table_name: str, limit: int = 100) -> List[Dict]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict]:
         """
         Реализация абстрактного метода extract из BaseExtractor.
 
@@ -104,7 +104,7 @@ class ReferenceExtractor(BaseExtractor):
             self.log_extraction_error(e, {"table_name": table_name, "limit": limit})
             return []
 
-    def extract_references(self) -> Dict[str, Any]:
+    def extract_references(self) -> dict[str, Any]:
         """
         Извлекает все справочники из базы данных.
 
@@ -129,20 +129,22 @@ class ReferenceExtractor(BaseExtractor):
             for table_name, table_info in reference_tables.items():
                 try:
                     self.logger.info(f"🔍 Извлекаю справочник: {table_name}")
-                    reference_data = self._extract_single_reference(table_name)
+                    reference_data = self._extract_single_reference(
+                        table_name, table_info
+                    )
                     if reference_data:
                         self.references_data.append(reference_data)
                         self.extraction_stats["successful_extractions"] += 1
                     else:
                         self.extraction_stats["failed_extractions"] += 1
                         self.extraction_stats["extraction_errors"].append(
-                            f"Не удалось извлечь {table_name}"
+                            f"Не удалось извлечь {table_name}",
                         )
                 except Exception as e:
                     self.logger.error(f"❌ Ошибка при извлечении {table_name}: {e}")
                     self.extraction_stats["failed_extractions"] += 1
                     self.extraction_stats["extraction_errors"].append(
-                        f"Ошибка в {table_name}: {str(e)}"
+                        f"Ошибка в {table_name}: {e!s}",
                     )
 
             self.extraction_stats["total_references"] = len(reference_tables)
@@ -162,7 +164,7 @@ class ReferenceExtractor(BaseExtractor):
             }
 
             self.logger.info(
-                f"✅ Извлечение завершено: {self.extraction_stats['successful_extractions']}/{self.extraction_stats['total_references']} справочников"
+                f"✅ Извлечение завершено: {self.extraction_stats['successful_extractions']}/{self.extraction_stats['total_references']} справочников",
             )
             return result
 
@@ -172,7 +174,7 @@ class ReferenceExtractor(BaseExtractor):
         finally:
             self.db_connector.close()
 
-    def _filter_reference_tables(self, all_tables: Dict[str, Any]) -> Dict[str, Any]:
+    def _filter_reference_tables(self, all_tables: dict[str, Any]) -> dict[str, Any]:
         """
         Фильтрует таблицы, оставляя только справочники.
 
@@ -189,17 +191,16 @@ class ReferenceExtractor(BaseExtractor):
             if any(
                 pattern in table_name.upper()
                 for pattern in ["_REFERENCE", "REFERENCE_", "СПРАВОЧНИК"]
-            ):
-                reference_tables[table_name] = table_info
-            # Также проверяем по содержимому
-            elif (
+            ) or (
                 "reference" in table_name.lower() or "справочник" in table_name.lower()
             ):
                 reference_tables[table_name] = table_info
 
         return reference_tables
 
-    def _extract_single_reference(self, table_name: str) -> Optional[Dict[str, Any]]:
+    def _extract_single_reference(
+        self, table_name: str, table_info: dict
+    ) -> dict[str, Any] | None:
         """
         Извлекает один справочник.
 
@@ -262,7 +263,8 @@ class ReferenceExtractor(BaseExtractor):
 
                                 # Правильная обработка BLOB данных
                                 if hasattr(value, "value") and isinstance(
-                                    value.value, bytes
+                                    value.value,
+                                    bytes,
                                 ):
                                     # UTF-16 для NT полей (стандарт 1С)
                                     try:
@@ -281,7 +283,7 @@ class ReferenceExtractor(BaseExtractor):
                             sample_records.append(record_dict)
                         except Exception as e:
                             self.logger.warning(
-                                f"⚠️ Не удалось конвертировать запись {i}: {e}"
+                                f"⚠️ Не удалось конвертировать запись {i}: {e}",
                             )
                             sample_records.append({"error": str(e), "field_count": 0})
                     else:
@@ -289,7 +291,7 @@ class ReferenceExtractor(BaseExtractor):
                             {
                                 "error": "Не удалось получить данные записи",
                                 "field_count": 0,
-                            }
+                            },
                         )
 
                 reference_data["sample_records"] = sample_records
@@ -337,7 +339,8 @@ class ReferenceExtractor(BaseExtractor):
                 # Анализируем содержимое для определения типа справочника
                 if sample_data:
                     content_analysis = self._analyze_reference_content(
-                        sample_data, table_name
+                        sample_data,
+                        table_name,
                     )
                     if content_analysis != "Неизвестный справочник":
                         return content_analysis
@@ -361,13 +364,15 @@ class ReferenceExtractor(BaseExtractor):
 
         except Exception as e:
             self.logger.warning(
-                f"⚠️ Ошибка при определении типа справочника {table_name}: {e}"
+                f"⚠️ Ошибка при определении типа справочника {table_name}: {e}",
             )
 
         return "Неизвестный справочник"
 
     def _analyze_reference_content(
-        self, sample_data: List[List[str]], table_name: str
+        self,
+        sample_data: list[list[str]],
+        table_name: str,
     ) -> str:
         """
         Анализирует содержимое справочника для определения его типа.
@@ -414,7 +419,8 @@ class ReferenceExtractor(BaseExtractor):
         return "Неизвестный справочник"
 
     def save_results(
-        self, output_path: str = "data/results/references_extraction.json"
+        self,
+        output_path: str = "data/results/references_extraction.json",
     ) -> str:
         """
         Сохраняет результаты извлечения справочников.
@@ -440,7 +446,7 @@ class ReferenceExtractor(BaseExtractor):
             self.logger.error(f"❌ Ошибка при сохранении результатов: {e}")
             raise
 
-    def get_extraction_summary(self) -> Dict[str, Any]:
+    def get_extraction_summary(self) -> dict[str, Any]:
         """
         Возвращает сводку по извлечению справочников.
 
@@ -471,10 +477,10 @@ if __name__ == "__main__":
     results = extractor.extract_references()
 
     # Выводим результаты
-    print(f"📊 Результаты извлечения:")
+    print("📊 Результаты извлечения:")
     print(f"   Всего справочников: {results['extraction_info']['total_references']}")
     print(
-        f"   Успешно извлечено: {results['extraction_info']['successful_extractions']}"
+        f"   Успешно извлечено: {results['extraction_info']['successful_extractions']}",
     )
     print(f"   Ошибок: {results['extraction_info']['failed_extractions']}")
 

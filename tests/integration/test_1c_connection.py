@@ -7,7 +7,6 @@ JTBD:
 чтобы убедиться в доступности данных для тестирования.
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -28,7 +27,9 @@ def test_1c_database_connection():
         print("❌ Файл 1С базы данных не найден!")
         return False
 
-    print(f"📏 Размер файла: {cdb_file_path.stat().st_size / (1024*1024*1024):.2f} GB")
+    print(
+        f"📏 Размер файла: {cdb_file_path.stat().st_size / (1024 * 1024 * 1024):.2f} GB"
+    )
 
     try:
         # Применяем патч для поддержки новых типов полей 1С
@@ -73,7 +74,7 @@ def test_1c_database_connection():
                 # Пробуем прочитать первую запись
                 try:
                     first_row = table[0]
-                    print(f"✅ Первая запись прочитана успешно")
+                    print("✅ Первая запись прочитана успешно")
 
                     if hasattr(first_row, "as_list"):
                         row_list = first_row.as_list(True)
@@ -83,7 +84,7 @@ def test_1c_database_connection():
                         for i, field in enumerate(row_list[:5]):
                             field_name = getattr(field, "name", f"field_{i}")
                             field_type = type(field).__name__
-                            print(f"   {i+1}. {field_name}: {field_type}")
+                            print(f"   {i + 1}. {field_name}: {field_type}")
 
                 except Exception as e:
                     print(f"⚠️ Ошибка при чтении записи: {e}")

@@ -3,9 +3,9 @@
 Тест улучшенного FlatTableExtractor с интеграцией маппинга полей
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 from datetime import datetime
 
 # Добавляем путь к проекту
@@ -17,7 +17,8 @@ from extractors.flat_table_extractor import FlatTableExtractor
 
 # Настройка логирования
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
 
@@ -75,7 +76,7 @@ def test_improved_flat_table_extractor():
                     (na_count / total_fields * 100) if total_fields > 0 else 0
                 )
                 print(
-                    f"\n📊 N/A значения: {na_count}/{total_fields} ({na_percentage:.1f}%)"
+                    f"\n📊 N/A значения: {na_count}/{total_fields} ({na_percentage:.1f}%)",
                 )
 
                 # Анализируем форматы дат
@@ -85,9 +86,9 @@ def test_improved_flat_table_extractor():
                         sample_date = flat_data[0][field]
                         print(f"📅 Формат {field}: {sample_date}")
                         if sample_date and sample_date.endswith("Z"):
-                            print(f"  ✅ Формат даты корректен (с Z суффиксом)")
+                            print("  ✅ Формат даты корректен (с Z суффиксом)")
                         else:
-                            print(f"  ❌ Формат даты некорректен (без Z суффикса)")
+                            print("  ❌ Формат даты некорректен (без Z суффикса)")
 
                 # Анализируем BLOB данные
                 blob_fields = ["description"]
@@ -96,11 +97,11 @@ def test_improved_flat_table_extractor():
                         sample_blob = flat_data[0][field]
                         if sample_blob and len(str(sample_blob).strip()) > 0:
                             print(
-                                f"🔍 BLOB данные {field}: {len(str(sample_blob))} символов"
+                                f"🔍 BLOB данные {field}: {len(str(sample_blob))} символов",
                             )
-                            print(f"  ✅ BLOB данные извлечены")
+                            print("  ✅ BLOB данные извлечены")
                         else:
-                            print(f"  ❌ BLOB данные пусты")
+                            print("  ❌ BLOB данные пусты")
 
                 # Показываем превью плоской таблицы
                 extractor.print_flat_table_preview(limit=10)
@@ -119,12 +120,16 @@ def test_improved_flat_table_extractor():
                     if isinstance(obj, datetime):
                         return obj.isoformat()
                     raise TypeError(
-                        f"Object of type {type(obj)} is not JSON serializable"
+                        f"Object of type {type(obj)} is not JSON serializable",
                     )
 
                 with open(output_path, "w", encoding="utf-8") as f:
                     json.dump(
-                        result, f, ensure_ascii=False, indent=2, default=json_serializer
+                        result,
+                        f,
+                        ensure_ascii=False,
+                        indent=2,
+                        default=json_serializer,
                     )
 
                 print(f"\n💾 Результаты сохранены: {output_path}")
@@ -137,14 +142,14 @@ def test_improved_flat_table_extractor():
                     def convert_for_parquet(obj):
                         if isinstance(obj, datetime):
                             return obj.isoformat()
-                        elif isinstance(obj, bool):
+                        if isinstance(obj, bool):
                             # Конвертируем boolean в None для числовых полей
                             return None
-                        elif obj is None:
+                        if obj is None:
                             return None
-                        elif isinstance(obj, (int, float)):
+                        if isinstance(obj, (int, float)):
                             return obj
-                        elif isinstance(obj, str):
+                        if isinstance(obj, str):
                             # Проверяем, является ли строка числом
                             if obj and (
                                 obj != "N/A"
@@ -184,7 +189,7 @@ def test_improved_flat_table_extractor():
                     print(f"💾 Parquet файл создан: {parquet_path}")
 
                     # Анализируем Parquet файл
-                    print(f"\n📊 АНАЛИЗ PARQUET ФАЙЛА:")
+                    print("\n📊 АНАЛИЗ PARQUET ФАЙЛА:")
                     print(f"  - Размер: {os.path.getsize(parquet_path) / 1024:.2f} KB")
                     print(f"  - Строк: {len(df)}")
                     print(f"  - Колонок: {len(df.columns)}")
@@ -199,12 +204,10 @@ def test_improved_flat_table_extractor():
                     print(f"⚠️ Ошибка при создании Parquet файла: {e}")
 
                 return True
-            else:
-                print("❌ Не удалось извлечь данные")
-                return False
-        else:
-            print("❌ Ошибка при извлечении данных")
+            print("❌ Не удалось извлечь данные")
             return False
+        print("❌ Ошибка при извлечении данных")
+        return False
 
     except Exception as e:
         print(f"❌ Ошибка при тестировании: {e}")

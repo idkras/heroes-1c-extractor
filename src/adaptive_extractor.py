@@ -211,14 +211,14 @@ class AdaptiveExtractor:
             elif isinstance(value, (int, float)) and value > 100:
                 field_info = self.format_field_info(key, "Сумма")
                 analysis["amount_fields"].append(
-                    {"field": key, "field_name": field_info, "value": value}
+                    {"field": key, "field_name": field_info, "value": value},
                 )
 
             # Поля с количествами (числовые значения <= 100)
             elif isinstance(value, (int, float)) and value <= 100:
                 field_info = self.format_field_info(key, "Количество")
                 analysis["quantity_fields"].append(
-                    {"field": key, "field_name": field_info, "value": value}
+                    {"field": key, "field_name": field_info, "value": value},
                 )
 
             # BLOB поля
@@ -230,7 +230,7 @@ class AdaptiveExtractor:
             elif "DATE" in key or "TIME" in key:
                 field_info = self.format_field_info(key, "Дата/Время")
                 analysis["date_fields"].append(
-                    {"field": key, "field_name": field_info, "value": value}
+                    {"field": key, "field_name": field_info, "value": value},
                 )
 
         return analysis

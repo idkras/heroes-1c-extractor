@@ -9,7 +9,9 @@ JTBD:
 
 import re
 from datetime import datetime
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Any
+
+# from typing import Optional, Tuple  # Неиспользуемые импорты
 
 
 class TableAnalyzer:
@@ -36,7 +38,7 @@ class TableAnalyzer:
             "price": [r"цена", r"price", r"стоимость"],
         }
 
-    def analyze_table_structure(self, table) -> Dict[str, Any]:
+    def analyze_table_structure(self, table) -> dict[str, Any]:
         """
         JTBD:
         Как метод анализа структуры таблицы, я хочу проанализировать структуру таблицы,
@@ -86,7 +88,7 @@ class TableAnalyzer:
                             # Добавляем образец значения
                             if len(field_analysis[field_name]["sample_values"]) < 3:
                                 field_analysis[field_name]["sample_values"].append(
-                                    str(value)[:100] if value else None
+                                    str(value)[:100] if value else None,
                                 )
 
                             # Обновляем характеристики поля
@@ -96,15 +98,16 @@ class TableAnalyzer:
                                     "is_date": isinstance(value, datetime),
                                     "is_string": isinstance(value, str),
                                     "is_blob": self._is_blob_field(value),
-                                }
+                                },
                             )
-            except Exception as e:
+            except Exception:
                 continue
 
         # Определяем назначение полей
         for field_name, analysis in field_analysis.items():
             analysis["field_purpose"] = self._determine_field_purpose(
-                field_name, analysis
+                field_name,
+                analysis,
             )
 
         return {
@@ -115,7 +118,7 @@ class TableAnalyzer:
             "structure_summary": self._create_structure_summary(field_analysis),
         }
 
-    def identify_field_types(self, row) -> Dict[str, Any]:
+    def identify_field_types(self, row) -> dict[str, Any]:
         """
         JTBD:
         Как метод идентификации типов полей, я хочу определить типы полей в строке,
@@ -140,7 +143,7 @@ class TableAnalyzer:
 
         return field_types
 
-    def extract_field_metadata(self, field_name: str, value: Any) -> Dict[str, Any]:
+    def extract_field_metadata(self, field_name: str, value: Any) -> dict[str, Any]:
         """
         JTBD:
         Как метод извлечения метаданных поля, я хочу извлечь метаданные конкретного поля,
@@ -167,8 +170,9 @@ class TableAnalyzer:
         }
 
     def analyze_document_structure(
-        self, field_analysis: Dict[str, Any]
-    ) -> Dict[str, List[str]]:
+        self,
+        field_analysis: dict[str, Any],
+    ) -> dict[str, list[str]]:
         """
         JTBD:
         Как метод анализа структуры документа, я хочу проанализировать структуру документа,
@@ -214,25 +218,23 @@ class TableAnalyzer:
         """
         if value is None:
             return "null"
-        elif isinstance(value, bool):
+        if isinstance(value, bool):
             return "boolean"
-        elif isinstance(value, int):
+        if isinstance(value, int):
             return "integer"
-        elif isinstance(value, float):
+        if isinstance(value, float):
             return "float"
-        elif isinstance(value, str):
+        if isinstance(value, str):
             return "string"
-        elif isinstance(value, datetime):
+        if isinstance(value, datetime):
             return "datetime"
-        elif isinstance(value, bytes):
+        if isinstance(value, bytes):
             return "bytes"
-        elif hasattr(value, "value") and hasattr(value, "__class__"):
+        if hasattr(value, "value") and hasattr(value, "__class__"):
             if "Blob" in str(type(value)):
                 return "blob"
-            else:
-                return "object"
-        else:
-            return "unknown"
+            return "object"
+        return "unknown"
 
     def _is_blob_field(self, value: Any) -> bool:
         """
@@ -242,12 +244,14 @@ class TableAnalyzer:
         """
         if isinstance(value, bytes) and len(value) > 0:
             return True
-        elif hasattr(value, "value") and hasattr(value, "__class__"):
+        if hasattr(value, "value") and hasattr(value, "__class__"):
             return "Blob" in str(type(value))
         return False
 
     def _determine_field_purpose(
-        self, field_name: str, analysis: Dict[str, Any]
+        self,
+        field_name: str,
+        analysis: dict[str, Any],
     ) -> str:
         """
         JTBD:
@@ -275,7 +279,7 @@ class TableAnalyzer:
                             num_value = float(sample)
                             if num_value > 1000:  # Вероятно сумма
                                 return "amount"
-                            elif num_value < 100:  # Вероятно количество
+                            if num_value < 100:  # Вероятно количество
                                 return "quantity"
                         except ValueError:
                             pass
@@ -296,7 +300,7 @@ class TableAnalyzer:
                             for keyword in ["магазин", "склад"]
                         ):
                             return "store"
-                        elif any(
+                        if any(
                             keyword in sample.lower()
                             for keyword in ["флор", "декор", "моно"]
                         ):
@@ -305,8 +309,9 @@ class TableAnalyzer:
         return "unknown"
 
     def _create_structure_summary(
-        self, field_analysis: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self,
+        field_analysis: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         JTBD:
         Как метод создания сводки структуры, я хочу создать сводку структуры таблицы,

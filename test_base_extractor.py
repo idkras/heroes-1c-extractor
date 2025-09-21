@@ -7,9 +7,8 @@ JTBD:
 чтобы убедиться в корректности базового класса для всех экстракторов.
 """
 
-import sys
 import os
-from pathlib import Path
+import sys
 
 # Добавляем путь к src
 sys.path.append("src")
@@ -48,7 +47,7 @@ class TestExtractor(BaseExtractor):
             table = self.db_connector.get_table(table_name)
             table_info = self.db_connector.get_table_info(table_name)
 
-            print(f"📋 Информация о таблице:")
+            print("📋 Информация о таблице:")
             print(f"   Размер: {table_info['size']} записей")
             print(f"   Есть данные: {table_info['has_data']}")
             print(f"   Пустая: {table_info['is_empty']}")
@@ -59,15 +58,15 @@ class TestExtractor(BaseExtractor):
 
             # Анализируем структуру таблицы
             structure_analysis = self.table_analyzer.analyze_table_structure(table)
-            print(f"📊 Анализ структуры:")
+            print("📊 Анализ структуры:")
             print(
-                f"   Всего полей: {structure_analysis['structure_summary']['total_fields']}"
+                f"   Всего полей: {structure_analysis['structure_summary']['total_fields']}",
             )
             print(
-                f"   BLOB полей: {structure_analysis['structure_summary']['blob_fields']}"
+                f"   BLOB полей: {structure_analysis['structure_summary']['blob_fields']}",
             )
             print(
-                f"   Числовых полей: {structure_analysis['structure_summary']['numeric_fields']}"
+                f"   Числовых полей: {structure_analysis['structure_summary']['numeric_fields']}",
             )
 
             # Извлекаем элементы
@@ -108,14 +107,14 @@ class TestExtractor(BaseExtractor):
 
             self.extraction_stats["total_items"] = len(items)
 
-            print(f"✅ Извлечение завершено:")
+            print("✅ Извлечение завершено:")
             print(f"   Успешно: {self.extraction_stats['successful_extractions']}")
             print(f"   Ошибок: {self.extraction_stats['failed_extractions']}")
             print(
-                f"   BLOB полей найдено: {self.extraction_stats['blob_fields_found']}"
+                f"   BLOB полей найдено: {self.extraction_stats['blob_fields_found']}",
             )
             print(
-                f"   BLOB полей обработано: {self.extraction_stats['blob_fields_processed']}"
+                f"   BLOB полей обработано: {self.extraction_stats['blob_fields_processed']}",
             )
 
             return items
@@ -187,14 +186,14 @@ def test_base_extractor():
         except Exception as e:
             extractor.log_extraction_error(e, {"test": "context"})
         print(
-            f"   Ошибок в логе: {len(extractor.extraction_stats['extraction_errors'])}"
+            f"   Ошибок в логе: {len(extractor.extraction_stats['extraction_errors'])}",
         )
 
         # Тест 4: Проверка продолжения извлечения
         print("📊 Тест 4: Проверка продолжения извлечения")
         should_continue = extractor.should_continue_extraction(5, 10)
         print(
-            f"   Следует продолжать при 5 ошибках из 10: {'✅' if should_continue else '❌'}"
+            f"   Следует продолжать при 5 ошибках из 10: {'✅' if should_continue else '❌'}",
         )
 
         # Тест 5: Анализ качества извлечения
@@ -228,7 +227,7 @@ def test_base_extractor():
                 if table_info["has_data"] and table_info["size"] > 0:
                     test_table_name = table_name
                     print(
-                        f"🎯 Найдена известная рабочая таблица: {test_table_name} ({table_info['size']} записей)"
+                        f"🎯 Найдена известная рабочая таблица: {test_table_name} ({table_info['size']} записей)",
                     )
                     break
 
@@ -239,7 +238,7 @@ def test_base_extractor():
                 if table_info["has_data"] and table_info["size"] > 0:
                     test_table_name = table_name
                     print(
-                        f"🎯 Найдена таблица с данными: {test_table_name} ({table_info['size']} записей)"
+                        f"🎯 Найдена таблица с данными: {test_table_name} ({table_info['size']} записей)",
                     )
                     break
 
@@ -261,7 +260,7 @@ def test_base_extractor():
         print("🔍 Анализ качества извлечения...")
         quality_metrics = extractor.analyze_extraction_quality(extracted_data)
 
-        print(f"📊 Результаты анализа качества:")
+        print("📊 Результаты анализа качества:")
         print(f"   Всего элементов: {quality_metrics['total_items']}")
         print(f"   Успешных элементов: {quality_metrics['successful_items']}")
         print(f"   Элементов с BLOB: {quality_metrics['items_with_blobs']}")
@@ -275,7 +274,7 @@ def test_base_extractor():
         print("-" * 40)
 
         for i, item in enumerate(extracted_data[:2]):  # Показываем первые 2 элемента
-            print(f"\n📋 Элемент {i+1}:")
+            print(f"\n📋 Элемент {i + 1}:")
             print(f"   Таблица: {item['table_name']}")
             print(f"   Индекс: {item['row_index']}")
             print(f"   Полей: {len(item.get('fields', {}))}")
@@ -311,7 +310,7 @@ def test_base_extractor():
 
         # Получаем финальную статистику
         final_stats = extractor.get_extraction_stats()
-        print(f"\n📊 ФИНАЛЬНАЯ СТАТИСТИКА:")
+        print("\n📊 ФИНАЛЬНАЯ СТАТИСТИКА:")
         print(f"   Всего элементов: {final_stats['total_items']}")
         print(f"   Успешно извлечено: {final_stats['successful_extractions']}")
         print(f"   Ошибок извлечения: {final_stats['failed_extractions']}")

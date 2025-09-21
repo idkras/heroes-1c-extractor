@@ -7,18 +7,18 @@ JTBD:
 чтобы все специализированные экстракторы могли наследовать общую функциональность.
 """
 
-import sys
 import os
-from typing import Dict, List, Any, Optional
-from datetime import datetime
+import sys
 from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Any
 
 # Добавляем путь к процессорам
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "processors"))
 
+from blob_processor import BlobProcessor
 from database_connector import DatabaseConnector
 from table_analyzer import TableAnalyzer
-from blob_processor import BlobProcessor
 
 
 class BaseExtractor(ABC):
@@ -52,7 +52,7 @@ class BaseExtractor(ABC):
         }
 
     @abstractmethod
-    def extract(self, table_name: str, limit: int = 100) -> List[Dict]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict]:
         """
         JTBD:
         Как абстрактный метод извлечения, я хочу определить интерфейс для всех экстракторов,
@@ -65,9 +65,8 @@ class BaseExtractor(ABC):
         Returns:
             Список извлеченных элементов
         """
-        pass
 
-    def process_row(self, row, row_index: int, table_name: str) -> Optional[Dict]:
+    def process_row(self, row, row_index: int, table_name: str) -> dict | None:
         """
         JTBD:
         Как метод обработки строки, я хочу обработать одну строку данных,
@@ -111,7 +110,8 @@ class BaseExtractor(ABC):
 
                 # Анализируем тип поля
                 field_metadata = self.table_analyzer.extract_field_metadata(
-                    field_name, value
+                    field_name,
+                    value,
                 )
 
                 # Проверяем, является ли поле BLOB
@@ -121,7 +121,8 @@ class BaseExtractor(ABC):
 
                     # Обрабатываем BLOB поле
                     blob_data = self.blob_processor.process_blob_field(
-                        field_name, value
+                        field_name,
+                        value,
                     )
                     if blob_data and not blob_data.get("error"):
                         item["blob_fields"][field_name] = blob_data
@@ -149,7 +150,7 @@ class BaseExtractor(ABC):
             self.extraction_stats["extraction_errors"].append(error_msg)
             return None
 
-    def validate_data(self, data: Dict) -> bool:
+    def validate_data(self, data: dict) -> bool:
         """
         JTBD:
         Как метод валидации данных, я хочу проверить корректность извлеченных данных,
@@ -185,7 +186,7 @@ class BaseExtractor(ABC):
         except Exception:
             return False
 
-    def get_extraction_stats(self) -> Dict[str, Any]:
+    def get_extraction_stats(self) -> dict[str, Any]:
         """
         JTBD:
         Как метод получения статистики, я хочу вернуть статистику извлечения,
@@ -223,7 +224,7 @@ class BaseExtractor(ABC):
             "end_time": None,
         }
 
-    def log_extraction_error(self, error: Exception, context: Dict) -> None:
+    def log_extraction_error(self, error: Exception, context: dict) -> None:
         """
         JTBD:
         Как метод логирования ошибок, я хочу записать ошибку извлечения,
@@ -242,7 +243,9 @@ class BaseExtractor(ABC):
         self.extraction_stats["extraction_errors"].append(error_info)
 
     def should_continue_extraction(
-        self, error_count: int, max_errors: int = 100
+        self,
+        error_count: int,
+        max_errors: int = 100,
     ) -> bool:
         """
         JTBD:
@@ -258,7 +261,7 @@ class BaseExtractor(ABC):
         """
         return error_count < max_errors
 
-    def analyze_extraction_quality(self, extracted_data: List[Dict]) -> Dict[str, Any]:
+    def analyze_extraction_quality(self, extracted_data: list[dict]) -> dict[str, Any]:
         """
         JTBD:
         Как метод анализа качества, я хочу проанализировать качество извлеченных данных,
@@ -340,7 +343,9 @@ class BaseExtractor(ABC):
         }
 
     def save_extraction_report(
-        self, output_file: str, extracted_data: List[Dict]
+        self,
+        output_file: str,
+        extracted_data: list[dict],
     ) -> bool:
         """
         JTBD:
@@ -376,7 +381,8 @@ class BaseExtractor(ABC):
 
         except Exception as e:
             self.log_extraction_error(
-                e, {"method": "save_extraction_report", "output_file": output_file}
+                e,
+                {"method": "save_extraction_report", "output_file": output_file},
             )
             return False
 

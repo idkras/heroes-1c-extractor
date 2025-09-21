@@ -5,26 +5,26 @@ FlatTableExtractor - извлекатель плоской таблицы с с�
 ИСПРАВЛЕН: Интегрирован маппинг полей и исправлена обработка BLOB данных
 """
 
-import sys
-import os
-import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 import json
+import logging
+import os
+import sys
+from datetime import datetime
+from typing import Any
+
 import pandas as pd
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "processors"))
 
-from processors.database_connector import DatabaseConnector
 from extractors.base_extractor import BaseExtractor
+from processors.database_connector import DatabaseConnector
 
 # Импортируем маппинг функций из extract_all_available_data.py
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from extract_all_available_data import (
     get_field_mapping,
     get_field_mapping_by_index,
-    get_field_display_name,
 )
 
 
@@ -54,7 +54,7 @@ class FlatTableExtractor(BaseExtractor):
         if not self.logger.handlers:
             handler = logging.StreamHandler()
             formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             )
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
@@ -69,7 +69,7 @@ class FlatTableExtractor(BaseExtractor):
             "extraction_errors": [],
         }
 
-    def extract(self, table_name: str, limit: int = 100) -> List[Dict]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict]:
         """
         Реализация абстрактного метода extract из BaseExtractor.
 
@@ -107,7 +107,7 @@ class FlatTableExtractor(BaseExtractor):
             self.log_extraction_error(e, {"table_name": table_name, "limit": limit})
             return []
 
-    def extract_flat_table(self) -> Dict[str, Any]:
+    def extract_flat_table(self) -> dict[str, Any]:
         """
         JTBD: Как извлекатель плоской таблицы, я хочу создать полную таблицу
         со ВСЕМИ сущностями и полями из документов, чтобы обеспечить максимальную
@@ -144,13 +144,13 @@ class FlatTableExtractor(BaseExtractor):
                     else:
                         self.extraction_stats["failed_extractions"] += 1
                         self.extraction_stats["extraction_errors"].append(
-                            f"Не удалось извлечь сущности из {table_name}"
+                            f"Не удалось извлечь сущности из {table_name}",
                         )
                 except Exception as e:
                     self.logger.error(f"❌ Ошибка при извлечении {table_name}: {e}")
                     self.extraction_stats["failed_extractions"] += 1
                     self.extraction_stats["extraction_errors"].append(
-                        f"Ошибка в {table_name}: {str(e)}"
+                        f"Ошибка в {table_name}: {e!s}",
                     )
 
             self.extraction_stats["total_documents"] = len(document_tables)
@@ -170,19 +170,19 @@ class FlatTableExtractor(BaseExtractor):
             }
 
             self.logger.info(
-                f"✅ Извлечение завершено: {self.extraction_stats['total_entities']} сущностей из {self.extraction_stats['successful_extractions']} документов"
+                f"✅ Извлечение завершено: {self.extraction_stats['total_entities']} сущностей из {self.extraction_stats['successful_extractions']} документов",
             )
             return result
 
         except Exception as e:
             self.logger.error(
-                f"❌ Критическая ошибка при извлечении плоской таблицы: {e}"
+                f"❌ Критическая ошибка при извлечении плоской таблицы: {e}",
             )
             raise
         finally:
             self.db_connector.close()
 
-    def _filter_document_tables(self, all_tables: Dict[str, Any]) -> Dict[str, Any]:
+    def _filter_document_tables(self, all_tables: dict[str, Any]) -> dict[str, Any]:
         """
         Фильтрует таблицы, оставляя только документы.
 
@@ -206,7 +206,7 @@ class FlatTableExtractor(BaseExtractor):
 
         return document_tables
 
-    def _extract_entities_from_document(self, table_name: str) -> List[Dict[str, Any]]:
+    def _extract_entities_from_document(self, table_name: str) -> list[dict[str, Any]]:
         """
         Извлекает сущности из одного документа.
 
@@ -236,13 +236,15 @@ class FlatTableExtractor(BaseExtractor):
 
                 try:
                     document_entities = self._extract_entities_from_record(
-                        record, i, table_name
+                        record,
+                        i,
+                        table_name,
                     )
                     if document_entities:
                         entities.extend(document_entities)
                 except Exception as e:
                     self.logger.warning(
-                        f"⚠️ Ошибка при извлечении сущностей из документа {i}: {e}"
+                        f"⚠️ Ошибка при извлечении сущностей из документа {i}: {e}",
                     )
                     continue
 
@@ -250,13 +252,16 @@ class FlatTableExtractor(BaseExtractor):
 
         except Exception as e:
             self.logger.error(
-                f"❌ Ошибка при извлечении сущностей из {table_name}: {e}"
+                f"❌ Ошибка при извлечении сущностей из {table_name}: {e}",
             )
             return []
 
     def _extract_entities_from_record(
-        self, record, index: int, table_name: str
-    ) -> List[Dict[str, Any]]:
+        self,
+        record,
+        index: int,
+        table_name: str,
+    ) -> list[dict[str, Any]]:
         """
         Извлекает сущности из одной записи документа.
 
@@ -281,13 +286,17 @@ class FlatTableExtractor(BaseExtractor):
 
             # Извлекаем сущности товаров/цветов
             flower_entities = self._extract_flower_entities(
-                record_list, index, table_name
+                record_list,
+                index,
+                table_name,
             )
             entities.extend(flower_entities)
 
             # Извлекаем сущности операций
             operation_entities = self._extract_operation_entities(
-                record_list, index, table_name
+                record_list,
+                index,
+                table_name,
             )
             entities.extend(operation_entities)
 
@@ -298,8 +307,11 @@ class FlatTableExtractor(BaseExtractor):
             return []
 
     def _create_base_entity(
-        self, record_list: List, index: int, table_name: str
-    ) -> Dict[str, Any]:
+        self,
+        record_list: list,
+        index: int,
+        table_name: str,
+    ) -> dict[str, Any]:
         """
         JTBD: Как создатель базовой сущности, я хочу создать полную запись документа
         со ВСЕМИ полями, чтобы обеспечить максимальную информативность для анализа.
@@ -385,7 +397,7 @@ class FlatTableExtractor(BaseExtractor):
                 # Обрабатываем bytes как BLOB поля
                 if isinstance(field_value, bytes):
                     base_entity[f"field_{field_name}"] = self._decode_blob_field(
-                        field_value
+                        field_value,
                     )
                 else:
                     base_entity[f"field_{field_name}"] = field_value
@@ -393,8 +405,11 @@ class FlatTableExtractor(BaseExtractor):
         return base_entity
 
     def _extract_flower_entities(
-        self, record_list: List, index: int, table_name: str
-    ) -> List[Dict[str, Any]]:
+        self,
+        record_list: list,
+        index: int,
+        table_name: str,
+    ) -> list[dict[str, Any]]:
         """
         Извлекает сущности цветов из записи.
 
@@ -427,16 +442,19 @@ class FlatTableExtractor(BaseExtractor):
                     "document_type": self._determine_document_type(table_name),
                     # Временные данные
                     "created_date": self._extract_field_value(
-                        record_list, "_DATE_TIME"
+                        record_list,
+                        "_DATE_TIME",
                     ),
                     "execution_date": self._extract_field_value(record_list, "_DATE"),
                     "document_date": self._extract_field_value(record_list, "_DATE"),
                     # Участники
                     "who_created": self._extract_field_value(
-                        record_list, "_CREATED_BY"
+                        record_list,
+                        "_CREATED_BY",
                     ),
                     "who_executed": self._extract_field_value(
-                        record_list, "_EXECUTED_BY"
+                        record_list,
+                        "_EXECUTED_BY",
                     ),
                     "supplier": self._extract_field_value(record_list, "_SUPPLIER"),
                     "buyer": self._extract_field_value(record_list, "_BUYER"),
@@ -477,8 +495,11 @@ class FlatTableExtractor(BaseExtractor):
         return entities
 
     def _extract_operation_entities(
-        self, record_list: List, index: int, table_name: str
-    ) -> List[Dict[str, Any]]:
+        self,
+        record_list: list,
+        index: int,
+        table_name: str,
+    ) -> list[dict[str, Any]]:
         """
         Извлекает сущности операций из записи.
 
@@ -531,7 +552,8 @@ class FlatTableExtractor(BaseExtractor):
             "is_marked": self._extract_field_value(record_list, "_MARKED"),
             "payment_status": self._extract_field_value(record_list, "_PAYMENT_STATUS"),
             "delivery_status": self._extract_field_value(
-                record_list, "_DELIVERY_STATUS"
+                record_list,
+                "_DELIVERY_STATUS",
             ),
             # Метаданные
             "created_at": datetime.now().isoformat() + "Z",
@@ -713,12 +735,11 @@ class FlatTableExtractor(BaseExtractor):
             # Извлекаем номер документа
             doc_number = table_name.replace("_DOCUMENT", "")
             return f"Документ {doc_number} (технический)"
-        elif "_REFERENCE" in table_name:
+        if "_REFERENCE" in table_name:
             return "Справочник"
-        elif "_REGISTER" in table_name:
+        if "_REGISTER" in table_name:
             return "Регистр"
-        else:
-            return "Неизвестный тип"
+        return "Неизвестный тип"
 
     def _determine_action(self, table_name: str) -> str:
         """
@@ -767,7 +788,7 @@ class FlatTableExtractor(BaseExtractor):
 
         return "неизвестная операция"
 
-    def _extract_field_value(self, record_list: List, field_name: str) -> Any:
+    def _extract_field_value(self, record_list: list, field_name: str) -> Any:
         """
         JTBD: Как извлекатель значений полей, я хочу получить значение любого поля
         из документа, чтобы обеспечить полное извлечение данных для анализа.
@@ -947,7 +968,8 @@ class FlatTableExtractor(BaseExtractor):
                 if hasattr(value, "name") and value.name:
                     field_name = value.name
                 elif hasattr(value, "__class__") and hasattr(
-                    value.__class__, "__name__"
+                    value.__class__,
+                    "__name__",
                 ):
                     # Пытаемся получить имя из типа поля
                     if "FLD" in str(value.__class__):
@@ -985,7 +1007,7 @@ class FlatTableExtractor(BaseExtractor):
             self.logger.warning(f"⚠️ Ошибка при извлечении всех полей: {e}")
             return {}
 
-    def _extract_objects(self, record_list: List) -> List[str]:
+    def _extract_objects(self, record_list: list) -> list[str]:
         """
         Извлекает объекты из записи.
 
@@ -1015,7 +1037,7 @@ class FlatTableExtractor(BaseExtractor):
                     objects.append(str(field.value))
         return objects
 
-    def _extract_flower_names(self, record_list: List) -> List[str]:
+    def _extract_flower_names(self, record_list: list) -> list[str]:
         """
         Извлекает названия цветов из BLOB полей и других источников.
 
@@ -1085,7 +1107,7 @@ class FlatTableExtractor(BaseExtractor):
 
         return flower_names
 
-    def _extract_flower_quantities(self, record_list: List) -> List[float]:
+    def _extract_flower_quantities(self, record_list: list) -> list[float]:
         """
         Извлекает количества цветов из полей _FLD4238 и других числовых полей.
 
@@ -1116,7 +1138,7 @@ class FlatTableExtractor(BaseExtractor):
 
         return quantities
 
-    def _extract_flower_prices(self, record_list: List) -> List[float]:
+    def _extract_flower_prices(self, record_list: list) -> list[float]:
         """
         Извлекает цены цветов из полей _FLD4239 и других финансовых полей.
 
@@ -1169,14 +1191,13 @@ class FlatTableExtractor(BaseExtractor):
 
         if any(flower in flower_lower for flower in ["роза", "rose"]):
             return "розы"
-        elif any(flower in flower_lower for flower in ["тюльпан", "tulip"]):
+        if any(flower in flower_lower for flower in ["тюльпан", "tulip"]):
             return "тюльпаны"
-        elif any(flower in flower_lower for flower in ["хризантема", "chrysanthemum"]):
+        if any(flower in flower_lower for flower in ["хризантема", "chrysanthemum"]):
             return "хризантемы"
-        elif any(flower in flower_lower for flower in ["лилия", "lily"]):
+        if any(flower in flower_lower for flower in ["лилия", "lily"]):
             return "лилии"
-        else:
-            return "другие цветы"
+        return "другие цветы"
 
     def _extract_flower_color(self, flower_name: str) -> str:
         """
@@ -1192,14 +1213,13 @@ class FlatTableExtractor(BaseExtractor):
 
         if any(color in flower_lower for color in ["красн", "red", "алый"]):
             return "красный"
-        elif any(color in flower_lower for color in ["бел", "white", "белый"]):
+        if any(color in flower_lower for color in ["бел", "white", "белый"]):
             return "белый"
-        elif any(color in flower_lower for color in ["розов", "pink", "розовый"]):
+        if any(color in flower_lower for color in ["розов", "pink", "розовый"]):
             return "розовый"
-        elif any(color in flower_lower for color in ["желт", "yellow", "желтый"]):
+        if any(color in flower_lower for color in ["желт", "yellow", "желтый"]):
             return "желтый"
-        else:
-            return "неизвестный цвет"
+        return "неизвестный цвет"
 
     def _extract_flower_size(self, flower_name: str) -> str:
         """
@@ -1215,12 +1235,11 @@ class FlatTableExtractor(BaseExtractor):
 
         if any(size in flower_lower for size in ["больш", "large", "крупн"]):
             return "большой"
-        elif any(size in flower_lower for size in ["маленьк", "small", "мелк"]):
+        if any(size in flower_lower for size in ["маленьк", "small", "мелк"]):
             return "маленький"
-        elif any(size in flower_lower for size in ["средн", "medium", "средний"]):
+        if any(size in flower_lower for size in ["средн", "medium", "средний"]):
             return "средний"
-        else:
-            return "неизвестный размер"
+        return "неизвестный размер"
 
     def _decode_blob_field(self, blob_value: Any) -> str:
         """
@@ -1280,7 +1299,7 @@ class FlatTableExtractor(BaseExtractor):
             self.logger.warning(f"⚠️ Ошибка декодирования BLOB: {e}")
             return str(blob_value)
 
-    def _extract_blob_content(self, record_list: List) -> str:
+    def _extract_blob_content(self, record_list: list) -> str:
         """
         Извлекает содержимое BLOB полей с правильным декодированием.
 
@@ -1299,7 +1318,8 @@ class FlatTableExtractor(BaseExtractor):
         return " ".join(blob_content)
 
     def save_results(
-        self, output_path: str = "data/results/flat_table_extraction.json"
+        self,
+        output_path: str = "data/results/flat_table_extraction.json",
     ) -> str:
         """
         Сохраняет результаты извлечения плоской таблицы.
@@ -1324,7 +1344,8 @@ class FlatTableExtractor(BaseExtractor):
             raise
 
     def save_to_csv(
-        self, output_path: str = "data/results/flat_table_extraction.csv"
+        self,
+        output_path: str = "data/results/flat_table_extraction.csv",
     ) -> str:
         """
         Сохраняет результаты в CSV формат.
@@ -1348,7 +1369,7 @@ class FlatTableExtractor(BaseExtractor):
             self.logger.error(f"❌ Ошибка при сохранении CSV: {e}")
             raise
 
-    def get_extraction_summary(self) -> Dict[str, Any]:
+    def get_extraction_summary(self) -> dict[str, Any]:
         """
         Возвращает сводку по извлечению плоской таблицы.
 
@@ -1419,7 +1440,7 @@ class FlatTableExtractor(BaseExtractor):
                 row_data.append(value.ljust(15))
 
             row = " | ".join(row_data)
-            print(f"{i+1:2d}. {row}")
+            print(f"{i + 1:2d}. {row}")
 
         print(f"\n📈 Всего сущностей: {len(self.flat_data)}")
         print(f"📊 Показано: {min(limit, len(self.flat_data))}")
@@ -1435,7 +1456,7 @@ class FlatTableExtractor(BaseExtractor):
             print("❌ Нет данных для отображения")
             return
 
-        print(f"\n🔍 ДЕТАЛЬНАЯ ИНФОРМАЦИЯ О ПЛОСКОЙ ТАБЛИЦЕ:")
+        print("\n🔍 ДЕТАЛЬНАЯ ИНФОРМАЦИЯ О ПЛОСКОЙ ТАБЛИЦЕ:")
         print("=" * 80)
 
         # Статистика по типам сущностей
@@ -1464,7 +1485,7 @@ class FlatTableExtractor(BaseExtractor):
         # Детальные примеры
         print(f"\n📄 ДЕТАЛЬНЫЕ ПРИМЕРЫ (первые {limit} сущностей):")
         for i, entity in enumerate(self.flat_data[:limit]):
-            print(f"\n--- Сущность {i+1} ---")
+            print(f"\n--- Сущность {i + 1} ---")
             for key, value in entity.items():
                 if key not in ["description"]:  # Пропускаем большие BLOB поля
                     if isinstance(value, str) and len(value) > 50:

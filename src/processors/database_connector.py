@@ -9,8 +9,8 @@ JTBD:
 
 import os
 import sys
-from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any
+
 from onec_dtools import DatabaseReader
 
 
@@ -28,7 +28,7 @@ class DatabaseConnector:
         чтобы подготовить все необходимые ресурсы для работы с данными.
         """
         self.file_path = file_path
-        self.db_reader: Optional[DatabaseReader] = None
+        self.db_reader: DatabaseReader | None = None
         self._patch_applied = False
         self._file_handle = None
 
@@ -52,11 +52,11 @@ class DatabaseConnector:
         except ValueError as e:
             if "Unknown field type" in str(e):
                 raise ValueError(
-                    f"Ошибка типа поля в 1С базе. Убедитесь что патч применен: {e}"
+                    f"Ошибка типа поля в 1С базе. Убедитесь что патч применен: {e}",
                 )
             raise e
 
-    def get_tables(self) -> Dict[str, Any]:
+    def get_tables(self) -> dict[str, Any]:
         """
         JTBD:
         Как метод получения таблиц, я хочу вернуть все доступные таблицы из базы,
@@ -79,7 +79,7 @@ class DatabaseConnector:
 
         return tables[table_name]
 
-    def get_table_info(self, table_name: str) -> Dict[str, Any]:
+    def get_table_info(self, table_name: str) -> dict[str, Any]:
         """
         JTBD:
         Как метод получения информации о таблице, я хочу вернуть метаданные таблицы,
@@ -93,7 +93,7 @@ class DatabaseConnector:
             "is_empty": len(table) == 0,
         }
 
-    def get_document_tables(self) -> Dict[str, Any]:
+    def get_document_tables(self) -> dict[str, Any]:
         """
         JTBD:
         Как метод получения таблиц документов, я хочу вернуть все таблицы документов,
@@ -106,7 +106,7 @@ class DatabaseConnector:
             if name.startswith("_DOCUMENT")
         }
 
-    def get_reference_tables(self) -> Dict[str, Any]:
+    def get_reference_tables(self) -> dict[str, Any]:
         """
         JTBD:
         Как метод получения справочников, я хочу вернуть все таблицы справочников,
@@ -119,7 +119,7 @@ class DatabaseConnector:
             if name.startswith("_Reference")
         }
 
-    def get_register_tables(self) -> Dict[str, Any]:
+    def get_register_tables(self) -> dict[str, Any]:
         """
         JTBD:
         Как метод получения регистров, я хочу вернуть все таблицы регистров,
@@ -132,7 +132,7 @@ class DatabaseConnector:
             if name.startswith("_AccumRGT") or name.startswith("_InfoRGT")
         }
 
-    def get_table_parts(self, table_name: str) -> Dict[str, Any]:
+    def get_table_parts(self, table_name: str) -> dict[str, Any]:
         """
         JTBD:
         Как метод получения табличных частей, я хочу вернуть все табличные части документа,

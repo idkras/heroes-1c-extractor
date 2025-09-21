@@ -7,9 +7,8 @@ JTBD:
 чтобы подтвердить работоспособность SimpleDocumentExtractor.
 """
 
-import sys
 import os
-from pathlib import Path
+import sys
 
 # Добавляем путь к src
 sys.path.append("src")
@@ -73,7 +72,7 @@ def test_simple_extraction():
                 if table_info["has_data"] and table_info["size"] > 0:
                     test_table_name = table_name
                     print(
-                        f"🎯 Найдена известная рабочая таблица: {test_table_name} ({table_info['size']} записей)"
+                        f"🎯 Найдена известная рабочая таблица: {test_table_name} ({table_info['size']} записей)",
                     )
                     break
 
@@ -84,7 +83,7 @@ def test_simple_extraction():
                 if table_info["has_data"] and table_info["size"] > 0:
                     test_table_name = table_name
                     print(
-                        f"🎯 Найдена таблица с данными: {test_table_name} ({table_info['size']} записей)"
+                        f"🎯 Найдена таблица с данными: {test_table_name} ({table_info['size']} записей)",
                     )
                     break
 
@@ -109,19 +108,19 @@ def test_simple_extraction():
         print("🔍 Анализ структуры документов...")
         structure_analysis = extractor.analyze_document_structure(documents)
 
-        print(f"📊 Результаты анализа структуры:")
+        print("📊 Результаты анализа структуры:")
         print(f"   Всего документов: {structure_analysis['total_documents']}")
         print(f"   Всего полей: {structure_analysis['summary']['total_fields']}")
         print(f"   BLOB полей: {structure_analysis['summary']['total_blob_fields']}")
         print(
-            f"   Документов с BLOB: {structure_analysis['summary']['documents_with_blobs']}"
+            f"   Документов с BLOB: {structure_analysis['summary']['documents_with_blobs']}",
         )
 
         # Валидируем качество извлечения
         print("🔍 Валидация качества извлечения...")
         quality_metrics = extractor.validate_extraction_quality(documents)
 
-        print(f"📊 Результаты валидации качества:")
+        print("📊 Результаты валидации качества:")
         print(f"   Документов с данными: {quality_metrics['documents_with_data']}")
         print(f"   Документов с BLOB: {quality_metrics['documents_with_blobs']}")
         print(f"   Успешность BLOB: {quality_metrics['blob_success_rate']:.1f}%")
@@ -133,7 +132,7 @@ def test_simple_extraction():
         print("-" * 40)
 
         for i, doc in enumerate(documents[:3]):  # Показываем первые 3 документа
-            print(f"\n📋 Документ {i+1}:")
+            print(f"\n📋 Документ {i + 1}:")
             print(f"   Таблица: {doc['table_name']}")
             print(f"   Индекс: {doc['row_index']}")
             print(f"   Полей: {len(doc.get('fields', {}))}")
@@ -169,7 +168,7 @@ def test_simple_extraction():
 
         # Получаем статистику извлечения
         stats = extractor.get_extraction_stats()
-        print(f"\n📊 СТАТИСТИКА ИЗВЛЕЧЕНИЯ:")
+        print("\n📊 СТАТИСТИКА ИЗВЛЕЧЕНИЯ:")
         print(f"   Всего документов: {stats['total_documents']}")
         print(f"   Успешно извлечено: {stats['successful_extractions']}")
         print(f"   Ошибок извлечения: {stats['failed_extractions']}")

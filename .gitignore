@@ -124,3 +124,12 @@ temp/large_files/
 .cursor/rules/todo2.mdc
 .cursor/mcp.json
 .todo2/
+
+# Большие результаты анализа (не коммитить)
+data/results/*.json
+data/results/*.duckdb
+data/results/*.parquet
+data/results/documents/
+temp/large_files/
+temp/cleanup/
+*.png

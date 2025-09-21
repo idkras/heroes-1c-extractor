@@ -8,8 +8,10 @@ JTBD:
 """
 
 import re
-from typing import Any, Dict, List, Optional, Union
-from datetime import datetime
+from typing import Any
+
+# from typing import List, Union  # Неиспользуемые импорты
+# from datetime import datetime  # Неиспользуемые импорты
 
 
 class BlobProcessor:
@@ -23,7 +25,7 @@ class BlobProcessor:
         """Инициализация процессора BLOB данных."""
         self.processed_blobs = set()  # Отслеживаем уже обработанные BLOB поля
 
-    def process_blob_field(self, field_name: str, value: Any) -> Dict[str, Any]:
+    def process_blob_field(self, field_name: str, value: Any) -> dict[str, Any]:
         """
         JTBD:
         Как процессор BLOB поля, я хочу обработать бинарное поле,
@@ -92,13 +94,13 @@ class BlobProcessor:
         """Получить размер BLOB данных."""
         if hasattr(value, "__len__"):
             return len(value)
-        elif hasattr(value, "value") and hasattr(value.value, "__len__"):
+        if hasattr(value, "value") and hasattr(value.value, "__len__"):
             return len(value.value)
-        elif hasattr(value, "value"):
+        if hasattr(value, "value"):
             return len(str(value.value))
         return 0
 
-    def _decode_blob_content(self, content: bytes) -> Optional[Dict[str, Any]]:
+    def _decode_blob_content(self, content: bytes) -> dict[str, Any] | None:
         """
         JTBD:
         Как декодер BLOB контента, я хочу декодировать бинарные данные в текст,
@@ -133,7 +135,7 @@ class BlobProcessor:
             "raw_bytes": content.hex()[:100],
         }
 
-    def _decode_bytes(self, blob_bytes: bytes) -> Optional[Dict[str, Any]]:
+    def _decode_bytes(self, blob_bytes: bytes) -> dict[str, Any] | None:
         """
         JTBD:
         Как декодер bytes, я хочу декодировать бинарные данные в текст,
@@ -166,20 +168,19 @@ class BlobProcessor:
         """
         if blob_bytes.startswith(b"\xff\xd8\xff"):
             return "JPEG"
-        elif blob_bytes.startswith(b"\x89PNG"):
+        if blob_bytes.startswith(b"\x89PNG"):
             return "PNG"
-        elif blob_bytes.startswith(b"GIF"):
+        if blob_bytes.startswith(b"GIF"):
             return "GIF"
-        elif blob_bytes.startswith(b"\x00\x00\x01\x00"):
+        if blob_bytes.startswith(b"\x00\x00\x01\x00"):
             return "ICO"
-        elif blob_bytes.startswith(b"%PDF"):
+        if blob_bytes.startswith(b"%PDF"):
             return "PDF"
-        elif blob_bytes.startswith(b"PK"):
+        if blob_bytes.startswith(b"PK"):
             return "ZIP/Office"
-        else:
-            return "unknown"
+        return "unknown"
 
-    def extract_flower_information(self, content: str) -> Dict[str, bool]:
+    def extract_flower_information(self, content: str) -> dict[str, bool]:
         """
         JTBD:
         Как анализатор цветочной информации, я хочу найти ключевые слова о цветах,
@@ -201,7 +202,7 @@ class BlobProcessor:
             ),
         }
 
-    def extract_store_information(self, content: str) -> Dict[str, Optional[str]]:
+    def extract_store_information(self, content: str) -> dict[str, str | None]:
         """
         JTBD:
         Как извлекатель информации о магазине, я хочу найти название и код магазина,
@@ -236,11 +237,10 @@ class BlobProcessor:
 
         if "флор" in content_lower:
             return "ФЛОРИСТИКА"
-        elif "декор" in content_lower:
+        if "декор" in content_lower:
             return "ДЕКОР"
-        elif "моно" in content_lower:
+        if "моно" in content_lower:
             return "МОНО БУКЕТ"
-        elif "интернет" in content_lower:
+        if "интернет" in content_lower:
             return "ИНТЕРНЕТ-ЗАКАЗ"
-        else:
-            return "Неизвестно"
+        return "Неизвестно"

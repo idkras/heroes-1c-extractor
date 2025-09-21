@@ -7,18 +7,17 @@ JTBD:
 чтобы подтвердить возможность извлечения данных и проанализировать их структуру.
 """
 
-import sys
 import os
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import sys
 from datetime import datetime
+from typing import Any
 
 # Добавляем путь к процессорам
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "processors"))
 
+from blob_processor import BlobProcessor
 from database_connector import DatabaseConnector
 from table_analyzer import TableAnalyzer
-from blob_processor import BlobProcessor
 
 
 class SimpleDocumentExtractor:
@@ -47,7 +46,7 @@ class SimpleDocumentExtractor:
             "extraction_errors": [],
         }
 
-    def extract_documents(self, table_name: str, limit: int = 100) -> List[Dict]:
+    def extract_documents(self, table_name: str, limit: int = 100) -> list[dict]:
         """
         JTBD:
         Как метод извлечения документов, я хочу извлечь реальные документы из таблицы,
@@ -68,7 +67,7 @@ class SimpleDocumentExtractor:
             table = self.db_connector.get_table(table_name)
             table_info = self.db_connector.get_table_info(table_name)
 
-            print(f"📋 Информация о таблице:")
+            print("📋 Информация о таблице:")
             print(f"   Размер: {table_info['size']} записей")
             print(f"   Есть данные: {table_info['has_data']}")
             print(f"   Пустая: {table_info['is_empty']}")
@@ -79,15 +78,15 @@ class SimpleDocumentExtractor:
 
             # Анализируем структуру таблицы
             structure_analysis = self.table_analyzer.analyze_table_structure(table)
-            print(f"📊 Анализ структуры:")
+            print("📊 Анализ структуры:")
             print(
-                f"   Всего полей: {structure_analysis['structure_summary']['total_fields']}"
+                f"   Всего полей: {structure_analysis['structure_summary']['total_fields']}",
             )
             print(
-                f"   BLOB полей: {structure_analysis['structure_summary']['blob_fields']}"
+                f"   BLOB полей: {structure_analysis['structure_summary']['blob_fields']}",
             )
             print(
-                f"   Числовых полей: {structure_analysis['structure_summary']['numeric_fields']}"
+                f"   Числовых полей: {structure_analysis['structure_summary']['numeric_fields']}",
             )
 
             # Извлекаем документы
@@ -129,14 +128,14 @@ class SimpleDocumentExtractor:
             self.extracted_documents = documents
             self.extraction_stats["total_documents"] = len(documents)
 
-            print(f"✅ Извлечение завершено:")
+            print("✅ Извлечение завершено:")
             print(f"   Успешно: {self.extraction_stats['successful_extractions']}")
             print(f"   Ошибок: {self.extraction_stats['failed_extractions']}")
             print(
-                f"   BLOB полей найдено: {self.extraction_stats['blob_fields_found']}"
+                f"   BLOB полей найдено: {self.extraction_stats['blob_fields_found']}",
             )
             print(
-                f"   BLOB полей обработано: {self.extraction_stats['blob_fields_processed']}"
+                f"   BLOB полей обработано: {self.extraction_stats['blob_fields_processed']}",
             )
 
             return documents
@@ -148,8 +147,11 @@ class SimpleDocumentExtractor:
             return []
 
     def _extract_single_document(
-        self, row, row_index: int, table_name: str
-    ) -> Optional[Dict]:
+        self,
+        row,
+        row_index: int,
+        table_name: str,
+    ) -> dict | None:
         """
         JTBD:
         Как метод извлечения одного документа, я хочу извлечь данные из строки,
@@ -192,7 +194,8 @@ class SimpleDocumentExtractor:
 
                 # Анализируем тип поля
                 field_metadata = self.table_analyzer.extract_field_metadata(
-                    field_name, value
+                    field_name,
+                    value,
                 )
 
                 # Проверяем, является ли поле BLOB
@@ -202,7 +205,8 @@ class SimpleDocumentExtractor:
 
                     # Обрабатываем BLOB поле
                     blob_data = self.blob_processor.process_blob_field(
-                        field_name, value
+                        field_name,
+                        value,
                     )
                     if blob_data and not blob_data.get("error"):
                         document["blob_fields"][field_name] = blob_data
@@ -229,7 +233,7 @@ class SimpleDocumentExtractor:
             print(f"❌ Ошибка извлечения документа {row_index}: {e}")
             return None
 
-    def analyze_document_structure(self, documents: List[Dict]) -> Dict[str, Any]:
+    def analyze_document_structure(self, documents: list[dict]) -> dict[str, Any]:
         """
         JTBD:
         Как метод анализа структуры документов, я хочу проанализировать структуру извлеченных документов,
@@ -263,14 +267,14 @@ class SimpleDocumentExtractor:
 
                 field_analysis[field_name]["count"] += 1
                 field_analysis[field_name]["types"].add(
-                    field_data.get("type", "unknown")
+                    field_data.get("type", "unknown"),
                 )
 
                 if field_data.get("value") is not None:
                     field_analysis[field_name]["has_values"] += 1
                     if len(field_analysis[field_name]["sample_values"]) < 3:
                         field_analysis[field_name]["sample_values"].append(
-                            field_data["value"]
+                            field_data["value"],
                         )
 
             # Анализируем BLOB поля
@@ -293,7 +297,7 @@ class SimpleDocumentExtractor:
                         content = blob_data.get("value", {}).get("content", "")
                         if content:
                             blob_analysis[field_name]["sample_contents"].append(
-                                content[:100]
+                                content[:100],
                             )
 
         # Создаем сводку анализа
@@ -337,17 +341,17 @@ class SimpleDocumentExtractor:
                 "sample_contents": analysis["sample_contents"],
             }
 
-        print(f"📊 Результаты анализа структуры:")
+        print("📊 Результаты анализа структуры:")
         print(f"   Всего документов: {structure_analysis['total_documents']}")
         print(f"   Всего полей: {structure_analysis['summary']['total_fields']}")
         print(f"   BLOB полей: {structure_analysis['summary']['total_blob_fields']}")
         print(
-            f"   Документов с BLOB: {structure_analysis['summary']['documents_with_blobs']}"
+            f"   Документов с BLOB: {structure_analysis['summary']['documents_with_blobs']}",
         )
 
         return structure_analysis
 
-    def validate_extraction_quality(self, documents: List[Dict]) -> Dict[str, Any]:
+    def validate_extraction_quality(self, documents: list[dict]) -> dict[str, Any]:
         """
         JTBD:
         Как метод валидации качества извлечения, я хочу проверить качество извлеченных документов,
@@ -420,7 +424,7 @@ class SimpleDocumentExtractor:
 
         quality_metrics["quality_score"] = quality_score
 
-        print(f"📊 Результаты валидации качества:")
+        print("📊 Результаты валидации качества:")
         print(f"   Документов с данными: {quality_metrics['documents_with_data']}")
         print(f"   Документов с BLOB: {quality_metrics['documents_with_blobs']}")
         print(f"   Успешность BLOB: {quality_metrics['blob_success_rate']:.1f}%")
@@ -430,7 +434,7 @@ class SimpleDocumentExtractor:
 
         return quality_metrics
 
-    def get_extraction_stats(self) -> Dict[str, Any]:
+    def get_extraction_stats(self) -> dict[str, Any]:
         """
         JTBD:
         Как метод получения статистики извлечения, я хочу вернуть статистику извлечения,

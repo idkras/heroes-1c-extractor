@@ -7,7 +7,7 @@ import os
 import re
 import signal
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 print = functools.partial(print, flush=True)
 from typing import Any
@@ -203,7 +203,7 @@ def get_field_display_name(field_name: str) -> str:
     field_mapping = get_field_mapping()
     if field_name in field_mapping:
         return f"{field_name} · {field_mapping[field_name]}"
-    elif field_name.startswith("field_"):
+    if field_name.startswith("field_"):
         # Для field_X полей пытаемся получить реальное имя по индексу
         try:
             field_index = int(field_name.split("_")[1])
@@ -212,13 +212,11 @@ def get_field_display_name(field_name: str) -> str:
                 real_name = index_mapping[field_index]
                 if real_name in field_mapping:
                     return f"{real_name} · {field_mapping[real_name]}"
-                else:
-                    return real_name
+                return real_name
         except (ValueError, IndexError):
             pass
         return field_name
-    else:
-        return field_name
+    return field_name
 
 
 def extract_all_available_data() -> None:
@@ -307,7 +305,7 @@ def extract_all_available_data() -> None:
             "references": [],
             "registers": [],
             "metadata": {
-                "extraction_date": datetime.now(timezone.utc).isoformat(),
+                "extraction_date": datetime.now(UTC).isoformat(),
                 "total_documents": 0,
                 "total_references": 0,
                 "total_registers": 0,
@@ -421,7 +419,8 @@ def extract_all_available_data() -> None:
                                             field_name = value.name
                                         # Дополнительная проверка для получения реального имени поля
                                         elif hasattr(value, "__class__") and hasattr(
-                                            value.__class__, "__name__"
+                                            value.__class__,
+                                            "__name__",
                                         ):
                                             # Пытаемся получить имя из типа поля
                                             if "FLD" in str(value.__class__):
@@ -435,7 +434,7 @@ def extract_all_available_data() -> None:
                                         if field_name.startswith("field_"):
                                             try:
                                                 field_index = int(
-                                                    field_name.split("_")[1]
+                                                    field_name.split("_")[1],
                                                 )
                                                 index_mapping = (
                                                     get_field_mapping_by_index()
@@ -504,7 +503,7 @@ def extract_all_available_data() -> None:
                         unique_count = len(set(str(v) for v in info["values"]))
                         display_name = get_field_display_name(field_name)
                         print(
-                            f"      {display_name}: {unique_count} уникальных значений"
+                            f"      {display_name}: {unique_count} уникальных значений",
                         )
 
                     # АНАЛИЗ ПУСТЫХ ЗНАЧЕНИЙ (Research Data Standard)
@@ -576,7 +575,7 @@ def extract_all_available_data() -> None:
                         name for name, info in field_analysis.items() if info["is_blob"]
                     ]
                     if blob_fields:
-                        print(f"   📦 BLOB поля найдены:")
+                        print("   📦 BLOB поля найдены:")
                         for blob_field in blob_fields:
                             blob_info = field_analysis[blob_field]
                             display_name = get_field_display_name(blob_field)
@@ -852,7 +851,7 @@ def extract_all_available_data() -> None:
                         if info["is_numeric"]
                     ]
                     if numeric_fields:
-                        print(f"   🔢 Числовые поля:")
+                        print("   🔢 Числовые поля:")
                         for num_field in numeric_fields:
                             values = field_analysis[num_field]["values"]
                             if values:
@@ -866,7 +865,7 @@ def extract_all_available_data() -> None:
                         name for name, info in field_analysis.items() if info["is_date"]
                     ]
                     if date_fields:
-                        print(f"   📅 Поля дат:")
+                        print("   📅 Поля дат:")
                         for date_field in date_fields:
                             values = field_analysis[date_field]["values"]
                             if values:
@@ -879,7 +878,7 @@ def extract_all_available_data() -> None:
                     for i, sample in enumerate(
                         sample_data[:3],
                     ):  # Показываем первые 3 записи
-                        print(f"      Запись {i+1}: {len(sample)} полей")
+                        print(f"      Запись {i + 1}: {len(sample)} полей")
                         for j, value in enumerate(
                             sample[:5],
                         ):  # Показываем первые 5 полей
@@ -956,7 +955,8 @@ def extract_all_available_data() -> None:
                                 else:
                                     # Дополнительная проверка для получения реального имени поля
                                     if hasattr(value, "__class__") and hasattr(
-                                        value.__class__, "__name__"
+                                        value.__class__,
+                                        "__name__",
                                     ):
                                         if "FLD" in str(value.__class__):
                                             field_name = (
@@ -1071,7 +1071,7 @@ def extract_all_available_data() -> None:
                                         if len(str(field_value)) > 30:
                                             field_value = str(field_value)[:30] + "..."
                                         print(
-                                            f"      {field_name}: {field_type} = {field_value}"
+                                            f"      {field_name}: {field_type} = {field_value}",
                                         )
 
                             # Ищем поля с номерами документов - ИСПРАВЛЕНО: более умный анализ
@@ -1421,10 +1421,10 @@ def extract_all_available_data() -> None:
                                     # Показываем содержимое BLOB для анализа
                                     if len(blob_content) > 0:
                                         display_name = get_field_display_name(
-                                            field_name
+                                            field_name,
                                         )
                                         print(
-                                            f"      📄 СОДЕРЖИМОЕ BLOB {display_name}:"
+                                            f"      📄 СОДЕРЖИМОЕ BLOB {display_name}:",
                                         )
                                         # Показываем первые 200 символов для анализа
                                         preview = (
@@ -1867,9 +1867,9 @@ def extract_all_available_data() -> None:
                                                 isinstance(document, dict)
                                                 and "blobs" in document
                                             ):
-                                                document["blobs"][
-                                                    field_name
-                                                ] = blob_data
+                                                document["blobs"][field_name] = (
+                                                    blob_data
+                                                )
                                                 processed_blobs.add(
                                                     field_name,
                                                 )  # Отмечаем как обработанное
@@ -2246,7 +2246,7 @@ def extract_all_available_data() -> None:
                                         "fields": row_dict,
                                         "extraction_stats": {
                                             "extraction_time": datetime.now(
-                                                timezone.utc
+                                                UTC,
                                             ).isoformat(),
                                             "success": True,
                                         },
@@ -2286,7 +2286,7 @@ def extract_all_available_data() -> None:
                                         "fields": row_dict,
                                         "extraction_stats": {
                                             "extraction_time": datetime.now(
-                                                timezone.utc
+                                                UTC,
                                             ).isoformat(),
                                             "success": True,
                                         },
@@ -2403,8 +2403,10 @@ def convert_to_parquet_duckdb(all_results: dict) -> None:
                         lambda x: (
                             x.hex()
                             if isinstance(x, bytes)
-                            else str(x) if pd.notna(x) else None
-                        )
+                            else str(x)
+                            if pd.notna(x)
+                            else None
+                        ),
                     )
 
             # Сохраняем в Parquet
@@ -2418,7 +2420,7 @@ def convert_to_parquet_duckdb(all_results: dict) -> None:
 
             # Загружаем данные в DuckDB (ИСПРАВЛЕНО: используем правильный синтаксис)
             con.execute(
-                f"CREATE OR REPLACE TABLE documents AS SELECT * FROM read_parquet('{parquet_file}')"
+                f"CREATE OR REPLACE TABLE documents AS SELECT * FROM read_parquet('{parquet_file}')",
             )
 
             # Создаем индексы для быстрого поиска
@@ -2508,7 +2510,7 @@ def extract_data_detailed_method() -> None:
 
         all_data = {
             "extraction_method": "detailed_analysis",
-            "extraction_date": datetime.now(timezone.utc).isoformat(),
+            "extraction_date": datetime.now(UTC).isoformat(),
             "source_files": [],
             "exported_tables": [],
             "analysis_results": {},
@@ -2579,7 +2581,7 @@ def extract_data_alternative_method() -> None:
                 "extraction_method": "alternative_from_existing_files",
                 "total_files": len(json_files),
                 "files": json_files,
-                "extraction_date": datetime.now(timezone.utc).isoformat(),
+                "extraction_date": datetime.now(UTC).isoformat(),
                 "status": "completed_using_existing_data",
             }
 
@@ -2619,14 +2621,14 @@ def create_documents_from_data(data: dict) -> None:
     }
 
     for data_type, russian_name in document_types.items():
-        if data_type in data and data[data_type]:
+        if data.get(data_type):
             print(f"📄 Создание документа: {russian_name}")
 
             # Создаем markdown документ
             doc_content = f"""# 📊 {russian_name} - Анализ данных 1С
 
 ## 📋 Общая информация
-- **Дата извлечения:** {datetime.now().strftime('%d.%m.%Y %H:%M')}
+- **Дата извлечения:** {datetime.now().strftime("%d.%m.%Y %H:%M")}
 - **Количество записей:** {len(data[data_type])}
 - **Источник:** 1CD файл
 
@@ -2653,76 +2655,7 @@ def create_documents_from_data(data: dict) -> None:
             # Добавляем примеры данных
             doc_content += "\n## 📄 Примеры данных\n"
             for i, record in enumerate(data[data_type][:5]):  # Первые 5 записей
-                doc_content += f"\n### Запись {i+1}\n"
-                if isinstance(record, dict):
-                    for key, value in record.items():
-                        if key != "blob_content":  # Пропускаем большие BLOB данные
-                            doc_content += f"- **{key}:** {value}\n"
-
-            # Сохраняем документ
-            doc_filename = f"{docs_dir}/{data_type}_analysis.md"
-            with open(doc_filename, "w", encoding="utf-8") as f:
-                f.write(doc_content)
-
-            print(f"   ✅ Создан документ: {doc_filename}")
-
-    print(f"📄 Все документы созданы в директории: {docs_dir}")
-
-
-def create_documents_from_data(data: dict) -> None:
-    """
-    Создает документы из извлеченных данных согласно 1c.todo.md
-    """
-    print("📄 СОЗДАНИЕ ДОКУМЕНТОВ ИЗ ИЗВЛЕЧЕННЫХ ДАННЫХ")
-    print("=" * 60)
-
-    # Создаем директорию для документов
-    docs_dir = "data/results/documents"
-    os.makedirs(docs_dir, exist_ok=True)
-
-    # Создаем документы по типам
-    document_types = {
-        "documents": "Документы",
-        "references": "Справочники",
-        "registers": "Регистры",
-    }
-
-    for data_type, russian_name in document_types.items():
-        if data_type in data and data[data_type]:
-            print(f"📄 Создание документа: {russian_name}")
-
-            # Создаем markdown документ
-            doc_content = f"""# 📊 {russian_name} - Анализ данных 1С
-
-## 📋 Общая информация
-- **Дата извлечения:** {datetime.now().strftime('%d.%m.%Y %H:%M')}
-- **Количество записей:** {len(data[data_type])}
-- **Источник:** 1CD файл
-
-## 📊 Статистика
-"""
-
-            # Добавляем статистику по полям
-            if data[data_type]:
-                sample_record = data[data_type][0]
-                if isinstance(sample_record, dict) and "fields" in sample_record:
-                    fields = sample_record["fields"]
-                    doc_content += f"- **Поля:** {len(fields)}\n"
-
-                    # Анализируем типы полей
-                    field_types = {}
-                    for field_name, field_value in fields.items():
-                        field_type = type(field_value).__name__
-                        field_types[field_type] = field_types.get(field_type, 0) + 1
-
-                    doc_content += "## 🔍 Типы полей\n"
-                    for field_type, count in field_types.items():
-                        doc_content += f"- **{field_type}:** {count} полей\n"
-
-            # Добавляем примеры данных
-            doc_content += "\n## 📄 Примеры данных\n"
-            for i, record in enumerate(data[data_type][:5]):  # Первые 5 записей
-                doc_content += f"\n### Запись {i+1}\n"
+                doc_content += f"\n### Запись {i + 1}\n"
                 if isinstance(record, dict):
                     for key, value in record.items():
                         if key != "blob_content":  # Пропускаем большие BLOB данные

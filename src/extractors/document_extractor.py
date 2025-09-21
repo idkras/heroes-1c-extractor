@@ -4,18 +4,18 @@ DocumentExtractor - извлекатель документов из 1С баз�
 Создан для извлечения реальных документов в формате, соответствующем тест-кейсам
 """
 
-import sys
-import os
-import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 import json
+import logging
+import os
+import sys
+from datetime import datetime
+from typing import Any
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "processors"))
 
-from processors.database_connector import DatabaseConnector
 from extractors.base_extractor import BaseExtractor
+from processors.database_connector import DatabaseConnector
 
 
 class DocumentExtractor(BaseExtractor):
@@ -43,7 +43,7 @@ class DocumentExtractor(BaseExtractor):
         if not self.logger.handlers:
             handler = logging.StreamHandler()
             formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             )
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
@@ -57,7 +57,7 @@ class DocumentExtractor(BaseExtractor):
             "extraction_errors": [],
         }
 
-    def extract(self, table_name: str, limit: int = 100) -> List[Dict]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict]:
         """
         Реализация абстрактного метода extract из BaseExtractor.
 
@@ -95,7 +95,7 @@ class DocumentExtractor(BaseExtractor):
             self.log_extraction_error(e, {"table_name": table_name, "limit": limit})
             return []
 
-    def extract_documents(self) -> Dict[str, Any]:
+    def extract_documents(self) -> dict[str, Any]:
         """
         Извлекает все документы из базы данных.
 
@@ -124,13 +124,13 @@ class DocumentExtractor(BaseExtractor):
                     else:
                         self.extraction_stats["failed_extractions"] += 1
                         self.extraction_stats["extraction_errors"].append(
-                            f"Не удалось извлечь {table_name}"
+                            f"Не удалось извлечь {table_name}",
                         )
                 except Exception as e:
                     self.logger.error(f"❌ Ошибка при извлечении {table_name}: {e}")
                     self.extraction_stats["failed_extractions"] += 1
                     self.extraction_stats["extraction_errors"].append(
-                        f"Ошибка в {table_name}: {str(e)}"
+                        f"Ошибка в {table_name}: {e!s}",
                     )
 
             self.extraction_stats["total_documents"] = len(document_tables)
@@ -149,7 +149,7 @@ class DocumentExtractor(BaseExtractor):
             }
 
             self.logger.info(
-                f"✅ Извлечение завершено: {self.extraction_stats['successful_extractions']}/{self.extraction_stats['total_documents']} документов"
+                f"✅ Извлечение завершено: {self.extraction_stats['successful_extractions']}/{self.extraction_stats['total_documents']} документов",
             )
             return result
 
@@ -159,7 +159,7 @@ class DocumentExtractor(BaseExtractor):
         finally:
             self.db_connector.close()
 
-    def _filter_document_tables(self, all_tables: Dict[str, Any]) -> Dict[str, Any]:
+    def _filter_document_tables(self, all_tables: dict[str, Any]) -> dict[str, Any]:
         """
         Фильтрует таблицы, оставляя только документы.
 
@@ -183,7 +183,7 @@ class DocumentExtractor(BaseExtractor):
 
         return document_tables
 
-    def _extract_single_document_table(self, table_name: str) -> List[Dict[str, Any]]:
+    def _extract_single_document_table(self, table_name: str) -> list[dict[str, Any]]:
         """
         Извлекает документы из одной таблицы.
 
@@ -226,8 +226,11 @@ class DocumentExtractor(BaseExtractor):
             return []
 
     def _extract_single_document(
-        self, record, index: int, table_name: str
-    ) -> Optional[Dict[str, Any]]:
+        self,
+        record,
+        index: int,
+        table_name: str,
+    ) -> dict[str, Any] | None:
         """
         Извлекает один документ.
 
@@ -258,7 +261,8 @@ class DocumentExtractor(BaseExtractor):
                 "buyer_name": self._extract_field_value(record_list, "_BUYER"),
                 "goods_received": self._extract_goods_data(record_list, "received"),
                 "goods_not_received": self._extract_goods_data(
-                    record_list, "not_received"
+                    record_list,
+                    "not_received",
                 ),
                 "flower_names": self._extract_flower_names(record_list),
                 "flower_quantities": self._extract_flower_quantities(record_list),
@@ -299,7 +303,7 @@ class DocumentExtractor(BaseExtractor):
 
         return "НЕИЗВЕСТНЫЙ ДОКУМЕНТ"
 
-    def _extract_field_value(self, record_list: List, field_name: str) -> Any:
+    def _extract_field_value(self, record_list: list, field_name: str) -> Any:
         """
         Извлекает значение поля из записи.
 
@@ -320,7 +324,7 @@ class DocumentExtractor(BaseExtractor):
         except:
             return None
 
-    def _extract_goods_data(self, record_list: List, goods_type: str) -> Dict[str, Any]:
+    def _extract_goods_data(self, record_list: list, goods_type: str) -> dict[str, Any]:
         """
         Извлекает данные о товарах.
 
@@ -334,7 +338,7 @@ class DocumentExtractor(BaseExtractor):
         # Упрощенная реализация - в реальности нужно анализировать табличные части
         return {"flowers": [], "quantities": [], "prices": []}
 
-    def _extract_flower_names(self, record_list: List) -> List[str]:
+    def _extract_flower_names(self, record_list: list) -> list[str]:
         """
         Извлекает названия цветов.
 
@@ -362,7 +366,7 @@ class DocumentExtractor(BaseExtractor):
                     flower_names.append(str(field.value))
         return flower_names
 
-    def _extract_flower_quantities(self, record_list: List) -> List[float]:
+    def _extract_flower_quantities(self, record_list: list) -> list[float]:
         """
         Извлекает количества цветов.
 
@@ -382,7 +386,7 @@ class DocumentExtractor(BaseExtractor):
                     continue
         return quantities
 
-    def _extract_flower_prices(self, record_list: List) -> List[float]:
+    def _extract_flower_prices(self, record_list: list) -> list[float]:
         """
         Извлекает цены цветов.
 
@@ -402,7 +406,7 @@ class DocumentExtractor(BaseExtractor):
                     continue
         return prices
 
-    def _extract_blob_content(self, record_list: List) -> str:
+    def _extract_blob_content(self, record_list: list) -> str:
         """
         Извлекает содержимое BLOB полей.
 
@@ -423,8 +427,10 @@ class DocumentExtractor(BaseExtractor):
         return " ".join(blob_content)
 
     def _extract_table_parts(
-        self, table_name: str, document_index: int
-    ) -> Dict[str, Any]:
+        self,
+        table_name: str,
+        document_index: int,
+    ) -> dict[str, Any]:
         """
         Извлекает табличные части документа.
 
@@ -439,7 +445,8 @@ class DocumentExtractor(BaseExtractor):
         return {"nomenclature": [], "quantities": [], "prices": []}
 
     def save_results(
-        self, output_path: str = "data/results/documents_extraction.json"
+        self,
+        output_path: str = "data/results/documents_extraction.json",
     ) -> str:
         """
         Сохраняет результаты извлечения документов.
@@ -463,7 +470,7 @@ class DocumentExtractor(BaseExtractor):
             self.logger.error(f"❌ Ошибка при сохранении результатов: {e}")
             raise
 
-    def get_extraction_summary(self) -> Dict[str, Any]:
+    def get_extraction_summary(self) -> dict[str, Any]:
         """
         Возвращает сводку по извлечению документов.
 

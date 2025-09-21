@@ -31,9 +31,9 @@
 - **buyer_name:** N/A
 - **goods_received:** {}
 - **goods_not_received:** {}
-- **flower_names:** 
-- **flower_quantities:** 
-- **flower_prices:** 
+- **flower_names:**
+- **flower_quantities:**
+- **flower_prices:**
 - **fields:** {'_VERSION': b'\x00\x00\x00\x9a', '_MARKED': b'\x80\x1b^X7\xd9\x0b\xfbJ5\x95\x118M\xaf\xff', '_DATE_TIME': datetime.datetime(1, 1, 1, 0, 0, 1), '_POSTED': False, '_NUMBER': False, '_FLD4225': '00000000029', '_FLD4237': 0.0, '_FLD4229': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '_FLD4243': b'\x08', '_FLD4254': b'\x00\x00\x00-', '_FLD3108': b'\x8f<\x18\xa9\x05F\xc9\x9a\x11\xdfb\x87\xd4\xb6>\x0e', '_FLD4255': b'\x81\x14\x00PV\xbe\n\xbc\x11\xe7\xe7\x12\xc5\x12\x8es', '_FLD4256': b'\x08', '_FLD4238': b'\x00\x00\x00D', '_FLD4239': b'\x80\xd5\x00PV\xbe\n\xbc\x11\xe4z\xf4\xd1\xb5\x96\xa4', '_FLD4240': b'\x08', '_FLD9885': b'\x00\x00\x009', '_FLD9999': b'\x80\xd5\x00PV\xbe\n\xbc\x11\xe4z\xf4\xd1\xb5\x96\x9f', '_FLD9998': b'\x91x\x18\xa9\x05F\xc9\x98\x11\xe2\x9ce\xf6l\xba\r', 'field_22': '!!!', 'field_23': False, 'field_24': False, 'field_25': False}
 - **blobs:** {}
 - **extraction_stats:** {'total_blobs': 0, 'successful': 0, 'failed': 0}
@@ -55,9 +55,9 @@
 - **buyer_name:** N/A
 - **goods_received:** {}
 - **goods_not_received:** {}
-- **flower_names:** 
-- **flower_quantities:** 
-- **flower_prices:** 
+- **flower_names:**
+- **flower_quantities:**
+- **flower_prices:**
 - **fields:** {'_VERSION': b'\x00\x00\x00\x9a', '_MARKED': b'\x80Y\xeen\x0e\xcc\\\x13I-\xed[\x8du\x950', '_DATE_TIME': datetime.datetime(1, 1, 1, 0, 0, 1), '_POSTED': False, '_NUMBER': False, '_FLD4225': '00000000085', '_FLD4237': 0.0, '_FLD4229': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '_FLD4243': b'\x08', '_FLD4254': b'\x00\x00\x00-', '_FLD3108': b'\x8f<\x18\xa9\x05F\xc9\x9a\x11\xdfb\x87\xd4\xb6>\x0e', '_FLD4255': b'\x80\xff\xb419&\x80\x10\x11\xe6~7\x9fw\xd6\x06', '_FLD4256': b'\x08', '_FLD4238': b'\x00\x00\x00D', '_FLD4239': b'\xbb\xed\x18\xa9\x05F\xc9\x98\x11\xe1L\xa8\xae\x01\xea\xd5', '_FLD4240': b'\x08', '_FLD9885': b'\x00\x00\x009', '_FLD9999': b'\xbb\xed\x18\xa9\x05F\xc9\x98\x11\xe1L\xa8\xae\x01\xea\xd4', '_FLD9998': b'\x91x\x18\xa9\x05F\xc9\x98\x11\xe2\x9ce\xf6l\xba\r', 'field_22': '!!!', 'field_23': False, 'field_24': False, 'field_25': False}
 - **blobs:** {}
 - **extraction_stats:** {'total_blobs': 0, 'successful': 0, 'failed': 0}
@@ -79,9 +79,9 @@
 - **buyer_name:** N/A
 - **goods_received:** {}
 - **goods_not_received:** {}
-- **flower_names:** 
-- **flower_quantities:** 
-- **flower_prices:** 
+- **flower_names:**
+- **flower_quantities:**
+- **flower_prices:**
 - **fields:** {'_VERSION': b'\x00\x00\x00\x9a', '_MARKED': b'\x80d9\xbd\x08\xc7~\xb1@\xbb\xe6!\x80\xa1\xca ', '_DATE_TIME': datetime.datetime(1, 1, 1, 0, 0, 1), '_POSTED': False, '_NUMBER': False, '_FLD4225': '00000000004', '_FLD4237': 0.0, '_FLD4229': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '_FLD4243': b'\x08', '_FLD4254': b'\x00\x00\x00-', '_FLD3108': b'\x8f<\x18\xa9\x05F\xc9\x9a\x11\xdfb\x87\xd4\xb6>\x0e', '_FLD4255': b'\xa2 \x18\xa9\x05F\xc9\x98\x11\xe2\x0e\x1fO\xccd\xad', '_FLD4256': b'\x08', '_FLD4238': b'\x00\x00\x00D', '_FLD4239': b'\xa1l\x18\xa9\x05F\xc9\x9a\x11\xe0vN\xfc\x02\x7f*', '_FLD4240': b'\x08', '_FLD9885': b'\x00\x00\x009', '_FLD9999': b"\xa1l\x18\xa9\x05F\xc9\x9a\x11\xe0vN\xfc\x02\x7f'", '_FLD9998': b'\x91x\x18\xa9\x05F\xc9\x98\x11\xe2\x9ce\xf6l\xba\r', 'field_22': '!!!', 'field_23': False, 'field_24': False, 'field_25': False}
 - **blobs:** {}
 - **extraction_stats:** {'total_blobs': 0, 'successful': 0, 'failed': 0}
@@ -103,9 +103,9 @@
 - **buyer_name:** N/A
 - **goods_received:** {}
 - **goods_not_received:** {}
-- **flower_names:** 
-- **flower_quantities:** 
-- **flower_prices:** 
+- **flower_names:**
+- **flower_quantities:**
+- **flower_prices:**
 - **fields:** {'_VERSION': b'\x00\x00\x00\x9a', '_MARKED': b'\x80\xfcZ\xcbC\xbe\xb2\x07J\xe8\x01\x8e\x8c\x08\x96\xf4', '_DATE_TIME': datetime.datetime(1, 1, 1, 0, 0, 1), '_POSTED': False, '_NUMBER': False, '_FLD4225': '00000000136', '_FLD4237': 0.0, '_FLD4229': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '_FLD4243': b'\x08', '_FLD4254': b'\x00\x00\x00-', '_FLD3108': b'\x8f<\x18\xa9\x05F\xc9\x9a\x11\xdfb\x87\xd4\xb6>\x0e', '_FLD4255': b'\x81\x1b\x00PV\xbe\n\xbc\x11\xe8\xb0\x0b\xfeU\xba\x8b', '_FLD4256': b'\x08', '_FLD4238': b'\x00\x00\x00D', '_FLD4239': b'\x81\x1b\x00PV\xbe\n\xbc\x11\xe8b~\x89\xfd;_', '_FLD4240': b'\x08', '_FLD9885': b'\x00\x00\x009', '_FLD9999': b'\x81\x1b\x00PV\xbe\n\xbc\x11\xe8b~\x89\xfd;^', '_FLD9998': b'\x81\x1b\x00PV\xbe\n\xbc\x11\xe8\xb6\x80\xccJa\xb4', 'field_22': '!!!', 'field_23': False, 'field_24': False, 'field_25': False}
 - **blobs:** {}
 - **extraction_stats:** {'total_blobs': 0, 'successful': 0, 'failed': 0}
@@ -127,9 +127,9 @@
 - **buyer_name:** N/A
 - **goods_received:** {}
 - **goods_not_received:** {}
-- **flower_names:** 
-- **flower_quantities:** 
-- **flower_prices:** 
+- **flower_names:**
+- **flower_quantities:**
+- **flower_prices:**
 - **fields:** {'_VERSION': b'\x00\x00\x00\x9a', '_MARKED': b'\x81\xa9\xe6\xeb\x8f\x8b/\xc1B\x1b\x042n\xf7\xc6\x85', '_DATE_TIME': datetime.datetime(1, 1, 1, 0, 0, 1), '_POSTED': False, '_NUMBER': False, '_FLD4225': '00000000054', '_FLD4237': 0.0, '_FLD4229': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '_FLD4243': b'\x08', '_FLD4254': b'\x00\x00\x00-', '_FLD3108': b'\x8f<\x18\xa9\x05F\xc9\x9a\x11\xdfb\x87\xd4\xb6>\x0e', '_FLD4255': b'\x80\xff\xb419&\x80\x10\x11\xe6~7\x9fw\xd6\x06', '_FLD4256': b'\x08', '_FLD4238': b'\x00\x00\x00D', '_FLD4239': b'\xbb\xed\x18\xa9\x05F\xc9\x98\x11\xe1L\xa8\xae\x01\xea\xd5', '_FLD4240': b'\x08', '_FLD9885': b'\x00\x00\x009', '_FLD9999': b'\xbb\xed\x18\xa9\x05F\xc9\x98\x11\xe1L\xa8\xae\x01\xea\xd4', '_FLD9998': b'\x91x\x18\xa9\x05F\xc9\x98\x11\xe2\x9ce\xf6l\xba\r', 'field_22': '!!!', 'field_23': False, 'field_24': False, 'field_25': False}
 - **blobs:** {}
 - **extraction_stats:** {'total_blobs': 0, 'successful': 0, 'failed': 0}
