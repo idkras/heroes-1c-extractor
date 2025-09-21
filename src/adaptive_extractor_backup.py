@@ -49,6 +49,52 @@ class AdaptiveExtractor:
     def __init__(self) -> None:
         self.business_fields = {"_NUMBER", "_DATE_TIME", "_POSTED", "_MARKED"}
 
+        # Маппинг технических имен на нормальные названия
+        self.field_names = {
+            # BLOB поля
+            "_FLD4229": "Основное описание операции",
+            "_FLD4243": "Дополнительные данные",
+            "_FLD4254": "Дополнительные данные 2",
+            "_FLD3108": "Складская информация",
+            "_FLD3035": "Отчеты о розничных продажах",
+            "_FLD3772": "Описания операций",
+            "_FLD4936": "Дополнительные данные",
+            "_FLD3980": "Дополнительные поля",
+            "_FLD3981": "Дополнительные поля",
+            "_FLD3982": "Расширенные данные",
+            "_FLD3986": "Дополнительные поля",
+            "_FLD5363": "Служебные данные",
+            "_FLD5299": "Техническая информация",
+            "_FLD5336": "Метаданные",
+            # Количественные поля
+            "_FLD3111": "Количество товара 1",
+            "_FLD3112": "Количество товара 2",
+            "_FLD3113": "Количество товара 3",
+            "_FLD3983": "Количество реализации",
+            "_FLD3984": "Количество реализации 2",
+            "_FLD3988": "Количество реализации 3",
+            "_FLD5330": "Количество операций",
+            "_FLD5333": "Количество операций 2",
+            "_FLD5334": "Количество операций 3",
+            # Суммовые поля
+            "_FLD3978": "Сумма реализации",
+            "_FLD5326": "Сумма операций",
+        }
+
+        # Маппинг таблиц на нормальные названия
+        self.table_names = {
+            "_DOCUMENT138": "Поступление товаров",
+            "_DOCUMENT137": "Розничные продажи",
+            "_DOCUMENT156": "Реализация товаров",
+            "_DOCUMENT184": "Счета-фактуры",
+            "_DOCUMENT154": "Накладные",
+            "_DOCUMENT163": "Акты работ",
+            "_DOCUMENT12259": "Основные документы",
+            "_DOCUMENTJOURNAL5354": "Журнал документов 5354",
+            "_DOCUMENTJOURNAL5287": "Журнал документов 5287",
+            "_DOCUMENTJOURNAL5321": "Журнал документов 5321",
+        }
+
         # Статистика извлечения
         self.extraction_stats = {
             "total_records_processed": 0,
@@ -79,14 +125,63 @@ class AdaptiveExtractor:
             "_DOCUMENT138": {
                 "amount_fields": [],
                 "quantity_fields": ["_FLD3111", "_FLD3112", "_FLD3113"],
-                "blob_fields": ["_FLD3108"],
+                "blob_fields": [
+                    "_FLD4229",
+                    "_FLD4243",
+                    "_FLD4254",
+                    "_FLD3108",
+                ],  # ИСПРАВЛЕНО: Добавлены критические BLOB поля для анализа цветов
+            },
+            "_DOCUMENT137": {  # ИСПРАВЛЕНО: Добавлена критическая таблица розничных продаж
+                "amount_fields": ["_FLD3035"],
+                "quantity_fields": ["_FLD3772", "_FLD4936"],
+                "blob_fields": [
+                    "_FLD3035",
+                    "_FLD3772",
+                    "_FLD4936",
+                ],  # BLOB поля для анализа цветов
             },
             "_DOCUMENT156": {
                 "amount_fields": ["_FLD3978"],
                 "quantity_fields": ["_FLD3983", "_FLD3984", "_FLD3988"],
                 "blob_fields": ["_FLD3980", "_FLD3981", "_FLD3982", "_FLD3986"],
             },
+            "_DOCUMENT184": {  # ИСПРАВЛЕНО: Добавлена критическая таблица счетов-фактур
+                "amount_fields": [],
+                "quantity_fields": [],
+                "blob_fields": [],  # BLOB поля будут определены автоматически
+            },
+            "_DOCUMENT154": {  # ИСПРАВЛЕНО: Добавлена критическая таблица отгрузок
+                "amount_fields": [],
+                "quantity_fields": [],
+                "blob_fields": [],  # BLOB поля будут определены автоматически
+            },
+            "_DOCUMENT163": {  # ИСПРАВЛЕНО: Добавлена критическая таблица перекомплектации
+                "amount_fields": [],
+                "quantity_fields": [],
+                "blob_fields": [],  # BLOB поля будут определены автоматически
+            },
+            "_DOCUMENT12259": {  # ИСПРАВЛЕНО: Добавлена критическая таблица документов
+                "amount_fields": [],
+                "quantity_fields": [],
+                "blob_fields": [],  # BLOB поля будут определены автоматически
+            },
         }
+
+    def get_field_name(self, field_id: str) -> str:
+        """Получить нормальное название поля"""
+        return self.field_names.get(field_id, field_id)
+
+    def get_table_name(self, table_id: str) -> str:
+        """Получить нормальное название таблицы"""
+        return self.table_names.get(table_id, table_id)
+
+    def format_field_info(self, field_id: str, field_type: str = "") -> str:
+        """Форматировать информацию о поле с нормальным названием"""
+        normal_name = self.get_field_name(field_id)
+        if field_type:
+            return f"{normal_name} ({field_id}) - {field_type}"
+        return f"{normal_name} ({field_id})"
 
     def analyze_table_structure(
         self,

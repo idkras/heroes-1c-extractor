@@ -1,234 +1,385 @@
 #!/usr/bin/env python3
-
 """
-BaseExtractor - базовый класс для всех extractors
-Устраняет дублирование кода и обеспечивает единую архитектуру
+BaseExtractor - базовый класс для всех экстракторов данных из 1С.
+
+JTBD:
+Как базовый экстрактор, я хочу предоставить общую логику извлечения данных,
+чтобы все специализированные экстракторы могли наследовать общую функциональность.
 """
 
-import json
-import logging
-import os
 import sys
-from abc import ABC, abstractmethod
+import os
+from typing import Dict, List, Any, Optional
 from datetime import datetime
-from typing import Any
+from abc import ABC, abstractmethod
 
-# Добавляем путь к патчам
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+# Добавляем путь к процессорам
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "processors"))
 
-# Применяем патч для onec_dtools
-from patches.onec_dtools.onec_dtools_patch import apply_patch
-
-apply_patch()
-
-from onec_dtools.database_reader import DatabaseReader
-
-from src.utils.blob_processor import BlobProcessor
-from src.utils.blob_utils import safe_get_blob_content
-
-logger = logging.getLogger(__name__)
+from database_connector import DatabaseConnector
+from table_analyzer import TableAnalyzer
+from blob_processor import BlobProcessor
 
 
 class BaseExtractor(ABC):
     """
-    Базовый класс для всех extractors
-
     JTBD:
-    Как система рефакторинга, я хочу предоставить единую архитектуру для всех extractors,
-    чтобы устранить дублирование кода и улучшить поддерживаемость.
+    Как BaseExtractor, я хочу предоставить базовую функциональность для всех экстракторов,
+    чтобы специализированные экстракторы могли наследовать общую логику.
     """
 
-    def __init__(self, db_path: str = "data/raw/1Cv8.1CD"):
+    def __init__(self, db_connector: DatabaseConnector):
         """
-        Инициализация базового extractor
+        JTBD:
+        Как конструктор BaseExtractor, я хочу инициализировать базовые компоненты,
+        чтобы все экстракторы имели доступ к общей функциональности.
 
         Args:
-            db_path: Путь к файлу базы данных 1С
+            db_connector: Подключение к базе данных 1С
         """
-        self.db_path = db_path
-        self.db: DatabaseReader | None = None
-        self.db_file: Any | None = None  # ИСПРАВЛЕНО: Добавляем файловый объект
-        self.results: dict[str, Any] = {}
-        self.blob_processor = BlobProcessor()  # ИСПРАВЛЕНО: Добавляем BlobProcessor
-        self.metadata: dict[str, Any] = {
-            "extraction_date": datetime.now().isoformat(),
-            "source_file": db_path,
-            "extractor_class": self.__class__.__name__,
+        self.db_connector = db_connector
+        self.table_analyzer = TableAnalyzer()
+        self.blob_processor = BlobProcessor()
+        self.extraction_stats = {
+            "total_items": 0,
+            "successful_extractions": 0,
+            "failed_extractions": 0,
+            "blob_fields_found": 0,
+            "blob_fields_processed": 0,
+            "extraction_errors": [],
+            "start_time": datetime.now().isoformat(),
+            "end_time": None,
         }
 
-    def open_database(self) -> bool:
+    @abstractmethod
+    def extract(self, table_name: str, limit: int = 100) -> List[Dict]:
         """
-        Открытие базы данных с обработкой ошибок
+        JTBD:
+        Как абстрактный метод извлечения, я хочу определить интерфейс для всех экстракторов,
+        чтобы каждый экстрактор реализовывал свою логику извлечения.
+
+        Args:
+            table_name: Имя таблицы для извлечения
+            limit: Максимальное количество элементов для извлечения
 
         Returns:
-            bool: True если база открыта успешно
+            Список извлеченных элементов
+        """
+        pass
+
+    def process_row(self, row, row_index: int, table_name: str) -> Optional[Dict]:
+        """
+        JTBD:
+        Как метод обработки строки, я хочу обработать одну строку данных,
+        чтобы извлечь структурированную информацию из строки таблицы.
+
+        Args:
+            row: Строка данных из таблицы
+            row_index: Индекс строки
+            table_name: Имя таблицы
+
+        Returns:
+            Словарь с данными строки или None при ошибке
         """
         try:
-            if not os.path.exists(self.db_path):
-                logger.error(f"❌ Файл базы данных не найден: {self.db_path}")
+            # Получаем список полей
+            if hasattr(row, "as_list"):
+                try:
+                    row_list = row.as_list(True)
+                except StopIteration:
+                    # Нормальное завершение итератора
+                    return None
+            else:
+                return None
+
+            # Создаем базовую структуру элемента
+            item = {
+                "table_name": table_name,
+                "row_index": row_index,
+                "fields": {},
+                "blob_fields": {},
+                "metadata": {
+                    "extraction_time": datetime.now().isoformat(),
+                    "field_count": len(row_list),
+                    "has_blob_fields": False,
+                },
+            }
+
+            # Обрабатываем каждое поле
+            for j, value in enumerate(row_list):
+                field_name = getattr(value, "name", f"field_{j}")
+
+                # Анализируем тип поля
+                field_metadata = self.table_analyzer.extract_field_metadata(
+                    field_name, value
+                )
+
+                # Проверяем, является ли поле BLOB
+                if field_metadata.get("is_blob", False):
+                    self.extraction_stats["blob_fields_found"] += 1
+                    item["metadata"]["has_blob_fields"] = True
+
+                    # Обрабатываем BLOB поле
+                    blob_data = self.blob_processor.process_blob_field(
+                        field_name, value
+                    )
+                    if blob_data and not blob_data.get("error"):
+                        item["blob_fields"][field_name] = blob_data
+                        self.extraction_stats["blob_fields_processed"] += 1
+                    else:
+                        item["blob_fields"][field_name] = {
+                            "error": blob_data.get("error", "Unknown error"),
+                            "field_type": "blob",
+                            "size": 0,
+                        }
+                else:
+                    # Обычное поле
+                    item["fields"][field_name] = {
+                        "value": str(value) if value is not None else None,
+                        "type": field_metadata.get("type", "unknown"),
+                        "is_numeric": field_metadata.get("is_numeric", False),
+                        "is_date": field_metadata.get("is_date", False),
+                        "is_string": field_metadata.get("is_string", False),
+                    }
+
+            return item
+
+        except Exception as e:
+            error_msg = f"Ошибка обработки строки {row_index}: {e}"
+            self.extraction_stats["extraction_errors"].append(error_msg)
+            return None
+
+    def validate_data(self, data: Dict) -> bool:
+        """
+        JTBD:
+        Как метод валидации данных, я хочу проверить корректность извлеченных данных,
+        чтобы убедиться в качестве извлечения.
+
+        Args:
+            data: Словарь с данными для валидации
+
+        Returns:
+            True если данные корректны, False иначе
+        """
+        try:
+            # Проверяем обязательные поля
+            required_fields = ["table_name", "row_index", "fields"]
+            for field in required_fields:
+                if field not in data:
+                    return False
+
+            # Проверяем типы данных
+            if not isinstance(data["table_name"], str):
+                return False
+            if not isinstance(data["row_index"], int):
+                return False
+            if not isinstance(data["fields"], dict):
                 return False
 
-            # ИСПРАВЛЕНО: Сохраняем файловый объект для предотвращения закрытия
-            self.db_file = open(self.db_path, "rb")
-            self.db = DatabaseReader(self.db_file)
-            logger.info("✅ База данных открыта успешно!")
+            # Проверяем наличие хотя бы одного поля
+            if len(data["fields"]) == 0:
+                return False
+
             return True
 
-        except Exception as e:
-            logger.error(f"❌ Ошибка открытия базы данных: {e}")
+        except Exception:
             return False
 
-    def get_document_tables(self) -> list[str]:
+    def get_extraction_stats(self) -> Dict[str, Any]:
         """
-        Получение списка таблиц документов
+        JTBD:
+        Как метод получения статистики, я хочу вернуть статистику извлечения,
+        чтобы проанализировать результаты работы экстрактора.
 
         Returns:
-            List[str]: Список названий таблиц документов
+            Словарь со статистикой извлечения
         """
-        if not self.db:
-            return []
+        # Обновляем время завершения
+        self.extraction_stats["end_time"] = datetime.now().isoformat()
 
-        return [name for name in self.db.tables.keys() if name.startswith("_DOCUMENT")]
+        # Вычисляем продолжительность
+        if self.extraction_stats["start_time"] and self.extraction_stats["end_time"]:
+            start = datetime.fromisoformat(self.extraction_stats["start_time"])
+            end = datetime.fromisoformat(self.extraction_stats["end_time"])
+            duration = (end - start).total_seconds()
+            self.extraction_stats["duration_seconds"] = duration
 
-    def get_reference_tables(self) -> list[str]:
+        return self.extraction_stats.copy()
+
+    def reset_stats(self) -> None:
         """
-        Получение списка справочников
-
-        Returns:
-            List[str]: Список названий справочников
+        JTBD:
+        Как метод сброса статистики, я хочу сбросить статистику извлечения,
+        чтобы начать новое извлечение с чистого листа.
         """
-        if not self.db:
-            return []
+        self.extraction_stats = {
+            "total_items": 0,
+            "successful_extractions": 0,
+            "failed_extractions": 0,
+            "blob_fields_found": 0,
+            "blob_fields_processed": 0,
+            "extraction_errors": [],
+            "start_time": datetime.now().isoformat(),
+            "end_time": None,
+        }
 
-        return [name for name in self.db.tables.keys() if name.startswith("_Reference")]
-
-    def get_register_tables(self) -> list[str]:
+    def log_extraction_error(self, error: Exception, context: Dict) -> None:
         """
-        Получение списка регистров
-
-        Returns:
-            List[str]: Список названий регистров
-        """
-        if not self.db:
-            return []
-
-        return [
-            name
-            for name in self.db.tables.keys()
-            if name.startswith("_AccumRGT") or name.startswith("_InfoRGT")
-        ]
-
-    def extract_blob_content(self, value: Any) -> str | None:
-        """
-        Извлечение содержимого BLOB поля
+        JTBD:
+        Как метод логирования ошибок, я хочу записать ошибку извлечения,
+        чтобы отслеживать проблемы в процессе извлечения.
 
         Args:
-            value: BLOB объект
-
-        Returns:
-            Optional[str]: Содержимое BLOB поля или None
+            error: Исключение, которое произошло
+            context: Контекст ошибки (таблица, строка и т.д.)
         """
-        return safe_get_blob_content(value)
+        error_info = {
+            "error_type": type(error).__name__,
+            "error_message": str(error),
+            "context": context,
+            "timestamp": datetime.now().isoformat(),
+        }
+        self.extraction_stats["extraction_errors"].append(error_info)
 
-    def save_results(self, output_file: str) -> bool:
+    def should_continue_extraction(
+        self, error_count: int, max_errors: int = 100
+    ) -> bool:
         """
-        Сохранение результатов в JSON файл
+        JTBD:
+        Как метод проверки продолжения, я хочу определить следует ли продолжать извлечение,
+        чтобы избежать бесконечных циклов при множественных ошибках.
 
         Args:
-            output_file: Путь к выходному файлу
+            error_count: Количество ошибок
+            max_errors: Максимальное количество ошибок
 
         Returns:
-            bool: True если сохранение успешно
+            True если следует продолжать, False иначе
+        """
+        return error_count < max_errors
+
+    def analyze_extraction_quality(self, extracted_data: List[Dict]) -> Dict[str, Any]:
+        """
+        JTBD:
+        Как метод анализа качества, я хочу проанализировать качество извлеченных данных,
+        чтобы оценить успешность извлечения.
+
+        Args:
+            extracted_data: Список извлеченных данных
+
+        Returns:
+            Словарь с метриками качества
+        """
+        if not extracted_data:
+            return {
+                "total_items": 0,
+                "quality_score": 0,
+                "success_rate": 0,
+                "blob_success_rate": 0,
+                "field_completeness": 0,
+            }
+
+        total_items = len(extracted_data)
+        successful_items = sum(1 for item in extracted_data if self.validate_data(item))
+        items_with_blobs = sum(
+            1
+            for item in extracted_data
+            if item.get("metadata", {}).get("has_blob_fields", False)
+        )
+
+        # Вычисляем метрики качества
+        success_rate = (successful_items / total_items) * 100 if total_items > 0 else 0
+        blob_success_rate = (
+            (
+                self.extraction_stats["blob_fields_processed"]
+                / self.extraction_stats["blob_fields_found"]
+            )
+            * 100
+            if self.extraction_stats["blob_fields_found"] > 0
+            else 0
+        )
+
+        # Вычисляем полноту полей
+        total_fields = sum(len(item.get("fields", {})) for item in extracted_data)
+        filled_fields = sum(
+            sum(
+                1
+                for field in item.get("fields", {}).values()
+                if field.get("value") is not None
+            )
+            for item in extracted_data
+        )
+        field_completeness = (
+            (filled_fields / total_fields) * 100 if total_fields > 0 else 0
+        )
+
+        # Вычисляем общий балл качества
+        quality_score = 0
+        if success_rate > 80:
+            quality_score += 40
+        elif success_rate > 60:
+            quality_score += 20
+        if blob_success_rate > 80:
+            quality_score += 30
+        elif blob_success_rate > 60:
+            quality_score += 15
+        if field_completeness > 80:
+            quality_score += 30
+        elif field_completeness > 60:
+            quality_score += 15
+
+        return {
+            "total_items": total_items,
+            "successful_items": successful_items,
+            "items_with_blobs": items_with_blobs,
+            "quality_score": quality_score,
+            "success_rate": success_rate,
+            "blob_success_rate": blob_success_rate,
+            "field_completeness": field_completeness,
+            "error_count": len(self.extraction_stats["extraction_errors"]),
+        }
+
+    def save_extraction_report(
+        self, output_file: str, extracted_data: List[Dict]
+    ) -> bool:
+        """
+        JTBD:
+        Как метод сохранения отчета, я хочу сохранить отчет об извлечении,
+        чтобы документировать результаты работы экстрактора.
+
+        Args:
+            output_file: Путь к файлу для сохранения отчета
+            extracted_data: Список извлеченных данных
+
+        Returns:
+            True если отчет сохранен успешно, False иначе
         """
         try:
-            # Создаем директорию если не существует
-            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            # Анализируем качество извлечения
+            quality_metrics = self.analyze_extraction_quality(extracted_data)
+
+            # Создаем отчет
+            report = {
+                "extraction_stats": self.get_extraction_stats(),
+                "quality_metrics": quality_metrics,
+                "extracted_data": extracted_data,
+                "timestamp": datetime.now().isoformat(),
+                "total_items": len(extracted_data),
+            }
+
+            import json
 
             with open(output_file, "w", encoding="utf-8") as f:
-                json.dump(self.results, f, ensure_ascii=False, indent=2, default=str)
+                json.dump(report, f, ensure_ascii=False, indent=2)
 
-            logger.info(f"✅ Результаты сохранены в: {output_file}")
             return True
 
         except Exception as e:
-            logger.error(f"❌ Ошибка сохранения результатов: {e}")
+            self.log_extraction_error(
+                e, {"method": "save_extraction_report", "output_file": output_file}
+            )
             return False
 
-    def log_progress(self, current: int, total: int, message: str = "") -> None:
-        """
-        Логирование прогресса обработки
-
-        Args:
-            current: Текущий элемент
-            total: Общее количество элементов
-            message: Дополнительное сообщение
-        """
-        percentage = (current / total * 100) if total > 0 else 0
-        progress_msg = f"📊 Прогресс: {current:,}/{total:,} ({percentage:.1f}%)"
-        if message:
-            progress_msg += f" - {message}"
-        logger.info(progress_msg)
-
-    @abstractmethod
-    def extract(self) -> dict[str, Any]:
-        """
-        Абстрактный метод извлечения данных
-        Должен быть реализован в наследниках
-
-        Returns:
-            Dict[str, Any]: Результаты извлечения
-        """
-
-    def run(self) -> dict[str, Any]:
-        """
-        Запуск полного процесса извлечения
-
-        Returns:
-            Dict[str, Any]: Результаты извлечения
-        """
-        logger.info(f"🚀 Запуск {self.__class__.__name__}")
-        logger.info("=" * 60)
-
-        # Открываем базу данных
-        if not self.open_database():
-            return {"error": "Не удалось открыть базу данных"}
-
-        try:
-            # Выполняем извлечение
-            self.results = self.extract()
-            self.results["metadata"] = self.metadata
-
-            logger.info("✅ Извлечение завершено успешно")
-            return self.results
-
-        except Exception as e:
-            logger.error(f"❌ Ошибка извлечения: {e}")
-            result = {"error": str(e)}
-        finally:
-            # Закрываем базу данных
-            if self.db:
-                self.db = None
-            if self.db_file:
-                self.db_file.close()
-                self.db_file = None
-
-        return result
-
-    def process_blob_field(
-        self,
-        blob_obj: Any,
-        field_name: str = "",
-        context: str = "",
-    ) -> dict[str, Any]:
-        """
-        Обработка BLOB поля с использованием BlobProcessor
-
-        Args:
-            blob_obj: BLOB объект
-            field_name: Имя поля
-            context: Контекст обработки
-
-        Returns:
-            Результат обработки BLOB
-        """
-        return self.blob_processor.extract_blob_content(blob_obj, context, field_name)
+    def __str__(self) -> str:
+        """Строковое представление для отладки."""
+        return f"BaseExtractor(db_connector={self.db_connector}, stats={self.get_extraction_stats()})"

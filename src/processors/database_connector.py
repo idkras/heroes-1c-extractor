@@ -30,6 +30,7 @@ class DatabaseConnector:
         self.file_path = file_path
         self.db_reader: Optional[DatabaseReader] = None
         self._patch_applied = False
+        self._file_handle = None
 
     def connect(self) -> DatabaseReader:
         """
@@ -44,9 +45,10 @@ class DatabaseConnector:
         self._apply_patch()
 
         try:
-            with open(self.file_path, "rb") as f:
-                self.db_reader = DatabaseReader(f)
-                return self.db_reader
+            # Открываем файл и сохраняем handle для предотвращения закрытия
+            self._file_handle = open(self.file_path, "rb")
+            self.db_reader = DatabaseReader(self._file_handle)
+            return self.db_reader
         except ValueError as e:
             if "Unknown field type" in str(e):
                 raise ValueError(
@@ -154,6 +156,10 @@ class DatabaseConnector:
         if self.db_reader:
             # onec_dtools не требует явного закрытия, но очищаем ссылку
             self.db_reader = None
+
+        if self._file_handle:
+            self._file_handle.close()
+            self._file_handle = None
 
     def _apply_patch(self) -> None:
         """

@@ -125,6 +125,102 @@ def extract_table_parts(db, table_name: str, row_index: int) -> dict:
     return table_parts
 
 
+def get_field_mapping() -> dict:
+    """
+    Маппинг полей из field_X в реальные названия полей согласно 1c-structure-mapping-analysis.md
+    """
+    return {
+        # Основные поля
+        "_NUMBER": "Номер документа",
+        "_DATE_TIME": "Дата и время операции",
+        "_DATE": "Дата документа",
+        "_POSTED": "Проведен ли документ",
+        "_MARKED": "Помечен на удаление",
+        # BLOB поля с описаниями
+        "_FLD4229": "Основное описание операции (BLOB)",
+        "_FLD4243": "Дополнительные данные (BLOB)",
+        "_FLD4254": "Дополнительные данные 2 (BLOB)",
+        "_FLD3108": "Складская информация (BLOB)",
+        "_FLD4255": "Дополнительные данные 3 (BLOB)",
+        "_FLD4256": "Дополнительные данные 4 (BLOB)",
+        # Финансовые поля
+        "_FLD4239": "Сумма документа",
+        "_FLD4238": "Количество товара",
+        "_FLD4240": "Единица измерения",
+        "_FLD9885": "Дополнительная сумма",
+        # Операционные поля
+        "_FLD4225": "Флаг операции 1 (поступление)",
+        "_FLD4226": "Флаг операции 2 (реализация)",
+        "_FLD4227": "Флаг операции 3 (перемещение)",
+        "_FLD4236": "Флаг операции 4 (корректировка)",
+        "_FLD4237": "Флаг операции 5 (списание)",
+        # Технические поля
+        "_VERSION": "Версия записи в базе данных",
+        "_FLD8015": "Технический счетчик",
+        "_FLD8070": "Техническое поле",
+        "_FLD8205": "Технический флаг",
+        "_FLD10651": "Технический счетчик",
+        "_FLD10654": "Технический флаг",
+    }
+
+
+def get_field_mapping_by_index() -> dict:
+    """
+    Маппинг полей по индексу для таблиц документов
+    """
+    return {
+        # Стандартные поля документов по индексу
+        0: "_VERSION",  # Версия записи
+        1: "_MARKED",  # Помечен на удаление
+        2: "_DATE_TIME",  # Дата и время
+        3: "_POSTED",  # Проведен ли документ
+        4: "_NUMBER",  # Номер документа
+        5: "_FLD4225",  # Флаг операции 1
+        6: "_FLD4226",  # Флаг операции 2
+        7: "_FLD4227",  # Флаг операции 3
+        8: "_FLD4236",  # Флаг операции 4
+        9: "_FLD4237",  # Флаг операции 5
+        10: "_FLD4229",  # Основное описание (BLOB)
+        11: "_FLD4243",  # Дополнительные данные (BLOB)
+        12: "_FLD4254",  # Дополнительные данные 2 (BLOB)
+        13: "_FLD3108",  # Складская информация (BLOB)
+        14: "_FLD4255",  # Дополнительные данные 3 (BLOB)
+        15: "_FLD4256",  # Дополнительные данные 4 (BLOB)
+        16: "_FLD4238",  # Количество товара
+        17: "_FLD4239",  # Сумма документа
+        18: "_FLD4240",  # Единица измерения
+        19: "_FLD9885",  # Дополнительная сумма
+        # Дополнительные поля
+        20: "_FLD9999",  # Дополнительное поле 1
+        21: "_FLD9998",  # Дополнительное поле 2
+    }
+
+
+def get_field_display_name(field_name: str) -> str:
+    """
+    Получить отображаемое название поля
+    """
+    field_mapping = get_field_mapping()
+    if field_name in field_mapping:
+        return f"{field_name} · {field_mapping[field_name]}"
+    elif field_name.startswith("field_"):
+        # Для field_X полей пытаемся получить реальное имя по индексу
+        try:
+            field_index = int(field_name.split("_")[1])
+            index_mapping = get_field_mapping_by_index()
+            if field_index in index_mapping:
+                real_name = index_mapping[field_index]
+                if real_name in field_mapping:
+                    return f"{real_name} · {field_mapping[real_name]}"
+                else:
+                    return real_name
+        except (ValueError, IndexError):
+            pass
+        return field_name
+    else:
+        return field_name
+
+
 def extract_all_available_data() -> None:
     """
     Извлечение всех доступных данных с надежной обработкой ошибок
@@ -174,96 +270,96 @@ def extract_all_available_data() -> None:
         print(f"✅ Файл 1CD найден: {cdb_file_path}")
 
     try:
-        with open(cdb_file_path, "rb") as f:
-            try:
-                db = DatabaseReader(f)
-            except ValueError as e:
-                if "Unknown field type" in str(e):
-                    print("⚠️ Предупреждение: ")
-                    print("Попробуем использовать более детальный подход...")
-                    # Попробуем использовать более детальный подход
-                    extract_data_detailed_method()
-                    return
-                raise e
+        # ИСПРАВЛЕНО: Открываем файл и сохраняем ссылку для DatabaseReader
+        f = open(cdb_file_path, "rb")
+        try:
+            db = DatabaseReader(f)
+        except ValueError as e:
+            if "Unknown field type" in str(e):
+                print("⚠️ Предупреждение: ")
+                print("Попробуем использовать более детальный подход...")
+                # Попробуем использовать более детальный подход
+                f.close()
+                extract_data_detailed_method()
+                return
+            f.close()
+            raise e
 
-            print("✅ База данных открыта успешно!")
+        print("✅ База данных открыта успешно!")
 
-            # Анализируем все основные таблицы документов
-            document_tables = [
-                "_DOCUMENT163",  # Большая таблица с реальными данными
-                "_DOCUMENT184",  # Таблица с BLOB данными
-                "_DOCUMENT154",  # Таблица с суммами
-                "_DOCUMENT137",  # Таблица с суммами (из предыдущего анализа)
-                "_DOCUMENT12259",  # Таблица документов
-                # КРИТИЧЕСКИЕ ТАБЛИЦЫ ДЛЯ ИЗВЛЕЧЕНИЯ
-                "_DOCUMENTJOURNAL5354",  # 4,458,509 записей - КРИТИЧЕСКАЯ
-                "_DOCUMENTJOURNAL5287",  # 2,798,531 записей - КРИТИЧЕСКАЯ
-                "_DOCUMENTJOURNAL5321",  # 973,975 записей - КРИТИЧЕСКАЯ
-                "_DOCUMENT138",  # 861,178 записей - КРИТИЧЕСКАЯ
-                "_DOCUMENT156",  # 571,213 записей - КРИТИЧЕСКАЯ
-            ]
+        # Анализируем все основные таблицы документов
+        document_tables = [
+            "_DOCUMENT163",  # Большая таблица с реальными данными
+            "_DOCUMENT184",  # Таблица с BLOB данными
+            "_DOCUMENT154",  # Таблица с суммами
+            "_DOCUMENT137",  # Таблица с суммами (из предыдущего анализа)
+            "_DOCUMENT12259",  # Таблица документов
+            # КРИТИЧЕСКИЕ ТАБЛИЦЫ ДЛЯ ИЗВЛЕЧЕНИЯ
+            "_DOCUMENTJOURNAL5354",  # 4,458,509 записей - КРИТИЧЕСКАЯ
+            "_DOCUMENTJOURNAL5287",  # 2,798,531 записей - КРИТИЧЕСКАЯ
+            "_DOCUMENTJOURNAL5321",  # 973,975 записей - КРИТИЧЕСКАЯ
+            "_DOCUMENT138",  # 861,178 записей - КРИТИЧЕСКАЯ
+            "_DOCUMENT156",  # 571,213 записей - КРИТИЧЕСКАЯ
+        ]
 
-            all_results: dict = {
-                "documents": [],
-                "references": [],
-                "registers": [],
-                "metadata": {
-                    "extraction_date": datetime.now(timezone.utc).isoformat(),
-                    "total_documents": 0,
-                    "total_references": 0,
-                    "total_registers": 0,
-                    "total_blobs": 0,
-                    "successful_extractions": 0,
-                    "failed_extractions": 0,
-                    "source_file": "data/raw/1Cv8.1CD",
-                },
-            }
+        all_results: dict = {
+            "documents": [],
+            "references": [],
+            "registers": [],
+            "metadata": {
+                "extraction_date": datetime.now(timezone.utc).isoformat(),
+                "total_documents": 0,
+                "total_references": 0,
+                "total_registers": 0,
+                "total_blobs": 0,
+                "successful_extractions": 0,
+                "failed_extractions": 0,
+                "source_file": "data/raw/1Cv8.1CD",
+            },
+        }
 
-            # Сначала извлекаем все таблицы для анализа
-            all_tables = list(db.tables.keys())
-            print(f"\n📊 Найдено {len(all_tables)} таблиц в базе данных")
+        # Сначала извлекаем все таблицы для анализа
+        all_tables = list(db.tables.keys())
+        print(f"\n📊 Найдено {len(all_tables)} таблиц в базе данных")
 
-            # Фильтруем таблицы по типам
-            document_tables_found = [t for t in all_tables if t.startswith("_DOCUMENT")]
-            reference_tables_found = [
-                t for t in all_tables if t.startswith("_Reference")
-            ]
-            register_tables_found = [
-                t
-                for t in all_tables
-                if t.startswith("_AccumRGT") or t.startswith("_InfoRGT")
-            ]
+        # Фильтруем таблицы по типам
+        document_tables_found = [t for t in all_tables if t.startswith("_DOCUMENT")]
+        reference_tables_found = [t for t in all_tables if t.startswith("_Reference")]
+        register_tables_found = [
+            t
+            for t in all_tables
+            if t.startswith("_AccumRGT") or t.startswith("_InfoRGT")
+        ]
 
-            print(f"   📄 Документы: {len(document_tables_found)}")
-            print(f"   📚 Справочники: {len(reference_tables_found)}")
-            print(f"   📊 Регистры: {len(register_tables_found)}")
+        print(f"   📄 Документы: {len(document_tables_found)}")
+        print(f"   📚 Справочники: {len(reference_tables_found)}")
+        print(f"   📊 Регистры: {len(register_tables_found)}")
 
-            # Обновляем список для извлечения
-            # КРИТИЧЕСКИЕ ТАБЛИЦЫ - ПРИОРИТЕТ 1 (ЛИМИТ 1000 ЗАПИСЕЙ)
-            critical_tables = [
-                "_DOCUMENTJOURNAL5354",  # 4,458,509 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
-                "_DOCUMENTJOURNAL5287",  # 2,798,531 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
-                "_DOCUMENTJOURNAL5321",  # 973,975 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
-                "_DOCUMENT138",  # 861,178 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
-                "_DOCUMENT156",  # 571,213 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
-            ]
+        # Обновляем список для извлечения
+        # КРИТИЧЕСКИЕ ТАБЛИЦЫ - ПРИОРИТЕТ 1 (ЛИМИТ 1000 ЗАПИСЕЙ)
+        critical_tables = [
+            "_DOCUMENTJOURNAL5354",  # 4,458,509 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
+            "_DOCUMENTJOURNAL5287",  # 2,798,531 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
+            "_DOCUMENTJOURNAL5321",  # 973,975 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
+            "_DOCUMENT138",  # 861,178 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
+            "_DOCUMENT156",  # 571,213 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
+        ]
 
-            # Лимит записей для критических таблиц
-            MAX_RECORDS_CRITICAL = (
-                10  # Только 10 документов для тестирования (ИСПРАВЛЕНО)
-            )
+        # Лимит записей для критических таблиц
+        MAX_RECORDS_CRITICAL = 1000  # Увеличено для полного извлечения (ИСПРАВЛЕНО)
 
-            # Проверяем какие критические таблицы доступны
-            available_critical = [t for t in critical_tables if t in db.tables]
-            print(
-                f"🎯 КРИТИЧЕСКИЕ ТАБЛИЦЫ ДОСТУПНЫ: {len(available_critical)}/{len(critical_tables)}",
-            )
-            for table in available_critical:
-                print(f"   ✅ {table}: {len(db.tables[table]):,} записей")
+        # Проверяем какие критические таблицы доступны
+        available_critical = [t for t in critical_tables if t in db.tables]
+        print(
+            f"🎯 КРИТИЧЕСКИЕ ТАБЛИЦЫ ДОСТУПНЫ: {len(available_critical)}/{len(critical_tables)}",
+        )
+        for table in available_critical:
+            print(f"   ✅ {table}: {len(db.tables[table]):,} записей")
 
-            tables_to_extract = (
-                document_tables + available_critical + document_tables_found[:5]
-            )  # Критические + 5 дополнительных
+            # ИСПРАВЛЕНО: Приоритизируем критические таблицы с данными
+            tables_to_extract = available_critical[
+                :3
+            ]  # Только первые 3 критические таблицы с данными
 
             # Добавляем справочники и регистры
             reference_tables_to_extract = reference_tables_found[
@@ -318,11 +414,38 @@ def extract_all_available_data() -> None:
                                 if row_list:
                                     sample_data.append(row_list)
 
-                                    # Анализируем поля
+                                    # Анализируем поля с реальными названиями
                                     for j, value in enumerate(row_list):
                                         field_name = f"field_{j}"
                                         if hasattr(value, "name") and value.name:
                                             field_name = value.name
+                                        # Дополнительная проверка для получения реального имени поля
+                                        elif hasattr(value, "__class__") and hasattr(
+                                            value.__class__, "__name__"
+                                        ):
+                                            # Пытаемся получить имя из типа поля
+                                            if "FLD" in str(value.__class__):
+                                                field_name = (
+                                                    str(value.__class__).split("'")[1]
+                                                    if "'" in str(value.__class__)
+                                                    else f"field_{j}"
+                                                )
+
+                                        # ИСПРАВЛЕНО: Применяем маппинг по индексу для field_X полей
+                                        if field_name.startswith("field_"):
+                                            try:
+                                                field_index = int(
+                                                    field_name.split("_")[1]
+                                                )
+                                                index_mapping = (
+                                                    get_field_mapping_by_index()
+                                                )
+                                                if field_index in index_mapping:
+                                                    field_name = index_mapping[
+                                                        field_index
+                                                    ]
+                                            except (ValueError, IndexError):
+                                                pass
 
                                         if field_name not in field_analysis:
                                             field_analysis[field_name] = {
@@ -348,21 +471,29 @@ def extract_all_available_data() -> None:
                                             )
                                             < 3
                                         ):
+                                            # ИСПРАВЛЕНО: Правильная обработка bytes для BLOB полей
+                                            if isinstance(value, bytes):
+                                                # Показываем размер и первые байты в hex
+                                                sample_value = f"<{len(value)} bytes>: {value[:20].hex()}{'...' if len(value) > 20 else ''}"
+                                            else:
+                                                sample_value = str(value)[:100]
                                             field_analysis[field_name][
                                                 "sample_values"
-                                            ].append(str(value)[:100])
+                                            ].append(sample_value)
                         except Exception as e:
                             print(f"   ⚠️ Ошибка при анализе записи {i}: {e!s}")
                             continue
 
-                    # Выводим схему данных
+                    # Выводим схему данных с реальными названиями полей
                     print(f"   📋 Схема данных ({len(field_analysis)} полей):")
                     for field_name, info in field_analysis.items():
+                        # Используем реальные названия полей из маппинга
+                        display_name = get_field_display_name(field_name)
                         blob_marker = " (BLOB)" if info["is_blob"] else ""
                         numeric_marker = " (NUMERIC)" if info["is_numeric"] else ""
                         date_marker = " (DATE)" if info["is_date"] else ""
                         print(
-                            f"      {field_name}: {info['type']}{blob_marker}{numeric_marker}{date_marker}",
+                            f"      {display_name}: {info['type']}{blob_marker}{numeric_marker}{date_marker}",
                         )
                         if info["sample_values"]:
                             print(f"         Примеры: {info['sample_values']}")
@@ -371,7 +502,10 @@ def extract_all_available_data() -> None:
                     print("   🔍 Анализ уникальных значений:")
                     for field_name, info in field_analysis.items():
                         unique_count = len(set(str(v) for v in info["values"]))
-                        print(f"      {field_name}: {unique_count} уникальных значений")
+                        display_name = get_field_display_name(field_name)
+                        print(
+                            f"      {display_name}: {unique_count} уникальных значений"
+                        )
 
                     # АНАЛИЗ ПУСТЫХ ЗНАЧЕНИЙ (Research Data Standard)
                     print("   📊 Анализ пустых значений:")
@@ -385,8 +519,9 @@ def extract_all_available_data() -> None:
                         empty_percent = (
                             (empty_count / total_count * 100) if total_count > 0 else 0
                         )
+                        display_name = get_field_display_name(field_name)
                         print(
-                            f"      {field_name}: {empty_count}/{total_count} пустых ({empty_percent:.1f}%)",
+                            f"      {display_name}: {empty_count}/{total_count} пустых ({empty_percent:.1f}%)",
                         )
 
                     # ПОИСК IDRRef ПОЛЕЙ (Research Data Standard)
@@ -436,16 +571,17 @@ def extract_all_available_data() -> None:
                     else:
                         print("      Потенциальные ключевые поля: не найдены")
 
-                    # Анализ BLOB полей
+                    # Анализ BLOB полей с реальными названиями
                     blob_fields = [
                         name for name, info in field_analysis.items() if info["is_blob"]
                     ]
                     if blob_fields:
-                        print(f"   📦 BLOB поля найдены: {blob_fields}")
+                        print(f"   📦 BLOB поля найдены:")
                         for blob_field in blob_fields:
                             blob_info = field_analysis[blob_field]
+                            display_name = get_field_display_name(blob_field)
                             print(
-                                f"      {blob_field}: {len(blob_info['values'])} записей",
+                                f"      {display_name}: {len(blob_info['values'])} записей",
                             )
                             # Анализ содержимого BLOB
                             for value in blob_info["values"][:3]:  # Первые 3 значения
@@ -633,7 +769,8 @@ def extract_all_available_data() -> None:
                     print("   🔍 Паттерны в данных:")
                     for field_name, info in field_analysis.items():
                         if info["sample_values"]:
-                            print(f"      {field_name}: {info['sample_values']}")
+                            display_name = get_field_display_name(field_name)
+                            print(f"      {display_name}: {info['sample_values']}")
 
                     # СОЗДАНИЕ ПАСПОРТА ДОКУМЕНТА (Research Data Standard)
                     print("   📄 Паспорт документа:")
@@ -647,24 +784,25 @@ def extract_all_available_data() -> None:
                         f"      Поля дат: {len([name for name, info in field_analysis.items() if info['is_date']])}",
                     )
 
-                    # АНАЛИЗ НАЗНАЧЕНИЯ ПОЛЕЙ
+                    # АНАЛИЗ НАЗНАЧЕНИЯ ПОЛЕЙ с реальными названиями
                     print("   🎯 Анализ назначения полей:")
                     for field_name, info in field_analysis.items():
+                        display_name = get_field_display_name(field_name)
                         if info["is_blob"]:
                             print(
-                                f"      {field_name}: BLOB поле (возможно, содержит описания или ссылки)",
+                                f"      {display_name}: BLOB поле (возможно, содержит описания или ссылки)",
                             )
                         elif info["is_numeric"]:
                             print(
-                                f"      {field_name}: Числовое поле (возможно, суммы или количества)",
+                                f"      {display_name}: Числовое поле (возможно, суммы или количества)",
                             )
                         elif info["is_date"]:
                             print(
-                                f"      {field_name}: Поле даты (возможно, дата документа или операции)",
+                                f"      {display_name}: Поле даты (возможно, дата документа или операции)",
                             )
                         else:
                             print(
-                                f"      {field_name}: Текстовое поле (возможно, номера или описания)",
+                                f"      {display_name}: Текстовое поле (возможно, номера или описания)",
                             )
 
                     # АНАЛИЗ ДУБЛИРОВАНИЯ (ПРИОРИТЕТ 2)
@@ -686,8 +824,9 @@ def extract_all_available_data() -> None:
                             }
                             if duplicates:
                                 duplicate_analysis[field_name] = duplicates
+                                display_name = get_field_display_name(field_name)
                                 print(
-                                    f"      {field_name}: {len(duplicates)} дублированных значений",
+                                    f"      {display_name}: {len(duplicates)} дублированных значений",
                                 )
                                 for dup_value, count in list(duplicates.items())[
                                     :3
@@ -696,7 +835,8 @@ def extract_all_available_data() -> None:
                                         f"         '{dup_value[:50]}...' - {count} раз",
                                     )
                             else:
-                                print(f"      {field_name}: дублирования не найдены")
+                                display_name = get_field_display_name(field_name)
+                                print(f"      {display_name}: дублирования не найдены")
 
                     if duplicate_analysis:
                         print(
@@ -705,32 +845,34 @@ def extract_all_available_data() -> None:
                     else:
                         print("   ✅ Дублирования не найдены")
 
-                    # Анализ числовых полей
+                    # Анализ числовых полей с реальными названиями
                     numeric_fields = [
                         name
                         for name, info in field_analysis.items()
                         if info["is_numeric"]
                     ]
                     if numeric_fields:
-                        print(f"   🔢 Числовые поля: {numeric_fields}")
+                        print(f"   🔢 Числовые поля:")
                         for num_field in numeric_fields:
                             values = field_analysis[num_field]["values"]
                             if values:
+                                display_name = get_field_display_name(num_field)
                                 print(
-                                    f"      {num_field}: {min(values)} - {max(values)}",
+                                    f"      {display_name}: {min(values)} - {max(values)}",
                                 )
 
-                    # Анализ дат
+                    # Анализ дат с реальными названиями
                     date_fields = [
                         name for name, info in field_analysis.items() if info["is_date"]
                     ]
                     if date_fields:
-                        print(f"   📅 Поля дат: {date_fields}")
+                        print(f"   📅 Поля дат:")
                         for date_field in date_fields:
                             values = field_analysis[date_field]["values"]
                             if values:
+                                display_name = get_field_display_name(date_field)
                                 print(
-                                    f"      {date_field}: {min(values)} - {max(values)}",
+                                    f"      {display_name}: {min(values)} - {max(values)}",
                                 )
 
                     print(f"   📄 Примеры данных ({len(sample_data)} записей):")
@@ -800,17 +942,40 @@ def extract_all_available_data() -> None:
                             if not row_list:
                                 continue
 
-                            # ИСПРАВЛЕНО: Безопасное создание словаря
+                            # ИСПРАВЛЕНО: Безопасное создание словаря с реальными названиями полей
                             row_dict = {}
                             for j, value in enumerate(row_list):
+                                field_name = f"field_{j}"
                                 if (
                                     hasattr(value, "name")
                                     and value.name
                                     and value.name.strip()
                                 ):
-                                    row_dict[value.name] = value
+                                    field_name = value.name
+                                    row_dict[field_name] = value
                                 else:
-                                    row_dict[f"field_{j}"] = value
+                                    # Дополнительная проверка для получения реального имени поля
+                                    if hasattr(value, "__class__") and hasattr(
+                                        value.__class__, "__name__"
+                                    ):
+                                        if "FLD" in str(value.__class__):
+                                            field_name = (
+                                                str(value.__class__).split("'")[1]
+                                                if "'" in str(value.__class__)
+                                                else f"field_{j}"
+                                            )
+
+                                    # ИСПРАВЛЕНО: Применяем маппинг по индексу для field_X полей
+                                    if field_name.startswith("field_"):
+                                        try:
+                                            field_index = int(field_name.split("_")[1])
+                                            index_mapping = get_field_mapping_by_index()
+                                            if field_index in index_mapping:
+                                                field_name = index_mapping[field_index]
+                                        except (ValueError, IndexError):
+                                            pass
+
+                                    row_dict[field_name] = value
 
                             # Создаем структуру документа с извлечением реальных данных
                             document: dict = {
@@ -1255,7 +1420,12 @@ def extract_all_available_data() -> None:
 
                                     # Показываем содержимое BLOB для анализа
                                     if len(blob_content) > 0:
-                                        print(f"      📄 СОДЕРЖИМОЕ BLOB {field_name}:")
+                                        display_name = get_field_display_name(
+                                            field_name
+                                        )
+                                        print(
+                                            f"      📄 СОДЕРЖИМОЕ BLOB {display_name}:"
+                                        )
                                         # Показываем первые 200 символов для анализа
                                         preview = (
                                             blob_content[:200]
@@ -1780,6 +1950,9 @@ def extract_all_available_data() -> None:
                                         )
                                     continue
 
+                            # ИСПРАВЛЕНО: Увеличиваем счетчик ДО добавления в результаты
+                            successful_docs += 1
+
                             if (
                                 isinstance(all_results, dict)
                                 and "documents" in all_results
@@ -1790,7 +1963,6 @@ def extract_all_available_data() -> None:
                                 and "metadata" in all_results
                             ):
                                 all_results["metadata"]["total_documents"] += 1
-                            successful_docs += 1
 
                             # УПРОЩЕННОЕ ЛОГИРОВАНИЕ
                             if i <= 3 or i % 100 == 0:  # Первые 3 и каждую 100-ю
@@ -2002,19 +2174,22 @@ def extract_all_available_data() -> None:
                         except Exception as e:
                             # ИСПРАВЛЕНО: Обрабатываем только реальные ошибки, не StopIteration
                             error_msg = str(e)
-                            if (
-                                "StopIteration" not in error_msg
-                                and "generator raised StopIteration" not in error_msg
-                            ):
-                                # Игнорируем BrokenPipeError при использовании head
-                                if "BrokenPipeError" not in error_msg:
+                            # Игнорируем BrokenPipeError при использовании head
+                            if "BrokenPipeError" not in error_msg:
+                                if (
+                                    "StopIteration" not in error_msg
+                                    and "generator raised StopIteration"
+                                    not in error_msg
+                                ):
                                     print(
                                         f"   ⚠️ Ошибка при обработке записи {i}: {e!s}",
                                     )
+                                else:
+                                    # StopIteration - это нормальное завершение итератора
+                                    continue
                             else:
-                                print(
-                                    f"   ℹ️ BrokenPipeError - проблема с выводом для записи {i}",
-                                )
+                                # BrokenPipeError - нормальное завершение при использовании head
+                                continue
                             continue
 
                     # СВОДНАЯ СТАТИСТИКА ПО BLOB ДАННЫМ
@@ -2132,6 +2307,14 @@ def extract_all_available_data() -> None:
 
             print(f"\n💾 Результат сохранен в: {output_file}")
 
+            # СОЗДАЕМ ДОКУМЕНТЫ ИЗ ИЗВЛЕЧЕННЫХ ДАННЫХ
+            print("\n📄 СОЗДАНИЕ ДОКУМЕНТОВ ИЗ ИЗВЛЕЧЕННЫХ ДАННЫХ")
+            create_documents_from_data(all_results)
+
+            # СОЗДАЕМ ДОКУМЕНТЫ ИЗ ИЗВЛЕЧЕННЫХ ДАННЫХ
+            print("\n📄 СОЗДАНИЕ ДОКУМЕНТОВ ИЗ ИЗВЛЕЧЕННЫХ ДАННЫХ")
+            create_documents_from_data(all_results)
+
             # Создаем XML с всеми доступными данными
             create_all_available_xml(all_results)
 
@@ -2145,6 +2328,10 @@ def extract_all_available_data() -> None:
         import traceback
 
         traceback.print_exc()
+    finally:
+        # ИСПРАВЛЕНО: Закрываем файл в блоке finally
+        if "f" in locals():
+            f.close()
 
 
 def convert_to_parquet_duckdb(all_results: dict) -> None:
@@ -2208,6 +2395,18 @@ def convert_to_parquet_duckdb(all_results: dict) -> None:
             # Создаем DataFrame
             df = pd.DataFrame(documents_data)
 
+            # ИСПРАВЛЕНО: Конвертируем все объекты в строки для Parquet
+            for col in df.columns:
+                if df[col].dtype == "object":
+                    # Конвертируем все значения в строки
+                    df[col] = df[col].apply(
+                        lambda x: (
+                            x.hex()
+                            if isinstance(x, bytes)
+                            else str(x) if pd.notna(x) else None
+                        )
+                    )
+
             # Сохраняем в Parquet
             parquet_file = "data/results/parquet/documents.parquet"
             df.to_parquet(parquet_file, index=False)
@@ -2217,10 +2416,9 @@ def convert_to_parquet_duckdb(all_results: dict) -> None:
             duckdb_file = "data/results/duckdb/analysis.duckdb"
             con = duckdb.connect(duckdb_file)
 
-            # Загружаем данные в DuckDB (ИСПРАВЛЕНО: убираем SQL инъекцию)
+            # Загружаем данные в DuckDB (ИСПРАВЛЕНО: используем правильный синтаксис)
             con.execute(
-                "CREATE OR REPLACE TABLE documents AS SELECT * FROM ?",
-                [parquet_file],
+                f"CREATE OR REPLACE TABLE documents AS SELECT * FROM read_parquet('{parquet_file}')"
             )
 
             # Создаем индексы для быстрого поиска
@@ -2400,6 +2598,144 @@ def extract_data_alternative_method() -> None:
 
     except (ValueError, TypeError, AttributeError, FileNotFoundError):
         print("❌ Ошибка в альтернативном методе: ")
+
+
+def create_documents_from_data(data: dict) -> None:
+    """
+    Создает документы из извлеченных данных согласно 1c.todo.md
+    """
+    print("📄 СОЗДАНИЕ ДОКУМЕНТОВ ИЗ ИЗВЛЕЧЕННЫХ ДАННЫХ")
+    print("=" * 60)
+
+    # Создаем директорию для документов
+    docs_dir = "data/results/documents"
+    os.makedirs(docs_dir, exist_ok=True)
+
+    # Создаем документы по типам
+    document_types = {
+        "documents": "Документы",
+        "references": "Справочники",
+        "registers": "Регистры",
+    }
+
+    for data_type, russian_name in document_types.items():
+        if data_type in data and data[data_type]:
+            print(f"📄 Создание документа: {russian_name}")
+
+            # Создаем markdown документ
+            doc_content = f"""# 📊 {russian_name} - Анализ данных 1С
+
+## 📋 Общая информация
+- **Дата извлечения:** {datetime.now().strftime('%d.%m.%Y %H:%M')}
+- **Количество записей:** {len(data[data_type])}
+- **Источник:** 1CD файл
+
+## 📊 Статистика
+"""
+
+            # Добавляем статистику по полям
+            if data[data_type]:
+                sample_record = data[data_type][0]
+                if isinstance(sample_record, dict) and "fields" in sample_record:
+                    fields = sample_record["fields"]
+                    doc_content += f"- **Поля:** {len(fields)}\n"
+
+                    # Анализируем типы полей
+                    field_types = {}
+                    for field_name, field_value in fields.items():
+                        field_type = type(field_value).__name__
+                        field_types[field_type] = field_types.get(field_type, 0) + 1
+
+                    doc_content += "## 🔍 Типы полей\n"
+                    for field_type, count in field_types.items():
+                        doc_content += f"- **{field_type}:** {count} полей\n"
+
+            # Добавляем примеры данных
+            doc_content += "\n## 📄 Примеры данных\n"
+            for i, record in enumerate(data[data_type][:5]):  # Первые 5 записей
+                doc_content += f"\n### Запись {i+1}\n"
+                if isinstance(record, dict):
+                    for key, value in record.items():
+                        if key != "blob_content":  # Пропускаем большие BLOB данные
+                            doc_content += f"- **{key}:** {value}\n"
+
+            # Сохраняем документ
+            doc_filename = f"{docs_dir}/{data_type}_analysis.md"
+            with open(doc_filename, "w", encoding="utf-8") as f:
+                f.write(doc_content)
+
+            print(f"   ✅ Создан документ: {doc_filename}")
+
+    print(f"📄 Все документы созданы в директории: {docs_dir}")
+
+
+def create_documents_from_data(data: dict) -> None:
+    """
+    Создает документы из извлеченных данных согласно 1c.todo.md
+    """
+    print("📄 СОЗДАНИЕ ДОКУМЕНТОВ ИЗ ИЗВЛЕЧЕННЫХ ДАННЫХ")
+    print("=" * 60)
+
+    # Создаем директорию для документов
+    docs_dir = "data/results/documents"
+    os.makedirs(docs_dir, exist_ok=True)
+
+    # Создаем документы по типам
+    document_types = {
+        "documents": "Документы",
+        "references": "Справочники",
+        "registers": "Регистры",
+    }
+
+    for data_type, russian_name in document_types.items():
+        if data_type in data and data[data_type]:
+            print(f"📄 Создание документа: {russian_name}")
+
+            # Создаем markdown документ
+            doc_content = f"""# 📊 {russian_name} - Анализ данных 1С
+
+## 📋 Общая информация
+- **Дата извлечения:** {datetime.now().strftime('%d.%m.%Y %H:%M')}
+- **Количество записей:** {len(data[data_type])}
+- **Источник:** 1CD файл
+
+## 📊 Статистика
+"""
+
+            # Добавляем статистику по полям
+            if data[data_type]:
+                sample_record = data[data_type][0]
+                if isinstance(sample_record, dict) and "fields" in sample_record:
+                    fields = sample_record["fields"]
+                    doc_content += f"- **Поля:** {len(fields)}\n"
+
+                    # Анализируем типы полей
+                    field_types = {}
+                    for field_name, field_value in fields.items():
+                        field_type = type(field_value).__name__
+                        field_types[field_type] = field_types.get(field_type, 0) + 1
+
+                    doc_content += "## 🔍 Типы полей\n"
+                    for field_type, count in field_types.items():
+                        doc_content += f"- **{field_type}:** {count} полей\n"
+
+            # Добавляем примеры данных
+            doc_content += "\n## 📄 Примеры данных\n"
+            for i, record in enumerate(data[data_type][:5]):  # Первые 5 записей
+                doc_content += f"\n### Запись {i+1}\n"
+                if isinstance(record, dict):
+                    for key, value in record.items():
+                        if key != "blob_content":  # Пропускаем большие BLOB данные
+                            doc_content += f"- **{key}:** {value}\n"
+
+            # Сохраняем документ
+            doc_filename = f"{docs_dir}/{data_type}_analysis.md"
+            with open(doc_filename, "w", encoding="utf-8") as f:
+                f.write(doc_content)
+
+            print(f"   ✅ Создан документ: {doc_filename}")
+
+    print(f"📄 Все документы созданы в директории: {docs_dir}")
 
 
 def create_all_available_xml(documents: dict) -> None:
