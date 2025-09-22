@@ -132,7 +132,33 @@ pip install onec_dtools
 
 # Установка Wine (для запуска Windows утилит на macOS)
 brew install wine
+
+# Установка pre-commit хуков для качества кода
+make install-pre-commit
 ```
+
+### 🔍 Качество кода и автоматические проверки
+
+Проект настроен для автоматических проверок качества кода:
+
+- **DeepSource**: Автоматические проверки в PR
+- **Pre-commit**: Локальные проверки перед коммитом
+- **Cursor AI Agent**: Полуавтоматическое исправление замечаний
+
+```bash
+# Локальная проверка качества (аналог DeepSource)
+make deepsource-local
+
+# Автоматическое исправление ошибок
+make auto-fix
+
+# Полная проверка качества
+make quality-check
+```
+
+📚 **Документация по качеству кода:**
+- [DeepSource + Cursor AI Integration](docs/DEEPSOURCE_CURSOR_INTEGRATION.md)
+- [GitHub + DeepSource Setup](docs/GITHUB_DEEPSOURCE_SETUP.md)
 
 ### 2. Настройка окружения
 

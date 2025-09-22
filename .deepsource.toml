@@ -1,0 +1,65 @@
+version = 1
+
+# Python анализатор
+[[analyzers]]
+name = "python"
+enabled = true
+
+  [analyzers.meta]
+  runtime_version = "3.11"
+
+# JavaScript/TypeScript анализатор (для notebooks и UI)
+[[analyzers]]
+name = "javascript"
+enabled = true
+
+  [analyzers.meta]
+  runtime_version = "nodejs_20"
+
+# Поиск секретов и ключей
+[[analyzers]]
+name = "secrets"
+enabled = true
+
+# Исключения для legacy кода и сгенерированных файлов
+[[transformers]]
+name = "ignore"
+paths = [
+  "**/__pycache__/**",
+  "**/.*",
+  "**/node_modules/**",
+  "**/build/**",
+  "**/dist/**",
+  "**/htmlcov/**",
+  "**/temp/**",
+  "**/patches/**",
+  "**/tools/**",
+  "**/dck1c/**",
+  "**/data/raw/**",
+  "**/data/exported/**",
+  "**/data/results/**",
+  "**/notebooks/data/**",
+  "**/output_screenshots/**",
+  "**/logs/**",
+  "**/coverage.xml",
+  "**/all_available_data.xml",
+  "**/research_1c_analysis_results.json",
+  "**/large_files/**",
+  "**/cleanup/**"
+]
+
+# Настройки качества кода
+[quality_gate]
+# Блокировать PR при критичных проблемах
+block_on_critical = true
+block_on_high = false
+block_on_medium = false
+block_on_low = false
+
+# Настройки покрытия тестов
+[coverage]
+# Минимальное покрытие для новых файлов
+min_coverage = 80
+# Минимальное покрытие для измененных файлов
+min_coverage_changed = 70
+
