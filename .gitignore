@@ -130,6 +130,8 @@ data/results/*.json
 data/results/*.duckdb
 data/results/*.parquet
 data/results/documents/
+data/results/parquet_organized/
+data/results/duckdb/
 temp/large_files/
 temp/cleanup/
 *.png

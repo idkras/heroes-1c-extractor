@@ -590,8 +590,8 @@ class BlobProcessor:
                     # Пробуем декодировать как UTF-16 (стандарт 1С)
                     decoded_text = x.decode("utf-16le")
                     if self._is_valid_text(decoded_text):
-                        return {
-                            "value": {
+                    return {
+                        "value": {
                                 "content": decoded_text,
                                 "type": "text_utf16_decoded",
                                 "length": len(decoded_text),
@@ -654,8 +654,8 @@ class BlobProcessor:
                         try:
                             decoded = x.decode(encoding)
                             if self._is_valid_text(decoded):
-                                return {
-                                    "value": {
+                    return {
+                        "value": {
                                         "content": decoded,
                                         "type": f"text_{encoding}",
                                         "length": len(decoded),
@@ -1050,8 +1050,8 @@ class TableAnalyzer:
                 is_blob = True  # JSON строки обрабатываем как BLOB
                 field_type = "json_string"
             else:
-                is_string = True
-                field_type = "string"
+            is_string = True
+            field_type = "string"
         elif hasattr(value, "value") and isinstance(value.value, str):
             # ИСПРАВЛЕНО: Проверяем на JSON строки в value
             if (
@@ -1062,8 +1062,8 @@ class TableAnalyzer:
                 is_blob = True  # JSON строки обрабатываем как BLOB
                 field_type = "json_string_object"
             else:
-                is_string = True
-                field_type = "string_object"
+            is_string = True
+            field_type = "string_object"
 
         return {
             "is_blob": is_blob,
@@ -1229,11 +1229,11 @@ class SimpleDocumentExtractor:
                                     row_data, i, table_name
                                 )
 
-                            if document:
-                                documents.append(document)
-                                self.extraction_stats["successful_extractions"] += 1
-                            else:
-                                self.extraction_stats["failed_extractions"] += 1
+                        if document:
+                            documents.append(document)
+                            self.extraction_stats["successful_extractions"] += 1
+                        else:
+                            self.extraction_stats["failed_extractions"] += 1
 
                         except Exception as e:
                             error_msg = f"Ошибка обработки записи {i}: {e}"
@@ -1249,7 +1249,7 @@ class SimpleDocumentExtractor:
                     )
 
                 else:
-                    print(
+                        print(
                         f"❌ StopIterationHandler не смог извлечь данные из {table_name}"
                     )
                     print(f"   Ошибки: {iteration_result.errors}")
