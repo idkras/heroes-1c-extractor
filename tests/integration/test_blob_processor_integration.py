@@ -7,17 +7,17 @@ JTBD:
 чтобы убедиться в правильном извлечении BLOB полей из базы данных.
 """
 
-import os
 import sys
-import pytest
 from pathlib import Path
-from typing import Any, Dict, List
+
+import pytest
 
 # Добавляем путь к src для импорта
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from processors.blob_processor import BlobProcessor
 from onec_dtools import DatabaseReader
+
+from src.processors.blob_processor import BlobProcessor
 
 
 class TestBlobProcessorIntegration:
@@ -61,7 +61,7 @@ class TestBlobProcessorIntegration:
         чтобы убедиться в правильном извлечении BLOB полей.
         """
         # Arrange
-        print(f"\n🔍 Тестирование BlobProcessor с реальной 1С базой")
+        print("\n🔍 Тестирование BlobProcessor с реальной 1С базой")
         print(f"📊 Найдено таблиц: {len(db_connection.tables)}")
 
         # Находим таблицы с документами
@@ -97,15 +97,15 @@ class TestBlobProcessorIntegration:
         # Тестируем BlobProcessor на реальных данных
         blob_results = []
         for i, (row_index, row) in enumerate(
-            non_empty_rows[:3]
+            non_empty_rows[:3],
         ):  # Тестируем первые 3 записи
-            print(f"\n📋 Анализ записи {i+1} (индекс {row_index}):")
+            print(f"\n📋 Анализ записи {i + 1} (индекс {row_index}):")
 
             try:
                 # Извлекаем данные строки
                 row_list = row.as_list(True) if hasattr(row, "as_list") else []
                 if not row_list:
-                    print(f"   ⚠️ Пустая строка")
+                    print("   ⚠️ Пустая строка")
                     continue
 
                 # Создаем словарь полей
@@ -141,47 +141,47 @@ class TestBlobProcessorIntegration:
 
                     if result.get("extraction_methods"):
                         print(
-                            f"      ✅ Успешно извлечено методами: {', '.join(result['extraction_methods'])}"
+                            f"      ✅ Успешно извлечено методами: {', '.join(result['extraction_methods'])}",
                         )
 
                         # Проверяем содержимое
                         if "value" in result and result["value"].get("content"):
                             content = result["value"]["content"]
                             print(
-                                f"      📄 Содержимое ({len(content)} символов): {content[:100]}{'...' if len(content) > 100 else ''}"
+                                f"      📄 Содержимое ({len(content)} символов): {content[:100]}{'...' if len(content) > 100 else ''}",
                             )
 
                             # Анализируем содержимое
                             flower_info = blob_processor.extract_flower_information(
-                                content
+                                content,
                             )
                             if flower_info["has_flower_info"]:
-                                print(f"      🌸 Найдена цветочная информация!")
+                                print("      🌸 Найдена цветочная информация!")
 
                             store_info = blob_processor.extract_store_information(
-                                content
+                                content,
                             )
                             if store_info["store_name"]:
                                 print(
-                                    f"      🏪 Название магазина: {store_info['store_name']}"
+                                    f"      🏪 Название магазина: {store_info['store_name']}",
                                 )
                             if store_info["store_code"]:
                                 print(
-                                    f"      🏷️ Код магазина: {store_info['store_code']}"
+                                    f"      🏷️ Код магазина: {store_info['store_code']}",
                                 )
 
                             doc_type = blob_processor.determine_document_type(content)
                             if doc_type != "Неизвестно":
                                 print(f"      📋 Тип документа: {doc_type}")
                         else:
-                            print(f"      ❌ Не удалось извлечь содержимое")
+                            print("      ❌ Не удалось извлечь содержимое")
                     else:
-                        print(f"      ❌ Не удалось извлечь BLOB данные")
+                        print("      ❌ Не удалось извлечь BLOB данные")
                         if result.get("error"):
                             print(f"         🚫 Ошибка: {result['error']}")
 
             except Exception as e:
-                print(f"   ❌ Ошибка при обработке записи {i+1}: {e}")
+                print(f"   ❌ Ошибка при обработке записи {i + 1}: {e}")
                 continue
 
         # Проверяем результаты
@@ -190,7 +190,7 @@ class TestBlobProcessorIntegration:
         successful_extractions = sum(
             1 for result in blob_results if result.get("extraction_methods")
         )
-        print(f"\n📊 РЕЗУЛЬТАТЫ ТЕСТИРОВАНИЯ:")
+        print("\n📊 РЕЗУЛЬТАТЫ ТЕСТИРОВАНИЯ:")
         print(f"   📦 Всего BLOB полей: {len(blob_results)}")
         print(f"   ✅ Успешно извлечено: {successful_extractions}")
         print(f"   ❌ Неудачных: {len(blob_results) - successful_extractions}")
@@ -224,7 +224,7 @@ class TestBlobProcessorIntegration:
         table_name, table_size = large_tables[0]
 
         print(
-            f"\n🎯 Тестирование на большой таблице: {table_name} ({table_size:,} записей)"
+            f"\n🎯 Тестирование на большой таблице: {table_name} ({table_size:,} записей)",
         )
 
         table = db_connection.tables[table_name]
@@ -269,7 +269,8 @@ class TestBlobProcessorIntegration:
                                     field_name = value.name
 
                                 result = blob_processor.process_blob_field(
-                                    field_name, value
+                                    field_name,
+                                    value,
                                 )
                                 test_results.append(result)
 

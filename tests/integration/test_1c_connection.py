@@ -28,7 +28,7 @@ def test_1c_database_connection():
         return False
 
     print(
-        f"📏 Размер файла: {cdb_file_path.stat().st_size / (1024 * 1024 * 1024):.2f} GB"
+        f"📏 Размер файла: {cdb_file_path.stat().st_size / (1024 * 1024 * 1024):.2f} GB",
     )
 
     try:

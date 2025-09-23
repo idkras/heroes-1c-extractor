@@ -16,7 +16,7 @@ class DocumentsByCriteriaExtractor(BaseExtractor):
     чтобы анализировать качество товаров и корректировки.
     """
 
-    def extract(self) -> dict[str, Any]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict[str, Any]]:
         """
         Поиск документов по критериям из [todo · incidents]/todo.md
         Особое внимание на документы "корректировка качества товара"
@@ -25,9 +25,9 @@ class DocumentsByCriteriaExtractor(BaseExtractor):
         logger.info("🎯 ЦЕЛЬ: Найти документы 'корректировка качества товара'")
         logger.info("=" * 60)
 
-        if self.db is None:
+        if not hasattr(self, "db") or self.db is None:
             print("❌ База данных не открыта")
-            return {"error": "База данных не открыта"}
+            return []
 
         results: dict[str, Any] = {
             "quality_documents": [],
@@ -110,12 +110,15 @@ class DocumentsByCriteriaExtractor(BaseExtractor):
         results["metadata"]["total_quality_documents"] = len(
             results["quality_documents"],
         )
-        return results
+        return [results]
 
 
 def search_documents_by_criteria() -> dict[str, Any]:
     """
     Функция-обертка для обратной совместимости
     """
-    extractor = DocumentsByCriteriaExtractor()
+    from ..processors.database_connector import DatabaseConnector
+
+    db_connector = DatabaseConnector("data/raw/1Cv8.1CD")
+    extractor = DocumentsByCriteriaExtractor(db_connector=db_connector)
     return extractor.run()

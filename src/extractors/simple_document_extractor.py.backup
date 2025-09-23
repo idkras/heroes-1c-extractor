@@ -1,0 +1,1116 @@
+#!/usr/bin/env python3
+"""
+SimpleDocumentExtractor - простой извлекатель документов из 1С.
+
+JTBD:
+Как простой извлекатель документов, я хочу извлекать реальные документы из 1С базы,
+чтобы подтвердить возможность извлечения данных и проанализировать их структуру.
+"""
+
+import os
+import sys
+from datetime import datetime
+from typing import Any
+
+
+# ИСПРАВЛЕНО: Импортируем маппинг полей из legacy кода
+def get_field_mapping() -> dict[str, Any]:
+    """
+    Маппинг полей из field_X в реальные названия полей согласно 1c-structure-mapping-analysis.md
+    """
+    return {
+        # Основные поля
+        "_NUMBER": "Номер документа",
+        "_DATE_TIME": "Дата и время операции",
+        "_DATE": "Дата документа",
+        "_POSTED": "Проведен ли документ",
+        "_MARKED": "Помечен на удаление",
+        # BLOB поля с описаниями
+        "_FLD4229": "Основное описание операции (BLOB)",
+        "_FLD4243": "Дополнительные данные (BLOB)",
+        "_FLD4254": "Дополнительные данные 2 (BLOB)",
+        "_FLD3108": "Складская информация (BLOB)",
+        "_FLD4255": "Дополнительные данные 3 (BLOB)",
+        "_FLD4256": "Дополнительные данные 4 (BLOB)",
+        # Финансовые поля
+        "_FLD4239": "Сумма документа",
+        "_FLD4238": "Количество товара",
+        "_FLD4240": "Единица измерения",
+        "_FLD9885": "Дополнительная сумма",
+        # Операционные поля
+        "_FLD4225": "Флаг операции 1 (поступление)",
+        "_FLD4226": "Флаг операции 2 (реализация)",
+        "_FLD4227": "Флаг операции 3 (перемещение)",
+        "_FLD4236": "Флаг операции 4 (корректировка)",
+        "_FLD4237": "Флаг операции 5 (списание)",
+        # Технические поля
+        "_VERSION": "Версия записи в базе данных",
+        "_FLD8015": "Технический счетчик",
+        "_FLD8070": "Техническое поле",
+        "_FLD8205": "Технический флаг",
+        "_FLD10651": "Технический счетчик",
+        "_FLD10654": "Технический флаг",
+    }
+
+
+def get_field_mapping_by_index() -> dict[int, str]:
+    """
+    Маппинг полей по индексу для таблиц документов
+    """
+    return {
+        # Стандартные поля документов по индексу
+        0: "_VERSION",  # Версия записи
+        1: "_MARKED",  # Помечен на удаление
+        2: "_DATE_TIME",  # Дата и время
+        3: "_POSTED",  # Проведен ли документ
+        4: "_NUMBER",  # Номер документа
+        5: "_FLD4225",  # Флаг операции 1
+        6: "_FLD4226",  # Флаг операции 2
+        7: "_FLD4227",  # Флаг операции 3
+        8: "_FLD4236",  # Флаг операции 4
+        9: "_FLD4237",  # Флаг операции 5
+        10: "_FLD4229",  # Основное описание (BLOB)
+        11: "_FLD4243",  # Дополнительные данные (BLOB)
+        12: "_FLD4254",  # Дополнительные данные 2 (BLOB)
+        13: "_FLD3108",  # Складская информация (BLOB)
+        14: "_FLD4255",  # Дополнительные данные 3 (BLOB)
+        15: "_FLD4256",  # Дополнительные данные 4 (BLOB)
+        16: "_FLD4238",  # Количество товара
+        17: "_FLD4239",  # Сумма документа
+        18: "_FLD4240",  # Единица измерения
+        19: "_FLD9885",  # Дополнительная сумма
+        # Дополнительные поля
+        20: "_FLD9999",  # Дополнительное поле 1
+        21: "_FLD9998",  # Дополнительное поле 2
+    }
+
+
+def get_field_display_name(field_name: str) -> str:
+    """
+    Получить отображаемое название поля
+    """
+    field_mapping = get_field_mapping()
+    if field_name in field_mapping:
+        return f"{field_name} · {field_mapping[field_name]}"
+    if field_name.startswith("field_"):
+        # Для field_X полей пытаемся получить реальное имя по индексу
+        try:
+            field_index = int(field_name.split("_")[1])
+            index_mapping = get_field_mapping_by_index()
+            if field_index in index_mapping:
+                real_name = index_mapping[field_index]
+                if isinstance(real_name, str) and real_name in field_mapping:
+                    return f"{real_name} · {field_mapping[real_name]}"
+                return str(real_name) if real_name is not None else field_name
+        except (ValueError, IndexError):
+            pass
+        return field_name
+    return field_name
+
+
+def get_document_type_mapping(table_name: str) -> str:
+    """
+    Маппинг типов документов для правильных названий файлов
+    """
+    mapping = {
+        "_DOCUMENT138": "поступление_товаров",
+        "_DOCUMENT137": "розничные_продажи",
+        "_DOCUMENT138_VT3118": "табличные_части",
+        "_DOCUMENT137_VT3035": "табличные_части_продаж",
+        "_DOCUMENT184": "счета_фактуры",
+        "_DOCUMENT154": "отгрузка_со_склада",
+        "_DOCUMENT156": "документы",
+        "_DOCUMENT163": "перекомплектация",
+        "_DOCUMENTJOURNAL5354": "журнал_документов_5354",
+        "_DOCUMENTJOURNAL5287": "журнал_документов_5287",
+        "_DOCUMENTJOURNAL5321": "журнал_документов_5321",
+    }
+    return mapping.get(table_name, "неизвестно")
+
+
+# Добавляем путь к процессорам
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "processors"))
+
+
+# ИСПРАВЛЕНО: Реальные компоненты вместо заглушек
+class BlobProcessor:
+    def process_blob_field(self, field_name: str, value: Any) -> dict[str, Any]:
+        """
+        JTBD:
+        Как BlobProcessor, я хочу обрабатывать BLOB поля как в legacy коде,
+        чтобы извлекать реальные данные из BLOB полей.
+        """
+        try:
+            # ИСПРАВЛЕНО: Проверяем разные типы BLOB объектов
+            blob_value = None
+
+            # Случай 1: Прямые bytes
+            if isinstance(value, bytes):
+                blob_value = value
+            # Случай 2: Объект с атрибутом value
+            elif hasattr(value, "value") and value.value is not None:
+                blob_value = value.value
+            # Случай 3: Объект с атрибутом data
+            elif hasattr(value, "data") and value.data is not None:
+                blob_value = value.data
+            # Случай 4: Объект с атрибутом content
+            elif hasattr(value, "content") and value.content is not None:
+                blob_value = value.content
+
+            if blob_value is None:
+                # Если ничего не найдено, возвращаем пустой результат
+                return {
+                    "value": {
+                        "content": "",
+                        "type": "empty",
+                        "length": 0,
+                    },
+                    "extraction_methods": ["empty"],
+                    "size": 0,
+                }
+
+            if isinstance(blob_value, bytes):
+                # Обрабатываем bytes
+                # Пробуем декодировать как UTF-16 (стандарт для NT полей)
+                try:
+                    decoded_content = blob_value.decode("utf-16")
+                    if decoded_content and len(decoded_content.strip()) > 0:
+                        return {
+                            "value": {
+                                "content": decoded_content,
+                                "type": "text_utf16",
+                                "length": len(decoded_content),
+                            },
+                            "extraction_methods": ["utf16"],
+                            "size": len(blob_value),
+                        }
+                except UnicodeDecodeError:
+                    pass
+
+                # Пробуем UTF-8
+                try:
+                    decoded_content = blob_value.decode("utf-8")
+                    if decoded_content and len(decoded_content.strip()) > 0:
+                        return {
+                            "value": {
+                                "content": decoded_content,
+                                "type": "text_utf8",
+                                "length": len(decoded_content),
+                            },
+                            "extraction_methods": ["utf8"],
+                            "size": len(blob_value),
+                        }
+                except UnicodeDecodeError:
+                    pass
+
+                # Пробуем CP1251
+                try:
+                    decoded_content = blob_value.decode("cp1251")
+                    if decoded_content and len(decoded_content.strip()) > 0:
+                        return {
+                            "value": {
+                                "content": decoded_content,
+                                "type": "text_cp1251",
+                                "length": len(decoded_content),
+                            },
+                            "extraction_methods": ["cp1251"],
+                            "size": len(blob_value),
+                        }
+                except UnicodeDecodeError:
+                    pass
+
+                # Если все кодировки не сработали, сохраняем как hex
+                return {
+                    "value": {
+                        "content": blob_value.hex(),
+                        "type": "binary_hex",
+                        "length": len(blob_value),
+                    },
+                    "extraction_methods": ["hex"],
+                    "size": len(blob_value),
+                }
+
+            # Не bytes, конвертируем в строку
+            content = str(blob_value)
+            if content and len(content.strip()) > 0:
+                return {
+                    "value": {
+                        "content": content,
+                        "type": type(blob_value).__name__,
+                        "length": len(content),
+                    },
+                    "extraction_methods": ["string"],
+                    "size": len(content),
+                }
+            else:
+                # Пустое содержимое
+                return {
+                    "value": {
+                        "content": "",
+                        "type": "empty",
+                        "length": 0,
+                    },
+                    "extraction_methods": ["empty"],
+                    "size": 0,
+                }
+
+        except Exception as e:
+            return {"error": f"Blob processing error: {e}"}
+
+
+class DatabaseConnector:
+    def __init__(self, database_path: str):
+        self.database_path = database_path
+        self.db: Any = None
+
+    def connect(self) -> bool:
+        """Подключается к базе данных 1С"""
+        try:
+            # ИСПРАВЛЕНО: Применяем патч для поддержки новых типов полей 1С
+            try:
+                import os
+                import sys
+
+                patch_path = os.path.join(
+                    os.path.dirname(__file__),
+                    "..",
+                    "..",
+                    "patches",
+                    "onec_dtools",
+                )
+                sys.path.insert(0, patch_path)
+                try:
+                    from simple_patch import apply_simple_patch
+                except ImportError:
+                    # Если не удается импортировать, пропускаем патч
+                    print("⚠️ simple_patch недоступен, пропускаем патч")
+                    return False
+
+                apply_simple_patch()
+                print("✅ Патч для новых типов полей применен")
+            except Exception as e:
+                print(f"⚠️ Не удалось применить патч: {e}")
+
+            from onec_dtools import DatabaseReader
+
+            f = open(self.database_path, "rb")
+            self.db = DatabaseReader(f)
+            return True
+        except Exception as e:
+            print(f"❌ Ошибка подключения к базе данных: {e}")
+            return False
+
+    def get_table(self, table_name: str) -> Any:
+        """Получает таблицу по имени"""
+        if self.db is not None and table_name in self.db.tables:
+            return self.db.tables[table_name]
+        return None
+
+    def get_table_info(self, table_name: str) -> dict[str, Any]:
+        """Получает информацию о таблице"""
+        if self.db is not None and table_name in self.db.tables:
+            table = self.db.tables[table_name]
+            return {
+                "size": len(table),
+                "has_data": len(table) > 0,
+                "is_empty": len(table) == 0,
+            }
+        return {"size": 0, "has_data": False, "is_empty": True}
+
+
+class TableAnalyzer:
+    def analyze_table_structure(self, table: Any) -> dict[str, Any]:
+        """Анализирует структуру таблицы"""
+        if not table:
+            return {
+                "structure_summary": {
+                    "total_fields": 0,
+                    "numeric_fields": 0,
+                    "blob_fields": 0,
+                }
+            }
+
+        try:
+            # Анализируем первые 5 записей для понимания структуры
+            field_analysis = {}
+            blob_fields = 0
+            numeric_fields = 0
+
+            for i in range(min(5, len(table))):
+                try:
+                    row = table[i]
+                    if hasattr(row, "as_list"):
+                        row_list = row.as_list(True)
+                        for j, value in enumerate(row_list):
+                            field_name = getattr(value, "name", f"field_{j}")
+
+                            # ИСПРАВЛЕНО: Используем маппинг полей из legacy кода
+                            if field_name.startswith("field_"):
+                                try:
+                                    field_index = int(field_name.split("_")[1])
+                                    index_mapping = get_field_mapping_by_index()
+                                    if field_index in index_mapping:
+                                        field_name = index_mapping[field_index]
+                                except (ValueError, IndexError):
+                                    pass
+
+                            if field_name not in field_analysis:
+                                field_analysis[field_name] = {
+                                    "is_blob": False,
+                                    "is_numeric": False,
+                                    "is_string": False,
+                                }
+
+                            # Анализируем тип поля
+                            if isinstance(value, bytes) or (
+                                hasattr(value, "value")
+                                and isinstance(value.value, bytes)
+                            ):
+                                field_analysis[field_name]["is_blob"] = True
+                                blob_fields += 1
+                            elif isinstance(value, (int, float)) or (
+                                hasattr(value, "value")
+                                and isinstance(value.value, (int, float))
+                            ):
+                                field_analysis[field_name]["is_numeric"] = True
+                                numeric_fields += 1
+                            elif isinstance(value, str) or (
+                                hasattr(value, "value") and isinstance(value.value, str)
+                            ):
+                                field_analysis[field_name]["is_string"] = True
+                except Exception:
+                    continue
+
+            return {
+                "structure_summary": {
+                    "total_fields": len(field_analysis),
+                    "numeric_fields": numeric_fields,
+                    "blob_fields": blob_fields,
+                }
+            }
+        except Exception:
+            return {
+                "structure_summary": {
+                    "total_fields": 0,
+                    "numeric_fields": 0,
+                    "blob_fields": 0,
+                }
+            }
+
+    def extract_field_metadata(self, field_name: str, value: Any) -> dict[str, Any]:
+        """Извлекает метаданные поля"""
+        is_blob = False
+        is_numeric = False
+        is_string = False
+        field_type = "unknown"
+
+        if isinstance(value, bytes):
+            is_blob = True
+            field_type = "bytes"
+        elif hasattr(value, "value") and isinstance(value.value, bytes):
+            is_blob = True
+            field_type = "blob_object"
+        elif isinstance(value, (int, float)):
+            is_numeric = True
+            field_type = "numeric"
+        elif hasattr(value, "value") and isinstance(value.value, (int, float)):
+            is_numeric = True
+            field_type = "numeric_object"
+        elif isinstance(value, str):
+            is_string = True
+            field_type = "string"
+        elif hasattr(value, "value") and isinstance(value.value, str):
+            is_string = True
+            field_type = "string_object"
+
+        return {
+            "is_blob": is_blob,
+            "is_numeric": is_numeric,
+            "is_string": is_string,
+            "type": field_type,
+        }
+
+
+class SimpleDocumentExtractor:
+    """
+    JTBD:
+    Как SimpleDocumentExtractor, я хочу извлекать реальные документы из 1С,
+    чтобы подтвердить возможность извлечения данных и проанализировать их структуру.
+    """
+
+    def __init__(self, db_connector: DatabaseConnector):
+        """
+        JTBD:
+        Как конструктор SimpleDocumentExtractor, я хочу инициализировать извлекатель,
+        чтобы подготовить все необходимые компоненты для извлечения документов.
+        """
+        self.db_connector = db_connector
+        self.table_analyzer = TableAnalyzer()
+        self.blob_processor = BlobProcessor()
+        self.extracted_documents: list[dict[str, Any]] = []
+        self.extraction_stats: dict[str, Any] = {
+            "total_documents": 0,
+            "successful_extractions": 0,
+            "failed_extractions": 0,
+            "blob_fields_found": 0,
+            "blob_fields_processed": 0,
+            "extraction_errors": [],
+        }
+
+    def extract_documents(
+        self, table_name: str, limit: int | None = None
+    ) -> list[dict[str, Any]]:
+        """
+        JTBD:
+        Как метод извлечения документов, я хочу извлечь реальные документы из таблицы,
+        чтобы проанализировать их структуру и содержимое.
+
+        Args:
+            table_name: Имя таблицы для извлечения
+            limit: Максимальное количество документов для извлечения
+
+        Returns:
+            Список извлеченных документов
+        """
+        print(f"🔍 Извлечение документов из таблицы: {table_name}")
+        if limit is None:
+            print("📊 Лимит: ВСЕ документы (без ограничений)")
+        else:
+            print(f"📊 Лимит: {limit} документов")
+
+        try:
+            # Получаем таблицу
+            table = self.db_connector.get_table(table_name)
+            table_info = self.db_connector.get_table_info(table_name)
+
+            print("📋 Информация о таблице:")
+            print(f"   Размер: {table_info['size']} записей")
+            print(f"   Есть данные: {table_info['has_data']}")
+            print(f"   Пустая: {table_info['is_empty']}")
+
+            if table_info["is_empty"]:
+                print("⚠️ Таблица пуста, нет данных для извлечения")
+                return []
+
+            # Анализируем структуру таблицы
+            structure_analysis = self.table_analyzer.analyze_table_structure(table)
+            print("📊 Анализ структуры:")
+            print(
+                f"   Всего полей: {structure_analysis['structure_summary'].get('total_fields', 0)}",
+            )
+            print(
+                f"   BLOB полей: {structure_analysis['structure_summary'].get('blob_fields', 0)}",
+            )
+            print(
+                f"   Числовых полей: {structure_analysis['structure_summary']['numeric_fields']}",
+            )
+
+            # Извлекаем документы БЕЗ ЛИМИТОВ
+            documents: list[dict[str, Any]] = []
+
+            # ИСПРАВЛЕНО: Убираем скрытые лимиты - извлекаем ВСЕ документы
+            print("📊 ИЗВЛЕЧЕНИЕ ВСЕХ ДОКУМЕНТОВ БЕЗ ЛИМИТОВ")
+            print(f"📊 Размер таблицы по info: {table_info['size']}")
+
+            # ДИАГНОСТИКА: Проверяем реальный размер таблицы
+            try:
+                # Пробуем получить реальный размер через итерацию
+                test_count = 0
+                test_iterator = iter(table)
+                for _ in test_iterator:
+                    test_count += 1
+                    if test_count > 1000:  # Ограничиваем тест для производительности
+                        break
+                print(f"📊 Тестовый подсчет: {test_count} записей (первые 1000)")
+            except Exception as e:
+                print(f"⚠️ Не удалось подсчитать записи: {e}")
+
+            # ИСПРАВЛЕНО: Извлекаем ВСЕ документы без лимитов
+            actual_limit: int | None = limit
+            if limit is None:
+                print("📊 Лимит: НЕТ (извлекаем ВСЕ документы)")
+            else:
+                print(f"📊 Лимит: {actual_limit} документов")
+
+            # ИСПРАВЛЕНО: Используем итератор БЕЗ ЛИМИТОВ
+            try:
+                table_iterator = iter(table)
+                i = 0
+
+                while True:  # Итерируем до конца таблицы
+                    try:
+                        row = next(table_iterator)
+
+                        # Пропускаем пустые строки
+                        if hasattr(row, "is_empty") and row.is_empty:
+                            continue
+
+                        # ИСПРАВЛЕНО: Декодируем BLOB поля ПЕРЕД извлечением документа
+                        if hasattr(row, "as_list"):
+                            try:
+                                row_list = row.as_list(True)
+                                # Декодируем BLOB поля в основном цикле
+                                for j, value in enumerate(row_list):
+                                    if isinstance(value, bytes):
+                                        # Пробуем декодировать BLOB поля
+                                        try:
+                                            decoded_content = value.decode("utf-16")
+                                            if (
+                                                decoded_content
+                                                and len(decoded_content.strip()) > 0
+                                            ):
+                                                row_list[j] = decoded_content
+                                        except UnicodeDecodeError:
+                                            try:
+                                                decoded_content = value.decode("utf-8")
+                                                if (
+                                                    decoded_content
+                                                    and len(decoded_content.strip()) > 0
+                                                ):
+                                                    row_list[j] = decoded_content
+                                            except UnicodeDecodeError:
+                                                try:
+                                                    decoded_content = value.decode(
+                                                        "cp1251"
+                                                    )
+                                                    if (
+                                                        decoded_content
+                                                        and len(decoded_content.strip())
+                                                        > 0
+                                                    ):
+                                                        row_list[j] = decoded_content
+                                                except UnicodeDecodeError:
+                                                    # Сохраняем как hex если не удалось декодировать
+                                                    row_list[j] = (
+                                                        f"[BLOB {len(value)} байт]"
+                                                    )
+                            except StopIteration:
+                                # Нормальное завершение итератора в BLOB декодировании
+                                print(f"✅ BLOB итератор завершен в записи {i}")
+                                break
+                            except Exception as e:
+                                error_msg = str(e)
+                                if (
+                                    "StopIteration" not in error_msg
+                                    and "generator raised StopIteration"
+                                    not in error_msg
+                                ):
+                                    print(
+                                        f"⚠️ Ошибка декодирования BLOB в записи {i}: {e}"
+                                    )
+                                else:
+                                    # StopIteration - это нормальное завершение итератора
+                                    print(f"✅ BLOB итератор завершен в записи {i}")
+                                    break
+
+                        # Извлекаем документ
+                        document = self._extract_single_document(row, i, table_name)
+                        if document:
+                            documents.append(document)
+                            self.extraction_stats["successful_extractions"] += 1
+
+                            # Показываем прогресс каждые 1000 документов
+                            if len(documents) % 1000 == 0:
+                                print(f"📊 Извлечено: {len(documents)} документов...")
+                        else:
+                            self.extraction_stats["failed_extractions"] += 1
+
+                        i += 1
+
+                        # ИСПРАВЛЕНО: Проверяем лимит только если он задан
+                        if actual_limit is not None and i >= actual_limit:
+                            print(f"📊 Достигнут лимит: {actual_limit} документов")
+                            break
+
+                    except StopIteration:
+                        # Нормальное завершение итератора - ВСЕ документы извлечены
+                        print(
+                            f"✅ Итератор завершен. Извлечено: {len(documents)} документов"
+                        )
+                        break
+                    except Exception as e:
+                        # ИСПРАВЛЕНО: Обрабатываем только реальные ошибки, не StopIteration
+                        error_msg = str(e)
+                        if (
+                            "StopIteration" not in error_msg
+                            and "generator raised StopIteration" not in error_msg
+                        ):
+                            error_msg = f"Ошибка извлечения документа {i}: {e}"
+                            print(f"❌ {error_msg}")
+                            if isinstance(
+                                self.extraction_stats["extraction_errors"], list
+                            ):
+                                self.extraction_stats["extraction_errors"].append(
+                                    error_msg
+                                )
+                            self.extraction_stats["failed_extractions"] += 1
+                        else:
+                            # StopIteration - это нормальное завершение итератора
+                            print(
+                                f"✅ Итератор завершен (Exception). Извлечено: {len(documents)} документов"
+                            )
+                            break
+                        i += 1
+                        continue
+
+            except Exception as e:
+                error_msg = f"Ошибка создания итератора: {e}"
+                print(f"❌ {error_msg}")
+                if isinstance(self.extraction_stats["extraction_errors"], list):
+                    self.extraction_stats["extraction_errors"].append(error_msg)
+
+            self.extracted_documents = documents
+            self.extraction_stats["total_documents"] = len(documents)
+
+            print("✅ Извлечение завершено:")
+            print(f"   Успешно: {self.extraction_stats['successful_extractions']}")
+            print(f"   Ошибок: {self.extraction_stats['failed_extractions']}")
+            print(
+                f"   BLOB полей найдено: {self.extraction_stats['blob_fields_found']}",
+            )
+            print(
+                f"   BLOB полей обработано: {self.extraction_stats['blob_fields_processed']}",
+            )
+
+            return documents
+
+        except Exception as e:
+            error_msg = f"Критическая ошибка извлечения из таблицы {table_name}: {e}"
+            print(f"❌ {error_msg}")
+            self.extraction_stats["extraction_errors"].append(error_msg)
+            return []
+
+    def _extract_single_document(
+        self,
+        row: Any,
+        row_index: int,
+        table_name: str,
+    ) -> dict[str, Any] | None:
+        """
+        JTBD:
+        Как метод извлечения одного документа, я хочу извлечь данные из строки,
+        чтобы создать структурированный документ с метаданными.
+
+        Args:
+            row: Строка данных из таблицы
+            row_index: Индекс строки
+            table_name: Имя таблицы
+
+        Returns:
+            Словарь с данными документа или None при ошибке
+        """
+        try:
+            # Получаем список полей
+            if hasattr(row, "as_list"):
+                try:
+                    row_list = row.as_list(True)
+                except RuntimeError as e:
+                    if "generator raised StopIteration" in str(e):
+                        # Нормальное завершение итератора в onec_dtools
+                        return None
+                    raise e
+                except StopIteration:
+                    # Нормальное завершение итератора
+                    return None
+            else:
+                return None
+
+            document: dict[str, Any] = {
+                "table_name": table_name,
+                "row_index": row_index,
+                "fields": {},
+                "blob_fields": {},
+                "metadata": {
+                    "extraction_time": datetime.now().isoformat(),
+                    "field_count": len(row_list),
+                    "has_blob_fields": False,
+                },
+            }
+
+            # Обрабатываем каждое поле
+            for j, value in enumerate(row_list):
+                field_name = getattr(value, "name", f"field_{j}")
+
+                # Анализируем тип поля
+                field_metadata = self.table_analyzer.extract_field_metadata(
+                    field_name,
+                    value,
+                )
+
+                # ИСПРАВЛЕНО: Проверяем, является ли поле BLOB и обрабатываем его
+                if field_metadata.get("is_blob", False):
+                    self.extraction_stats["blob_fields_found"] += 1
+                    document["metadata"]["has_blob_fields"] = True
+
+                    # ИСПРАВЛЕНО: Обрабатываем BLOB поле с улучшенной логикой
+                    blob_data = self.blob_processor.process_blob_field(
+                        field_name,
+                        value,
+                    )
+
+                    # Проверяем успешность обработки
+                    if (
+                        blob_data
+                        and "value" in blob_data
+                        and blob_data["value"]["content"]
+                    ):
+                        document["blob_fields"][field_name] = blob_data
+                        self.extraction_stats["blob_fields_processed"] += 1
+                    elif blob_data and "error" in blob_data:
+                        # Логируем ошибку, но не останавливаем обработку
+                        print(
+                            f"⚠️ BLOB ошибка в поле {field_name}: {blob_data['error']}"
+                        )
+                        document["blob_fields"][field_name] = {
+                            "error": blob_data["error"],
+                            "field_type": "blob",
+                            "size": 0,
+                        }
+                    else:
+                        # Пустое BLOB поле
+                        document["blob_fields"][field_name] = {
+                            "value": {
+                                "content": "",
+                                "type": "empty",
+                                "length": 0,
+                            },
+                            "extraction_methods": ["empty"],
+                            "size": 0,
+                        }
+                else:
+                    # Обычное поле
+                    document["fields"][field_name] = {
+                        "value": str(value) if value is not None else None,
+                        "type": field_metadata.get("type", "unknown"),
+                        "is_numeric": field_metadata.get("is_numeric", False),
+                        "is_date": field_metadata.get("is_date", False),
+                        "is_string": field_metadata.get("is_string", False),
+                    }
+
+            return document
+
+        except Exception as e:
+            print(f"❌ Ошибка извлечения документа {row_index}: {e}")
+            return None
+
+    def analyze_document_structure(
+        self, documents: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """
+        JTBD:
+        Как метод анализа структуры документов, я хочу проанализировать структуру извлеченных документов,
+        чтобы понять их назначение и связи.
+
+        Args:
+            documents: Список извлеченных документов
+
+        Returns:
+            Словарь с анализом структуры документов
+        """
+        if not documents:
+            return {"error": "Нет документов для анализа"}
+
+        print(f"🔍 Анализ структуры {len(documents)} документов")
+
+        # Анализируем поля
+        field_analysis: dict[str, Any] = {}
+        blob_analysis: dict[str, Any] = {}
+
+        for doc in documents:
+            # Анализируем обычные поля
+            for field_name, field_data in doc.get("fields", {}).items():
+                if field_name not in field_analysis:
+                    field_analysis[field_name] = {
+                        "count": 0,
+                        "types": set(),
+                        "has_values": 0,
+                        "sample_values": [],
+                    }
+
+                field_analysis[field_name]["count"] += 1
+                field_analysis[field_name]["types"].add(
+                    field_data.get("type", "unknown"),
+                )
+
+                if field_data.get("value") is not None:
+                    field_analysis[field_name]["has_values"] += 1
+                    if len(field_analysis[field_name]["sample_values"]) < 3:
+                        field_analysis[field_name]["sample_values"].append(
+                            field_data["value"],
+                        )
+
+            # Анализируем BLOB поля
+            for field_name, blob_data in doc.get("blob_fields", {}).items():
+                if field_name not in blob_analysis:
+                    blob_analysis[field_name] = {
+                        "count": 0,
+                        "successful_extractions": 0,
+                        "failed_extractions": 0,
+                        "sample_contents": [],
+                    }
+
+                blob_analysis[field_name]["count"] += 1
+
+                if blob_data.get("error"):
+                    blob_analysis[field_name]["failed_extractions"] += 1
+                else:
+                    blob_analysis[field_name]["successful_extractions"] += 1
+                    if len(blob_analysis[field_name]["sample_contents"]) < 3:
+                        content = blob_data.get("value", {}).get("content", "")
+                        if content:
+                            blob_analysis[field_name]["sample_contents"].append(
+                                content[:100],
+                            )
+
+        # Создаем сводку анализа
+        structure_analysis: dict[str, Any] = {
+            "total_documents": len(documents),
+            "field_analysis": {},
+            "blob_analysis": {},
+            "summary": {
+                "total_fields": len(field_analysis),
+                "total_blob_fields": len(blob_analysis),
+                "documents_with_blobs": sum(
+                    1
+                    for doc in documents
+                    if doc.get("metadata", {}).get("has_blob_fields", False)
+                ),
+            },
+        }
+
+        # Обрабатываем анализ полей
+        for field_name, analysis in field_analysis.items():
+            structure_analysis["field_analysis"][field_name] = {
+                "count": analysis["count"],
+                "types": (
+                    list(analysis["types"])
+                    if isinstance(analysis["types"], set)
+                    else []
+                ),
+                "fill_rate": (analysis["has_values"] / analysis["count"]) * 100,
+                "sample_values": analysis["sample_values"],
+            }
+
+        # Обрабатываем анализ BLOB полей
+        for field_name, analysis in blob_analysis.items():
+            success_rate = 0
+            if analysis["count"] > 0:
+                success_rate = (
+                    analysis["successful_extractions"] / analysis["count"]
+                ) * 100
+
+            structure_analysis["blob_analysis"][field_name] = {
+                "count": analysis["count"],
+                "success_rate": success_rate,
+                "successful_extractions": analysis["successful_extractions"],
+                "failed_extractions": analysis["failed_extractions"],
+                "sample_contents": analysis["sample_contents"],
+            }
+
+        print("📊 Результаты анализа структуры:")
+        print(f"   Всего документов: {structure_analysis['total_documents']}")
+        print(f"   Всего полей: {structure_analysis['summary']['total_fields']}")
+        print(f"   BLOB полей: {structure_analysis['summary']['total_blob_fields']}")
+        print(
+            f"   Документов с BLOB: {structure_analysis['summary']['documents_with_blobs']}",
+        )
+
+        return structure_analysis
+
+    def validate_extraction_quality(
+        self, documents: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """
+        JTBD:
+        Как метод валидации качества извлечения, я хочу проверить качество извлеченных документов,
+        чтобы убедиться в корректности извлечения данных.
+
+        Args:
+            documents: Список извлеченных документов
+
+        Returns:
+            Словарь с результатами валидации качества
+        """
+        if not documents:
+            return {"error": "Нет документов для валидации"}
+
+        print(f"🔍 Валидация качества извлечения {len(documents)} документов")
+
+        quality_metrics: dict[str, Any] = {
+            "total_documents": len(documents),
+            "documents_with_data": 0,
+            "documents_with_blobs": 0,
+            "blob_success_rate": 0.0,
+            "field_completeness": 0.0,
+            "extraction_errors": (
+                len(self.extraction_stats["extraction_errors"])
+                if isinstance(self.extraction_stats["extraction_errors"], list)
+                else 0
+            ),
+            "quality_score": 0.0,
+        }
+
+        total_blob_fields = 0
+        successful_blob_fields = 0
+        total_fields = 0
+        filled_fields = 0
+
+        for doc in documents:
+            # Проверяем наличие данных
+            if doc.get("fields") or doc.get("blob_fields"):
+                quality_metrics["documents_with_data"] += 1
+
+            # Проверяем BLOB поля
+            if doc.get("blob_fields"):
+                quality_metrics["documents_with_blobs"] += 1
+                for field_name, blob_data in doc["blob_fields"].items():
+                    total_blob_fields += 1
+                    if not blob_data.get("error"):
+                        successful_blob_fields += 1
+
+            # Проверяем обычные поля
+            for field_name, field_data in doc.get("fields", {}).items():
+                total_fields += 1
+                if field_data.get("value") is not None:
+                    filled_fields += 1
+
+        # Вычисляем метрики качества
+        if total_blob_fields > 0:
+            quality_metrics["blob_success_rate"] = (
+                successful_blob_fields / total_blob_fields
+            ) * 100
+
+        if total_fields > 0:
+            quality_metrics["field_completeness"] = (filled_fields / total_fields) * 100
+
+        # Вычисляем общий балл качества
+        quality_score: float = 0.0
+        if quality_metrics["documents_with_data"] > 0:
+            quality_score += 30  # За наличие данных
+        if quality_metrics["blob_success_rate"] > 50:
+            quality_score += 30  # За успешное извлечение BLOB
+        if quality_metrics["field_completeness"] > 70:
+            quality_score += 20  # За полноту полей
+        if quality_metrics["extraction_errors"] == 0:
+            quality_score += 20  # За отсутствие ошибок
+
+        quality_metrics["quality_score"] = quality_score
+
+        print("📊 Результаты валидации качества:")
+        print(f"   Документов с данными: {quality_metrics['documents_with_data']}")
+        print(f"   Документов с BLOB: {quality_metrics['documents_with_blobs']}")
+        print(f"   Успешность BLOB: {quality_metrics['blob_success_rate']:.1f}%")
+        print(f"   Полнота полей: {quality_metrics['field_completeness']:.1f}%")
+        print(f"   Ошибок извлечения: {quality_metrics['extraction_errors']}")
+        print(f"   Общий балл качества: {quality_score}/100")
+
+        return quality_metrics
+
+    def get_extraction_stats(self) -> dict[str, Any]:
+        """
+        JTBD:
+        Как метод получения статистики извлечения, я хочу вернуть статистику извлечения,
+        чтобы проанализировать результаты работы извлекателя.
+
+        Returns:
+            Словарь со статистикой извлечения
+        """
+        return self.extraction_stats.copy()
+
+    def save_to_parquet_with_descriptive_names(
+        self,
+        base_path: str = "data/results/parquet/",
+    ) -> list[str]:
+        """
+        JTBD:
+        Как метод сохранения с описательными именами, я хочу сохранить документы
+        с понятными названиями файлов как в legacy коде.
+
+        Args:
+            base_path: Базовая директория для сохранения
+
+        Returns:
+            Список путей к сохраненным файлам
+        """
+        try:
+            import os
+
+            import pandas as pd
+
+            os.makedirs(base_path, exist_ok=True)
+            saved_files: list[str] = []
+
+            if not self.extracted_documents:
+                print("⚠️ Нет документов для сохранения")
+                return saved_files
+
+            # Группируем по table_name
+            df = pd.DataFrame(self.extracted_documents)
+            if "table_name" not in df.columns:
+                print("⚠️ Нет поля table_name в документах")
+                return saved_files
+
+            for table_name in df["table_name"].unique():
+                table_df = df[df["table_name"] == table_name]
+
+                # ИСПРАВЛЕНО: Используем правильный маппинг типов документов
+                document_type = get_document_type_mapping(table_name)
+
+                # Создаем файл с понятным названием (lowercase)
+                table_name_lower = table_name.lower()
+                safe_name = (
+                    document_type.lower()
+                    .replace(" ", "_")
+                    .replace("(", "")
+                    .replace(")", "")
+                )
+                parquet_file = f"{base_path}{table_name_lower}_{safe_name}.parquet"
+
+                # Конвертируем BLOB поля (bytes) в hex-строки для Parquet
+                for col in table_df.select_dtypes(include=["object"]).columns:
+                    if table_df[col].apply(lambda x: isinstance(x, bytes)).any():
+                        table_df[col] = table_df[col].apply(
+                            lambda x: x.hex() if isinstance(x, bytes) else x
+                        )
+
+                table_df.to_parquet(parquet_file, index=False)
+                saved_files.append(parquet_file)
+                print(f"✅ {table_name}: {len(table_df)} записей → {parquet_file}")
+
+            return saved_files
+
+        except Exception as e:
+            print(f"❌ Ошибка при сохранении с описательными именами: {e}")
+            raise
+
+    def save_extraction_report(self, output_file: str) -> bool:
+        """
+        JTBD:
+        Как метод сохранения отчета об извлечении, я хочу сохранить отчет об извлечении,
+        чтобы документировать результаты работы извлекателя.
+
+        Args:
+            output_file: Путь к файлу для сохранения отчета
+
+        Returns:
+            True если отчет сохранен успешно, False иначе
+        """
+        try:
+            report = {
+                "extraction_stats": self.extraction_stats,
+                "extracted_documents": self.extracted_documents,
+                "timestamp": datetime.now().isoformat(),
+                "total_documents": len(self.extracted_documents),
+            }
+
+            import json
+
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(report, f, ensure_ascii=False, indent=2)
+
+            print(f"✅ Отчет об извлечении сохранен: {output_file}")
+            return True
+
+        except Exception as e:
+            print(f"❌ Ошибка сохранения отчета: {e}")
+            return False

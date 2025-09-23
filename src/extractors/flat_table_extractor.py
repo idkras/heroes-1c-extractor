@@ -8,24 +8,14 @@ FlatTableExtractor - извлекатель плоской таблицы с с�
 import json
 import logging
 import os
-import sys
 from datetime import datetime
 from typing import Any
 
 import pandas as pd
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "processors"))
-
-from extractors.base_extractor import BaseExtractor
-from processors.database_connector import DatabaseConnector
-
-# Импортируем маппинг функций из extract_all_available_data.py
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from extract_all_available_data import (
-    get_field_mapping,
-    get_field_mapping_by_index,
-)
+from ..extract_all_available_data import get_field_mapping_by_index
+from ..processors.database_connector import DatabaseConnector
+from .base_extractor import BaseExtractor
 
 
 class FlatTableExtractor(BaseExtractor):
@@ -60,8 +50,8 @@ class FlatTableExtractor(BaseExtractor):
             self.logger.addHandler(handler)
             self.logger.setLevel(logging.INFO)
 
-        self.flat_data = []
-        self.extraction_stats = {
+        self.flat_data: list[dict[str, Any]] = []
+        self.extraction_stats: dict[str, Any] = {
             "total_documents": 0,
             "total_entities": 0,
             "successful_extractions": 0,
@@ -69,7 +59,7 @@ class FlatTableExtractor(BaseExtractor):
             "extraction_errors": [],
         }
 
-    def extract(self, table_name: str, limit: int = 100) -> list[dict]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict[str, Any]]:
         """
         Реализация абстрактного метода extract из BaseExtractor.
 
@@ -91,7 +81,7 @@ class FlatTableExtractor(BaseExtractor):
             if not table:
                 return []
 
-            extracted_entities = []
+            extracted_entities: list[dict[str, Any]] = []
 
             for i, row in enumerate(table):
                 if i >= limit:
@@ -99,7 +89,7 @@ class FlatTableExtractor(BaseExtractor):
 
                 entities = self.process_document_row(row, i, table_name)
                 if entities:
-                    extracted_entities.extend(entities)
+                    extracted_entities.append(entities)
 
             return extracted_entities
 
@@ -227,12 +217,11 @@ class FlatTableExtractor(BaseExtractor):
             if not table:
                 return []
 
-            entities = []
-
             # Извлекаем первые 3 документа для анализа
+            entities: list[dict[str, Any]] = []
             for i, record in enumerate(table):
-                if i >= 3:
-                    break
+                # ИСПРАВЛЕНО: Анализируем ВСЕ записи без лимитов
+                # Убрано ограничение i >= 3 для полного анализа данных
 
                 try:
                     document_entities = self._extract_entities_from_record(
@@ -258,12 +247,12 @@ class FlatTableExtractor(BaseExtractor):
 
     def _extract_entities_from_record(
         self,
-        record,
+        record: Any,
         index: int,
         table_name: str,
     ) -> list[dict[str, Any]]:
         """
-        Извлекает сущности из одной записи документа.
+        ИСПРАВЛЕНО: Правильное извлечение сущностей с корректной обработкой onec_dtools API.
 
         Args:
             record: Запись из таблицы
@@ -277,11 +266,16 @@ class FlatTableExtractor(BaseExtractor):
             if not hasattr(record, "as_list"):
                 return []
 
+            # ИСПРАВЛЕНИЕ: Правильное извлечение данных согласно @1C standard.md
+            # Используем row.as_list(True) для включения BLOB полей
             record_list = record.as_list(True)
+
             entities = []
 
             # Создаем базовую сущность документа
-            base_entity = self._create_base_entity(record_list, index, table_name)
+            base_entity = self._create_base_entity(
+                record_list, index, table_name, record
+            )
             entities.append(base_entity)
 
             # Извлекаем сущности товаров/цветов
@@ -289,6 +283,7 @@ class FlatTableExtractor(BaseExtractor):
                 record_list,
                 index,
                 table_name,
+                record,
             )
             entities.extend(flower_entities)
 
@@ -297,20 +292,26 @@ class FlatTableExtractor(BaseExtractor):
                 record_list,
                 index,
                 table_name,
+                record,
             )
             entities.extend(operation_entities)
 
             return entities
 
+        except StopIteration:
+            # ИСПРАВЛЕНИЕ: StopIteration - нормальное завершение итератора
+            self.logger.debug(f"Завершение итерации для записи {index}")
+            return []
         except Exception as e:
             self.logger.warning(f"⚠️ Ошибка при извлечении сущностей из записи: {e}")
             return []
 
     def _create_base_entity(
         self,
-        record_list: list,
+        record_list: list[Any],
         index: int,
         table_name: str,
+        record: Any = None,
     ) -> dict[str, Any]:
         """
         JTBD: Как создатель базовой сущности, я хочу создать полную запись документа
@@ -334,7 +335,7 @@ class FlatTableExtractor(BaseExtractor):
         all_fields = self._extract_all_fields_from_record(record_list)
 
         # Вспомогательная функция для безопасного извлечения значений
-        def safe_get_value(field_name, default=None):
+        def safe_get_value(field_name: str, default: Any = None) -> Any:
             if field_name in all_fields:
                 value = all_fields[field_name]
                 # Обрабатываем bytes как BLOB поля
@@ -406,9 +407,10 @@ class FlatTableExtractor(BaseExtractor):
 
     def _extract_flower_entities(
         self,
-        record_list: list,
+        record_list: list[Any],
         index: int,
         table_name: str,
+        record: Any = None,
     ) -> list[dict[str, Any]]:
         """
         Извлекает сущности цветов из записи.
@@ -496,9 +498,10 @@ class FlatTableExtractor(BaseExtractor):
 
     def _extract_operation_entities(
         self,
-        record_list: list,
+        record_list: list[Any],
         index: int,
         table_name: str,
+        record: Any = None,
     ) -> list[dict[str, Any]]:
         """
         Извлекает сущности операций из записи.
@@ -524,16 +527,22 @@ class FlatTableExtractor(BaseExtractor):
             "entity_type": "operation",
             "document_type": self._determine_document_type(table_name),
             # Временные данные
-            "created_date": self._extract_field_value(record_list, "_DATE_TIME"),
-            "execution_date": self._extract_field_value(record_list, "_DATE"),
-            "document_date": self._extract_field_value(record_list, "_DATE"),
+            "created_date": self._extract_field_value(
+                record_list, "_DATE_TIME", record
+            ),
+            "execution_date": self._extract_field_value(record_list, "_DATE", record),
+            "document_date": self._extract_field_value(record_list, "_DATE", record),
             # Участники
-            "who_created": self._extract_field_value(record_list, "_CREATED_BY"),
-            "who_executed": self._extract_field_value(record_list, "_EXECUTED_BY"),
-            "supplier": self._extract_field_value(record_list, "_SUPPLIER"),
-            "buyer": self._extract_field_value(record_list, "_BUYER"),
-            "store": self._extract_field_value(record_list, "_STORE"),
-            "store_code": self._extract_field_value(record_list, "_STORE_CODE"),
+            "who_created": self._extract_field_value(
+                record_list, "_CREATED_BY", record
+            ),
+            "who_executed": self._extract_field_value(
+                record_list, "_EXECUTED_BY", record
+            ),
+            "supplier": self._extract_field_value(record_list, "_SUPPLIER", record),
+            "buyer": self._extract_field_value(record_list, "_BUYER", record),
+            "store": self._extract_field_value(record_list, "_STORE", record),
+            "store_code": self._extract_field_value(record_list, "_STORE_CODE", record),
             # Что сделал
             "action": self._determine_action(table_name),
             "operation_type": self._determine_operation_type(table_name),
@@ -543,17 +552,22 @@ class FlatTableExtractor(BaseExtractor):
             "object_type": "operation",
             "object_category": "business_operation",
             # Финансы
-            "total_amount": self._extract_field_value(record_list, "_AMOUNT"),
+            "total_amount": self._extract_field_value(record_list, "_AMOUNT", record),
             "currency": "RUB",
-            "vat_amount": self._extract_field_value(record_list, "_VAT"),
-            "discount_amount": self._extract_field_value(record_list, "_DISCOUNT"),
+            "vat_amount": self._extract_field_value(record_list, "_VAT", record),
+            "discount_amount": self._extract_field_value(
+                record_list, "_DISCOUNT", record
+            ),
             # Статусы
-            "is_posted": self._extract_field_value(record_list, "_POSTED"),
-            "is_marked": self._extract_field_value(record_list, "_MARKED"),
-            "payment_status": self._extract_field_value(record_list, "_PAYMENT_STATUS"),
+            "is_posted": self._extract_field_value(record_list, "_POSTED", record),
+            "is_marked": self._extract_field_value(record_list, "_MARKED", record),
+            "payment_status": self._extract_field_value(
+                record_list, "_PAYMENT_STATUS", record
+            ),
             "delivery_status": self._extract_field_value(
                 record_list,
                 "_DELIVERY_STATUS",
+                record,
             ),
             # Метаданные
             "created_at": datetime.now().isoformat() + "Z",
@@ -788,160 +802,55 @@ class FlatTableExtractor(BaseExtractor):
 
         return "неизвестная операция"
 
-    def _extract_field_value(self, record_list: list, field_name: str) -> Any:
+    def _extract_field_value(
+        self, record_list: list[Any], field_name: str, record: Any = None
+    ) -> Any:
         """
-        JTBD: Как извлекатель значений полей, я хочу получить значение любого поля
-        из документа, чтобы обеспечить полное извлечение данных для анализа.
+        ИСПРАВЛЕНО: Правильное извлечение значений полей согласно @1C standard.md.
 
-        КРИТИЧЕСКИ ВАЖНО: Извлекаем значения ВСЕХ полей, включая неизвестные,
-        чтобы создать полную таблицу маппинга полей для последующего анализа.
-
-        Извлекает значение поля из записи с использованием маппинга полей.
+        Использует правильный API onec_dtools для извлечения BLOB полей с UTF-16 декодированием.
 
         Args:
             record_list: Список полей записи
             field_name: Имя поля
+            record: Запись для получения имен полей
 
         Returns:
             Значение поля
         """
         try:
-            # Получаем маппинг полей
-            field_mapping = get_field_mapping()
-            index_mapping = get_field_mapping_by_index()
+            # ИСПРАВЛЕНИЕ: Правильное извлечение полей согласно onec_dtools API
+            # Получаем имена полей из записи
+            field_names = []
+            if record and hasattr(record, "fields"):
+                field_names = list(record.fields.keys())
 
-            # ИСПРАВЛЕНИЕ: Правильное извлечение полей из onec_dtools
-            # onec_dtools возвращает поля как объекты с атрибутами name и value
+            # Ищем поле по имени
+            for i, value in enumerate(record_list):
+                current_field_name = (
+                    field_names[i] if i < len(field_names) else f"field_{i}"
+                )
 
-            # ИСПРАВЛЕНИЕ: Маппинг на основе РЕАЛЬНЫХ полей из 1С базы данных
-            field_alternatives = {
-                # Временные поля - используем реальные поля с данными
-                "document_date": [
-                    "field__POSTED",
-                    "field__DATE_TIME",
-                    "_DATE",
-                    "_DATE_TIME",
-                ],
-                "execution_date": [
-                    "field__POSTED",
-                    "field__DATE_TIME",
-                    "_DATE",
-                    "_DATE_TIME",
-                ],
-                "created_date": [
-                    "field__DATE_TIME",
-                    "field__POSTED",
-                    "_DATE_TIME",
-                    "_DATE",
-                ],
-                # Участники - пока не найдены реальные поля
-                "who_created": ["_CREATED_BY", "_AUTHOR", "_USER"],
-                "who_executed": ["_EXECUTED_BY", "_PERFORMER", "_EXECUTOR"],
-                "supplier": ["_SUPPLIER", "_CONTRACTOR", "_VENDOR"],
-                "buyer": ["_BUYER", "_CUSTOMER", "_CLIENT"],
-                # Склады - пока не найдены реальные поля
-                "store": ["_STORE", "_WAREHOUSE", "_LOCATION"],
-                "store_code": ["_STORE_CODE", "_WAREHOUSE_CODE", "_LOCATION_CODE"],
-                # Финансовые - используем реальные поля с данными
-                "total_amount": [
-                    "field__FLD4227",
-                    "field__FLD4236",
-                    "field__FLD4237",
-                    "_FLD4239",
-                ],
-                "vat_amount": [
-                    "field__FLD4227",
-                    "field__FLD4236",
-                    "field__FLD4237",
-                    "_VAT",
-                ],
-                "discount_amount": [
-                    "field__FLD4227",
-                    "field__FLD4236",
-                    "field__FLD4237",
-                    "_DISCOUNT",
-                ],
-                # Статусы - используем реальные поля с данными
-                "payment_status": ["field__POSTED", "field__MARKED", "_PAYMENT_STATUS"],
-                "delivery_status": [
-                    "field__POSTED",
-                    "field__MARKED",
-                    "_DELIVERY_STATUS",
-                ],
-                "is_posted": ["field__POSTED", "_POSTED", "_FLD9999"],
-                "is_marked": ["field__MARKED", "_MARKED", "_FLD9998"],
-            }
+                if current_field_name == field_name:
+                    # ИСПРАВЛЕНИЕ: Правильная обработка BLOB объектов согласно @1C standard.md
+                    if hasattr(value, "value"):
+                        field_value = value.value
+                        if isinstance(field_value, bytes):
+                            # BLOB поле - используем UTF-16 декодирование (стандарт 1С)
+                            return self._decode_blob_field(field_value)
+                        else:
+                            return str(field_value)
+                    else:
+                        return str(value)
 
-            # Сначала ищем по точному имени
-            for field in record_list:
-                if hasattr(field, "name") and field.name == field_name:
-                    if hasattr(field, "value"):
-                        # ИСПРАВЛЕНИЕ: Правильная обработка BLOB полей с UTF-16
-                        if field_name in [
-                            "_FLD4229",
-                            "_FLD4243",
-                            "_FLD4254",
-                            "_FLD3108",
-                            "_FLD4255",
-                            "_FLD4256",
-                        ]:
-                            # UTF-16 для NT полей (стандарт 1С)
-                            try:
-                                if isinstance(field.value, bytes):
-                                    content = field.value.decode("utf-16")
-                                    if content and len(content.strip()) > 0:
-                                        return content
-                                else:
-                                    return str(field.value)
-                            except UnicodeDecodeError:
-                                # Fallback на UTF-8, CP1251
-                                for encoding in ["utf-8", "cp1251"]:
-                                    try:
-                                        if isinstance(field.value, bytes):
-                                            content = field.value.decode(encoding)
-                                            if content and len(content.strip()) > 0:
-                                                return content
-                                    except UnicodeDecodeError:
-                                        continue
-                                # Если все кодировки не сработали, используем hex
-                                return (
-                                    field.value.hex()
-                                    if isinstance(field.value, bytes)
-                                    else str(field.value)
-                                )
-                        return field.value
-                    return str(field)
-
-            # Если поле не найдено, пытаемся найти по индексу
-            if field_name.startswith("field_"):
-                try:
-                    field_index = int(field_name.split("_")[1])
-                    if field_index in index_mapping:
-                        real_field_name = index_mapping[field_index]
-                        return self._extract_field_value(record_list, real_field_name)
-                except (ValueError, IndexError):
-                    pass
-
-            # ИСПРАВЛЕНИЕ: Если поле не найдено, пытаемся найти по маппингу
-            if field_name in field_mapping:
-                mapped_field = field_mapping[field_name]
-                return self._extract_field_value(record_list, mapped_field)
-
-            # НОВОЕ: Поиск по альтернативным именам полей
-            if field_name in field_alternatives:
-                for alt_field_name in field_alternatives[field_name]:
-                    for field in record_list:
-                        if hasattr(field, "name") and field.name == alt_field_name:
-                            if hasattr(field, "value"):
-                                return field.value
-                            return str(field)
-
+            # Если поле не найдено, возвращаем None
             return None
+
         except Exception as e:
             self.logger.warning(f"⚠️ Ошибка при извлечении поля {field_name}: {e}")
             return None
 
-    def _extract_all_fields_from_record(self, record_list):
+    def _extract_all_fields_from_record(self, record_list: list[Any]) -> dict[str, Any]:
         """
         JTBD: Как извлекатель всех полей, я хочу извлечь ВСЕ поля из документа любого типа,
         чтобы создать полную картину данных для последующего анализа и маппинга.
@@ -1243,13 +1152,9 @@ class FlatTableExtractor(BaseExtractor):
 
     def _decode_blob_field(self, blob_value: Any) -> str:
         """
-        JTBD: Как декодер BLOB полей, я хочу извлечь ВСЕ текстовое содержимое
-        из BLOB полей, чтобы получить максимальную информацию о документах.
+        ИСПРАВЛЕНО: Правильное декодирование BLOB полей согласно @1C standard.md.
 
-        КРИТИЧЕСКИ ВАЖНО: Декодируем ВСЕ BLOB поля с различными кодировками,
-        чтобы не потерять важную информацию о цветах, товарах и операциях.
-
-        Декодирует BLOB поле с правильной обработкой UTF-16 и других кодировок.
+        Использует UTF-16 как основной метод декодирования для NT полей (стандарт 1С).
 
         Args:
             blob_value: Значение BLOB поля
@@ -1259,8 +1164,7 @@ class FlatTableExtractor(BaseExtractor):
         """
         try:
             if isinstance(blob_value, bytes):
-                # ИСПРАВЛЕНИЕ: Правильная обработка BLOB с UTF-16 (стандарт 1С)
-                # Сначала пробуем UTF-16 (стандарт для NT полей в 1С)
+                # ИСПРАВЛЕНИЕ: UTF-16 как основной метод (стандарт для NT полей в 1С)
                 try:
                     content = blob_value.decode("utf-16")
                     if content and len(content.strip()) > 0:
@@ -1268,7 +1172,7 @@ class FlatTableExtractor(BaseExtractor):
                 except UnicodeDecodeError:
                     pass
 
-                # Затем UTF-8
+                # Fallback на UTF-8
                 try:
                     content = blob_value.decode("utf-8")
                     if content and len(content.strip()) > 0:
@@ -1276,17 +1180,9 @@ class FlatTableExtractor(BaseExtractor):
                 except UnicodeDecodeError:
                     pass
 
-                # Затем CP1251 для русских текстов
+                # Fallback на CP1251 для русских текстов
                 try:
                     content = blob_value.decode("cp1251")
-                    if content and len(content.strip()) > 0:
-                        return content
-                except UnicodeDecodeError:
-                    pass
-
-                # Затем Latin1
-                try:
-                    content = blob_value.decode("latin1")
                     if content and len(content.strip()) > 0:
                         return content
                 except UnicodeDecodeError:
@@ -1319,6 +1215,7 @@ class FlatTableExtractor(BaseExtractor):
 
     def save_results(
         self,
+        results: list[dict[str, Any]] | None = None,
         output_path: str = "data/results/flat_table_extraction.json",
     ) -> str:
         """
@@ -1333,8 +1230,11 @@ class FlatTableExtractor(BaseExtractor):
         try:
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
+            # Используем переданные результаты или внутренние данные
+            data_to_save = results if results is not None else self.flat_data
+
             with open(output_path, "w", encoding="utf-8") as f:
-                json.dump(self.flat_data, f, ensure_ascii=False, indent=2)
+                json.dump(data_to_save, f, ensure_ascii=False, indent=2)
 
             self.logger.info(f"💾 Результаты сохранены: {output_path}")
             return output_path
@@ -1367,6 +1267,69 @@ class FlatTableExtractor(BaseExtractor):
 
         except Exception as e:
             self.logger.error(f"❌ Ошибка при сохранении CSV: {e}")
+            raise
+
+    def save_to_parquet(
+        self,
+        output_path: str = "data/results/parquet/flat_table_extraction.parquet",
+    ) -> str:
+        """
+        Сохраняет результаты в Parquet формат для совместимости с notebook.
+
+        Args:
+            output_path: Путь для сохранения Parquet файла
+
+        Returns:
+            Путь к сохраненному файлу
+        """
+        try:
+            import pyarrow as pa
+            import pyarrow.parquet as pq
+
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+            df = pd.DataFrame(self.flat_data)
+
+            # ИСПРАВЛЕНО: Правильное сохранение BLOB данных как binary
+            table_data = {}
+            for col in df.columns:
+                if df[col].dtype == "object":
+                    # Проверяем, содержит ли колонка BLOB данные
+                    blob_data = []
+                    for val in df[col]:
+                        if isinstance(val, bytes):
+                            blob_data.append(val)
+                        elif (
+                            isinstance(val, str)
+                            and val.startswith("b'")
+                            and val.endswith("'")
+                        ):
+                            # Восстанавливаем bytes из строкового представления
+                            try:
+                                import ast
+
+                                blob_data.append(ast.literal_eval(val))
+                            except:
+                                blob_data.append(b"")
+                        else:
+                            blob_data.append(b"")
+
+                    # Сохраняем как binary колонку
+                    table_data[col] = pa.array(blob_data, type=pa.binary())
+                else:
+                    # Обычные поля как строки
+                    table_data[col] = pa.array(df[col].astype(str))
+
+            # Создаем PyArrow Table
+            table = pa.table(table_data)
+
+            # Сохраняем с правильными типами
+            pq.write_table(table, output_path)
+            self.logger.info(f"💾 Parquet результаты сохранены: {output_path}")
+            return output_path
+
+        except Exception as e:
+            self.logger.error(f"❌ Ошибка при сохранении Parquet: {e}")
             raise
 
     def get_extraction_summary(self) -> dict[str, Any]:
@@ -1460,7 +1423,7 @@ class FlatTableExtractor(BaseExtractor):
         print("=" * 80)
 
         # Статистика по типам сущностей
-        entity_types = {}
+        entity_types: dict[str, int] = {}
         for entity in self.flat_data:
             entity_type = entity.get("entity_type", "unknown")
             entity_types[entity_type] = entity_types.get(entity_type, 0) + 1

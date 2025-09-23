@@ -8,9 +8,9 @@ JTBD:
 """
 
 import re
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -48,26 +48,12 @@ class DocumentMetadata:
 class DocumentStructure:
     """Структура документа"""
 
-    number_fields: List[str] = None
-    date_fields: List[str] = None
-    description_fields: List[str] = None
-    amount_fields: List[str] = None
-    sale_type_fields: List[str] = None
-    blob_fields: List[str] = None
-
-    def __post_init__(self):
-        if self.number_fields is None:
-            self.number_fields = []
-        if self.date_fields is None:
-            self.date_fields = []
-        if self.description_fields is None:
-            self.description_fields = []
-        if self.amount_fields is None:
-            self.amount_fields = []
-        if self.sale_type_fields is None:
-            self.sale_type_fields = []
-        if self.blob_fields is None:
-            self.blob_fields = []
+    number_fields: list[str] = field(default_factory=list)
+    date_fields: list[str] = field(default_factory=list)
+    description_fields: list[str] = field(default_factory=list)
+    amount_fields: list[str] = field(default_factory=list)
+    sale_type_fields: list[str] = field(default_factory=list)
+    blob_fields: list[str] = field(default_factory=list)
 
 
 class DocumentAnalyzer:
@@ -79,7 +65,7 @@ class DocumentAnalyzer:
     чтобы извлекать метаданные, поля и бизнес-информацию для дальнейшей обработки.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Инициализация анализатора документов"""
         self.field_patterns = {
             "number": [r"_NUMBER", r"field_\d+", r".*[Nn]umber.*", r".*[Nn]um.*"],
@@ -110,8 +96,9 @@ class DocumentAnalyzer:
         }
 
     def analyze_document_structure(
-        self, row_dict: Dict[str, Any]
-    ) -> Tuple[Dict[str, FieldInfo], DocumentStructure]:
+        self,
+        row_dict: dict[str, Any],
+    ) -> tuple[dict[str, FieldInfo], DocumentStructure]:
         """
         Анализ структуры документа
 
@@ -134,7 +121,9 @@ class DocumentAnalyzer:
         for field_name, value in row_dict.items():
             if value is not None:
                 field_info = self._analyze_field(
-                    field_name, value, original_bytes.get(field_name)
+                    field_name,
+                    value,
+                    original_bytes.get(field_name),
                 )
                 field_analysis[field_name] = field_info
 
@@ -144,7 +133,10 @@ class DocumentAnalyzer:
         return field_analysis, structure
 
     def _analyze_field(
-        self, field_name: str, value: Any, original_bytes: Optional[bytes] = None
+        self,
+        field_name: str,
+        value: Any,
+        original_bytes: bytes | None = None,
     ) -> FieldInfo:
         """
         Анализ отдельного поля
@@ -159,9 +151,7 @@ class DocumentAnalyzer:
         """
         # Определяем размер поля
         size = 0
-        if isinstance(value, (str, bytes)):
-            size = len(value)
-        elif hasattr(value, "__len__"):
+        if isinstance(value, (str, bytes)) or hasattr(value, "__len__"):
             size = len(value)
 
         # Проверяем, является ли поле BLOB
@@ -193,8 +183,11 @@ class DocumentAnalyzer:
         )
 
     def _classify_field(
-        self, field_name: str, field_info: FieldInfo, structure: DocumentStructure
-    ):
+        self,
+        field_name: str,
+        field_info: FieldInfo,
+        structure: DocumentStructure,
+    ) -> str:
         """
         Классификация поля по типу
 
@@ -226,6 +219,8 @@ class DocumentAnalyzer:
         # Поиск BLOB полей
         if field_info.is_blob:
             structure.blob_fields.append(field_name)
+
+        return "classified"
 
     def _is_number_field(self, field_name: str, field_info: FieldInfo) -> bool:
         """Проверка, является ли поле номером документа"""
@@ -322,7 +317,9 @@ class DocumentAnalyzer:
         return False
 
     def extract_document_metadata(
-        self, field_analysis: Dict[str, FieldInfo], structure: DocumentStructure
+        self,
+        field_analysis: dict[str, FieldInfo],
+        structure: DocumentStructure,
     ) -> DocumentMetadata:
         """
         Извлечение метаданных документа
@@ -349,9 +346,13 @@ class DocumentAnalyzer:
             if field_name in field_analysis:
                 field_info = field_analysis[field_name]
                 if field_info.is_date and hasattr(field_info.value, "isoformat"):
-                    metadata.document_date = field_info.value.isoformat()
+                    try:
+                        metadata.document_date = field_info.value.isoformat()
+                    except AttributeError:
+                        # Если isoformat() не работает, используем строковое представление
+                        metadata.document_date = str(field_info.value)
                     break
-                elif field_info.is_string and isinstance(field_info.value, str):
+                if field_info.is_string and isinstance(field_info.value, str):
                     metadata.document_date = field_info.value
                     break
 
@@ -401,7 +402,7 @@ class DocumentAnalyzer:
 
         return metadata
 
-    def analyze_blob_content(self, blob_content: str) -> Dict[str, Any]:
+    def analyze_blob_content(self, blob_content: str) -> dict[str, Any]:
         """
         Анализ содержимого BLOB поля
 
@@ -411,7 +412,7 @@ class DocumentAnalyzer:
         Returns:
             Dict[str, Any]: Результаты анализа
         """
-        analysis = {
+        analysis: dict[str, Any] = {
             "has_floristic_info": False,
             "has_store_info": False,
             "has_finance_info": False,
@@ -456,10 +457,10 @@ class DocumentAnalyzer:
 
     def create_document_summary(
         self,
-        field_analysis: Dict[str, FieldInfo],
+        field_analysis: dict[str, FieldInfo],
         structure: DocumentStructure,
         metadata: DocumentMetadata,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Создание сводки документа
 
@@ -493,10 +494,10 @@ class DocumentAnalyzer:
             "statistics": {
                 "total_fields": len(field_analysis),
                 "numeric_fields": len(
-                    [f for f in field_analysis.values() if f.is_numeric]
+                    [f for f in field_analysis.values() if f.is_numeric],
                 ),
                 "string_fields": len(
-                    [f for f in field_analysis.values() if f.is_string]
+                    [f for f in field_analysis.values() if f.is_string],
                 ),
                 "date_fields": len([f for f in field_analysis.values() if f.is_date]),
                 "blob_fields": len([f for f in field_analysis.values() if f.is_blob]),

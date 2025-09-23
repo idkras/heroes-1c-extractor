@@ -17,7 +17,7 @@ class DocumentNamesBlobExtractor(BaseExtractor):
     чтобы понять назначение каждого типа документа.
     """
 
-    def extract(self) -> dict[str, Any]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict[str, Any]]:
         """
         Поиск названий документов в BLOB полях
         ЦЕЛЬ: Найти реальные названия документов для понимания их назначения
@@ -32,13 +32,15 @@ class DocumentNamesBlobExtractor(BaseExtractor):
             "metadata": {
                 "extraction_date": self.metadata["extraction_date"],
                 "source_file": self.metadata["source_file"],
-                "total_tables": len(self.db.tables) if self.db else 0,
+                "total_tables": (
+                    len(self.db.tables) if hasattr(self, "db") and self.db else 0
+                ),
             },
         }
 
-        if self.db is None:
+        if not hasattr(self, "db") or self.db is None:
             print("❌ База данных не открыта")
-            return results
+            return [results]
 
         print(f"\n📊 Всего таблиц в базе: {len(self.db.tables):,}")
 
@@ -92,12 +94,15 @@ class DocumentNamesBlobExtractor(BaseExtractor):
                 ]  # Первые 10 образцов
                 print(f"   ✅ Найдено {len(blob_samples)} BLOB образцов")
 
-        return results
+        return [results]
 
 
 def search_document_names_in_blob() -> dict[str, Any]:
     """
     Функция-обертка для обратной совместимости
     """
-    extractor = DocumentNamesBlobExtractor()
+    from ..processors.database_connector import DatabaseConnector
+
+    db_connector = DatabaseConnector("data/raw/1Cv8.1CD")
+    extractor = DocumentNamesBlobExtractor(db_connector=db_connector)
     return extractor.run()

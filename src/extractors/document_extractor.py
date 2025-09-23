@@ -7,15 +7,11 @@ DocumentExtractor - извлекатель документов из 1С баз�
 import json
 import logging
 import os
-import sys
 from datetime import datetime
 from typing import Any
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "processors"))
-
-from extractors.base_extractor import BaseExtractor
-from processors.database_connector import DatabaseConnector
+from ..processors.database_connector import DatabaseConnector
+from .base_extractor import BaseExtractor
 
 
 class DocumentExtractor(BaseExtractor):
@@ -49,8 +45,8 @@ class DocumentExtractor(BaseExtractor):
             self.logger.addHandler(handler)
             self.logger.setLevel(logging.INFO)
 
-        self.documents_data = []
-        self.extraction_stats = {
+        self.documents_data: list[dict[str, Any]] = []
+        self.extraction_stats: dict[str, Any] = {
             "total_documents": 0,
             "successful_extractions": 0,
             "failed_extractions": 0,
@@ -227,7 +223,7 @@ class DocumentExtractor(BaseExtractor):
 
     def _extract_single_document(
         self,
-        record,
+        record: Any,
         index: int,
         table_name: str,
     ) -> dict[str, Any] | None:
@@ -446,6 +442,7 @@ class DocumentExtractor(BaseExtractor):
 
     def save_results(
         self,
+        results: list[dict[str, Any]] | None = None,
         output_path: str = "data/results/documents_extraction.json",
     ) -> str:
         """
@@ -460,14 +457,81 @@ class DocumentExtractor(BaseExtractor):
         try:
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
+            # Используем переданные результаты или внутренние данные
+            data_to_save = results if results is not None else self.documents_data
+
             with open(output_path, "w", encoding="utf-8") as f:
-                json.dump(self.documents_data, f, ensure_ascii=False, indent=2)
+                json.dump(data_to_save, f, ensure_ascii=False, indent=2)
 
             self.logger.info(f"💾 Результаты сохранены: {output_path}")
             return output_path
 
         except Exception as e:
             self.logger.error(f"❌ Ошибка при сохранении результатов: {e}")
+            raise
+
+    def save_to_parquet(
+        self,
+        output_path: str = "data/results/parquet/documents_extraction.parquet",
+    ) -> str:
+        """
+        Сохраняет результаты в Parquet формат для совместимости с notebook.
+
+        Args:
+            output_path: Путь для сохранения Parquet файла
+
+        Returns:
+            Путь к сохраненному файлу
+        """
+        try:
+            import pandas as pd
+            import pyarrow as pa
+            import pyarrow.parquet as pq
+
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+            df = pd.DataFrame(self.documents_data)
+
+            # ИСПРАВЛЕНО: Правильное сохранение BLOB данных как binary
+            table_data = {}
+            for col in df.columns:
+                if df[col].dtype == "object":
+                    # Проверяем, содержит ли колонка BLOB данные
+                    blob_data = []
+                    for val in df[col]:
+                        if isinstance(val, bytes):
+                            blob_data.append(val)
+                        elif (
+                            isinstance(val, str)
+                            and val.startswith("b'")
+                            and val.endswith("'")
+                        ):
+                            # Восстанавливаем bytes из строкового представления
+                            try:
+                                import ast
+
+                                blob_data.append(ast.literal_eval(val))
+                            except:
+                                blob_data.append(b"")
+                        else:
+                            blob_data.append(b"")
+
+                    # Сохраняем как binary колонку
+                    table_data[col] = pa.array(blob_data, type=pa.binary())
+                else:
+                    # Обычные поля как строки
+                    table_data[col] = pa.array(df[col].astype(str))
+
+            # Создаем PyArrow Table
+            table = pa.table(table_data)
+
+            # Сохраняем с правильными типами
+            pq.write_table(table, output_path)
+            self.logger.info(f"💾 Parquet результаты сохранены: {output_path}")
+            return output_path
+
+        except Exception as e:
+            self.logger.error(f"❌ Ошибка при сохранении Parquet: {e}")
             raise
 
     def get_extraction_summary(self) -> dict[str, Any]:
@@ -483,7 +547,7 @@ class DocumentExtractor(BaseExtractor):
             "failed_extractions": self.extraction_stats["failed_extractions"],
             "success_rate": (
                 self.extraction_stats["successful_extractions"]
-                / max(self.extraction_stats["total_documents"], 1)
+                / max(int(self.extraction_stats["total_documents"]), 1)
                 * 100
             ),
             "extraction_errors": self.extraction_stats["extraction_errors"],

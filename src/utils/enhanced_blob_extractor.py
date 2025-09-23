@@ -15,6 +15,19 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+# Magic bytes для детекции форматов (из @1C standard.md)
+MAGIC_SIGNATURES = {
+    "pdf": b"%PDF-",
+    "zip": b"PK\x03\x04",
+    "jpeg": b"\xff\xd8\xff",
+    "png": b"\x89PNG\r\n\x1a\n",
+    "gif": b"GIF8",
+    "rtf": b"{\\rtf",
+    "xml": b"<?xml",
+    "html": b"<!DOCTYPE",
+    "json": b"{",
+}
+
 
 @dataclass
 class BlobExtractionResult:
@@ -45,6 +58,8 @@ class EnhancedBlobExtractor:
             "hexdump",
             "strings",
         ]
+        # Детекция форматов включена по умолчанию
+        self.format_detection_enabled = True
 
     def extract_blob_content(
         self,
@@ -70,6 +85,22 @@ class EnhancedBlobExtractor:
             if result.content:
                 result.content_length = len(result.content)
                 result.quality_score = self._calculate_quality_score(result, data_type)
+
+                # Добавляем детекцию формата если включена
+                if self.format_detection_enabled and result.content:
+                    try:
+                        blob_bytes = (
+                            result.content.encode("utf-8")
+                            if isinstance(result.content, str)
+                            else result.content
+                        )
+                        if isinstance(blob_bytes, bytes):
+                            result.metadata["detected_format"] = (
+                                self.detect_format_by_signature(blob_bytes)
+                            )
+                    except Exception as e:
+                        logger.debug(f"Format detection failed: {e}")
+
                 return result
 
         # Если не сработал, пробуем остальные методы
@@ -568,6 +599,18 @@ class EnhancedBlobExtractor:
 
         return {"extraction_result": result, "financial_info": financial_info}
 
+    def detect_format_by_signature(self, blob_data: bytes) -> str:
+        """Детекция формата по magic bytes (из @1C standard.md)"""
+        if not blob_data:
+            return "empty"
+
+        # Проверяем magic bytes
+        for format_name, signature in MAGIC_SIGNATURES.items():
+            if signature and blob_data.startswith(signature):
+                return format_name
+
+        return "unknown"
+
 
 def enhanced_safe_get_blob_content(blob_obj: Any) -> BlobExtractionResult:
     """
@@ -623,3 +666,17 @@ def extract_financial_data(blob_obj: Any) -> dict[str, Any]:
     """
     extractor = EnhancedBlobExtractor()
     return extractor.extract_financial_data(blob_obj)
+
+
+def detect_blob_format(blob_data: bytes) -> str:
+    """
+    Детекция формата BLOB по magic bytes (из @1C standard.md)
+
+    Args:
+        blob_data: Бинарные данные BLOB
+
+    Returns:
+        str: Определенный формат
+    """
+    extractor = EnhancedBlobExtractor()
+    return extractor.detect_format_by_signature(blob_data)

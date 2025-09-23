@@ -72,9 +72,9 @@ class TestDocumentSearch:
         # Проверяем, что все документы содержат информацию о магазинах
         for doc in store_docs:
             store_name = doc[2] if doc[2] else ""
-            assert "ПЦ" in store_name, (
-                f"Документ {doc[0]} не содержит информации о магазине"
-            )
+            assert (
+                "ПЦ" in store_name
+            ), f"Документ {doc[0]} не содержит информации о магазине"
 
         conn.close()
 
@@ -101,9 +101,9 @@ class TestDocumentSearch:
         # Проверяем, что суммы действительно высокие
         for doc in high_amount_docs:
             amount = doc[2] if doc[2] else 0
-            assert amount > 10000, (
-                f"Документ {doc[0]} имеет сумму {amount}, что меньше 10000"
-            )
+            assert (
+                amount > 10000
+            ), f"Документ {doc[0]} имеет сумму {amount}, что меньше 10000"
 
         conn.close()
 
@@ -130,9 +130,9 @@ class TestDocumentSearch:
         # Проверяем, что даты корректные
         for doc in date_docs:
             date = doc[2] if doc[2] else ""
-            assert date != "N/A" and date != "", (
-                f"Документ {doc[0]} имеет некорректную дату: {date}"
-            )
+            assert (
+                date != "N/A" and date != ""
+            ), f"Документ {doc[0]} имеет некорректную дату: {date}"
 
         conn.close()
 
@@ -201,15 +201,13 @@ class TestDocumentSearch:
                 or "цвет" in blob_content.lower()
                 or "букет" in blob_content.lower()
                 or "моно" in blob_content.lower()
-            ), (
-                f"Документ {doc[0]} не содержит информации о цветах: {blob_content[:50]}..."
-            )
-            assert amount > 5000, (
-                f"Документ {doc[0]} имеет сумму {amount}, что меньше 5000"
-            )
-            assert "ПЦ" in store_name, (
-                f"Документ {doc[0]} не содержит информации о магазине ПЦ"
-            )
+            ), f"Документ {doc[0]} не содержит информации о цветах: {blob_content[:50]}..."
+            assert (
+                amount > 5000
+            ), f"Документ {doc[0]} имеет сумму {amount}, что меньше 5000"
+            assert (
+                "ПЦ" in store_name
+            ), f"Документ {doc[0]} не содержит информации о магазине ПЦ"
 
         conn.close()
 
@@ -289,15 +287,15 @@ class TestDocumentSearch:
             amount = doc[3] if doc[3] else 0
 
             # Проверяем, что документ имеет реальную сумму и магазин
-            assert amount >= 1000, (
-                f"Документ {doc[0]} имеет сумму {amount}, что меньше 1000"
-            )
-            assert amount <= 50000, (
-                f"Документ {doc[0]} имеет сумму {amount}, что больше 50000"
-            )
-            assert 1000 <= amount <= 50000, (
-                f"Документ {doc[0]} имеет сумму {amount}, которая не соответствует фильтру"
-            )
+            assert (
+                amount >= 1000
+            ), f"Документ {doc[0]} имеет сумму {amount}, что меньше 1000"
+            assert (
+                amount <= 50000
+            ), f"Документ {doc[0]} имеет сумму {amount}, что больше 50000"
+            assert (
+                1000 <= amount <= 50000
+            ), f"Документ {doc[0]} имеет сумму {amount}, которая не соответствует фильтру"
 
         conn.close()
 

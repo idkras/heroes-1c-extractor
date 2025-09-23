@@ -7,12 +7,12 @@ JTBD:
 чтобы понять паттерны извлечения данных и создать план рефакторинга на основе фактов.
 """
 
+import json
 import os
 import sys
-from pathlib import Path
-from typing import Dict, Any, List
-import json
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union, Collection
 
 # Добавляем путь к src для импорта
 sys.path.insert(0, str(Path(__file__).parent / "src"))
@@ -38,7 +38,7 @@ except Exception as e:
 from onec_dtools import DatabaseReader
 
 
-def analyze_1c_database_structure():
+def analyze_1c_database_structure() -> Optional[Dict[str, Any]]:
     """
     JTBD:
     Как анализатор структуры базы данных, я хочу проанализировать реальную 1С базу,
@@ -52,10 +52,12 @@ def analyze_1c_database_structure():
 
     if not cdb_file_path.exists():
         print(f"❌ Файл 1С базы данных не найден: {cdb_file_path}")
-        return
+        return None
 
     print(f"📁 Путь к файлу: {cdb_file_path}")
-    print(f"📏 Размер файла: {cdb_file_path.stat().st_size / (1024*1024*1024):.2f} GB")
+    print(
+        f"📏 Размер файла: {cdb_file_path.stat().st_size / (1024 * 1024 * 1024):.2f} GB"
+    )
 
     try:
         with open(cdb_file_path, "rb") as f:
@@ -144,7 +146,9 @@ def analyze_1c_database_structure():
                                         fields_analysis = {}
                                         for j, value in enumerate(row_list):
                                             field_name = getattr(
-                                                value, "name", f"field_{j}"
+                                                value,
+                                                "name",
+                                                f"field_{j}",
                                             )
                                             field_type = type(value).__name__
 
@@ -153,7 +157,8 @@ def analyze_1c_database_structure():
                                                 "is_blob": hasattr(value, "value")
                                                 and "Blob" in str(type(value)),
                                                 "is_numeric": isinstance(
-                                                    value, (int, float)
+                                                    value,
+                                                    (int, float),
                                                 ),
                                                 "is_string": isinstance(value, str),
                                                 "is_date": isinstance(value, datetime),
@@ -163,7 +168,7 @@ def analyze_1c_database_structure():
                                             }
 
                                         sample_records.append(
-                                            {"row_index": i, "fields": fields_analysis}
+                                            {"row_index": i, "fields": fields_analysis},
                                         )
                             except Exception as e:
                                 print(f"      ⚠️ Ошибка при чтении записи {i}: {e}")
@@ -176,61 +181,67 @@ def analyze_1c_database_structure():
                                 set(
                                     field["type"]
                                     for record in sample_records
-                                    for field in record["fields"].values()
-                                )
+                                    for field in (record.get("fields", {}).values() if isinstance(record.get("fields"), dict) else [])  # type: ignore
+                                ),
                             ),
                             "blob_fields": [
                                 name
                                 for record in sample_records
-                                for name, field in record["fields"].items()
+                                for name, field in (record.get("fields", {}).items() if isinstance(record.get("fields"), dict) else [])  # type: ignore
                                 if field["is_blob"]
                             ],
                             "numeric_fields": [
                                 name
                                 for record in sample_records
-                                for name, field in record["fields"].items()
+                                for name, field in (record.get("fields", {}).items() if isinstance(record.get("fields"), dict) else [])  # type: ignore
                                 if field["is_numeric"]
                             ],
                             "string_fields": [
                                 name
                                 for record in sample_records
-                                for name, field in record["fields"].items()
+                                for name, field in (record.get("fields", {}).items() if isinstance(record.get("fields"), dict) else [])  # type: ignore
                                 if field["is_string"]
                             ],
                             "date_fields": [
                                 name
                                 for record in sample_records
-                                for name, field in record["fields"].items()
+                                for name, field in (record.get("fields", {}).items() if isinstance(record.get("fields"), dict) else [])  # type: ignore
                                 if field["is_date"]
                             ],
                         }
 
+                        field_types = document_analysis[table_name]["field_types"]
+                        blob_fields = document_analysis[table_name]["blob_fields"]
+                        numeric_fields = document_analysis[table_name]["numeric_fields"]
+                        string_fields = document_analysis[table_name]["string_fields"]
+                        date_fields = document_analysis[table_name]["date_fields"]
+
                         print(
-                            f"      📊 Поля: {len(document_analysis[table_name]['field_types'])} типов"
+                            f"      📊 Поля: {len(field_types) if isinstance(field_types, Collection) else 0} типов",
                         )
                         print(
-                            f"      📦 BLOB поля: {len(document_analysis[table_name]['blob_fields'])}"
+                            f"      📦 BLOB поля: {len(blob_fields) if isinstance(blob_fields, Collection) else 0}",
                         )
                         print(
-                            f"      🔢 Числовые поля: {len(document_analysis[table_name]['numeric_fields'])}"
+                            f"      🔢 Числовые поля: {len(numeric_fields) if isinstance(numeric_fields, Collection) else 0}",
                         )
                         print(
-                            f"      📝 Строковые поля: {len(document_analysis[table_name]['string_fields'])}"
+                            f"      📝 Строковые поля: {len(string_fields) if isinstance(string_fields, Collection) else 0}",
                         )
                         print(
-                            f"      📅 Дата поля: {len(document_analysis[table_name]['date_fields'])}"
+                            f"      📅 Дата поля: {len(date_fields) if isinstance(date_fields, Collection) else 0}",
                         )
 
                         # Показываем примеры полей
                         if sample_records:
                             first_record = sample_records[0]
-                            print(f"      🔍 Пример полей:")
-                            for field_name, field_info in list(
-                                first_record["fields"].items()
-                            )[:5]:
-                                print(
-                                    f"         {field_name}: {field_info['type']} = {field_info['sample_value']}"
-                                )
+                            print("      🔍 Пример полей:")
+                            fields = first_record.get("fields", {})
+                            if isinstance(fields, dict):
+                                for field_name, field_info in list(fields.items())[:5]:
+                                    print(
+                                        f"         {field_name}: {field_info['type']} = {field_info['sample_value']}",
+                                    )
 
                 except Exception as e:
                     print(f"   ❌ Ошибка при анализе таблицы {table_name}: {e}")
@@ -267,7 +278,9 @@ def analyze_1c_database_structure():
                                         fields_analysis = {}
                                         for j, value in enumerate(row_list):
                                             field_name = getattr(
-                                                value, "name", f"field_{j}"
+                                                value,
+                                                "name",
+                                                f"field_{j}",
                                             )
                                             field_type = type(value).__name__
 
@@ -279,9 +292,9 @@ def analyze_1c_database_structure():
                                             }
 
                                         sample_records.append(
-                                            {"row_index": i, "fields": fields_analysis}
+                                            {"row_index": i, "fields": fields_analysis},
                                         )
-                            except Exception as e:
+                            except Exception:
                                 continue
 
                         reference_analysis[table_name] = {
@@ -289,9 +302,16 @@ def analyze_1c_database_structure():
                             "sample_records": sample_records,
                         }
 
-                        print(
-                            f"      📊 Поля: {len(sample_records[0]['fields']) if sample_records else 0}"
-                        )
+                        if sample_records and isinstance(
+                            sample_records[0].get("fields"), dict
+                        ):
+                            fields = sample_records[0]["fields"]
+                            fields_count = (
+                                len(fields) if isinstance(fields, dict) else 0
+                            )
+                        else:
+                            fields_count = 0
+                        print(f"      📊 Поля: {fields_count}")
 
                 except Exception as e:
                     print(f"   ❌ Ошибка при анализе справочника {table_name}: {e}")
@@ -302,7 +322,7 @@ def analyze_1c_database_structure():
             # 4. ВЫЯВЛЕНИЕ ПАТТЕРНОВ ИЗВЛЕЧЕНИЯ
             print("\n🔍 ВЫЯВЛЕНИЕ ПАТТЕРНОВ ИЗВЛЕЧЕНИЯ:")
 
-            extraction_patterns = {
+            extraction_patterns: Dict[str, Any] = {
                 "common_field_types": {},
                 "blob_processing_patterns": [],
                 "data_quality_issues": [],
@@ -310,15 +330,23 @@ def analyze_1c_database_structure():
             }
 
             # Анализируем общие типы полей
-            all_field_types = []
-            all_blob_fields = []
+            all_field_types: List[str] = []
+            all_blob_fields: List[str] = []
 
             for table_name, table_data in document_analysis.items():
-                for record in table_data.get("sample_records", []):
-                    for field_name, field_info in record["fields"].items():
-                        all_field_types.append(field_info["type"])
-                        if field_info["is_blob"]:
-                            all_blob_fields.append(field_name)
+                sample_records = table_data.get("sample_records", [])  # type: ignore
+                if isinstance(sample_records, list):
+                    for record in sample_records:
+                        if isinstance(record, dict):
+                            fields = record.get("fields", {})
+                            if isinstance(fields, dict):
+                                for field_name, field_info in fields.items():
+                                    if isinstance(field_info, dict):
+                                        all_field_types.append(
+                                            field_info.get("type", "unknown")
+                                        )
+                                        if field_info.get("is_blob", False):
+                                            all_blob_fields.append(field_name)
 
             # Подсчитываем частоту типов полей
             from collections import Counter
@@ -345,30 +373,38 @@ def analyze_1c_database_structure():
                         "hypothesis": "BLOB поля требуют специальной обработки с декодированием",
                         "evidence": f"Найдено {len(set(all_blob_fields))} уникальных BLOB полей",
                         "implication": "Нужен специализированный BlobProcessor",
-                    }
+                    },
                 )
 
             # Гипотеза 2: Разные типы таблиц требуют разных подходов
-            if len(document_tables) > 0 and len(reference_tables) > 0:
+            doc_count = (
+                len(document_tables) if isinstance(document_tables, Collection) else 0
+            )
+            ref_count = (
+                len(reference_tables) if isinstance(reference_tables, Collection) else 0
+            )
+            if doc_count > 0 and ref_count > 0:
                 hypotheses.append(
                     {
                         "hypothesis": "Документы, справочники и регистры требуют разных экстракторов",
-                        "evidence": f"Найдено {len(document_tables)} документов, {len(reference_tables)} справочников",
+                        "evidence": f"Найдено {doc_count} документов, {ref_count} справочников",
                         "implication": "Нужны отдельные DocumentExtractor, ReferenceExtractor, RegisterExtractor",
-                    }
+                    },
                 )
 
             # Гипотеза 3: Производительность зависит от размера таблиц
-            large_tables = [
-                name for name, data in document_analysis.items() if data["size"] > 1000
-            ]
+            large_tables: List[str] = []
+            for name, data in document_analysis.items():
+                size = data.get("size")
+                if isinstance(size, (int, float)) and size > 1000:
+                    large_tables.append(name)
             if large_tables:
                 hypotheses.append(
                     {
                         "hypothesis": "Большие таблицы требуют оптимизации производительности",
                         "evidence": f"Найдено {len(large_tables)} таблиц с >1000 записей",
                         "implication": "Нужна пакетная обработка и прогресс-трекинг",
-                    }
+                    },
                 )
 
             for i, hypothesis in enumerate(hypotheses, 1):
@@ -376,13 +412,17 @@ def analyze_1c_database_structure():
                 print(f"      📊 Доказательства: {hypothesis['evidence']}")
                 print(f"      🎯 Импликация: {hypothesis['implication']}")
 
-            analysis_results["hypotheses"] = hypotheses
+            analysis_results["hypotheses"] = hypotheses  # type: ignore
 
             # Сохраняем результаты анализа
             output_file = "research_1c_analysis_results.json"
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8") as f:  # type: ignore
                 json.dump(
-                    analysis_results, f, ensure_ascii=False, indent=2, default=str
+                    analysis_results,
+                    f,  # type: ignore
+                    ensure_ascii=False,
+                    indent=2,
+                    default=str,
                 )
 
             print(f"\n💾 Результаты анализа сохранены в: {output_file}")
@@ -394,22 +434,22 @@ def analyze_1c_database_structure():
 
             if all_blob_fields:
                 recommendations.append(
-                    "1. Создать BlobProcessor для обработки BLOB полей"
+                    "1. Создать BlobProcessor для обработки BLOB полей",
                 )
 
             if len(document_tables) > 0:
                 recommendations.append(
-                    "2. Создать DocumentExtractor для извлечения документов"
+                    "2. Создать DocumentExtractor для извлечения документов",
                 )
 
             if len(reference_tables) > 0:
                 recommendations.append(
-                    "3. Создать ReferenceExtractor для извлечения справочников"
+                    "3. Создать ReferenceExtractor для извлечения справочников",
                 )
 
             if len(register_tables) > 0:
                 recommendations.append(
-                    "4. Создать RegisterExtractor для извлечения регистров"
+                    "4. Создать RegisterExtractor для извлечения регистров",
                 )
 
             if large_tables:
@@ -417,7 +457,7 @@ def analyze_1c_database_structure():
 
             recommendations.append("6. Создать ErrorHandler для обработки ошибок")
             recommendations.append(
-                "7. Создать DataConverter для конвертации в Parquet/DuckDB"
+                "7. Создать DataConverter для конвертации в Parquet/DuckDB",
             )
 
             for recommendation in recommendations:
@@ -426,14 +466,18 @@ def analyze_1c_database_structure():
             analysis_results["recommendations"] = recommendations
 
             # Обновляем результаты
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8") as f:  # type: ignore
                 json.dump(
-                    analysis_results, f, ensure_ascii=False, indent=2, default=str
+                    analysis_results,
+                    f,  # type: ignore
+                    ensure_ascii=False,
+                    indent=2,
+                    default=str,
                 )
 
-            print(f"\n🎉 RESEARCH-FIRST АНАЛИЗ ЗАВЕРШЕН!")
+            print("\n🎉 RESEARCH-FIRST АНАЛИЗ ЗАВЕРШЕН!")
             print(
-                f"📊 Проанализировано таблиц: {len(document_analysis) + len(reference_analysis)}"
+                f"📊 Проанализировано таблиц: {len(document_analysis) + len(reference_analysis)}",
             )
             print(f"💡 Сформировано гипотез: {len(hypotheses)}")
             print(f"🎯 Рекомендаций: {len(recommendations)}")

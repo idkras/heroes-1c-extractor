@@ -311,6 +311,28 @@ class CredentialsManager:
                 fallback_sources=["env", "github_secrets"],
                 validation_rules={"type": "str", "min_length": 10},
             ),
+            # SonarQube credentials
+            "sonar_token": CredentialConfig(
+                name="SonarQube Token",
+                source="keychain",
+                key="sonar-token",
+                fallback_sources=["env", "github_secrets"],
+                validation_rules={"type": "str", "min_length": 20, "prefix": "sqp_"},
+            ),
+            "sonar_host_url": CredentialConfig(
+                name="SonarQube Host URL",
+                source="keychain",
+                key="sonar-host-url",
+                fallback_sources=["env", "github_secrets"],
+                validation_rules={"type": "str", "min_length": 10},
+            ),
+            "sonar_organization": CredentialConfig(
+                name="SonarQube Organization",
+                source="keychain",
+                key="sonar-organization",
+                fallback_sources=["env", "github_secrets"],
+                validation_rules={"type": "str", "min_length": 3},
+            ),
         }
 
     def get_credential(self, credential_name: str) -> CredentialResult:

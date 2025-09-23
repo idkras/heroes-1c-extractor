@@ -24,9 +24,9 @@ class TestDocumentStructure:
 
     def test_parquet_exists(self):
         """Проверяем, что Parquet файл существует"""
-        assert self.parquet_path.exists(), (
-            f"Parquet файл не найден: {self.parquet_path}"
-        )
+        assert (
+            self.parquet_path.exists()
+        ), f"Parquet файл не найден: {self.parquet_path}"
 
     def test_documents_table_structure(self):
         """Проверяем структуру таблицы documents в DuckDB"""
@@ -57,9 +57,9 @@ class TestDocumentStructure:
         ]
 
         for field in required_fields:
-            assert field in schema_columns, (
-                f"Обязательное поле '{field}' отсутствует в таблице documents"
-            )
+            assert (
+                field in schema_columns
+            ), f"Обязательное поле '{field}' отсутствует в таблице documents"
 
         conn.close()
 
@@ -109,9 +109,9 @@ class TestDocumentStructure:
             WHERE store_name != 'N/A' AND store_name != ''
         """,
         ).fetchone()
-        assert result is not None, (
-            "Не удалось получить количество документов с магазинами"
-        )
+        assert (
+            result is not None
+        ), "Не удалось получить количество документов с магазинами"
         documents_with_stores = result[0]
 
         assert documents_with_stores > 0, "Нет документов с названиями магазинов"
@@ -140,9 +140,9 @@ class TestDocumentStructure:
         ]
 
         for col in required_columns:
-            assert col in df.columns, (
-                f"Обязательная колонка '{col}' отсутствует в Parquet файле"
-            )
+            assert (
+                col in df.columns
+            ), f"Обязательная колонка '{col}' отсутствует в Parquet файле"
 
     def test_document_search_capabilities(self):
         """Проверяем возможности поиска документов"""
@@ -159,9 +159,9 @@ class TestDocumentStructure:
             WHERE document_type = 'ФЛОРИСТИКА'
         """,
         ).fetchone()
-        assert result is not None, (
-            "Не удалось получить количество документов ФЛОРИСТИКА"
-        )
+        assert (
+            result is not None
+        ), "Не удалось получить количество документов ФЛОРИСТИКА"
         floristic_docs = result[0]
 
         # Тест 2: Поиск по магазину
@@ -172,9 +172,9 @@ class TestDocumentStructure:
             WHERE store_name LIKE '%ПЦ%'
         """,
         ).fetchone()
-        assert result is not None, (
-            "Не удалось получить количество документов по магазину"
-        )
+        assert (
+            result is not None
+        ), "Не удалось получить количество документов по магазину"
         store_docs = result[0]
 
         # Тест 3: Поиск по сумме
@@ -185,9 +185,9 @@ class TestDocumentStructure:
             WHERE total_amount > 10000
         """,
         ).fetchone()
-        assert result is not None, (
-            "Не удалось получить количество документов с высокой суммой"
-        )
+        assert (
+            result is not None
+        ), "Не удалось получить количество документов с высокой суммой"
         high_amount_docs = result[0]
 
         # Тест 4: Поиск по BLOB содержимому
@@ -198,9 +198,9 @@ class TestDocumentStructure:
             WHERE blob_content LIKE '%флор%'
         """,
         ).fetchone()
-        assert result is not None, (
-            "Не удалось получить количество документов с BLOB содержимым"
-        )
+        assert (
+            result is not None
+        ), "Не удалось получить количество документов с BLOB содержимым"
         blob_docs = result[0]
 
         # Проверяем, что поиск работает
@@ -302,9 +302,9 @@ class TestDocumentStructure:
             WHERE blob_content != '' AND blob_content IS NOT NULL
         """,
         ).fetchone()
-        assert result is not None, (
-            "Не удалось получить количество документов с BLOB данными"
-        )
+        assert (
+            result is not None
+        ), "Не удалось получить количество документов с BLOB данными"
         blob_docs = result[0]
 
         # Проверяем, что есть документы с датами

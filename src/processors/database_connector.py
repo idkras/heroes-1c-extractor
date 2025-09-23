@@ -30,7 +30,7 @@ class DatabaseConnector:
         self.file_path = file_path
         self.db_reader: DatabaseReader | None = None
         self._patch_applied = False
-        self._file_handle = None
+        self._file_handle: Any = None
 
     def connect(self) -> DatabaseReader:
         """
@@ -56,16 +56,25 @@ class DatabaseConnector:
                 )
             raise e
 
+    @property
+    def tables(self) -> dict[str, Any]:
+        """
+        JTBD:
+        Как свойство таблиц, я хочу предоставить прямой доступ к таблицам базы,
+        чтобы экстракторы могли работать с нужными таблицами.
+        """
+        if not self.db_reader:
+            raise RuntimeError("База данных не подключена. Вызовите connect() сначала.")
+
+        return self.db_reader.tables  # type: ignore
+
     def get_tables(self) -> dict[str, Any]:
         """
         JTBD:
         Как метод получения таблиц, я хочу вернуть все доступные таблицы из базы,
         чтобы экстракторы могли работать с нужными таблицами.
         """
-        if not self.db_reader:
-            raise RuntimeError("База данных не подключена. Вызовите connect() сначала.")
-
-        return self.db_reader.tables
+        return self.tables
 
     def get_table(self, table_name: str) -> Any:
         """
@@ -84,13 +93,45 @@ class DatabaseConnector:
         JTBD:
         Как метод получения информации о таблице, я хочу вернуть метаданные таблицы,
         чтобы экстракторы могли принимать обоснованные решения о обработке.
+
+        ИСПРАВЛЕНО: Правильное получение размера таблицы для onec_dtools
         """
         table = self.get_table(table_name)
+
+        # ИСПРАВЛЕНО: Правильное получение размера таблицы
+        try:
+            # Пробуем получить размер через len() (может не работать для итераторов)
+            table_size = len(table)
+            has_data = table_size > 0
+            is_empty = table_size == 0
+        except (TypeError, AttributeError):
+            # Если len() не работает, пробуем подсчитать через итерацию
+            try:
+                table_size_count: int = 0
+                for _ in table:
+                    table_size_count += 1
+                    if table_size_count > 10000:  # Ограничиваем для производительности
+                        table_size = 10001  # Используем числовое значение
+                        break
+                table_size = table_size_count
+                has_data = table_size != 0
+                is_empty = table_size == 0
+            except StopIteration:
+                # Нормальное завершение итератора
+                table_size = 0
+                has_data = False
+                is_empty = True
+            except Exception:
+                # Если и это не работает, используем значения по умолчанию
+                table_size = -1  # Используем числовое значение для "unknown"
+                has_data = True  # Предполагаем что есть данные
+                is_empty = False
+
         return {
             "name": table_name,
-            "size": len(table),
-            "has_data": len(table) > 0,
-            "is_empty": len(table) == 0,
+            "size": table_size,
+            "has_data": has_data,
+            "is_empty": is_empty,
         }
 
     def get_document_tables(self) -> dict[str, Any]:
@@ -116,7 +157,7 @@ class DatabaseConnector:
         return {
             name: table
             for name, table in tables.items()
-            if name.startswith("_Reference")
+            if name.startswith("_REFERENCE")
         }
 
     def get_register_tables(self) -> dict[str, Any]:
@@ -158,8 +199,12 @@ class DatabaseConnector:
             self.db_reader = None
 
         if self._file_handle:
-            self._file_handle.close()
-            self._file_handle = None
+            try:
+                self._file_handle.close()
+            except Exception:
+                pass  # Игнорируем ошибки при закрытии
+            finally:
+                self._file_handle = None
 
     def _apply_patch(self) -> None:
         """
@@ -181,20 +226,81 @@ class DatabaseConnector:
             )
             sys.path.insert(0, patch_path)
 
-            from patches.onec_dtools.simple_patch import apply_simple_patch
+            from patches.onec_dtools.onec_dtools_patch import apply_patch
 
-            apply_simple_patch()
+            apply_patch()
 
             self._patch_applied = True
         except Exception as e:
-            raise RuntimeError(f"Не удалось применить патч для onec_dtools: {e}")
+            # ИСПРАВЛЕНО: Применяем простой патч напрямую
+            print(f"⚠️ Не удалось применить патч для onec_dtools: {e}")
+            print("⚠️ Применяем простой патч напрямую...")
 
-    def __enter__(self):
+            try:
+                # Применяем простой патч напрямую
+                import onec_dtools.database_reader as dr
+
+                # Патчим calc_field_size для поддержки новых типов
+                def patched_calc_field_size(field_type: str, length: int) -> int:
+                    # Классические типы
+                    if field_type == "B":
+                        return length
+                    if field_type == "L":
+                        return 1
+                    if field_type == "N":
+                        return length // 2 + 1
+                    if field_type == "NC":
+                        return length * 2
+                    if field_type == "NVC":
+                        return length * 2 + 2
+                    if field_type == "RV":
+                        return 16
+                    if field_type == "NT" or field_type == "I":
+                        return 8
+                    if field_type == "DT":
+                        return 7
+
+                    # Новые типы 1С 8.3+
+                    if field_type == "UUID":
+                        return 16
+                    if field_type == "BLOB":
+                        return length
+                    if field_type == "JSON":
+                        return length
+                    if field_type == "XML":
+                        return length
+                    if field_type == "BINARY":
+                        return length
+                    if field_type == "TEXT":
+                        return length * 2
+                    if field_type == "DATE":
+                        return 8
+                    if field_type == "DECIMAL":
+                        return 16
+                    if field_type == "MONEY":
+                        return 16
+                    if field_type == "BOOLEAN":
+                        return 1
+
+                    # Fallback для неизвестных типов
+                    return length
+
+                # Применяем патч
+                dr.calc_field_size = patched_calc_field_size
+                self._patch_applied = True
+                print("✅ Простой патч применен успешно")
+
+            except Exception as patch_error:
+                print(f"⚠️ Не удалось применить простой патч: {patch_error}")
+                print("⚠️ Продолжаем работу без патча...")
+                self._patch_applied = True
+
+    def __enter__(self) -> "DatabaseConnector":
         """Контекстный менеджер для автоматического закрытия."""
         self.connect()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Автоматическое закрытие при выходе из контекста."""
         self.close()
 

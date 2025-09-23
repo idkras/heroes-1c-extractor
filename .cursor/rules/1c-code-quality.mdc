@@ -1,0 +1,183 @@
+---
+alwaysApply: true
+---
+# 1C Code Quality Rules
+
+## 🎯 Специализированные правила для работы с 1С данными
+
+### 1. ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ ПЕРЕД КОДИРОВАНИЕМ
+
+1. **Прочитай стандарт качества кода:**
+   - @4.4 code quality standard
+   - @1.2 AI QA Standard
+   - @4.1 TDD Documentation Standard
+
+2. **Проверь типизацию:**
+   - Все функции имеют аннотации типов
+   - Все переменные имеют явные типы
+   - Используй `from typing import Dict, List, Optional, Union, Any`
+
+3. **Проверь архитектуру:**
+   - Соблюдение принципов SOLID
+   - Использование Protocol для интерфейсов
+   - Dependency Injection
+
+### 2. СПЕЦИАЛИЗИРОВАННЫЕ ПРАВИЛА ДЛЯ 1С
+
+#### **BLOB Processing (КРИТИЧНО):**
+```python
+# ✅ ПРАВИЛЬНО: Использование row.as_list(True) для BLOB
+row_data = row.as_list(True)  # True = включать BLOB поля
+
+# ✅ ПРАВИЛЬНО: Проверка типа перед декодированием
+if isinstance(blob_value, bytes):
+    content = blob_value.decode("utf-16")
+else:
+    content = str(blob_value)
+
+# ❌ НЕПРАВИЛЬНО: Прямое обращение без проверки
+content = blob_value.decode("utf-16")  # Может упасть
+```
+
+#### **Error Handling для 1С:**
+```python
+# ✅ ПРАВИЛЬНО: Обработка специфичных ошибок 1С
+try:
+    # Код работы с 1С
+    pass
+except ValueError as e:
+    if "Unknown field type" in str(e):
+        # Специфичная ошибка 1С
+        return None
+    raise
+except BrokenPipeError:
+    # Нормальное завершение при head
+    return None
+except StopIteration:
+    # Нормальное завершение итератора
+    return None
+```
+
+#### **Type Safety для 1С:**
+```python
+# ✅ ПРАВИЛЬНО: Защитное программирование
+def safe_get_blob_content(blob_obj: Any) -> Optional[str]:
+    if not hasattr(blob_obj, "value"):
+        return None
+    
+    value = blob_obj.value
+    if not isinstance(value, bytes):
+        return str(value) if value is not None else None
+    
+    # Пробуем разные кодировки
+    for encoding in ["utf-16", "utf-8", "cp1251"]:
+        try:
+            return value.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    
+    return value.hex()
+```
+
+### 3. ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ ПОСЛЕ КОДИРОВАНИЯ
+
+1. **Запусти линтеры:**
+   ```bash
+   make lint
+   python3 -m mypy src/
+   python3 -m pylint src/
+   ```
+
+2. **Проверь типизацию:**
+   - 0 ошибок MyPy
+   - 0 ошибок Pylint
+   - Все функции типизированы
+
+3. **Проверь архитектуру:**
+   - Соблюдение SOLID
+   - Правильное наследование
+   - Protocol-based интерфейсы
+
+### 4. СПЕЦИАЛЬНЫЕ ПАТТЕРНЫ ДЛЯ 1С
+
+#### **Множественные стратегии декодирования:**
+```python
+def enhanced_blob_extraction(blob_obj: Any) -> Dict[str, Any]:
+    """Улучшенное извлечение BLOB с множественными методами"""
+    methods_used = []
+    content = None
+    
+    # Метод 1: UTF-16 (стандарт 1С)
+    if hasattr(blob_obj, "value") and isinstance(blob_obj.value, bytes):
+        try:
+            content = blob_obj.value.decode("utf-16")
+            methods_used.append("utf16")
+        except UnicodeDecodeError:
+            pass
+    
+    # Метод 2: UTF-8 (fallback)
+    if not content:
+        try:
+            content = blob_obj.value.decode("utf-8")
+            methods_used.append("utf8")
+        except UnicodeDecodeError:
+            pass
+    
+    # Метод 3: CP1251 (русская кодировка)
+    if not content:
+        try:
+            content = blob_obj.value.decode("cp1251")
+            methods_used.append("cp1251")
+        except UnicodeDecodeError:
+            pass
+    
+    # Метод 4: Hex fallback
+    if not content:
+        content = blob_obj.value.hex()
+        methods_used.append("hex")
+    
+    return {
+        "content": content,
+        "methods_used": methods_used,
+        "success": len(methods_used) > 0
+    }
+```
+
+#### **Валидация результатов:**
+```python
+def validate_1c_extraction_result(result: Any) -> bool:
+    """Валидация результата извлечения 1С"""
+    if not isinstance(result, dict):
+        return False
+    
+    required_keys = ["content", "type", "length"]
+    return all(key in result for key in required_keys)
+```
+
+### 5. ЗАПРЕЩЕННЫЕ ПАТТЕРНЫ
+
+#### **❌ НЕ ДЕЛАЙ:**
+- Прямое обращение к атрибутам без проверки
+- Игнорирование ошибок кодировки
+- Использование `row.as_dict()` для BLOB полей
+- Отсутствие типизации
+- Нарушение принципов SOLID
+
+#### **✅ ОБЯЗАТЕЛЬНО:**
+- Проверка `isinstance()` перед операциями
+- Обработка всех возможных ошибок
+- Использование `row.as_list(True)` для BLOB
+- Строгая типизация
+- Соблюдение архитектурных принципов
+
+### 6. ЧЕКЛИСТ ПЕРЕД КОММИТОМ
+
+- [ ] Прочитал стандарт качества кода
+- [ ] Все функции типизированы
+- [ ] Проверки `isinstance()` добавлены
+- [ ] BLOB обрабатывается через `row.as_list(True)`
+- [ ] Ошибки кодировки обрабатываются
+- [ ] MyPy проходит без ошибок
+- [ ] Pylint проходит без ошибок
+- [ ] Архитектура соответствует SOLID
+- [ ] Тесты написаны и проходят

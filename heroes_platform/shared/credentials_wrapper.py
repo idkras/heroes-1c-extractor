@@ -65,6 +65,7 @@ def get_service_credentials(service: str) -> dict:
             "google_refresh_token",
         ],  # OAuth for other Google services
         "linear": ["linear_api_key"],
+        "sonarqube": ["sonar_token", "sonar_host_url", "sonar_organization"],
     }
 
     if service not in service_credentials:

@@ -7,9 +7,11 @@ JTBD:
 чтобы убедиться в корректности анализа документов в реальных условиях.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 from onec_dtools import DatabaseReader
+
 from src.processors.document_analyzer import DocumentAnalyzer
 
 # Применяем патч для поддержки новых типов полей 1С
@@ -102,34 +104,39 @@ class TestDocumentAnalyzerIntegration:
                         else:
                             row_dict[f"field_{j}"] = value
 
-                    print(f"\n📄 Анализ документа {i+1}:")
+                    print(f"\n📄 Анализ документа {i + 1}:")
                     print(f"   📋 Поля: {list(row_dict.keys())[:10]}...")
                     print(f"   📊 Всего полей: {len(row_dict)}")
 
                     # Анализируем структуру документа
                     field_analysis, structure = analyzer.analyze_document_structure(
-                        row_dict
+                        row_dict,
                     )
 
                     # Проверяем результаты анализа
                     assert len(field_analysis) == len(row_dict)
                     assert isinstance(
-                        structure, type(analyzer).__module__ + ".DocumentStructure"
+                        structure,
+                        type(analyzer.DocumentStructure),
                     )
 
                     # Извлекаем метаданные
                     metadata = analyzer.extract_document_metadata(
-                        field_analysis, structure
+                        field_analysis,
+                        structure,
                     )
 
                     # Проверяем метаданные
                     assert isinstance(
-                        metadata, type(analyzer).__module__ + ".DocumentMetadata"
+                        metadata,
+                        type(analyzer.DocumentMetadata),
                     )
 
                     # Создаем сводку
                     summary = analyzer.create_document_summary(
-                        field_analysis, structure, metadata
+                        field_analysis,
+                        structure,
+                        metadata,
                     )
 
                     # Проверяем сводку
@@ -145,22 +152,22 @@ class TestDocumentAnalyzerIntegration:
                     print(f"   ✅ Код магазина: {metadata.store_code}")
 
                     # Статистика полей
-                    print(f"   📊 Статистика полей:")
+                    print("   📊 Статистика полей:")
                     print(f"      Всего полей: {summary['statistics']['total_fields']}")
                     print(
-                        f"      Числовые поля: {summary['statistics']['numeric_fields']}"
+                        f"      Числовые поля: {summary['statistics']['numeric_fields']}",
                     )
                     print(
-                        f"      Строковые поля: {summary['statistics']['string_fields']}"
+                        f"      Строковые поля: {summary['statistics']['string_fields']}",
                     )
                     print(
-                        f"      Поля с датами: {summary['statistics']['date_fields']}"
+                        f"      Поля с датами: {summary['statistics']['date_fields']}",
                     )
                     print(f"      BLOB поля: {summary['statistics']['blob_fields']}")
                     print(f"      Пустые поля: {summary['statistics']['empty_fields']}")
 
                     # Структура полей
-                    print(f"   📋 Структура полей:")
+                    print("   📋 Структура полей:")
                     print(f"      Поля с номерами: {structure.number_fields}")
                     print(f"      Поля с датами: {structure.date_fields}")
                     print(f"      Поля с суммами: {structure.amount_fields}")
@@ -177,44 +184,45 @@ class TestDocumentAnalyzerIntegration:
                             ):
                                 try:
                                     blob_content = field_info.value.value.decode(
-                                        "utf-8", errors="ignore"
+                                        "utf-8",
+                                        errors="ignore",
                                     )
                                     if len(blob_content) > 0:
                                         print(
-                                            f"      🔍 BLOB поле {blob_field}: {blob_content[:100]}..."
+                                            f"      🔍 BLOB поле {blob_field}: {blob_content[:100]}...",
                                         )
 
                                         # Анализируем содержимое BLOB
                                         blob_analysis = analyzer.analyze_blob_content(
-                                            blob_content
+                                            blob_content,
                                         )
                                         print(
-                                            f"         Цветочная информация: {blob_analysis['has_floristic_info']}"
+                                            f"         Цветочная информация: {blob_analysis['has_floristic_info']}",
                                         )
                                         print(
-                                            f"         Информация о магазине: {blob_analysis['has_store_info']}"
+                                            f"         Информация о магазине: {blob_analysis['has_store_info']}",
                                         )
                                         print(
-                                            f"         Финансовая информация: {blob_analysis['has_finance_info']}"
+                                            f"         Финансовая информация: {blob_analysis['has_finance_info']}",
                                         )
                                         print(
-                                            f"         Найденные цвета: {blob_analysis['colors_found']}"
+                                            f"         Найденные цвета: {blob_analysis['colors_found']}",
                                         )
                                         print(
-                                            f"         Типы букетов: {blob_analysis['bouquet_types_found']}"
+                                            f"         Типы букетов: {blob_analysis['bouquet_types_found']}",
                                         )
                                 except Exception as e:
                                     print(
-                                        f"         ⚠️ Ошибка анализа BLOB {blob_field}: {e}"
+                                        f"         ⚠️ Ошибка анализа BLOB {blob_field}: {e}",
                                     )
 
-                    print(f"   ✅ Анализ документа {i+1} завершен успешно")
+                    print(f"   ✅ Анализ документа {i + 1} завершен успешно")
 
             except Exception as e:
-                print(f"   ⚠️ Ошибка при анализе документа {i+1}: {e}")
+                print(f"   ⚠️ Ошибка при анализе документа {i + 1}: {e}")
                 continue
 
-        print(f"\n✅ Интеграционный тест DocumentAnalyzer завершен успешно")
+        print("\n✅ Интеграционный тест DocumentAnalyzer завершен успешно")
 
     def test_analyze_multiple_document_tables(self, db_connection, analyzer):
         """
@@ -270,20 +278,23 @@ class TestDocumentAnalyzerIntegration:
 
                             # Извлекаем метаданные
                             metadata = analyzer.extract_document_metadata(
-                                field_analysis, structure
+                                field_analysis,
+                                structure,
                             )
 
-                            # Создаем сводку
-                            summary = analyzer.create_document_summary(
-                                field_analysis, structure, metadata
-                            )
+                            # Создаем сводку (может понадобиться для отладки)
+                            # summary = analyzer.create_document_summary(
+                            #     field_analysis,
+                            #     structure,
+                            #     metadata,
+                            # )
 
                             print(
-                                f"   📄 Документ {i+1}: {metadata.document_number} | {metadata.document_type} | {metadata.total_amount}₽"
+                                f"   📄 Документ {i + 1}: {metadata.document_number} | {metadata.document_type} | {metadata.total_amount}₽",
                             )
 
                     except Exception as e:
-                        print(f"   ⚠️ Ошибка при анализе документа {i+1}: {e}")
+                        print(f"   ⚠️ Ошибка при анализе документа {i + 1}: {e}")
                         continue
 
                 print(f"   ✅ Анализ таблицы {table_name} завершен")
@@ -292,7 +303,7 @@ class TestDocumentAnalyzerIntegration:
                 print(f"   ⚠️ Ошибка при анализе таблицы {table_name}: {e}")
                 continue
 
-        print(f"\n✅ Анализ нескольких таблиц документов завершен успешно")
+        print("\n✅ Анализ нескольких таблиц документов завершен успешно")
 
     def test_analyze_blob_fields_in_real_data(self, db_connection, analyzer):
         """
@@ -342,7 +353,7 @@ class TestDocumentAnalyzerIntegration:
 
                     # Анализируем структуру документа
                     field_analysis, structure = analyzer.analyze_document_structure(
-                        row_dict
+                        row_dict,
                     )
 
                     # Анализируем BLOB поля
@@ -355,14 +366,15 @@ class TestDocumentAnalyzerIntegration:
                             ):
                                 try:
                                     blob_content = field_info.value.value.decode(
-                                        "utf-8", errors="ignore"
+                                        "utf-8",
+                                        errors="ignore",
                                     )
                                     if len(blob_content) > 0:
                                         blob_fields_found += 1
 
                                         # Анализируем содержимое BLOB
                                         blob_analysis = analyzer.analyze_blob_content(
-                                            blob_content
+                                            blob_content,
                                         )
 
                                         if blob_analysis["has_floristic_info"]:
@@ -375,42 +387,42 @@ class TestDocumentAnalyzerIntegration:
                                             finance_info_found += 1
 
                                         colors_found.extend(
-                                            blob_analysis["colors_found"]
+                                            blob_analysis["colors_found"],
                                         )
                                         bouquet_types_found.extend(
-                                            blob_analysis["bouquet_types_found"]
+                                            blob_analysis["bouquet_types_found"],
                                         )
 
                                         print(
-                                            f"   🔍 BLOB поле {blob_field}: {blob_content[:50]}..."
+                                            f"   🔍 BLOB поле {blob_field}: {blob_content[:50]}...",
                                         )
                                         print(
-                                            f"      Цветочная информация: {blob_analysis['has_floristic_info']}"
+                                            f"      Цветочная информация: {blob_analysis['has_floristic_info']}",
                                         )
                                         print(
-                                            f"      Информация о магазине: {blob_analysis['has_store_info']}"
+                                            f"      Информация о магазине: {blob_analysis['has_store_info']}",
                                         )
                                         print(
-                                            f"      Финансовая информация: {blob_analysis['has_finance_info']}"
+                                            f"      Финансовая информация: {blob_analysis['has_finance_info']}",
                                         )
                                         print(
-                                            f"      Найденные цвета: {blob_analysis['colors_found']}"
+                                            f"      Найденные цвета: {blob_analysis['colors_found']}",
                                         )
                                         print(
-                                            f"      Типы букетов: {blob_analysis['bouquet_types_found']}"
+                                            f"      Типы букетов: {blob_analysis['bouquet_types_found']}",
                                         )
 
                                 except Exception as e:
                                     print(
-                                        f"      ⚠️ Ошибка анализа BLOB {blob_field}: {e}"
+                                        f"      ⚠️ Ошибка анализа BLOB {blob_field}: {e}",
                                     )
 
             except Exception as e:
-                print(f"   ⚠️ Ошибка при анализе записи {i+1}: {e}")
+                print(f"   ⚠️ Ошибка при анализе записи {i + 1}: {e}")
                 continue
 
         # Выводим итоговую статистику
-        print(f"\n📊 ИТОГОВАЯ СТАТИСТИКА BLOB АНАЛИЗА:")
+        print("\n📊 ИТОГОВАЯ СТАТИСТИКА BLOB АНАЛИЗА:")
         print(f"   📦 Найдено BLOB полей: {blob_fields_found}")
         print(f"   🌸 Цветочная информация: {floristic_info_found}")
         print(f"   🏪 Информация о магазинах: {store_info_found}")
@@ -424,5 +436,4 @@ class TestDocumentAnalyzerIntegration:
         assert store_info_found >= 0
         assert finance_info_found >= 0
 
-        print(f"\n✅ Анализ BLOB полей в реальных данных завершен успешно")
-
+        print("\n✅ Анализ BLOB полей в реальных данных завершен успешно")

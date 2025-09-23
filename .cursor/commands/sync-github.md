@@ -1,4 +1,4 @@
-# Sync GitHub Command
+что # Sync GitHub Command
 
 Синхронизирует все изменения проекта с GitHub репозиторием.
 

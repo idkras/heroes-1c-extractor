@@ -18,7 +18,7 @@ class AllDocumentTypesExtractor(BaseExtractor):
     чтобы отследить полный путь от сырья до цветочков в магазине.
     """
 
-    def extract(self) -> dict[str, Any]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict[str, Any]]:
         """
         Поиск всех типов документов согласно уточненному плану
         ЦЕЛЬ: Отследить весь путь от сырья до цветочков в магазине
@@ -27,9 +27,9 @@ class AllDocumentTypesExtractor(BaseExtractor):
         print("🎯 ЦЕЛЬ: Полный путь цветов от сырья до магазина")
         print("=" * 60)
 
-        if self.db is None:
+        if not hasattr(self, "db") or self.db is None:
             print("❌ База данных не открыта")
-            return {"error": "База данных не открыта"}
+            return []
 
         results: dict[str, Any] = {
             "document_types": {},
@@ -156,12 +156,15 @@ class AllDocumentTypesExtractor(BaseExtractor):
                 }
                 print(f"   ✅ Найдено {len(ref_samples)} образцов справочников")
 
-        return results
+        return [results]
 
 
 def search_all_document_types() -> dict[str, Any]:
     """
     Функция-обертка для обратной совместимости
     """
-    extractor = AllDocumentTypesExtractor()
+    from ..processors.database_connector import DatabaseConnector
+
+    db_connector = DatabaseConnector("data/raw/1Cv8.1CD")
+    extractor = AllDocumentTypesExtractor(db_connector=db_connector)
     return extractor.run()

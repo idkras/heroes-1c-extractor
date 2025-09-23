@@ -1,0 +1,71 @@
+# Quality Gate Configuration for Heroes 1C Extractor
+# Настройка Quality Gate для контроля качества кода
+
+name: "Heroes 1C Extractor Quality Gate"
+
+# Условия для прохождения Quality Gate
+conditions:
+  # Покрытие тестами
+  - metric: "coverage"
+    op: "LT"
+    error: "80"
+    warning: "85"
+  
+  # Дублирование кода
+  - metric: "duplicated_lines_density"
+    op: "GT"
+    error: "3"
+    warning: "2"
+  
+  # Технический долг
+  - metric: "sqale_index"
+    op: "GT"
+    error: "30"
+    warning: "20"
+  
+  # Критические уязвимости
+  - metric: "vulnerabilities"
+    op: "GT"
+    error: "0"
+    warning: "0"
+  
+  # Критические баги
+  - metric: "bugs"
+    op: "GT"
+    error: "0"
+    warning: "0"
+  
+  # Критические code smells
+  - metric: "code_smells"
+    op: "GT"
+    error: "10"
+    warning: "5"
+  
+  # Сложность кода
+  - metric: "complexity"
+    op: "GT"
+    error: "100"
+    warning: "80"
+  
+  # Поддерживаемость
+  - metric: "maintainability_rating"
+    op: "GT"
+    error: "2"
+    warning: "1"
+
+# Дополнительные настройки
+settings:
+  # Минимальное покрытие тестами
+  coverage_threshold: 80
+  
+  # Максимальное дублирование
+  duplication_threshold: 3
+  
+  # Максимальный технический долг (в минутах)
+  technical_debt_threshold: 30
+  
+  # Максимальная сложность
+  complexity_threshold: 100
+  
+  # Рейтинг поддерживаемости (1=A, 2=B, 3=C, 4=D, 5=E)
+  maintainability_rating_threshold: 2

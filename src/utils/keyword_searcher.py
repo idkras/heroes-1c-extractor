@@ -185,20 +185,20 @@ class KeywordSearcher:
         try:
             # Извлекаем содержимое BLOB
             blob_content = self.blob_processor.safe_get_blob_content(field_value)
-            if not blob_content or len(blob_content) < 10:
+            if not blob_content or len(str(blob_content)) < 10:
                 return result
 
             # Ищем ключевые слова
             found_keywords = set()
             for keyword in keywords:
-                if keyword.lower() in blob_content.lower():
+                if keyword.lower() in str(blob_content).lower():
                     found_keywords.add(keyword)
                     if result.matches is not None:
                         result.matches.append(
                             {
                                 "field_name": field_name,
                                 "keyword": keyword,
-                                "content_sample": blob_content[:200],
+                                "content_sample": str(blob_content)[:200],
                                 "field_type": "blob",
                             },
                         )

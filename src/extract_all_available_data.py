@@ -31,7 +31,7 @@ def signal_handler(sig: int, frame: Any) -> None:
 signal.signal(signal.SIGINT, signal_handler)
 
 
-def extract_table_parts(db, table_name: str, row_index: int) -> dict:
+def extract_table_parts(db: Any, table_name: str, row_index: int) -> dict[str, Any]:
     """
     Извлекает табличные части документа
     """
@@ -125,7 +125,7 @@ def extract_table_parts(db, table_name: str, row_index: int) -> dict:
     return table_parts
 
 
-def get_field_mapping() -> dict:
+def get_field_mapping() -> dict[str, Any]:
     """
     Маппинг полей из field_X в реальные названия полей согласно 1c-structure-mapping-analysis.md
     """
@@ -164,7 +164,7 @@ def get_field_mapping() -> dict:
     }
 
 
-def get_field_mapping_by_index() -> dict:
+def get_field_mapping_by_index() -> dict[int, str]:
     """
     Маппинг полей по индексу для таблиц документов
     """
@@ -210,9 +210,9 @@ def get_field_display_name(field_name: str) -> str:
             index_mapping = get_field_mapping_by_index()
             if field_index in index_mapping:
                 real_name = index_mapping[field_index]
-                if real_name in field_mapping:
+                if isinstance(real_name, str) and real_name in field_mapping:
                     return f"{real_name} · {field_mapping[real_name]}"
-                return real_name
+                return str(real_name) if real_name is not None else field_name
         except (ValueError, IndexError):
             pass
         return field_name
@@ -300,7 +300,7 @@ def extract_all_available_data() -> None:
             "_DOCUMENT156",  # 571,213 записей - КРИТИЧЕСКАЯ
         ]
 
-        all_results: dict = {
+        all_results: dict[str, Any] = {
             "documents": [],
             "references": [],
             "registers": [],
@@ -343,6 +343,37 @@ def extract_all_available_data() -> None:
             "_DOCUMENT156",  # 571,213 записей - КРИТИЧЕСКАЯ (ЛИМИТ 1000)
         ]
 
+        # ИСПРАВЛЕНО: Добавляем ВСЕ типы таблиц для полного извлечения
+        table_parts_tables = [
+            "_DOCUMENT138_VT3118",  # Табличные части поступления товаров
+            "_DOCUMENT137_VT3035",  # Табличные части розничных продаж
+            "_DOCUMENT184_VT3119",  # Табличные части счетов-фактур
+            "_DOCUMENT156_VT3120",  # Табличные части реализации товаров
+        ]
+
+        # ИСПРАВЛЕНО: Добавляем справочники и регистры
+        reference_tables_to_extract = [
+            t for t in all_tables if t.startswith("_Reference")
+        ]
+        register_tables_to_extract = [
+            t
+            for t in all_tables
+            if t.startswith("_AccumRGT") or t.startswith("_InfoRGT")
+        ]
+
+        # ИСПРАВЛЕНО: Добавляем другие полезные таблицы
+        other_useful_tables = [
+            t
+            for t in all_tables
+            if not any(
+                t.startswith(prefix)
+                for prefix in ["_DOCUMENT", "_Reference", "_AccumRGT", "_InfoRGT"]
+            )
+            and len(db.tables[t]) > 0  # Только непустые таблицы
+        ][
+            :10
+        ]  # Первые 10 других таблиц
+
         # Лимит записей для критических таблиц
         MAX_RECORDS_CRITICAL = 1000  # Увеличено для полного извлечения (ИСПРАВЛЕНО)
 
@@ -359,19 +390,33 @@ def extract_all_available_data() -> None:
                 :3
             ]  # Только первые 3 критические таблицы с данными
 
-            # Добавляем справочники и регистры
-            reference_tables_to_extract = reference_tables_found[
-                :5
-            ]  # Первые 5 справочников
-            register_tables_to_extract = register_tables_found[:5]  # Первые 5 регистров
+            # ИСПРАВЛЕНО: Добавляем табличные части для полного извлечения
+            available_table_parts = [t for t in table_parts_tables if t in db.tables]
+            print(
+                f"🎯 ТАБЛИЧНЫЕ ЧАСТИ ДОСТУПНЫ: {len(available_table_parts)}/{len(table_parts_tables)}"
+            )
+            for table in available_table_parts:
+                print(f"   ✅ {table}: {len(db.tables[table]):,} записей")
+
+            # Объединяем ВСЕ типы таблиц для полного извлечения
+            all_tables_to_extract = (
+                tables_to_extract
+                + available_table_parts
+                + reference_tables_to_extract
+                + register_tables_to_extract
+                + other_useful_tables
+            )
 
             print("\n🎯 План извлечения:")
             print(f"   📄 Документы: {len(tables_to_extract)}")
+            print(f"   📄 Табличные части: {len(available_table_parts)}")
             print(f"   📚 Справочники: {len(reference_tables_to_extract)}")
             print(f"   📊 Регистры: {len(register_tables_to_extract)}")
+            print(f"   🔧 Другие таблицы: {len(other_useful_tables)}")
+            print(f"   📊 ВСЕГО ТАБЛИЦ: {len(all_tables_to_extract)}")
 
-            # Извлекаем документы
-            for table_name in tables_to_extract:
+            # Извлекаем документы И табличные части
+            for table_name in all_tables_to_extract:
                 if table_name in db.tables:
                     print(f"\n📊 Анализ таблицы: {table_name}")
                     table = db.tables[table_name]
@@ -387,7 +432,7 @@ def extract_all_available_data() -> None:
                     print("   🔍 Детальный анализ структуры данных...")
 
                     # Анализ полей и типов данных
-                    field_analysis = {}
+                    field_analysis: dict[str, dict[str, Any]] = {}
                     sample_data = []
 
                     # Анализируем первые 5 записей для понимания структуры
@@ -459,14 +504,16 @@ def extract_all_available_data() -> None:
                                                 "sample_values": [],
                                             }
 
+                                        if "values" not in field_analysis[field_name]:
+                                            field_analysis[field_name]["values"] = []
                                         field_analysis[field_name]["values"].append(
-                                            value,
+                                            value
                                         )
                                         if (
                                             len(
-                                                field_analysis[field_name][
-                                                    "sample_values"
-                                                ],
+                                                field_analysis[field_name].get(
+                                                    "sample_values", []
+                                                )
                                             )
                                             < 3
                                         ):
@@ -500,7 +547,11 @@ def extract_all_available_data() -> None:
                     # АНАЛИЗ УНИКАЛЬНЫХ ЗНАЧЕНИЙ (Research Data Standard)
                     print("   🔍 Анализ уникальных значений:")
                     for field_name, info in field_analysis.items():
-                        unique_count = len(set(str(v) for v in info["values"]))
+                        values = info.get("values", [])
+                        if isinstance(values, list):
+                            unique_count = len(set(str(v) for v in values))
+                        else:
+                            unique_count = 0
                         display_name = get_field_display_name(field_name)
                         print(
                             f"      {display_name}: {unique_count} уникальных значений",
@@ -509,12 +560,15 @@ def extract_all_available_data() -> None:
                     # АНАЛИЗ ПУСТЫХ ЗНАЧЕНИЙ (Research Data Standard)
                     print("   📊 Анализ пустых значений:")
                     for field_name, info in field_analysis.items():
-                        empty_count = sum(
-                            1
-                            for v in info["values"]
-                            if v is None or str(v).strip() == ""
-                        )
-                        total_count = len(info["values"])
+                        values = info.get("values", [])
+                        if isinstance(values, list):
+                            empty_count = sum(
+                                1 for v in values if v is None or str(v).strip() == ""
+                            )
+                            total_count = len(values)
+                        else:
+                            empty_count = 0
+                            total_count = 0
                         empty_percent = (
                             (empty_count / total_count * 100) if total_count > 0 else 0
                         )
@@ -532,8 +586,13 @@ def extract_all_available_data() -> None:
                     if idrref_fields:
                         print(f"   🔗 Поля со ссылками (IDRRef): {idrref_fields}")
                         for idrref_field in idrref_fields:
+                            values = field_analysis[idrref_field].get("values", [])
+                            if isinstance(values, list):
+                                count = len(values)
+                            else:
+                                count = 0
                             print(
-                                f"      {idrref_field}: {len(field_analysis[idrref_field]['values'])} записей",
+                                f"      {idrref_field}: {count} записей",
                             )
                     else:
                         print("   🔗 Поля со ссылками (IDRRef): не найдены")
@@ -543,9 +602,14 @@ def extract_all_available_data() -> None:
                     # Ищем поля, которые могут быть ключами для связей
                     potential_keys = []
                     for field_name, info in field_analysis.items():
-                        if info["is_blob"] and len(info["values"]) > 0:
+                        values = info.get("values", [])
+                        if (
+                            info["is_blob"]
+                            and isinstance(values, list)
+                            and len(values) > 0
+                        ):
                             # Анализируем содержимое BLOB полей на предмет ссылок
-                            for value in info["values"][:3]:
+                            for value in values[:3]:
                                 if isinstance(value, bytes) and len(value) > 0:
                                     try:
                                         decoded = value.decode(
@@ -808,10 +872,11 @@ def extract_all_available_data() -> None:
                     print("   🔍 Анализ дублирования:")
                     duplicate_analysis = {}
                     for field_name, info in field_analysis.items():
-                        if info["values"]:
+                        values = info.get("values", [])
+                        if isinstance(values, list) and values:
                             # Анализируем дублирование значений
-                            value_counts = {}
-                            for value in info["values"]:
+                            value_counts: dict[str, int] = {}
+                            for value in values:
                                 value_str = str(value)
                                 value_counts[value_str] = (
                                     value_counts.get(value_str, 0) + 1
@@ -853,12 +918,16 @@ def extract_all_available_data() -> None:
                     if numeric_fields:
                         print("   🔢 Числовые поля:")
                         for num_field in numeric_fields:
-                            values = field_analysis[num_field]["values"]
-                            if values:
-                                display_name = get_field_display_name(num_field)
-                                print(
-                                    f"      {display_name}: {min(values)} - {max(values)}",
-                                )
+                            values = field_analysis[num_field].get("values", [])
+                            if isinstance(values, list) and values:
+                                numeric_values = [
+                                    v for v in values if isinstance(v, (int, float))
+                                ]
+                                if numeric_values:
+                                    display_name = get_field_display_name(num_field)
+                                    print(
+                                        f"      {display_name}: {min(numeric_values)} - {max(numeric_values)}",
+                                    )
 
                     # Анализ дат с реальными названиями
                     date_fields = [
@@ -975,36 +1044,69 @@ def extract_all_available_data() -> None:
                                         except (ValueError, IndexError):
                                             pass
 
-                                    row_dict[field_name] = value
+                                    # ИСПРАВЛЕНО: Декодируем BLOB поля перед сохранением
+                                    if isinstance(value, bytes):
+                                        # Пробуем декодировать BLOB поля
+                                        try:
+                                            decoded_content = value.decode("utf-16")
+                                            if (
+                                                decoded_content
+                                                and len(decoded_content.strip()) > 0
+                                            ):
+                                                row_dict[field_name] = decoded_content
+                                            else:
+                                                row_dict[field_name] = (
+                                                    f"[BLOB {len(value)} байт]"
+                                                )
+                                        except UnicodeDecodeError:
+                                            try:
+                                                decoded_content = value.decode("utf-8")
+                                                if (
+                                                    decoded_content
+                                                    and len(decoded_content.strip()) > 0
+                                                ):
+                                                    row_dict[field_name] = (
+                                                        decoded_content
+                                                    )
+                                                else:
+                                                    row_dict[field_name] = (
+                                                        f"[BLOB {len(value)} байт]"
+                                                    )
+                                            except UnicodeDecodeError:
+                                                row_dict[field_name] = (
+                                                    f"[BLOB {len(value)} байт]"
+                                                )
+                                    else:
+                                        row_dict[field_name] = value
 
-                            # Создаем структуру документа с извлечением реальных данных
-                            document: dict = {
-                                "id": f"{table_name}_{i}",
-                                "table_name": table_name,
-                                "row_index": row_index,
-                                "document_type": "Неизвестно",
-                                "document_number": "N/A",
-                                "document_date": "N/A",
-                                "store_name": "N/A",
-                                "store_code": "N/A",
-                                "total_amount": 0.0,
-                                "currency": "RUB",
-                                "supplier_name": "N/A",
-                                "buyer_name": "N/A",
-                                "goods_received": "{}",
-                                "goods_not_received": "{}",
-                                "flower_names": "",
-                                "flower_quantities": "",
-                                "flower_prices": "",
-                                "blob_content": "",
-                                "fields": {},
-                                "blobs": {},
-                                "extraction_stats": {
-                                    "total_blobs": 0,
-                                    "successful": 0,
-                                    "failed": 0,
-                                },
-                            }
+                                # Создаем структуру документа с извлечением реальных данных
+                                document: dict[str, Any] = {
+                                    "id": f"{table_name}_{i}",
+                                    "table_name": table_name,
+                                    "row_index": row_index,
+                                    "document_type": "Неизвестно",
+                                    "document_number": "N/A",
+                                    "document_date": "N/A",
+                                    "store_name": "N/A",
+                                    "store_code": "N/A",
+                                    "total_amount": 0.0,
+                                    "currency": "RUB",
+                                    "supplier_name": "N/A",
+                                    "buyer_name": "N/A",
+                                    "goods_received": "{}",
+                                    "goods_not_received": "{}",
+                                    "flower_names": "",
+                                    "flower_quantities": "",
+                                    "flower_prices": "",
+                                    "blob_content": "",
+                                    "fields": {},
+                                    "blobs": {},
+                                    "extraction_stats": {
+                                        "total_blobs": 0,
+                                        "successful": 0,
+                                        "failed": 0,
+                                    },
+                                }
 
                             # ИСПРАВЛЕНО: УПРОЩЕННЫЙ АНАЛИЗ СТРУКТУРЫ ДОКУМЕНТА
                             if i <= 3:  # Только для первых 3 записей
@@ -1249,7 +1351,7 @@ def extract_all_available_data() -> None:
                                     or (
                                         info["is_numeric"]
                                         and isinstance(info["value"], (int, float))
-                                        and info["value"] > 0
+                                        and float(info["value"]) > 0
                                     )
                                     or (
                                         info["is_string"]
@@ -1270,7 +1372,7 @@ def extract_all_available_data() -> None:
                                     not is_amount_field
                                     and info["is_numeric"]
                                     and isinstance(info["value"], (int, float))
-                                    and info["value"] > 0
+                                    and float(info["value"]) > 0
                                 ):
                                     is_amount_field = True
                                     print(
@@ -1285,10 +1387,16 @@ def extract_all_available_data() -> None:
                                 ):
                                     try:
                                         # Пытаемся декодировать BLOB как текст и найти числа
-                                        blob_text = info["value"].decode(
-                                            "utf-8",
-                                            errors="ignore",
-                                        )
+                                        value = info.get("value")
+                                        if isinstance(value, bytes):
+                                            blob_text = value.decode(
+                                                "utf-8",
+                                                errors="ignore",
+                                            )
+                                        else:
+                                            blob_text = (
+                                                str(value) if value is not None else ""
+                                            )
                                         if any(char.isdigit() for char in blob_text):
                                             # Проверяем есть ли числа в BLOB
                                             numbers = re.findall(
@@ -1336,6 +1444,7 @@ def extract_all_available_data() -> None:
                                     # УПРОЩЕННЫЙ АНАЛИЗ BLOB ПОЛЕЙ
                                     if i <= 3:  # Только для первых 3 документов
                                         try:
+                                            # blob_value уже проверен как bytes выше
                                             blob_text = blob_value.decode(
                                                 "utf-8",
                                                 errors="ignore",
@@ -1391,10 +1500,17 @@ def extract_all_available_data() -> None:
                                     if blob_type == "unknown":
                                         # Пробуем декодировать как текст
                                         try:
-                                            blob_content = blob_bytes.decode(
-                                                "utf-8",
-                                                errors="ignore",
-                                            )
+                                            if isinstance(blob_bytes, bytes):
+                                                blob_content = blob_bytes.decode(
+                                                    "utf-8",
+                                                    errors="ignore",
+                                                )
+                                            else:
+                                                blob_content = (
+                                                    str(blob_bytes)
+                                                    if blob_bytes is not None
+                                                    else ""
+                                                )
                                             if len(blob_content.strip()) > 10:
                                                 blob_type = "TEXT_UTF8"
                                         except:
@@ -1406,12 +1522,24 @@ def extract_all_available_data() -> None:
                                                 if len(blob_content.strip()) > 10:
                                                     blob_type = "TEXT_UTF16"
                                             except:
-                                                blob_content = (
-                                                    blob_bytes.hex()[:100] + "..."
-                                                )
+                                                if isinstance(blob_bytes, bytes):
+                                                    blob_content = (
+                                                        blob_bytes.hex()[:100] + "..."
+                                                    )
+                                                else:
+                                                    blob_content = (
+                                                        str(blob_bytes)[:100] + "..."
+                                                    )
                                                 blob_type = "BINARY"
                                     else:
-                                        blob_content = f"[{blob_type} файл, {len(blob_bytes)} байт]"
+                                        blob_size = (
+                                            len(blob_bytes)
+                                            if isinstance(blob_bytes, (bytes, str))
+                                            else 0
+                                        )
+                                        blob_content = (
+                                            f"[{blob_type} файл, {blob_size} байт]"
+                                        )
 
                                     document["blob_content"] = blob_content
                                     print(
@@ -1556,7 +1684,7 @@ def extract_all_available_data() -> None:
                                     if f.get("value") is not None
                                 ],
                             )
-                            blob_fields = len(
+                            blob_fields_count = len(
                                 [
                                     f
                                     for f in field_analysis.values()
@@ -1567,7 +1695,7 @@ def extract_all_available_data() -> None:
                             print("   📊 СТАТИСТИКА ПОЛЕЙ:")
                             print(f"      Всего полей: {total_fields}")
                             print(f"      Успешно извлечено: {successful_fields}")
-                            print(f"      BLOB полей: {blob_fields}")
+                            print(f"      BLOB полей: {blob_fields_count}")
                             print(
                                 (
                                     f"      Процент успеха: {(successful_fields / total_fields * 100):.1f}%"
@@ -1630,7 +1758,7 @@ def extract_all_available_data() -> None:
                                                 ] += 1
 
                                                 # Правильная обработка BLOB согласно onec_dtools API
-                                                blob_data: dict = {
+                                                blob_data: dict[str, Any] = {
                                                     "field_type": "blob",
                                                     "size": (
                                                         len(value)
@@ -1867,9 +1995,9 @@ def extract_all_available_data() -> None:
                                                 isinstance(document, dict)
                                                 and "blobs" in document
                                             ):
-                                                document["blobs"][field_name] = (
-                                                    blob_data
-                                                )
+                                                document["blobs"][
+                                                    field_name
+                                                ] = blob_data
                                                 processed_blobs.add(
                                                     field_name,
                                                 )  # Отмечаем как обработанное
@@ -2334,7 +2462,7 @@ def extract_all_available_data() -> None:
             f.close()
 
 
-def convert_to_parquet_duckdb(all_results: dict) -> None:
+def convert_to_parquet_duckdb(all_results: dict[str, Any]) -> None:
     """
     Конвертация результатов в Parquet и DuckDB для аналитики
     """
@@ -2403,16 +2531,42 @@ def convert_to_parquet_duckdb(all_results: dict) -> None:
                         lambda x: (
                             x.hex()
                             if isinstance(x, bytes)
-                            else str(x)
-                            if pd.notna(x)
-                            else None
+                            else str(x) if pd.notna(x) else None
                         ),
                     )
 
-            # Сохраняем в Parquet
+            # ИСПРАВЛЕНО: Создаем отдельные Parquet файлы для каждой таблицы
+            print("\n📊 СОЗДАНИЕ ОТДЕЛЬНЫХ PARQUET ФАЙЛОВ ПО ТАБЛИЦАМ:")
+
+            # Группируем по table_name
+            for table_name in df["table_name"].unique():
+                table_df = df[df["table_name"] == table_name]
+
+                # Получаем понятное название из маппинга
+                document_type = (
+                    table_df["document_type"].iloc[0]
+                    if len(table_df) > 0
+                    else "Неизвестно"
+                )
+                safe_name = (
+                    document_type.lower()
+                    .replace(" ", "_")
+                    .replace("(", "")
+                    .replace(")", "")
+                )
+
+                # ИСПРАВЛЕНО: Создаем файл с lowercase названием
+                table_name_lower = table_name.lower()
+                parquet_file = (
+                    f"data/results/parquet/{table_name_lower}_{safe_name}.parquet"
+                )
+                table_df.to_parquet(parquet_file, index=False)
+                print(f"✅ {table_name}: {len(table_df)} записей → {parquet_file}")
+
+            # Создаем общий файл
             parquet_file = "data/results/parquet/documents.parquet"
             df.to_parquet(parquet_file, index=False)
-            print(f"✅ Parquet файл создан: {parquet_file}")
+            print(f"✅ Общий файл: {parquet_file}")
 
             # Создаем DuckDB базу
             duckdb_file = "data/results/duckdb/analysis.duckdb"
@@ -2602,7 +2756,7 @@ def extract_data_alternative_method() -> None:
         print("❌ Ошибка в альтернативном методе: ")
 
 
-def create_documents_from_data(data: dict) -> None:
+def create_documents_from_data(data: dict[str, Any]) -> None:
     """
     Создает документы из извлеченных данных согласно 1c.todo.md
     """
@@ -2643,7 +2797,7 @@ def create_documents_from_data(data: dict) -> None:
                     doc_content += f"- **Поля:** {len(fields)}\n"
 
                     # Анализируем типы полей
-                    field_types = {}
+                    field_types: dict[str, int] = {}
                     for field_name, field_value in fields.items():
                         field_type = type(field_value).__name__
                         field_types[field_type] = field_types.get(field_type, 0) + 1
@@ -2671,7 +2825,7 @@ def create_documents_from_data(data: dict) -> None:
     print(f"📄 Все документы созданы в директории: {docs_dir}")
 
 
-def create_all_available_xml(documents: dict) -> None:
+def create_all_available_xml(documents: dict[str, Any]) -> None:
     """
     Создание XML со всеми доступными данными
     """

@@ -7,8 +7,8 @@ JTBD:
 чтобы убедиться в правильной обработке BLOB полей.
 """
 
-import pytest
 from unittest.mock import Mock
+
 from src.processors.blob_processor import BlobProcessor
 
 
@@ -27,7 +27,7 @@ class TestBlobProcessor:
         """
         # Arrange
         field_name = "test_field"
-        blob_bytes = "Тестовый контент".encode("utf-8")
+        blob_bytes = "Тестовый контент".encode()
 
         # Act
         result = self.processor.process_blob_field(field_name, blob_bytes)
@@ -48,7 +48,7 @@ class TestBlobProcessor:
         # Arrange
         field_name = "test_field"
         mock_blob = Mock()
-        mock_blob.value = "Тестовый контент".encode("utf-8")
+        mock_blob.value = "Тестовый контент".encode()
         mock_blob.__len__ = Mock(return_value=100)
         mock_blob.__class__ = type("Blob", (), {})
         mock_blob.__class__.__name__ = "Blob"
@@ -191,7 +191,7 @@ class TestBlobProcessor:
         чтобы убедиться в правильной обработке текстовых данных.
         """
         # Arrange
-        content = "Тестовый контент".encode("utf-8")
+        content = "Тестовый контент".encode()
 
         # Act
         result = self.processor._decode_blob_content(content)

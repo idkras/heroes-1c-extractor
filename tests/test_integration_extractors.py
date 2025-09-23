@@ -22,12 +22,15 @@ class TestIntegrationExtractors(unittest.TestCase):
 
     def setUp(self):
         """Настройка тестов"""
+        from src.processors.database_connector import DatabaseConnector
+
+        db_connector = DatabaseConnector("test_db.1CD")
         self.extractors = [
-            DocumentNamesBlobExtractor(),
-            DocumentsByCriteriaExtractor(),
-            AllDocumentTypesExtractor(),
-            AllMissingDocumentsExtractor(),
-            QualityDocumentsExtractor(),
+            DocumentNamesBlobExtractor(db_connector),
+            DocumentsByCriteriaExtractor(db_connector),
+            AllDocumentTypesExtractor(db_connector),
+            AllMissingDocumentsExtractor(db_connector),
+            QualityDocumentsExtractor(db_connector),
         ]
 
     def test_all_extractors_inherit_base(self):
@@ -50,19 +53,20 @@ class TestIntegrationExtractors(unittest.TestCase):
         """Тест что все extractors имеют метод extract"""
         for extractor in self.extractors:
             self.assertTrue(callable(extractor.extract))
-            # Проверяем что метод возвращает словарь
+            # Проверяем что метод возвращает список
             with patch.object(extractor, "db", None):
-                result = extractor.extract()
-                self.assertIsInstance(result, dict)
+                result = extractor.extract("test_table")
+                self.assertIsInstance(result, list)
 
     def test_all_extractors_handle_no_database(self):
         """Тест что все extractors корректно обрабатывают отсутствие базы данных"""
         for extractor in self.extractors:
-            extractor.db = None
-            result = extractor.extract()
-            self.assertIsInstance(result, dict)
-            # Должен содержать ошибку или пустой результат
-            self.assertTrue("error" in result or len(result) > 0)
+            # Мокаем db_connector вместо прямого присваивания
+            with patch.object(extractor.db_connector, "get_table", return_value=None):
+                result = extractor.extract("test_table")
+                self.assertIsInstance(result, list)
+                # Должен быть пустой список при отсутствии базы
+                self.assertEqual(len(result), 0)
 
     def test_all_extractors_use_common_methods(self):
         """Тест что все extractors используют общие методы BaseExtractor"""
@@ -91,8 +95,8 @@ class TestIntegrationExtractors(unittest.TestCase):
                             "get_register_tables",
                             return_value=[],
                         ):
-                            result = extractor.extract()
-                            self.assertIsInstance(result, dict)
+                            result = extractor.extract("test_table")
+                            self.assertIsInstance(result, list)
                             # Проверяем что результат не пустой
                             self.assertTrue(len(result) > 0)
 
@@ -103,7 +107,8 @@ class TestIntegrationExtractors(unittest.TestCase):
             self.assertIsNotNone(extractor.__class__.__doc__)
             # Проверяем что docstring содержит JTBD
             docstring = extractor.__class__.__doc__
-            self.assertIn("JTBD", docstring)
+            if docstring:
+                self.assertIn("JTBD", docstring)
 
     def test_extractors_are_independent(self):
         """Тест что extractors работают независимо"""

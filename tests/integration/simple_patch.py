@@ -17,8 +17,8 @@ def apply_simple_patch() -> bool:
     try:
         import onec_dtools.database_reader as dr
 
-        # Сохраняем оригинальную функцию
-        original_calc_field_size = dr.calc_field_size
+        # Сохраняем оригинальную функцию (может понадобиться для восстановления)
+        # original_calc_field_size = dr.calc_field_size
 
         def calc_field_size_patched(field_type: str, length: int) -> int:
             """

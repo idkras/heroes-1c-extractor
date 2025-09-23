@@ -19,6 +19,16 @@
 				"AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
 				"OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
 			}
+		},
+		"1c-extractor": {
+			"type": "stdio",
+			"command": "python3",
+			"args": [
+				"mcp_server/1c_mcp_server.py"
+			],
+			"env": {
+				"PYTHONPATH": "."
+			}
 		}
 	}
 }

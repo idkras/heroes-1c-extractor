@@ -23,7 +23,7 @@ def safe_get_blob_content(value: Any) -> str | None:
     Returns:
         str: Содержимое BLOB поля или None если не удалось извлечь
     """
-    result = blob_processor.safe_get_blob_content(value)
+    result = blob_processor.safe_get_blob_content(value)  # type: ignore
     return result if result is not None else None
 
 
@@ -39,7 +39,7 @@ def is_blob_field(field_value: Any) -> bool:
     Returns:
         bool: True если поле является BLOB полем
     """
-    return blob_processor.is_blob_field(field_value)
+    return blob_processor.is_blob_field(field_value)  # type: ignore
 
 
 def extract_blob_content_safe(record_data: dict, field_name: str) -> str | None:

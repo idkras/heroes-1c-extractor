@@ -18,7 +18,7 @@ class AllMissingDocumentsExtractor(BaseExtractor):
     чтобы обеспечить полноту данных для JTBD сценариев.
     """
 
-    def extract(self) -> dict[str, Any]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict[str, Any]]:
         """
         Поиск всех недостающих документов для JTBD сценариев
         ЦЕЛЬ: Найти справочники, регистры, документы с цветами и типами букетов
@@ -27,9 +27,9 @@ class AllMissingDocumentsExtractor(BaseExtractor):
         print("🎯 ЦЕЛЬ: JTBD сценарии - цвета, типы букетов, склады, подразделения")
         print("=" * 60)
 
-        if self.db is None:
+        if not hasattr(self, "db") or self.db is None:
             print("❌ База данных не открыта")
-            return {"error": "База данных не открыта"}
+            return []
 
         results: dict[str, Any] = {
             "missing_documents": {},
@@ -197,12 +197,15 @@ class AllMissingDocumentsExtractor(BaseExtractor):
             },
         }
 
-        return results
+        return [results]
 
 
 def search_all_missing_documents() -> dict[str, Any]:
     """
     Функция-обертка для обратной совместимости
     """
-    extractor = AllMissingDocumentsExtractor()
+    from ..processors.database_connector import DatabaseConnector
+
+    db_connector = DatabaseConnector("data/raw/1Cv8.1CD")
+    extractor = AllMissingDocumentsExtractor(db_connector=db_connector)
     return extractor.run()

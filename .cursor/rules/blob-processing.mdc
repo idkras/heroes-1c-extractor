@@ -1,0 +1,276 @@
+---
+alwaysApply: false
+---
+
+# BLOB Processing Rules
+
+## 🎯 Специализированные правила для обработки BLOB данных
+
+### 1. ОБЯЗАТЕЛЬНЫЕ ПРИНЦИПЫ BLOB ОБРАБОТКИ
+
+#### **Принцип 1: Всегда используй row.as_list(True)**
+```python
+# ✅ ПРАВИЛЬНО: Включение BLOB полей
+row_data = row.as_list(True)  # True = включать BLOB поля
+
+# ❌ НЕПРАВИЛЬНО: Пропуск BLOB полей
+row_data = row.as_dict()  # НЕ включает BLOB поля
+```
+
+#### **Принцип 2: Проверяй тип перед операциями**
+```python
+# ✅ ПРАВИЛЬНО: Проверка типа
+if isinstance(blob_value, bytes):
+    content = blob_value.decode("utf-16")
+else:
+    content = str(blob_value)
+
+# ❌ НЕПРАВИЛЬНО: Прямое обращение
+content = blob_value.decode("utf-16")  # Может упасть
+```
+
+#### **Принцип 3: Множественные стратегии декодирования**
+```python
+# ✅ ПРАВИЛЬНО: Множественные попытки
+def decode_blob_safely(blob_bytes: bytes) -> str:
+    encodings = ["utf-16", "utf-8", "cp1251"]
+    
+    for encoding in encodings:
+        try:
+            return blob_bytes.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    
+    # Fallback to hex
+    return blob_bytes.hex()
+```
+
+### 2. СПЕЦИАЛИЗИРОВАННЫЕ ПАТТЕРНЫ
+
+#### **Паттерн 1: Enhanced BLOB Extraction**
+```python
+def enhanced_blob_extraction(blob_obj: Any) -> Dict[str, Any]:
+    """
+    Улучшенное извлечение BLOB с множественными методами
+    """
+    if not hasattr(blob_obj, "value"):
+        return {
+            "content": str(blob_obj),
+            "type": "no_value_attribute",
+            "length": 0,
+            "success": False
+        }
+    
+    value = blob_obj.value
+    if not isinstance(value, bytes):
+        return {
+            "content": str(value),
+            "type": "not_bytes",
+            "length": len(str(value)),
+            "success": True
+        }
+    
+    # Пробуем разные кодировки
+    encodings = ["utf-16", "utf-8", "cp1251"]
+    methods_used = []
+    
+    for encoding in encodings:
+        try:
+            content = value.decode(encoding)
+            return {
+                "content": content,
+                "type": encoding,
+                "length": len(content),
+                "success": True,
+                "method": encoding
+            }
+        except UnicodeDecodeError:
+            methods_used.append(f"failed_{encoding}")
+            continue
+    
+    # Fallback to hex
+    return {
+        "content": value.hex(),
+        "type": "hex",
+        "length": len(value.hex()),
+        "success": True,
+        "method": "hex_fallback",
+        "failed_methods": methods_used
+    }
+```
+
+#### **Паттерн 2: Safe BLOB Processing**
+```python
+def safe_blob_processing(blob_field: Any, field_name: str) -> Dict[str, Any]:
+    """
+    Безопасная обработка BLOB поля
+    """
+    try:
+        result = enhanced_blob_extraction(blob_field)
+        
+        # Валидация результата
+        if not result.get("success", False):
+            return {
+                "field_name": field_name,
+                "content": "processing_failed",
+                "type": "error",
+                "length": 0,
+                "error": "Failed to process BLOB"
+            }
+        
+        return {
+            "field_name": field_name,
+            **result
+        }
+        
+    except Exception as e:
+        return {
+            "field_name": field_name,
+            "content": "exception_occurred",
+            "type": "error",
+            "length": 0,
+            "error": str(e)
+        }
+```
+
+#### **Паттерн 3: BLOB Validation**
+```python
+def validate_blob_result(result: Dict[str, Any]) -> bool:
+    """
+    Валидация результата обработки BLOB
+    """
+    required_keys = ["content", "type", "length", "success"]
+    
+    if not all(key in result for key in required_keys):
+        return False
+    
+    if not isinstance(result["success"], bool):
+        return False
+    
+    if not isinstance(result["length"], int):
+        return False
+    
+    if result["length"] < 0:
+        return False
+    
+    return True
+```
+
+### 3. ОБРАБОТКА ОШИБОК BLOB
+
+#### **Специфичные ошибки 1С:**
+```python
+def handle_blob_errors(func: Callable[..., T]) -> Callable[..., Optional[T]]:
+    """
+    Декоратор для обработки ошибок BLOB
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs) -> Optional[T]:
+        try:
+            return func(*args, **kwargs)
+        except UnicodeDecodeError as e:
+            print(f"BLOB encoding error: {e}")
+            return None
+        except AttributeError as e:
+            print(f"BLOB attribute error: {e}")
+            return None
+        except Exception as e:
+            print(f"Unexpected BLOB error: {e}")
+            return None
+    return wrapper
+```
+
+#### **Recovery Strategies:**
+```python
+def resilient_blob_processing(blob_obj: Any) -> Dict[str, Any]:
+    """
+    Устойчивая обработка BLOB с восстановлением
+    """
+    strategies = [
+        ("utf16", lambda x: x.decode("utf-16")),
+        ("utf8", lambda x: x.decode("utf-8")),
+        ("cp1251", lambda x: x.decode("cp1251")),
+        ("latin1", lambda x: x.decode("latin1")),
+        ("hex", lambda x: x.hex())
+    ]
+    
+    for strategy_name, strategy_func in strategies:
+        try:
+            content = strategy_func(blob_obj)
+            return {
+                "content": content,
+                "method": strategy_name,
+                "success": True
+            }
+        except (UnicodeDecodeError, AttributeError):
+            continue
+    
+    return {
+        "content": "all_strategies_failed",
+        "method": "none",
+        "success": False
+    }
+```
+
+### 4. ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ
+
+#### **Перед обработкой BLOB:**
+- [ ] Используется `row.as_list(True)`
+- [ ] Проверка `isinstance(value, bytes)`
+- [ ] Обработка ошибок кодировки
+- [ ] Множественные стратегии декодирования
+
+#### **После обработки BLOB:**
+- [ ] Валидация результата
+- [ ] Проверка успешности
+- [ ] Логирование ошибок
+- [ ] Fallback стратегии
+
+### 5. ЗАПРЕЩЕННЫЕ ПАТТЕРНЫ
+
+#### **❌ НЕ ДЕЛАЙ:**
+```python
+# Прямое обращение без проверки
+content = blob_value.decode("utf-16")
+
+# Игнорирование ошибок
+try:
+    content = blob_value.decode("utf-16")
+except:
+    pass  # НЕПРАВИЛЬНО!
+
+# Использование as_dict() для BLOB
+row_data = row.as_dict()  # Пропускает BLOB поля
+
+# Отсутствие fallback
+content = blob_value.decode("utf-16")  # Может упасть
+```
+
+#### **✅ ОБЯЗАТЕЛЬНО:**
+```python
+# Проверка типа
+if isinstance(blob_value, bytes):
+    content = blob_value.decode("utf-16")
+
+# Множественные стратегии
+for encoding in ["utf-16", "utf-8", "cp1251"]:
+    try:
+        content = blob_value.decode(encoding)
+        break
+    except UnicodeDecodeError:
+        continue
+
+# Использование as_list(True)
+row_data = row.as_list(True)  # Включает BLOB поля
+```
+
+### 6. ЧЕКЛИСТ BLOB ОБРАБОТКИ
+
+- [ ] Используется `row.as_list(True)`
+- [ ] Проверка `isinstance(value, bytes)`
+- [ ] Множественные стратегии декодирования
+- [ ] Обработка ошибок кодировки
+- [ ] Валидация результата
+- [ ] Fallback стратегии
+- [ ] Логирование ошибок
+- [ ] Тестирование edge cases

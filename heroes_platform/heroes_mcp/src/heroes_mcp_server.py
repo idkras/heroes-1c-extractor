@@ -36,7 +36,7 @@ except ImportError:
 
 
 # ПРОВЕРКА АРГУМЕНТОВ КОМАНДНОЙ СТРОКИ ПЕРЕД ИНИЦИАЛИЗАЦИЕЙ
-def check_command_line_args():
+def check_command_line_args() -> None:
     """Проверяет аргументы командной строки и выходит если нужно"""
     if len(sys.argv) > 1:
         arg = sys.argv[1]
@@ -178,7 +178,7 @@ incident_management_loaded = True
 
 # Playwright Validator integration removed - not used
 
-from mcp.server.fastmcp import FastMCP  # type: ignore
+from mcp.server.fastmcp import FastMCP
 
 # Инициализация FastMCP сервера
 mcp = FastMCP("heroes_mcp")
@@ -327,7 +327,7 @@ async def yandex_direct_get_campaigns() -> str:
 
 
 # Добавляем метод run() для совместимости с MCP CLI
-def run():
+def run() -> None:
     """Run the MCP server - compatibility method for MCP CLI"""
     # MCP CLI не передает аргументы, поэтому запускаем сервер напрямую
     main()
@@ -482,10 +482,10 @@ def _validate_analysis_content_internal(
     generated_content: str, reference_content: str
 ) -> dict[str, Any]:
     """Internal function to validate analysis content against reference content"""
-    from cross_reference_validator import (  # type: ignore
+    from cross_reference_validator import (
         generate_validation_report,
     )
-    from cross_reference_validator import (  # type: ignore
+    from cross_reference_validator import (
         validate_analysis_content as validate_content,
     )
 
@@ -533,7 +533,7 @@ def _check_typography_internal(text: str) -> dict[str, Any]:
 
 def _fix_typography_internal(text: str) -> dict[str, Any]:
     """Internal function to fix typography of text"""
-    from typography_checker import fix_typography  # type: ignore
+    from typography_checker import fix_typography
 
     fixed_text = fix_typography(text)
     return {
@@ -545,7 +545,7 @@ def _fix_typography_internal(text: str) -> dict[str, Any]:
 
 
 @mcp.tool()
-async def standards_workflow_command(command: str, **kwargs) -> str:
+async def standards_workflow_command(command: str, **kwargs: Any) -> str:
     """
     Standards Management Workflow - единая точка входа для всех операций со стандартами
 
@@ -577,21 +577,6 @@ async def standards_workflow_command(command: str, **kwargs) -> str:
             {"error": f"Standards workflow failed: {str(e)}", "command": command},
             ensure_ascii=False,
             indent=2,
-        )
-
-        # Standards commands removed - replaced by standards_workflow
-
-        # Standards search command removed - replaced by standards_workflow
-
-        # [reflection] Output validation: Результат уже сформирован в workflow
-        # Переменные results, limit, query удалены как остатки от старого кода
-
-        return json.dumps(result, ensure_ascii=False, indent=2)
-
-    except Exception as e:
-        logger.error(f"Error in standards_search: {e}")
-        return json.dumps(
-            {"error": f"Error searching standards: {str(e)}"}, ensure_ascii=False
         )
 
 
@@ -730,7 +715,7 @@ def ai_guidance_checklist(task_type: str = "general") -> str:
         # Use AI Guidance workflow
         if ai_guidance_workflow:
             result = ai_guidance_workflow.ai_guidance_checklist(task_type)
-            return result
+            return str(result)
         else:
             return json.dumps(
                 {"error": "AI Guidance workflow not available"}, ensure_ascii=False
@@ -976,14 +961,14 @@ async def ghost_publish_analysis(
 
         # Use real Ghost workflow
         if ghost_workflow:
-            result = await ghost_workflow.publish_analysis(  # type: ignore
+            result = await ghost_workflow.publish_analysis(
                 {
                     "analysis_data": analysis_data,
                     "title": title,
                     "tags": tags,
                     "status": status,
                 }
-            )  # type: ignore
+            )
             return json.dumps(result, ensure_ascii=False)
         else:
             return "ERROR: Ghost workflow not available (integration disabled)"
@@ -1050,9 +1035,9 @@ async def ghost_integration(action: str = "status", config: dict | None = None) 
 
         # Use real Ghost workflow
         if ghost_workflow:
-            result = await ghost_workflow.integration(  # type: ignore
+            result = await ghost_workflow.integration(
                 {"action": action, "config": config}
-            )  # type: ignore
+            )
             return json.dumps(result, ensure_ascii=False)
         else:
             return "ERROR: Ghost workflow not available (integration disabled)"
@@ -1186,7 +1171,7 @@ def registry_compliance_check() -> str:
 
         # Вызываем workflow метод
         result = registry_workflow.compliance_check()
-        return result
+        return str(result)
 
     except Exception as e:
         logger.error(f"Error in registry_compliance_check: {e}")
@@ -1766,7 +1751,7 @@ def registry_output_validate(jtbd: str, artifact: str) -> str:
 
         # Вызываем workflow метод
         result = registry_workflow.output_validate(jtbd, artifact)
-        return result
+        return str(result)
 
     except Exception as e:
         logger.error(f"Error in registry_output_validate: {e}")
@@ -1804,7 +1789,7 @@ def registry_docs_audit(paths: str) -> str:
 
         # Вызываем workflow метод
         result = registry_workflow.docs_audit(paths)
-        return result
+        return str(result)
 
     except Exception as e:
         logger.error(f"Error in registry_docs_audit: {e}")
@@ -1841,7 +1826,7 @@ def registry_gap_report(expected: str, actual: str, decision: str) -> str:
 
         # Вызываем workflow метод
         result = registry_workflow.gap_report(expected, actual, decision)
-        return result
+        return str(result)
 
     except Exception as e:
         logger.error(f"Error in registry_gap_report: {e}")
@@ -1876,7 +1861,7 @@ def registry_release_block(until: str) -> str:
 
         # Вызываем workflow метод
         result = registry_workflow.release_block(until)
-        return result
+        return str(result)
 
     except Exception as e:
         logger.error(f"Error in registry_release_block: {e}")
@@ -2185,9 +2170,9 @@ async def yandex_direct_get_banners_stat(
                 )
 
         # Получаем статистику баннеров
-        banners_stat = await client.get_banners_stat(  # type: ignore
+        banners_stat = await client.get_banners_stat(
             date_from, date_to, campaign_ids_list
-        )  # type: ignore
+        )
 
         return json.dumps(
             {
@@ -2443,7 +2428,7 @@ async def n8n_workflow_validate(
         )
 
 
-def main():
+def main() -> None:
     """Главная функция запуска сервера"""
 
     # Аргументы уже проверены в начале файла

@@ -6,6 +6,7 @@ Unit тесты для BaseExtractor
 """
 
 import unittest
+from typing import Any
 from unittest.mock import Mock, patch
 
 from src.extractors.base_extractor import BaseExtractor
@@ -14,8 +15,8 @@ from src.extractors.base_extractor import BaseExtractor
 class ConcreteExtractor(BaseExtractor):
     """Конкретная реализация для тестирования"""
 
-    def extract(self):
-        return {"test": "data"}
+    def extract(self, table_name: str, limit: int = 100) -> list[dict[str, Any]]:
+        return [{"test": "data"}]
 
 
 class TestBaseExtractor(unittest.TestCase):
@@ -25,7 +26,10 @@ class TestBaseExtractor(unittest.TestCase):
 
     def setUp(self):
         """Настройка тестов"""
-        self.extractor = ConcreteExtractor("test_db.1CD")
+        from src.processors.database_connector import DatabaseConnector
+
+        db_connector = DatabaseConnector("test_db.1CD")
+        self.extractor = ConcreteExtractor(db_connector)
 
     def test_initialization(self):
         """Тест инициализации BaseExtractor"""
@@ -44,9 +48,8 @@ class TestBaseExtractor(unittest.TestCase):
         mock_open.return_value.__enter__.return_value = mock_file
         mock_db_reader.return_value = Mock()
 
-        result = self.extractor.open_database()
+        self.extractor.open_database()
 
-        self.assertTrue(result)
         self.assertIsNotNone(self.extractor.db)
         self.assertIsNotNone(self.extractor.db_file)
 
@@ -55,16 +58,17 @@ class TestBaseExtractor(unittest.TestCase):
         """Тест открытия несуществующего файла"""
         mock_exists.return_value = False
 
-        result = self.extractor.open_database()
+        self.extractor.open_database()
 
-        self.assertFalse(result)
         self.assertIsNone(self.extractor.db)
 
     def test_get_document_tables_empty(self):
         """Тест получения таблиц документов при пустой базе"""
-        self.extractor.db = None
-        result = self.extractor.get_document_tables()
-        self.assertEqual(result, [])
+        with patch.object(
+            self.extractor.db_connector, "get_document_tables", return_value=[]
+        ):
+            result = self.extractor.get_document_tables()
+            self.assertEqual(result, [])
 
     def test_get_document_tables_with_data(self):
         """Тест получения таблиц документов с данными"""
@@ -139,20 +143,20 @@ class TestBaseExtractor(unittest.TestCase):
     @patch("json.dump")
     def test_save_results_success(self, mock_json_dump, mock_open, mock_makedirs):
         """Тест успешного сохранения результатов"""
-        self.extractor.results = {"test": "data"}
+        test_results = [{"test": "data"}]
 
-        result = self.extractor.save_results("test_output.json")
+        result = self.extractor.save_results(test_results)
 
-        self.assertTrue(result)
+        self.assertEqual(result, "results_saved")
         mock_makedirs.assert_called_once()
         mock_open.assert_called_once()
         mock_json_dump.assert_called_once()
 
     def test_log_progress(self):
         """Тест логирования прогресса"""
-        with patch("src.extractors.base_extractor.logger") as mock_logger:
-            self.extractor.log_progress(50, 100, "test message")
-            mock_logger.info.assert_called_once()
+        with patch("builtins.print") as mock_print:
+            self.extractor.log_progress("test message")
+            mock_print.assert_called_once()
 
     def test_run_without_database(self):
         """Тест запуска без базы данных"""

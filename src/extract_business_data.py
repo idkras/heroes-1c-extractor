@@ -131,7 +131,7 @@ def extract_blob_content(blob_obj: Any) -> dict[str, Any]:
     return blob_data
 
 
-def extract_critical_tables(db: DatabaseReader) -> dict[str, list[dict]]:
+def extract_critical_tables(db: DatabaseReader) -> dict[str, list[dict[str, Any]]]:
     """Извлекает критические таблицы"""
     results = {}
 
@@ -224,7 +224,7 @@ def extract_critical_tables(db: DatabaseReader) -> dict[str, list[dict]]:
     return results
 
 
-def extract_reference_tables(db: DatabaseReader) -> dict[str, list[dict]]:
+def extract_reference_tables(db: DatabaseReader) -> dict[str, list[dict[str, Any]]]:
     """Извлекает справочники"""
     results = {}
 

@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
 """
+🚨 LEGACY CODE - НЕ ИСПОЛЬЗОВАТЬ! 🚨
 Адаптивный извлекатель для разных типов таблиц 1С
+
+ЗАМЕНЕН НА: src/extractors/ - новые рефакторенные экстракторы
+ИСПОЛЬЗУЙТЕ: FlatTableExtractor, DocumentExtractor, ReferenceExtractor
 """
 
 import logging

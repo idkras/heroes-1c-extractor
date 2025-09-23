@@ -337,7 +337,7 @@ class BlobProcessor:
         self,
         blob_objects: list[Any],
         context: str = "",
-    ) -> list[dict[str, Any]]:
+    ) -> list[BlobExtractionResult]:
         """
         Обработка множественных BLOB объектов
 
@@ -355,7 +355,7 @@ class BlobProcessor:
             result = self.extract_blob_content(blob_obj, context, field_name)
             results.append(result)
 
-        return results
+        return [result.to_dict() for result in results]  # type: ignore
 
     def analyze_blob_quality(self, results: list[dict[str, Any]]) -> dict[str, Any]:
         """

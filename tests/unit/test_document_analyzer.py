@@ -7,15 +7,11 @@ JTBD:
 чтобы убедиться в корректности анализа документов и извлечения метаданных.
 """
 
-import pytest
 from datetime import datetime
-from unittest.mock import Mock
-from src.processors.document_analyzer import (
-    DocumentAnalyzer,
-    FieldInfo,
-    DocumentMetadata,
-    DocumentStructure,
-)
+
+import pytest
+
+from src.processors.document_analyzer import DocumentAnalyzer
 
 
 class TestDocumentAnalyzer:

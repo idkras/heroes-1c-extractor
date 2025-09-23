@@ -7,6 +7,7 @@ JTBD:
 чтобы извлечь текстовую информацию из BLOB полей 1С.
 """
 
+import ast
 import re
 from typing import Any
 
@@ -21,15 +22,20 @@ class BlobProcessor:
     чтобы извлекать текстовую информацию с правильным декодированием.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Инициализация процессора BLOB данных."""
-        self.processed_blobs = set()  # Отслеживаем уже обработанные BLOB поля
+        self.processed_blobs: set[str] = set()  # Отслеживаем уже обработанные BLOB поля
 
     def process_blob_field(self, field_name: str, value: Any) -> dict[str, Any]:
         """
         JTBD:
         Как процессор BLOB поля, я хочу обработать бинарное поле,
         чтобы извлечь текстовую информацию с метаданными.
+
+        ИСПРАВЛЕНО согласно стандарту 1С:
+        - Правильная обработка onec_dtools BLOB объектов
+        - UTF-16 для NT полей (стандарт 1С)
+        - Защита от больших файлов
 
         Args:
             field_name: Имя поля
@@ -46,19 +52,73 @@ class BlobProcessor:
         }
 
         try:
+            # ИСПРАВЛЕНО: Проверяем размер BLOB (защита от больших файлов)
+            if hasattr(value, "__len__"):
+                blob_size = len(value)
+                if blob_size == 0:
+                    return {
+                        **blob_data,
+                        "content": "",
+                        "type": "empty_blob",
+                        "size": 0,
+                        "extraction_methods": ["empty_check"],
+                    }
+                elif blob_size > 100 * 1024 * 1024:  # 100MB
+                    return {
+                        **blob_data,
+                        "content": f"BLOB слишком большой: {blob_size} байт",
+                        "type": "large_blob",
+                        "size": blob_size,
+                        "extraction_methods": ["size_check"],
+                    }
+
             # Проверяем тип BLOB объекта
             if self._is_blob_object(value):
                 blob_data["size"] = self._get_blob_size(value)
 
-                # Метод 1: value (правильная обработка BLOB согласно onec_dtools API)
+                # ИСПРАВЛЕНО: Правильная обработка BLOB согласно onec_dtools API
                 if hasattr(value, "value"):
                     try:
-                        content = value.value
-                        if content:
-                            decoded_result = self._decode_blob_content(content)
+                        blob_value = value.value
+
+                        # ИСПРАВЛЕНО: Обрабатываем в зависимости от типа данных
+                        if isinstance(blob_value, bytes):
+                            # Для бинарных данных пробуем UTF-16 (стандарт для NT полей)
+                            decoded_result = self._decode_blob_content(blob_value)
                             if decoded_result:
                                 blob_data["value"] = decoded_result
-                                blob_data["extraction_methods"].append("value")
+                                if isinstance(blob_data["extraction_methods"], list):
+                                    blob_data["extraction_methods"].append(
+                                        "onec_dtools_utf16"
+                                    )
+                        elif isinstance(blob_value, str):
+                            # Для строковых данных
+                            if blob_value and len(blob_value.strip()) > 0:
+                                blob_data["value"] = {
+                                    "content": blob_value,
+                                    "type": "string_value",
+                                    "length": len(blob_value),
+                                    "encoding": "string",
+                                }
+                                if isinstance(blob_data["extraction_methods"], list):
+                                    blob_data["extraction_methods"].append(
+                                        "string_value"
+                                    )
+                        else:
+                            # Для других типов конвертируем в строку
+                            content = str(blob_value)
+                            if content and len(content.strip()) > 0:
+                                blob_data["value"] = {
+                                    "content": content,
+                                    "type": "converted_string",
+                                    "length": len(content),
+                                    "encoding": "converted",
+                                }
+                                if isinstance(blob_data["extraction_methods"], list):
+                                    blob_data["extraction_methods"].append(
+                                        "converted_string"
+                                    )
+
                     except Exception as e:
                         blob_data["value_error"] = f"Ошибка извлечения: {e}"
 
@@ -67,7 +127,8 @@ class BlobProcessor:
                     decoded_result = self._decode_bytes(value)
                     if decoded_result:
                         blob_data["bytes"] = decoded_result
-                        blob_data["extraction_methods"].append("bytes")
+                        if isinstance(blob_data["extraction_methods"], list):
+                            blob_data["extraction_methods"].append("bytes")
 
             # Если ни один метод не сработал
             if not blob_data.get("extraction_methods"):
@@ -100,39 +161,128 @@ class BlobProcessor:
             return len(str(value.value))
         return 0
 
-    def _decode_blob_content(self, content: bytes) -> dict[str, Any] | None:
+    def _normalize_bytes(self, x: Any) -> Any:
+        """
+        Нормализация bytes из строковых представлений
+
+        Args:
+            x: Входные данные для нормализации
+
+        Returns:
+            Нормализованные bytes или исходные данные
+        """
+        if isinstance(x, (bytes, bytearray)):
+            return bytes(x)
+        if isinstance(x, str) and x.startswith("b'") and x.endswith("'"):
+            try:
+                y = ast.literal_eval(x)  # вернёт bytes
+                if isinstance(y, (bytes, bytearray)):
+                    return bytes(y)
+            except Exception:
+                pass
+        return x
+
+    def _guess_1c_blob_kind(self, b: bytes) -> str | None:
+        """
+        Распознает тип BLOB поля по сигнатурам 1С
+
+        Args:
+            b: Байты для анализа
+
+        Returns:
+            Тип BLOB или None
+        """
+        # Проверяем тип входных данных
+        if isinstance(b, (bytes, bytearray)):
+            # Конвертируем в bytes для анализа
+            blob_bytes = bytes(b)
+
+            # Частая «магия» 1С: 0x80 0xFD и «PV» в заголовке
+            if (
+                len(blob_bytes) >= 5
+                and blob_bytes[0:2] == b"\x80\xfd"
+                and blob_bytes[3:5] == b"PV"
+            ):
+                return "1c_presentation_value"
+
+        return None
+
+    def _decode_blob_content(self, content: Any) -> dict[str, Any] | None:
         """
         JTBD:
         Как декодер BLOB контента, я хочу декодировать бинарные данные в текст,
         чтобы извлечь читаемую информацию из BLOB полей.
+
+        ИСПРАВЛЕНО согласно стандарту 1С:
+        - Нормализация входных данных (str(bytes) -> bytes)
+        - Детекция сигнатур 1С (\x80\xfd\x00PV)
+        - UTF-16 для NT полей (стандарт 1С)
+        - Правильная обработка onec_dtools BLOB объектов
         """
-        if not isinstance(content, bytes):
+        # ИСПРАВЛЕНО: Нормализация входных данных
+        x = self._normalize_bytes(content)
+
+        if not isinstance(x, bytes):
             return {
-                "content": str(content),
-                "type": type(content).__name__,
-                "length": len(str(content)),
+                "content": str(x),
+                "type": type(x).__name__,
+                "length": len(str(x)),
             }
 
-        # Правильное декодирование: UTF-16 для NT полей, затем UTF-8, CP1251
-        for encoding in ["utf-16", "utf-8", "cp1251"]:
+        # ИСПРАВЛЕНО: Сначала проверяем сигнатуры 1С
+        kind = self._guess_1c_blob_kind(x)
+        if kind == "1c_presentation_value":
+            import base64
+
+            return {
+                "content": base64.b64encode(x).decode("ascii"),
+                "type": "1c_binary",
+                "encoding": "base64",
+                "length": len(x),
+                "note": "Внутренний контейнер 1С, требуется десериализация onec_dtools",
+            }
+
+        # ИСПРАВЛЕНО: UTF-16 для NT полей (стандарт 1С), затем UTF-8, CP1251
+        # Согласно стандарту 1С: UTF-16 для NT полей, затем fallback
+        try:
+            # Сначала UTF-16 (стандарт для NT полей в 1С)
+            decoded_content = x.decode("utf-16")
+            if decoded_content and len(decoded_content.strip()) > 0:
+                return {
+                    "content": decoded_content,
+                    "type": "text_utf16_nt_field",
+                    "length": len(decoded_content),
+                    "raw_bytes": x.hex()[:100],
+                    "encoding": "utf-16",
+                    "is_nt_field": True,
+                }
+        except UnicodeDecodeError:
+            pass
+
+        # Fallback на другие кодировки
+        for encoding in ["utf-8", "cp1251", "latin1"]:
             try:
-                decoded_content = content.decode(encoding)
-                if len(decoded_content.strip()) > 0:
+                decoded_content = x.decode(encoding)
+                if decoded_content and len(decoded_content.strip()) > 0:
                     return {
                         "content": decoded_content,
                         "type": f"text_{encoding.replace('-', '')}",
                         "length": len(decoded_content),
-                        "raw_bytes": content.hex()[:100],
+                        "raw_bytes": x.hex()[:100],
+                        "encoding": encoding,
+                        "is_nt_field": False,
                     }
             except UnicodeDecodeError:
                 continue
 
         # Если не удалось декодировать как текст, возвращаем hex
         return {
-            "content": content.hex(),
+            "content": x.hex(),
             "type": "binary_hex",
-            "length": len(content),
-            "raw_bytes": content.hex()[:100],
+            "length": len(x),
+            "raw_bytes": x.hex()[:100],
+            "encoding": "hex",
+            "is_nt_field": False,
         }
 
     def _decode_bytes(self, blob_bytes: bytes) -> dict[str, Any] | None:
@@ -208,7 +358,7 @@ class BlobProcessor:
         Как извлекатель информации о магазине, я хочу найти название и код магазина,
         чтобы извлечь информацию о торговой точке из BLOB данных.
         """
-        result = {"store_name": None, "store_code": None}
+        result: dict[str, str | None] = {"store_name": None, "store_code": None}
 
         # Извлекаем название магазина
         store_match = re.search(r"Магазин\s+([^ПЦ]+?)(?:\s+ПЦ|$)", content)
@@ -244,3 +394,67 @@ class BlobProcessor:
         if "интернет" in content_lower:
             return "ИНТЕРНЕТ-ЗАКАЗ"
         return "Неизвестно"
+
+    def enhanced_safe_get_blob_content(self, blob_obj: Any) -> str:
+        """
+        ИСПРАВЛЕННАЯ функция извлечения BLOB данных согласно стандарту 1С.
+
+        JTBD:
+        Как извлекатель BLOB данных, я хочу правильно извлекать содержимое BLOB полей,
+        чтобы получить читаемую информацию с правильной кодировкой UTF-16 для NT полей.
+
+        ИСПРАВЛЕНО согласно стандарту 1С:
+        - UTF-16 для NT полей (стандарт 1С)
+        - Защита от больших файлов
+        - Правильная обработка onec_dtools BLOB объектов
+        """
+        try:
+            # ИСПРАВЛЕНО: Проверяем размер BLOB (защита от больших файлов)
+            if hasattr(blob_obj, "__len__"):
+                blob_size = len(blob_obj)
+                if blob_size == 0:
+                    return ""  # Пустой BLOB
+                elif blob_size > 100 * 1024 * 1024:  # 100MB
+                    return f"BLOB слишком большой: {blob_size} байт"
+
+            # ИСПРАВЛЕНО: Получаем значение BLOB согласно onec_dtools API
+            if hasattr(blob_obj, "value"):
+                blob_value = blob_obj.value
+
+                # ИСПРАВЛЕНО: Обрабатываем в зависимости от типа данных
+                if isinstance(blob_value, bytes):
+                    # Для бинарных данных пробуем UTF-16 (стандарт для NT полей)
+                    try:
+                        content = blob_value.decode("utf-16")
+                        if content and len(content.strip()) > 0:
+                            return content
+                    except UnicodeDecodeError:
+                        pass
+
+                    # Если UTF-16 не сработал, пробуем другие кодировки
+                    for encoding in ["utf-8", "cp1251", "latin1"]:
+                        try:
+                            content = blob_value.decode(encoding)
+                            if content and len(content.strip()) > 0:
+                                return content
+                        except UnicodeDecodeError:
+                            continue
+
+                    # Если все кодировки не сработали, используем hex
+                    return blob_value.hex()
+
+                elif isinstance(blob_value, str):
+                    # Для строковых данных
+                    if blob_value and len(blob_value.strip()) > 0:
+                        return blob_value
+
+                else:
+                    # Для других типов конвертируем в строку
+                    content = str(blob_value)
+                    if content and len(content.strip()) > 0:
+                        return content
+
+        except Exception as e:
+            return f"Ошибка чтения BLOB: {e}"
+
+        return "Не удалось извлечь содержимое BLOB"

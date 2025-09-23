@@ -71,9 +71,9 @@ class TestNotebookQA:
 
                 for pattern in problematic_patterns:
                     matches = re.findall(pattern, code)
-                    assert len(matches) == 0, (
-                        f"Найдены проблемные f-string в ячейке {i}: {matches}"
-                    )
+                    assert (
+                        len(matches) == 0
+                    ), f"Найдены проблемные f-string в ячейке {i}: {matches}"
 
     def test_data_files_exist(self, data_paths):
         """Test Case 3: Проверка существования файлов данных"""
@@ -94,9 +94,9 @@ class TestNotebookQA:
 
             # Проверяем типы данных
             assert df["table_name"].dtype == "object", "Неправильный тип для table_name"
-            assert df["field__NUMBER"].dtype == "object", (
-                "Неправильный тип для field__NUMBER"
-            )
+            assert (
+                df["field__NUMBER"].dtype == "object"
+            ), "Неправильный тип для field__NUMBER"
 
         # Проверяем test_flowers.parquet
         if data_paths["test_flowers_parquet"].exists():
@@ -120,9 +120,9 @@ class TestNotebookQA:
             # Проверяем основную таблицу documents
             for (table_name,) in tables:
                 result = conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()
-                assert result is not None, (
-                    f"Не удалось получить количество записей для таблицы {table_name}"
-                )
+                assert (
+                    result is not None
+                ), f"Не удалось получить количество записей для таблицы {table_name}"
                 count = result[0]
                 assert count > 0, f"Таблица {table_name} пустая"
 
@@ -159,9 +159,9 @@ class TestNotebookQA:
                 check=False,
             )
 
-            assert result.returncode == 0, (
-                f"Ошибка выполнения notebook: {result.stderr}"
-            )
+            assert (
+                result.returncode == 0
+            ), f"Ошибка выполнения notebook: {result.stderr}"
 
         except subprocess.TimeoutExpired:
             pytest.fail("Notebook выполняется слишком долго")
@@ -205,16 +205,16 @@ class TestNotebookQA:
                 "float64",
                 "int64",
             ], "Неправильный тип для amount"
-            assert df["flower_type"].dtype == "object", (
-                "Неправильный тип для flower_type"
-            )
+            assert (
+                df["flower_type"].dtype == "object"
+            ), "Неправильный тип для flower_type"
             assert df["store"].dtype == "object", "Неправильный тип для store"
 
             # Проверяем значения
             assert df["amount"].min() > 0, "Отрицательные суммы"
-            assert len(df["flower_type"].unique()) > 0, (
-                "Нет разнообразия в типах цветов"
-            )
+            assert (
+                len(df["flower_type"].unique()) > 0
+            ), "Нет разнообразия в типах цветов"
             assert len(df["store"].unique()) > 0, "Нет разнообразия в магазинах"
 
     def test_performance(self, data_paths):
@@ -227,9 +227,9 @@ class TestNotebookQA:
             df = pd.read_parquet(data_paths["documents_parquet"])
             load_time = time.time() - start_time
 
-            assert load_time < 5.0, (
-                f"Слишком медленная загрузка Parquet: {load_time:.2f}s"
-            )
+            assert (
+                load_time < 5.0
+            ), f"Слишком медленная загрузка Parquet: {load_time:.2f}s"
             assert len(df) > 0, "Parquet файл пустой"
 
         # Тестируем время загрузки DuckDB
@@ -240,9 +240,9 @@ class TestNotebookQA:
             conn.close()
             load_time = time.time() - start_time
 
-            assert load_time < 3.0, (
-                f"Слишком медленная загрузка DuckDB: {load_time:.2f}s"
-            )
+            assert (
+                load_time < 3.0
+            ), f"Слишком медленная загрузка DuckDB: {load_time:.2f}s"
             assert len(df) > 0, "DuckDB файл пустой"
 
     def test_error_handling(self, notebook_path):
@@ -300,9 +300,9 @@ class TestNotebookAIMetrics:
             valid_records = len(df.dropna(subset=key_fields))
             accuracy = (valid_records / total_records) * 100
 
-            assert accuracy >= 95.0, (
-                f"Точность данных {accuracy:.1f}% ниже требуемых 95%"
-            )
+            assert (
+                accuracy >= 95.0
+            ), f"Точность данных {accuracy:.1f}% ниже требуемых 95%"
 
     def test_completeness_metric(self, data_paths):
         """Проверка метрики полноты данных - 100% для обязательных полей"""
@@ -315,9 +315,9 @@ class TestNotebookAIMetrics:
             for field in required_fields:
                 if field in df.columns:
                     completeness = (df[field].notna().sum() / len(df)) * 100
-                    assert completeness == 100.0, (
-                        f"Полнота поля {field}: {completeness:.1f}%"
-                    )
+                    assert (
+                        completeness == 100.0
+                    ), f"Полнота поля {field}: {completeness:.1f}%"
 
     def test_consistency_metric(self, data_paths):
         """Проверка метрики консистентности данных"""
@@ -347,9 +347,9 @@ class TestNotebookAIMetrics:
             pd.read_parquet(data_paths["documents_parquet"])
             load_time = time.time() - start_time
 
-            assert load_time < 5.0, (
-                f"Время загрузки {load_time:.2f}s превышает 5 секунд"
-            )
+            assert (
+                load_time < 5.0
+            ), f"Время загрузки {load_time:.2f}s превышает 5 секунд"
 
 
 if __name__ == "__main__":

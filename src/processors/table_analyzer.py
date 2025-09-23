@@ -21,7 +21,7 @@ class TableAnalyzer:
     чтобы предоставить метаданные о полях для правильной обработки данных.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         JTBD:
         Как конструктор TableAnalyzer, я хочу инициализировать анализатор,
@@ -38,7 +38,7 @@ class TableAnalyzer:
             "price": [r"цена", r"price", r"стоимость"],
         }
 
-    def analyze_table_structure(self, table) -> dict[str, Any]:
+    def analyze_table_structure(self, table: Any) -> dict[str, Any]:
         """
         JTBD:
         Как метод анализа структуры таблицы, я хочу проанализировать структуру таблицы,
@@ -52,13 +52,21 @@ class TableAnalyzer:
                 "structure_summary": {},
             }
 
-        # Анализируем первые несколько записей для понимания структуры
-        sample_size = min(10, len(table))
+        # ИСПРАВЛЕНО: Анализируем ВСЕ записи для понимания структуры
+        # Убираем лимит в 10 записей - анализируем все доступные данные
         field_analysis = {}
         field_types = {}
         field_names = set()
 
-        for i in range(sample_size):
+        print(f"📊 Анализ структуры таблицы: {len(table)} записей")
+
+        # ИСПРАВЛЕНО: Анализируем все записи, но с ограничением для производительности
+        max_analysis_records = (
+            min(1000, len(table)) if hasattr(table, "__len__") else 1000
+        )
+        print(f"📊 Будет проанализировано: {max_analysis_records} записей")
+
+        for i in range(max_analysis_records):
             try:
                 row = table[i]
                 if not hasattr(row, "is_empty") or not row.is_empty:
@@ -86,8 +94,12 @@ class TableAnalyzer:
                                 }
 
                             # Добавляем образец значения
-                            if len(field_analysis[field_name]["sample_values"]) < 3:
-                                field_analysis[field_name]["sample_values"].append(
+                            sample_values = field_analysis[field_name]["sample_values"]
+                            if (
+                                isinstance(sample_values, list)
+                                and len(sample_values) < 3
+                            ):
+                                sample_values.append(
                                     str(value)[:100] if value else None,
                                 )
 
@@ -118,7 +130,7 @@ class TableAnalyzer:
             "structure_summary": self._create_structure_summary(field_analysis),
         }
 
-    def identify_field_types(self, row) -> dict[str, Any]:
+    def identify_field_types(self, row: Any) -> dict[str, Any]:
         """
         JTBD:
         Как метод идентификации типов полей, я хочу определить типы полей в строке,

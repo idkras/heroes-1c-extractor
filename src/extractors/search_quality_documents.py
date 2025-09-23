@@ -17,7 +17,7 @@ class QualityDocumentsExtractor(BaseExtractor):
     чтобы получить данные для анализа качества цветов и флористики.
     """
 
-    def extract(self) -> dict[str, Any]:
+    def extract(self, table_name: str, limit: int = 100) -> list[dict[str, Any]]:
         """
         Поиск документов качества
         """
@@ -25,9 +25,9 @@ class QualityDocumentsExtractor(BaseExtractor):
         print("🎯 ЦЕЛЬ: Найти первичные данные по качеству товаров")
         print("=" * 60)
 
-        if self.db is None:
+        if not hasattr(self, "db") or self.db is None:
             print("❌ База данных не открыта")
-            return {"error": "База данных не открыта"}
+            return []
 
         results: dict[str, Any] = {
             "quality_documents": [],
@@ -105,12 +105,15 @@ class QualityDocumentsExtractor(BaseExtractor):
         results["metadata"]["total_quality_documents"] = len(
             results["quality_documents"],
         )
-        return results
+        return [results]  # Возвращаем список словарей
 
 
 def search_quality_documents() -> dict[str, Any]:
     """
     Функция-обертка для обратной совместимости
     """
-    extractor = QualityDocumentsExtractor()
+    from ..processors.database_connector import DatabaseConnector
+
+    db_connector = DatabaseConnector("data/raw/1Cv8.1CD")
+    extractor = QualityDocumentsExtractor(db_connector=db_connector)
     return extractor.run()

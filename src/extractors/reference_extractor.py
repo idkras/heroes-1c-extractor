@@ -14,12 +14,11 @@ import os
 import sys
 from datetime import datetime
 from typing import Any
+from ..extractors.base_extractor import BaseExtractor
+from ..processors.database_connector import DatabaseConnector
 
 # Добавляем путь к src для импорта
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-
-from extractors.base_extractor import BaseExtractor
-from processors.database_connector import DatabaseConnector
 
 
 class ReferenceExtractor(BaseExtractor):
@@ -54,8 +53,8 @@ class ReferenceExtractor(BaseExtractor):
             self.logger.addHandler(handler)
             self.logger.setLevel(logging.INFO)
 
-        self.references_data = []
-        self.extraction_stats = {
+        self.references_data: list[dict[str, Any]] = []
+        self.extraction_stats: dict[str, Any] = {
             "total_references": 0,
             "successful_extractions": 0,
             "failed_extractions": 0,
@@ -226,7 +225,7 @@ class ReferenceExtractor(BaseExtractor):
             # Анализируем структуру таблицы
 
             # Извлекаем данные
-            reference_data = {
+            reference_data: dict[str, Any] = {
                 "table_name": table_name,
                 "type": self._determine_reference_type(table_name),
                 "status": "extracted",
@@ -278,19 +277,19 @@ class ReferenceExtractor(BaseExtractor):
                                             record_dict[field_name] = value.value.hex()
                                 else:
                                     record_dict[field_name] = (
-                                        str(value) if value is not None else None
+                                        str(value) if value is not None else ""
                                     )
                             sample_records.append(record_dict)
                         except Exception as e:
                             self.logger.warning(
                                 f"⚠️ Не удалось конвертировать запись {i}: {e}",
                             )
-                            sample_records.append({"error": str(e), "field_count": 0})
+                            sample_records.append({"error": str(e), "field_count": "0"})
                     else:
                         sample_records.append(
                             {
                                 "error": "Не удалось получить данные записи",
-                                "field_count": 0,
+                                "field_count": "0",
                             },
                         )
 
@@ -414,23 +413,28 @@ class ReferenceExtractor(BaseExtractor):
 
         # Возвращаем тип с наибольшим количеством совпадений
         if type_scores:
-            return max(type_scores, key=type_scores.get)
+            return max(type_scores, key=lambda x: type_scores[x])
 
         return "Неизвестный справочник"
 
     def save_results(
         self,
+        results: list[dict[str, Any]] | None = None,
         output_path: str = "data/results/references_extraction.json",
     ) -> str:
         """
         Сохраняет результаты извлечения справочников.
 
         Args:
+            results: Результаты для сохранения (опционально)
             output_path: Путь для сохранения результатов
 
         Returns:
             Путь к сохраненному файлу
         """
+        if results is not None:
+            self.references_data = results
+
         try:
             # Создаем директорию если не существует
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -459,7 +463,7 @@ class ReferenceExtractor(BaseExtractor):
             "failed_extractions": self.extraction_stats["failed_extractions"],
             "success_rate": (
                 self.extraction_stats["successful_extractions"]
-                / max(self.extraction_stats["total_references"], 1)
+                / max(int(self.extraction_stats["total_references"]), 1)
                 * 100
             ),
             "extraction_errors": self.extraction_stats["extraction_errors"],

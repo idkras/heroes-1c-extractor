@@ -1,1 +1,1 @@
-# Heroes 1C Extractor Package
+# 1C Data Extractor Package
