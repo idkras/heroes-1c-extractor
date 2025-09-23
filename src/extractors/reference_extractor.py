@@ -14,8 +14,8 @@ import os
 import sys
 from datetime import datetime
 from typing import Any
-from ..extractors.base_extractor import BaseExtractor
-from ..processors.database_connector import DatabaseConnector
+from extractors.base_extractor import BaseExtractor
+from processors.database_connector import DatabaseConnector
 
 # Добавляем путь к src для импорта
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -234,24 +234,29 @@ class ReferenceExtractor(BaseExtractor):
                 "table_info": table_info,
             }
 
+            # Получаем реальные имена полей из метаданных таблицы
+            if hasattr(table, "fields"):
+                field_names = list(table.fields.keys())
+            else:
+                field_names = []
+
             # Извлекаем первые несколько записей для анализа
             try:
                 sample_records = []
+                print(f"🔍 DEBUG: Начинаю цикл for record in table")
                 for i, record in enumerate(table):
+                    print(f"🔍 DEBUG: Получена запись {i}: {type(record)}")
                     if i >= 5:  # Ограничиваемся 5 записями для анализа
                         break
                     # Конвертируем Row в словарь для JSON сериализации
                     if hasattr(record, "as_list"):
+                        print(f"🔍 DEBUG: Обрабатываю запись {i} с as_list")
                         try:
                             record_list = record.as_list(True)
                             record_dict = {}
+                            print(f"🔍 DEBUG: record_list длина: {len(record_list)}")
 
-                            # Получаем реальные имена полей из метаданных таблицы
-                            table = self.db_connector.get_table(table_name)
-                            if hasattr(table, "fields"):
-                                field_names = list(table.fields.keys())
-                            else:
-                                field_names = []
+                            # Используем уже полученные имена полей
 
                             for j, value in enumerate(record_list):
                                 # Используем реальные имена полей из метаданных
@@ -280,7 +285,9 @@ class ReferenceExtractor(BaseExtractor):
                                         str(value) if value is not None else ""
                                     )
                             sample_records.append(record_dict)
+                            print(f"🔍 DEBUG: Добавлена запись {i}, всего записей: {len(sample_records)}")
                         except Exception as e:
+                            print(f"🔍 DEBUG: Ошибка в записи {i}: {e}")
                             self.logger.warning(
                                 f"⚠️ Не удалось конвертировать запись {i}: {e}",
                             )

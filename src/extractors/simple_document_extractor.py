@@ -590,7 +590,7 @@ class BlobProcessor:
                     # Пробуем декодировать как UTF-16 (стандарт 1С)
                     decoded_text = x.decode("utf-16le")
                     if self._is_valid_text(decoded_text):
-                    return {
+                        return {
                         "value": {
                                 "content": decoded_text,
                                 "type": "text_utf16_decoded",
@@ -654,8 +654,8 @@ class BlobProcessor:
                         try:
                             decoded = x.decode(encoding)
                             if self._is_valid_text(decoded):
-                    return {
-                        "value": {
+                                return {
+                                    "value": {
                                         "content": decoded,
                                         "type": f"text_{encoding}",
                                         "length": len(decoded),
@@ -1249,7 +1249,7 @@ class SimpleDocumentExtractor:
                     )
 
                 else:
-                        print(
+                    print(
                         f"❌ StopIterationHandler не смог извлечь данные из {table_name}"
                     )
                     print(f"   Ошибки: {iteration_result.errors}")
