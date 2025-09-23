@@ -263,7 +263,7 @@ except ImportError:
 
 # ИСПРАВЛЕНО: Реальные компоненты вместо заглушек
 class BlobProcessor:
-    def __init__(self, output_dir: str = "extracted_files") -> None:
+    def __init__(self, output_dir: str = "data/results/extracted_files") -> None:
         """
         Инициализация BlobProcessor с настройками сохранения файлов
 
@@ -272,13 +272,22 @@ class BlobProcessor:
         """
         self.output_dir = output_dir
         self.magic_signatures = {
-            "png": b"\x89PNG",
+            # Изображения
+            "png": b"\x89PNG\r\n\x1a\n",
             "jpeg": b"\xff\xd8\xff",
-            "pdf": b"%PDF-",
-            "zip": b"PK\x03\x04",
-            "rtf": b"{\rtf1",
+            "gif": b"GIF87a",
+            "bmp": b"BM",
+            # Документы
+            "pdf": b"%PDF",
+            "rtf": b"{\\rtf",
             "xml": b"<?xml",
             "json": b"{",
+            # Архивы
+            "zip": b"PK\x03\x04",
+            "rar": b"Rar!\x1a\x07\x00",
+            # 1C специфичные
+            "1c_presentation": b"\x80\xfd\x00PV",
+            "1c_binary": b"\x80\xfd",
         }
 
     def detect_file_type(self, blob_data: bytes) -> str:
@@ -548,6 +557,12 @@ class BlobProcessor:
                     },
                     "extraction_methods": ["direct_text"],
                     "size": len(x),
+                    "metadata": {
+                        "file_type": "text",
+                        "file_path": None,
+                        "file_size": len(x),
+                        "quality": 1.0,
+                    },
                 }
 
             if not isinstance(x, (bytes, bytearray)):
@@ -559,6 +574,12 @@ class BlobProcessor:
                     },
                     "extraction_methods": ["normalization_failed"],
                     "size": 0,
+                    "metadata": {
+                        "file_type": "unknown",
+                        "file_path": None,
+                        "file_size": 0,
+                        "quality": 0.0,
+                    },
                 }
 
             # 2. Детекция 1С сигнатур
@@ -578,6 +599,12 @@ class BlobProcessor:
                             "extraction_methods": ["1c_signature_utf16"],
                             "size": len(x),
                             "note": "1С контейнер успешно декодирован как UTF-16",
+                            "metadata": {
+                                "file_type": "1c_presentation",
+                                "file_path": None,
+                                "file_size": len(x),
+                                "quality": 1.0,
+                            },
                         }
                 except:
                     pass
@@ -595,6 +622,12 @@ class BlobProcessor:
                     "extraction_methods": ["1c_signature_base64"],
                     "size": len(x),
                     "note": "Внутренний контейнер 1С, требуется десериализация onec_dtools",
+                    "metadata": {
+                        "file_type": "1c_binary",
+                        "file_path": None,
+                        "file_size": len(x),
+                        "quality": 0.8,
+                    },
                 }
 
             # 3. Обработка смещений данных
@@ -701,6 +734,12 @@ class BlobProcessor:
                 },
                 "extraction_methods": ["base64_fallback"],
                 "size": len(x),
+                "metadata": {
+                    "file_type": "binary",
+                    "file_path": None,
+                    "file_size": len(x),
+                    "quality": 0.5,
+                },
             }
 
         except Exception as e:

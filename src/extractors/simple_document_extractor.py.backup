@@ -171,7 +171,7 @@ class BlobProcessor:
 
             if isinstance(blob_value, bytes):
                 # Обрабатываем bytes
-                # Пробуем декодировать как UTF-16 (стандарт для NT полей)
+                # Обрабатываем bytes - пробуем декодировать как UTF-16 (стандарт для NT полей)
                 try:
                     decoded_content = blob_value.decode("utf-16")
                     if decoded_content and len(decoded_content.strip()) > 0:
@@ -231,7 +231,7 @@ class BlobProcessor:
                 }
 
             # Не bytes, конвертируем в строку
-            content = str(blob_value)
+            content = str(blob_value)  # type: ignore[unreachable]
             if content and len(content.strip()) > 0:
                 return {
                     "value": {
